@@ -1398,6 +1398,56 @@ const CreditCalculator = () => {
                 See My Savings
               </button>
             </div>
+
+            {/* State Information Section - Below the buttons */}
+            <div className="mt-8 bg-gray-50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">State R&D Credit Information</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Complex Portal States */}
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-orange-800 mb-3 flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5" />
+                    States Requiring Specialized Filing
+                  </h4>
+                  <p className="text-sm text-orange-700 mb-3">
+                    These states require online portal applications with complex procedures:
+                  </p>
+                  <div className="space-y-2">
+                    {unsupportedStates.map(state => (
+                      <div key={state.code} className="text-sm">
+                        <span className="font-medium">{state.name}</span>
+                        <p className="text-xs text-orange-600 ml-2">{state.reason}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-600 mt-3 italic">
+                    Contact us for specialized assistance with these states.
+                  </p>
+                </div>
+
+                {/* States Without Credits */}
+                <div className="bg-gray-100 border border-gray-300 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                    <Info className="w-5 h-5" />
+                    States Without R&D Credits
+                  </h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    These states don't offer R&D tax credit programs:
+                  </p>
+                  <div className="grid grid-cols-2 gap-1">
+                    {statesWithoutCredit.map(state => (
+                      <div key={state} className="text-sm text-gray-600">
+                        • {state}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-3 italic">
+                    Federal credits still available in these states.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         );
 
@@ -1696,55 +1746,7 @@ const CreditCalculator = () => {
                   </div>
                 </div>
 
-                {/* State Information Section */}
-                <div className="mt-8 bg-gray-50 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">State R&D Credit Information</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Complex Portal States */}
-                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-orange-800 mb-3 flex items-center gap-2">
-                        <AlertCircle className="w-5 h-5" />
-                        States Requiring Specialized Filing
-                      </h4>
-                      <p className="text-sm text-orange-700 mb-3">
-                        These states require online portal applications with complex procedures:
-                      </p>
-                      <div className="space-y-2">
-                        {unsupportedStates.map(state => (
-                          <div key={state.code} className="text-sm">
-                            <span className="font-medium">{state.name}</span>
-                            <p className="text-xs text-orange-600 ml-2">{state.reason}</p>
-                          </div>
-                        ))}
-                      </div>
-                      <p className="text-xs text-gray-600 mt-3 italic">
-                        Contact us for specialized assistance with these states.
-                      </p>
-                    </div>
 
-                    {/* States Without Credits */}
-                    <div className="bg-gray-100 border border-gray-300 rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                        <Info className="w-5 h-5" />
-                        States Without R&D Credits
-                      </h4>
-                      <p className="text-sm text-gray-600 mb-3">
-                        These states don't offer R&D tax credit programs:
-                      </p>
-                      <div className="grid grid-cols-2 gap-1">
-                        {statesWithoutCredit.map(state => (
-                          <div key={state} className="text-sm text-gray-600">
-                            • {state}
-                          </div>
-                        ))}
-                      </div>
-                      <p className="text-xs text-gray-500 mt-3 italic">
-                        Federal credits still available in these states.
-                      </p>
-                    </div>
-                  </div>
-                </div>
 
                 {/* SECTION 4: CREDIBILITY - Build trust with breakdown */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

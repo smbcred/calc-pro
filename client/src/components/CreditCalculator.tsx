@@ -1612,14 +1612,7 @@ const CreditCalculator = () => {
                     <h2 className="text-3xl md:text-4xl font-bold mb-3">
                       You Could Save {formatCurrency(results.totalBenefit || 0)}
                     </h2>
-                    <div className="bg-white/20 rounded-xl p-4 mb-6">
-                      <p className="text-lg font-bold mb-1">
-                        {Math.round(results.totalBenefit / (getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0)))}x Return on Investment
-                      </p>
-                      <p className="text-sm text-white/80">
-                        Your ${((getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))).toLocaleString()} investment → {formatCurrency(results.totalBenefit)} in tax savings
-                      </p>
-                    </div>
+
                     
                     {/* Value Breakdown - Scannable */}
                     <div className="grid grid-cols-3 gap-4 bg-white/10 rounded-xl p-4 mb-6">
@@ -1735,6 +1728,16 @@ const CreditCalculator = () => {
                       </span>
                     </div>
                     
+                    {/* ROI Display - Right before CTA */}
+                    <div className="bg-green-50 rounded-xl p-4 mb-4 text-center border border-green-200">
+                      <p className="text-lg font-bold text-green-800 mb-1">
+                        {Math.round(results.totalBenefit / (getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0)))}x Return on Investment
+                      </p>
+                      <p className="text-sm text-green-700">
+                        Your ${((getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))).toLocaleString()} investment → {formatCurrency(results.totalBenefit)} in tax savings
+                      </p>
+                    </div>
+                    
                     <button
                       onClick={() => {
                         const basePrice = getTieredPricing(results.totalCredit);
@@ -1774,70 +1777,45 @@ const CreditCalculator = () => {
                   </div>
                 </div>
 
-                {/* QUALIFICATION & SOCIAL PROOF - Condensed */}
-                {getQualificationReasons().length > 0 && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 className="font-medium text-blue-900 mb-2 text-center">✅ Why You Qualify</h4>
-                    <div className="text-sm text-blue-800 text-center">
-                      {getQualificationReasons().slice(0, 3).join(' • ')}
-                      {getQualificationReasons().length > 3 && ' + more'}
+                {/* TIME SAVINGS & COMPETITIVE ADVANTAGE */}
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6">
+                  <h4 className="font-bold text-gray-900 mb-4 text-center">⏰ Why Choose Our Flat-Fee Service?</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <h5 className="font-semibold text-green-800">Save Time & Money:</h5>
+                      <ul className="text-sm text-gray-700 space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span><strong>Ready in 10 minutes</strong> vs. weeks with traditional CPAs</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span><strong>Flat fee of ${getTieredPricing(results.totalCredit).toLocaleString()}</strong> vs. 15-25% of your refund</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span><strong>No hourly billing</strong> — pay once, get everything</span>
+                        </li>
+                      </ul>
                     </div>
-                  </div>
-                )}
-
-                {/* HIGH VALUE SOCIAL PROOF */}
-                {results.totalBenefit > 50000 && (
-                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-300 rounded-lg p-4 text-center">
-                    <p className="font-bold text-gray-900">🌟 You're in the top 20% of R&D businesses</p>
-                    <p className="text-sm text-gray-700 mt-1">
-                      Most companies claim $20K–$40K. Your substantial R&D activity qualifies for major savings.
-                    </p>
-                  </div>
-                )}
-
-                {/* SECTION 9: SUPPORTING INFO - Detailed breakdown (collapsed by default) */}
-                <div className="bg-gray-50 rounded-lg p-6">
-                  <button
-                    onClick={() => setShowDetails(!showDetails)}
-                    className="flex items-center justify-between w-full text-left"
-                  >
-                    <h3 className="text-lg font-semibold">Detailed Breakdown</h3>
-                    <ChevronRight className={`w-5 h-5 transition-transform ${showDetails ? 'rotate-90' : ''}`} />
-                  </button>
-                  
-                  {showDetails && (
-                    <div className="mt-4 space-y-4">
-                      <div>
-                        <h4 className="font-medium mb-2">Your AI & Tech R&D Expenses</h4>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex justify-between">
-                            <span>Employee Time ({Math.round(results.qres.wagePercent * 100)}%)</span>
-                            <span>{formatCurrency(results.qres.wages)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Contractors ({Math.round(results.qres.contractorPercent * 100)}% × 65%)</span>
-                            <span>{formatCurrency(results.qres.contractors)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Cloud & APIs</span>
-                            <span>{formatCurrency(results.qres.cloud)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>AI Tools & Software</span>
-                            <span>{formatCurrency(results.qres.software)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Other Supplies</span>
-                            <span>{formatCurrency(results.qres.supplies)}</span>
-                          </div>
-                          <div className="flex justify-between font-semibold pt-2 border-t">
-                            <span>Total Qualified R&D</span>
-                            <span>{formatCurrency(results.qres.total)}</span>
-                          </div>
+                    <div className="space-y-3">
+                      <h5 className="font-semibold text-blue-800">Cost Comparison:</h5>
+                      <div className="bg-white rounded-lg p-4 text-sm">
+                        <div className="flex justify-between mb-2">
+                          <span>Traditional CPA (20% fee):</span>
+                          <span className="font-bold text-red-600">${Math.round(results.totalBenefit * 0.2).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between mb-2">
+                          <span>Our flat fee:</span>
+                          <span className="font-bold text-green-600">${getTieredPricing(results.totalCredit).toLocaleString()}</span>
+                        </div>
+                        <div className="border-t pt-2 flex justify-between">
+                          <span className="font-bold">You save:</span>
+                          <span className="font-bold text-green-700">${(Math.round(results.totalBenefit * 0.2) - getTieredPricing(results.totalCredit)).toLocaleString()}</span>
                         </div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* WHAT YOU'LL NEED TO CLAIM YOUR REFUND */}
@@ -1884,6 +1862,66 @@ const CreditCalculator = () => {
                   </div>
                 </div>
 
+                {/* QUALIFICATION & SOCIAL PROOF - Condensed */}
+                {getQualificationReasons().length > 0 && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 className="font-medium text-blue-900 mb-2 text-center">✅ Why You Qualify</h4>
+                    <div className="text-sm text-blue-800 text-center">
+                      {getQualificationReasons().slice(0, 3).join(' • ')}
+                      {getQualificationReasons().length > 3 && ' + more'}
+                    </div>
+                  </div>
+                )}
+
+
+
+                {/* SECTION 9: SUPPORTING INFO - Detailed breakdown (collapsed by default) */}
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <button
+                    onClick={() => setShowDetails(!showDetails)}
+                    className="flex items-center justify-between w-full text-left"
+                  >
+                    <h3 className="text-lg font-semibold">Detailed Breakdown</h3>
+                    <ChevronRight className={`w-5 h-5 transition-transform ${showDetails ? 'rotate-90' : ''}`} />
+                  </button>
+                  
+                  {showDetails && (
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <h4 className="font-medium mb-2">Your AI & Tech R&D Expenses</h4>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex justify-between">
+                            <span>Employee Time ({Math.round(results.qres.wagePercent * 100)}%)</span>
+                            <span>{formatCurrency(results.qres.wages)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Contractors ({Math.round(results.qres.contractorPercent * 100)}% × 65%)</span>
+                            <span>{formatCurrency(results.qres.contractors)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Cloud & APIs</span>
+                            <span>{formatCurrency(results.qres.cloud)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>AI Tools & Software</span>
+                            <span>{formatCurrency(results.qres.software)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Other Supplies</span>
+                            <span>{formatCurrency(results.qres.supplies)}</span>
+                          </div>
+                          <div className="flex justify-between font-semibold pt-2 border-t">
+                            <span>Total Qualified R&D</span>
+                            <span>{formatCurrency(results.qres.total)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+
+
                 {/* OPTIONAL DETAILS - Highly condensed */}
                 <div className="bg-gray-50 rounded-lg p-4">
                   <button
@@ -1902,7 +1940,7 @@ const CreditCalculator = () => {
                       </div>
                       <div className="flex justify-between">
                         <span>Federal Credit ({(results.federal.rate * 100).toFixed(1)}%):</span>
-                        <span className="font-medium">{formatCurrency(results.federal.creditAmount)}</span>
+                        <span className="font-medium">{formatCurrency(results.federal.creditAmount || 0)}</span>
                       </div>
                       {results.state > 0 && (
                         <div className="flex justify-between">
@@ -1920,12 +1958,25 @@ const CreditCalculator = () => {
               </>
             )}
 
-            {/* MINIMAL DISCLAIMER */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-center">
-              <p className="text-sm text-yellow-800">
-                <AlertCircle className="w-4 h-4 inline mr-1" />
-                Document preparation service, not tax advice. Estimates based on provided information.
-              </p>
+            {/* COMPREHENSIVE LEGAL DISCLAIMERS */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+              <div className="flex items-start">
+                <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0" />
+                <div className="text-sm text-yellow-800">
+                  <p className="font-semibold mb-3">Important Legal Disclaimers:</p>
+                  <ul className="list-disc list-inside space-y-2">
+                    <li><strong>This is not tax advice</strong> — We provide document preparation services only. This service prepares forms and supporting documentation for you to file yourself or provide to your tax professional.</li>
+                    <li><strong>Consult a tax professional</strong> — For complex tax situations, audit defense, or personalized tax advice, we strongly recommend consulting with a qualified CPA or tax attorney.</li>
+                    <li><strong>Estimates only</strong> — All calculations are estimates based on simplified methodologies and information you provide. Actual credits may vary based on IRS review and additional documentation requirements.</li>
+                    <li><strong>No liability</strong> — We disclaim all liability for errors, omissions, or any consequences arising from use of these estimates or prepared documents. Users assume full responsibility for the accuracy and completeness of information provided.</li>
+                    <li><strong>IRS compliance</strong> — While our forms follow IRS guidelines, we cannot guarantee IRS acceptance or audit protection. Documentation and substantiation of all claimed activities is your responsibility.</li>
+                    <li><strong>No refund guarantee</strong> — We cannot guarantee any specific tax credit amount or IRS acceptance. Our service prepares documentation based on provided information only.</li>
+                  </ul>
+                  <p className="mt-4 text-xs font-medium">
+                    By purchasing this service, you acknowledge these limitations and agree to use the prepared documents at your own risk and discretion.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <button

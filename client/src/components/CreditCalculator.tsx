@@ -145,9 +145,9 @@ const CreditCalculator = () => {
     
     return (
       <div className="mb-12">
-        {/* Primary Value Props with Better Spacing */}
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        {/* Primary Value Props with Perfect Centering */}
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 px-4">
             <div className="bg-gradient-to-br from-green-50 via-white to-green-100 border border-green-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group">
               <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <DollarSign className="w-8 h-8 text-white" />
@@ -185,7 +185,7 @@ const CreditCalculator = () => {
 
         {/* Urgency Banner */}
         {isEndOfYear && (
-          <div className="max-w-4xl mx-auto bg-gradient-to-r from-orange-100 to-red-100 border border-orange-300 rounded-2xl p-6">
+          <div className="max-w-5xl mx-auto bg-gradient-to-r from-orange-100 to-red-100 border border-orange-300 rounded-2xl p-6 mx-4">
             <div className="flex items-center justify-center gap-3 text-orange-800">
               <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
                 <Clock className="w-5 h-5 text-orange-700" />
@@ -865,54 +865,52 @@ const CreditCalculator = () => {
     ];
 
     return (
-      <div className="mb-8">
-        {/* Progress Bar */}
-        <div className="flex justify-between items-center mb-4">
-          {steps.map((stepInfo, index) => {
-            const step = index + 1;
-            const isActive = currentStep >= step;
-            const isCompleted = currentStep > step;
-            
-            return (
-              <div key={step} className="flex items-center flex-1">
-                <div className="flex flex-col items-center relative">
+      <div className="mb-8 max-w-4xl mx-auto">
+        {/* Progress Bar with Perfect Centering */}
+        <div className="relative">
+          <div className="flex items-center justify-between mb-6 px-4">
+            {steps.map((stepInfo, index) => {
+              const step = index + 1;
+              const isActive = currentStep >= step;
+              const isCompleted = currentStep > step;
+              
+              return (
+                <div key={step} className="flex flex-col items-center relative z-10 bg-white rounded-full p-2">
                   <div className={`
-                    w-12 h-12 rounded-full flex items-center justify-center font-bold mb-2 border-2 transition-all duration-300
+                    w-16 h-16 rounded-full flex items-center justify-center font-bold mb-3 border-3 transition-all duration-300 shadow-lg
                     ${isActive 
-                      ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white border-transparent shadow-lg transform scale-110' 
+                      ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white border-transparent transform scale-110' 
                       : 'bg-white text-gray-400 border-gray-300'}
-                    ${isCompleted ? 'bg-gradient-to-r from-green-500 to-blue-500' : ''}
+                    ${isCompleted ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white' : ''}
                   `}>
-                    {isCompleted ? '✓' : stepInfo.icon}
+                    <span className="text-2xl">
+                      {isCompleted ? '✓' : stepInfo.icon}
+                    </span>
                   </div>
-                  <div className="text-center">
-                    <span className="text-xs font-medium text-gray-700 block">{stepInfo.label}</span>
-                    <span className="text-xs text-blue-600 font-medium">{stepInfo.benefit}</span>
+                  <div className="text-center min-w-[100px]">
+                    <span className="text-sm font-semibold text-gray-800 block">{stepInfo.label}</span>
+                    <span className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full mt-1 inline-block">
+                      {stepInfo.benefit}
+                    </span>
                   </div>
                 </div>
-                {step < 4 && (
-                  <div className="flex-1 flex items-center mx-3">
-                    <div className={`
-                      flex-1 h-2 rounded-full transition-all duration-500
-                      ${currentStep > step 
-                        ? 'bg-gradient-to-r from-green-400 to-blue-400' 
-                        : 'bg-gray-200'}
-                    `}>
-                      {currentStep === step && (
-                        <div className="h-full bg-gradient-to-r from-blue-400 to-green-400 rounded-full animate-pulse" style={{width: '30%'}} />
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+          
+          {/* Progress Line */}
+          <div className="absolute top-8 left-0 right-0 h-1 bg-gray-200 rounded-full mx-16">
+            <div 
+              className="h-full bg-gradient-to-r from-blue-400 to-green-400 rounded-full transition-all duration-500"
+              style={{width: `${((currentStep - 1) / 3) * 100}%`}}
+            />
+          </div>
         </div>
         
         {/* Step Message */}
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Step {currentStep} of 4 · Average time: <span className="font-medium text-blue-600">10 minutes</span>
+        <div className="text-center bg-blue-50 rounded-xl py-3 px-6 mx-auto max-w-sm">
+          <p className="text-base text-blue-800 font-medium">
+            Step {currentStep} of 4 · Average time: <span className="font-bold text-blue-600">10 minutes</span>
           </p>
         </div>
       </div>
@@ -1870,8 +1868,8 @@ Total Qualified R&D Expenses: ${formatCurrency(results.qres.total)}`;
       <div className="absolute inset-0 bg-grid-slate-100 bg-[length:20px_20px] opacity-25"></div>
       
       {/* Main Container with Perfect Centering */}
-      <div className="relative flex items-center justify-center min-h-screen py-12 px-4">
-        <div className="w-full max-w-4xl">
+      <div className="relative flex items-center justify-center min-h-screen py-8 px-4">
+        <div className="w-full max-w-6xl">
           {/* Main Calculator Container */}
           <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 relative overflow-hidden">
             {/* Decorative Elements */}

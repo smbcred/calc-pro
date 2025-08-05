@@ -1949,18 +1949,18 @@ const CreditCalculator = () => {
                       <div className="flex justify-between items-center mb-2">
                         <div>
                           <h4 className="font-bold text-green-900">
-                            {formData.selectedYears.length > 1 
+                            {formData.selectedYears && formData.selectedYears.length > 1 
                               ? `${formData.selectedYears.length}-Year Federal Package`
                               : 'Federal R&D Credit Package'
                             }
                           </h4>
                           <p className="text-sm text-green-700">
                             IRS Form 6765 + documentation + filing guide
-                            {formData.selectedYears.length > 1 && (
+                            {formData.selectedYears && formData.selectedYears.length > 1 && (
                               <span> • {formData.selectedYears.length} years of forms</span>
                             )}
                           </p>
-                          {formData.selectedYears.length > 1 && (
+                          {formData.selectedYears && formData.selectedYears.length > 1 && (
                             <div className="text-xs text-green-600 mt-1">
                               ✅ {Math.round(getMultiYearDiscount(formData.selectedYears.length) * 100)}% multi-year discount applied
                             </div>
@@ -1968,11 +1968,17 @@ const CreditCalculator = () => {
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-green-700">
-                            ${getTieredPricing(results.totalCredit, formData.selectedYears.length).toLocaleString()}
+                            ${getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1).toLocaleString()}
                           </div>
-                          {formData.selectedYears.length > 1 && (
+                          {formData.selectedYears && formData.selectedYears.length > 1 && (
                             <div className="text-sm text-green-600 line-through">
                               ${(getTieredPricing(results.totalCredit) * formData.selectedYears.length).toLocaleString()}
+                            </div>
+                          )}
+                          {formData.selectedYears && formData.selectedYears.length > 1 && (
+                            <div className="text-xs text-green-600 mt-1">
+                              Save ${((getTieredPricing(results.totalCredit) * formData.selectedYears.length) - 
+                                getTieredPricing(results.totalCredit, formData.selectedYears.length)).toLocaleString()}
                             </div>
                           )}
                         </div>
@@ -2042,7 +2048,7 @@ const CreditCalculator = () => {
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-xl font-bold text-gray-900">Total Investment:</span>
                       <span className="text-3xl font-bold text-green-600">
-                        ${((getTieredPricing(results.totalCredit, formData.selectedYears.length) + 
+                        ${((getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1) + 
                             ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
                           ).toLocaleString()}
                       </span>
@@ -2052,48 +2058,75 @@ const CreditCalculator = () => {
                     <div className="bg-green-50 rounded-xl p-4 mb-4 text-center border border-green-200">
                       <p className="text-lg font-bold text-green-800 mb-1">
                         {Math.round(results.totalBenefit / 
-                          (getTieredPricing(results.totalCredit, formData.selectedYears.length) + 
+                          (getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1) + 
                            ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
                         )}x Return on Investment
                       </p>
                       <p className="text-sm text-green-700">
-                        Your ${((getTieredPricing(results.totalCredit, formData.selectedYears.length) + 
+                        Your ${((getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1) + 
                                  ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
                                ).toLocaleString()} investment → {formatCurrency(results.totalBenefit)} in tax savings
                       </p>
-                      {formData.selectedYears.length > 1 && (
+                      {formData.selectedYears && formData.selectedYears.length > 1 && (
                         <p className="text-xs text-green-600 mt-1">
                           That's {formatCurrency(results.totalBenefit / formData.selectedYears.length)} per year average!
                         </p>
                       )}
                     </div>
 
-                    {/* Multi-Year Upsell Section - Only show if single year selected */}
-                    {formData.selectedYears && formData.selectedYears.length === 1 && (
-                      <div className="border-2 border-orange-200 bg-orange-50 rounded-xl p-6 mb-6">
-                        <div className="text-center mb-4">
-                          <h3 className="text-xl font-bold text-orange-800 mb-2">🚀 Maximize Your Savings!</h3>
-                          <p className="text-orange-700">File multiple years and save big with our multi-year discount</p>
-                        </div>
-                        
-                        <MultiYearSelector />
-                        
-                        <div className="mt-4 bg-white rounded-lg p-4 border border-orange-200">
-                          <div className="text-center">
-                            <div className="text-lg font-bold text-green-600 mb-1">
-                              Save up to 25% with multi-year filing
-                            </div>
-                            <div className="text-sm text-gray-600">
-                              The more years you file, the bigger your discount
-                            </div>
-                          </div>
+                    {/* Multi-Year Selection Section - Always visible for upselling */}
+                    <div className={`border-2 rounded-xl p-6 mb-6 ${
+                      formData.selectedYears && formData.selectedYears.length === 1 
+                        ? 'border-orange-200 bg-orange-50' 
+                        : 'border-green-200 bg-green-50'
+                    }`}>
+                      <div className="text-center mb-4">
+                        {formData.selectedYears && formData.selectedYears.length === 1 ? (
+                          <>
+                            <h3 className="text-xl font-bold text-orange-800 mb-2">🚀 Maximize Your Savings!</h3>
+                            <p className="text-orange-700">File multiple years and save big with our multi-year discount</p>
+                          </>
+                        ) : (
+                          <>
+                            <h3 className="text-xl font-bold text-green-800 mb-2">📅 Multi-Year Filing Selected</h3>
+                            <p className="text-green-700">Great choice! You're saving with our multi-year discount</p>
+                          </>
+                        )}
+                      </div>
+                      
+                      <MultiYearSelector />
+                      
+                      {/* Dynamic pricing preview */}
+                      <div className="mt-4 bg-white rounded-lg p-4 border border-gray-200">
+                        <div className="text-center">
+                          {formData.selectedYears && formData.selectedYears.length === 1 ? (
+                            <>
+                              <div className="text-lg font-bold text-green-600 mb-1">
+                                Save up to 25% with multi-year filing
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                The more years you file, the bigger your discount
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="text-lg font-bold text-green-600 mb-1">
+                                {Math.round(getMultiYearDiscount(formData.selectedYears?.length || 1) * 100)}% Multi-Year Discount Applied
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                You're saving ${((getTieredPricing(results.totalCredit) * (formData.selectedYears?.length || 1)) - 
+                                  getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1)).toLocaleString()} 
+                                vs individual year pricing
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
-                    )}
+                    </div>
                     
                     <button
                       onClick={() => {
-                        const basePrice = getTieredPricing(results.totalCredit, formData.selectedYears.length);
+                        const basePrice = getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1);
                         const stateAddon = (formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0;
                         const totalPrice = basePrice + stateAddon;
                         
@@ -2172,10 +2205,10 @@ const CreditCalculator = () => {
                         <div className="grid grid-cols-3 gap-2 text-xs border-t pt-1">
                           <span className="font-bold">Our Flat Fee</span>
                           <span className="font-bold text-green-600">Fixed</span>
-                          <span className="font-bold text-green-600">${getTieredPricing(results.totalCredit).toLocaleString()}</span>
+                          <span className="font-bold text-green-600">${getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1).toLocaleString()}</span>
                         </div>
                         <div className="bg-green-100 p-2 rounded text-center mt-2">
-                          <span className="font-bold text-green-800">You save: ${(Math.round(results.totalBenefit * 0.15) - getTieredPricing(results.totalCredit)).toLocaleString()}</span>
+                          <span className="font-bold text-green-800">You save: ${(Math.round(results.totalBenefit * 0.15) - getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1)).toLocaleString()}</span>
                         </div>
                       </div>
                     </div>

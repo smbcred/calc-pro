@@ -1600,360 +1600,193 @@ const CreditCalculator = () => {
               </>
             ) : (
               <>
-                {/* Full Results - Shown After Email - OPTIMIZED ORDER */}
-                
-                {/* SECTION 1: VALUE - Show them the money first */}
-                <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white text-center">
-                  <h3 className="text-xl font-bold mb-2">Your Calculated Tax Benefit</h3>
-                  <p className="text-4xl font-bold">
-                    {formatCurrency(results.totalBenefit || 0)}
-                  </p>
-                  <p className="text-sm opacity-90 mt-2">
-                    Combined federal credits, state credits, and Section 174A deductions
-                  </p>
-                </div>
-
-                {/* SECTION 2: URGENCY - Limited-time opportunity */}
-                <div className="bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-300 rounded-lg p-5 shadow-lg">
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl flex-shrink-0">🔥</span>
-                    <div className="w-full">
-                      <h3 className="text-lg font-bold text-gray-900 mb-3">
-                        Limited-Time Opportunity: New Law Supercharges R&D Credits
-                      </h3>
-                      
-                      <div className="space-y-2 text-sm text-gray-800">
-                        <div className="flex items-start gap-2">
-                          <span className="text-orange-600 font-bold mt-0.5">▸</span>
-                          <p>
-                            <strong>Amend 2022–2024 returns</strong> through July 3, 2026 — claim credits you missed
-                          </p>
-                        </div>
-                        
-                        <div className="flex items-start gap-2">
-                          <span className="text-orange-600 font-bold mt-0.5">▸</span>
-                          <p>
-                            <strong>100% immediate expensing of R&D costs</strong> — retroactive to 2022 for qualifying businesses
-                          </p>
-                        </div>
-                        
-                        <div className="flex items-start gap-2">
-                          <span className="text-orange-600 font-bold mt-0.5">▸</span>
-                          <p>
-                            <strong>Expanded refundability</strong> for businesses under $31M in revenue — get cash back faster
-                          </p>
-                        </div>
-                        
-                        <div className="flex items-start gap-2">
-                          <span className="text-orange-600 font-bold mt-0.5">▸</span>
-                          <p>
-                            <strong>Permanent 100% bonus depreciation</strong> for eligible assets — maximize your deductions
-                          </p>
-                        </div>
+                {/* HERO VALUE SECTION - Lead with the money */}
+                <div className="bg-gradient-to-br from-green-600 via-green-500 to-blue-600 rounded-2xl p-8 text-white text-center relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
+                  <div className="relative z-10">
+                    <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 mb-4">
+                      <span className="text-sm font-semibold">✨ Your Personalized Results</span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold mb-3">
+                      You Could Save {formatCurrency(results.totalBenefit || 0)}
+                    </h2>
+                    <p className="text-xl text-white/90 mb-6">
+                      That's a {Math.round(results.totalBenefit / (getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0)))}x return on investment
+                    </p>
+                    
+                    {/* Value Breakdown - Scannable */}
+                    <div className="grid grid-cols-3 gap-4 bg-white/10 rounded-xl p-4 mb-6">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold">{formatCurrency(results.federal.creditAmount || 0)}</div>
+                        <div className="text-sm text-white/80">Federal Credit</div>
                       </div>
-                      
-                      <div className="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg">
-                        <p className="text-sm font-bold text-red-900 flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          Act Fast: You must file amended returns by July 3, 2026 to unlock this one-time benefit.
-                        </p>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold">{formatCurrency(results.section174ABenefit || 0)}</div>
+                        <div className="text-sm text-white/80">Tax Deduction</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold">{results.state > 0 ? formatCurrency(results.state) : '$0'}</div>
+                        <div className="text-sm text-white/80">State Credit</div>
+                      </div>
+                    </div>
+
+                    {/* Urgency - Condensed */}
+                    <div className="bg-red-500/20 border border-red-300/30 rounded-lg p-3 mb-6">
+                      <div className="flex items-center justify-center gap-2 text-sm font-semibold">
+                        <Clock className="w-4 h-4" />
+                        <span>Limited Time: File amended returns by July 2026 for max benefit</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* SECTION 3: PRIMARY CTA - Strike while the iron is hot */}
-                <div className="bg-gradient-to-b from-green-50 to-green-100 border-2 border-green-300 rounded-lg p-6">
-                  {/* Main Headline */}
+                {/* PRIMARY CTA SECTION - Single focused action */}
+                <div className="bg-white border-2 border-green-200 rounded-2xl p-6 shadow-lg">
                   <div className="text-center mb-6">
-                    <p className="text-sm text-gray-600 mb-2">Your estimated tax benefit:</p>
-                    <p className="text-4xl font-bold text-green-700 mb-3">{formatCurrency(results.totalBenefit || 0)}</p>
-                    <h3 className="text-xl font-bold text-gray-800">
-                      Let's turn this into real money in your pocket
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                      Get Your Complete R&D Credit Package
                     </h3>
+                    <p className="text-gray-600">
+                      All forms, documentation, and filing instructions ready in 5 minutes
+                    </p>
                   </div>
 
-                  {/* State Credit Add-On Selection */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.stateCredit}
-                        onChange={(e) => updateFormData('stateCredit', e.target.checked)}
-                        className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                      />
-                      <div className="ml-3 flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold text-blue-900">Add State R&D Credit Filing</span>
-                          <span className="text-blue-700 font-bold">+${getStateAddonPricing(results.totalCredit)}</span>
+                  {/* Package Options - Clear Pricing */}
+                  <div className="space-y-4 mb-6">
+                    {/* Federal Package */}
+                    <div className="border-2 border-green-300 rounded-lg p-4 bg-green-50">
+                      <div className="flex justify-between items-center mb-2">
+                        <div>
+                          <h4 className="font-bold text-green-900">Federal R&D Credit Package</h4>
+                          <p className="text-sm text-green-700">IRS Form 6765 + documentation + filing guide</p>
                         </div>
-                        <p className="text-sm text-blue-700 mt-1">
-                          Get additional state credits on top of your federal savings
-                        </p>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-green-700">${getTieredPricing(results.totalCredit).toLocaleString()}</div>
+                        </div>
                       </div>
-                    </label>
-                    
-                    {formData.stateCredit && (
-                      <div className="mt-4 pl-8">
-                        <select
-                          value={formData.selectedState}
-                          onChange={(e) => updateFormData('selectedState', e.target.value)}
-                          className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                          <option value="">Choose your state</option>
-                          {statesWithCredit.map(state => (
-                            <option key={state.code} value={state.code}>
-                              {state.name} - {(state.rate * 100).toFixed(1)}% credit
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-                  </div>
+                    </div>
 
-                  {/* What's Included - Clear List */}
-                  <div className="bg-white rounded-lg p-4 mb-6">
-                    <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                      <span className="text-lg">📦</span>
-                      Everything you need to claim your credit:
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                      <div className="flex items-start gap-2">
-                        <span className="text-green-600 mt-0.5">✓</span>
-                        <div>
-                          <span className="font-medium text-gray-800">IRS Form 6765</span>
-                          <p className="text-xs text-gray-600">All sections completed & calculated</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-green-600 mt-0.5">✓</span>
-                        <div>
-                          <span className="font-medium text-gray-800">Technical Narrative</span>
-                          <p className="text-xs text-gray-600">IRS-compliant documentation</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-green-600 mt-0.5">✓</span>
-                        <div>
-                          <span className="font-medium text-gray-800">Section 174A Deduction</span>
-                          <p className="text-xs text-gray-600">Immediate expensing calculations</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-green-600 mt-0.5">✓</span>
-                        <div>
-                          <span className="font-medium text-gray-800">Compliance Memo</span>
-                          <p className="text-xs text-gray-600">"How this was prepared" documentation</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-green-600 mt-0.5">✓</span>
-                        <div>
-                          <span className="font-medium text-gray-800">Recordkeeping Checklist</span>
-                          <p className="text-xs text-gray-600">What to save for audit protection</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-green-600 mt-0.5">✓</span>
-                        <div>
-                          <span className="font-medium text-gray-800">Filing Instructions</span>
-                          <p className="text-xs text-gray-600">Step-by-step guide to file yourself or hand to your CPA</p>
-                        </div>
-                      </div>
-                      {formData.stateCredit && formData.selectedState && (
-                        <div className="flex items-start gap-2">
-                          <span className="text-green-600 mt-0.5">✓</span>
-                          <div>
-                            <span className="font-medium text-gray-800">State Forms</span>
-                            <p className="text-xs text-gray-600">{statesWithCredit.find(s => s.code === formData.selectedState)?.name} credit forms</p>
+                    {/* State Add-On */}
+                    <div className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                      formData.stateCredit ? 'border-blue-300 bg-blue-50' : 'border-gray-200 bg-gray-50'
+                    }`}>
+                      <label className="flex justify-between items-center cursor-pointer">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="checkbox"
+                              checked={formData.stateCredit}
+                              onChange={(e) => updateFormData('stateCredit', e.target.checked)}
+                              className="w-5 h-5 text-blue-600 rounded"
+                            />
+                            <div>
+                              <h4 className="font-bold text-gray-900">Add State Credit Filing</h4>
+                              <p className="text-sm text-gray-600">State forms + additional savings</p>
+                            </div>
                           </div>
+                          {formData.stateCredit && (
+                            <div className="mt-3 ml-8">
+                              <select
+                                value={formData.selectedState}
+                                onChange={(e) => updateFormData('selectedState', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                              >
+                                <option value="">Choose your state</option>
+                                {statesWithCredit.map(state => (
+                                  <option key={state.code} value={state.code}>
+                                    {state.name} - {(state.rate * 100).toFixed(1)}% credit
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
                         </div>
+                        <div className="text-right ml-4">
+                          <div className="text-xl font-bold text-blue-700">+${getStateAddonPricing(results.totalCredit)}</div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* What's Included - Condensed */}
+                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h4 className="font-bold text-gray-900 mb-3 text-center">📦 Complete IRS-Ready Package</h4>
+                    <div className="text-sm text-gray-700 text-center">
+                      ✓ Form 6765 • ✓ Technical documentation • ✓ Filing instructions
+                      {formData.stateCredit && formData.selectedState && (
+                        <span> • ✓ State credit forms</span>
                       )}
                     </div>
                   </div>
                   
-                  {/* Pricing - Clear and Simple */}
-                  <div className="bg-white rounded-lg p-4 mb-6">
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-700">Your investment:</span>
-                        <span className="font-semibold">${getTieredPricing(results.totalCredit).toLocaleString()}</span>
-                      </div>
-                      {formData.stateCredit && formData.selectedState && (
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-600">+ State paperwork</span>
-                          <span className="font-medium">${getStateAddonPricing(results.totalCredit).toLocaleString()}</span>
-                        </div>
-                      )}
-                      <div className="border-t pt-2 flex justify-between items-center">
-                        <span className="font-bold text-lg">Total Due Today</span>
-                        <span className="font-bold text-2xl text-green-600">
-                          ${((getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))).toLocaleString()}
+                  {/* Total & CTA */}
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-xl font-bold text-gray-900">Total Investment:</span>
+                      <span className="text-3xl font-bold text-green-600">
+                        ${((getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))).toLocaleString()}
+                      </span>
+                    </div>
+                    
+                    <button
+                      onClick={() => {
+                        const basePrice = getTieredPricing(results.totalCredit);
+                        const stateAddon = (formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0;
+                        const totalPrice = basePrice + stateAddon;
+                        
+                        console.log('Proceeding to checkout with:', {
+                          email,
+                          results: results.details,
+                          totalBenefit: results.totalBenefit,
+                          basePrice,
+                          stateAddon,
+                          totalPrice,
+                          state: formData.selectedState
+                        });
+                        window.location.href = '/checkout';
+                      }}
+                      className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-5 px-8 rounded-xl font-bold text-xl hover:from-green-700 hover:to-blue-700 transform hover:scale-[1.02] transition-all shadow-xl"
+                    >
+                      Get My Tax Credit Package →
+                    </button>
+                    
+                    {/* Condensed Trust Elements */}
+                    <div className="mt-4 text-center space-y-2">
+                      <p className="text-sm font-medium text-gray-700">⚡ Instant delivery • 2,847+ successful claims • 100% IRS compliant</p>
+                      <div className="flex justify-center items-center gap-4 text-xs text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <Lock className="w-3 h-3" />
+                          Secure checkout
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Shield className="w-3 h-3" />
+                          Money-back guarantee
                         </span>
                       </div>
                     </div>
-                    
-                    {/* ROI Callout */}
-                    <div className="mt-3 p-3 bg-green-50 rounded text-center">
-                      <p className="text-sm text-green-800">
-                        <strong>That's a {Math.round(results.totalBenefit / (getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0)))}x return</strong> on your investment
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Main CTA Button */}
-                  <button
-                    onClick={() => {
-                      const basePrice = getTieredPricing(results.totalCredit);
-                      const stateAddon = (formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0;
-                      const totalPrice = basePrice + stateAddon;
-                      
-                      console.log('Proceeding to checkout with:', {
-                        email,
-                        results: results.details,
-                        totalBenefit: results.totalBenefit,
-                        basePrice,
-                        stateAddon,
-                        totalPrice,
-                        state: formData.selectedState
-                      });
-                      window.location.href = '/checkout';
-                    }}
-                    className="w-full bg-green-600 text-white py-4 px-8 rounded-lg font-bold text-lg hover:bg-green-700 transform hover:scale-105 transition-all shadow-lg"
-                  >
-                    Get My R&D Tax Credit Package →
-                  </button>
-                  
-                  {/* Trust Elements */}
-                  <div className="mt-4 space-y-2">
-                    <p className="text-sm text-center text-gray-700 font-medium">
-                      ⚡ Documents ready instantly after purchase
-                    </p>
-                    <p className="text-xs text-center text-gray-600">
-                      Join 2,847+ businesses who've successfully claimed their credits
-                    </p>
-                    <div className="flex justify-center items-center gap-4 text-xs text-gray-500">
-                      <span className="flex items-center gap-1">
-                        <Lock className="w-3 h-3" />
-                        Secure checkout
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Shield className="w-3 h-3" />
-                        100% IRS compliant
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" />
-                        No hidden fees
-                      </span>
-                    </div>
-                    
-                    {/* Service Disclaimer */}
-                    <div className="mt-3 pt-3 border-t border-green-200">
-                      <p className="text-xs text-center text-gray-600 italic">
-                        This is a document preparation service, not tax advice. We prepare IRS-compliant forms and documentation 
-                        for you to file yourself or provide to your tax professional.
-                      </p>
-                    </div>
                   </div>
                 </div>
 
-
-
-                {/* SECTION 4: CREDIBILITY - Build trust with breakdown */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-                    <h3 className="text-sm font-medium text-green-600 mb-2">Total Tax Savings</h3>
-                    <p className="text-3xl font-bold text-green-700">{formatCurrency(results.totalBenefit || 0)}</p>
-                    <p className="text-xs text-green-600 mt-1">
-                      Combined credits + deductions
-                    </p>
-                    {results.federal.isStartupEligible && (
-                      <p className="text-xs text-green-700 font-medium mt-2 p-2 bg-green-100 rounded">
-                        💰 Up to {formatCurrency(results.federal.payrollTaxOffset)} can be a cash refund!
-                      </p>
-                    )}
-                  </div>
-                  
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                    <h3 className="text-sm font-medium text-blue-600 mb-2">R&D Tax Credits</h3>
-                    <p className="text-2xl font-bold text-blue-700">{formatCurrency(results.totalCredit || 0)}</p>
-                    <div className="text-xs text-blue-600 mt-1 space-y-1">
-                      <div>Federal: {formatCurrency(results.federal.creditAmount || 0)}</div>
-                      {results.state > 0 && <div>State: {formatCurrency(results.state || 0)}</div>}
-                    </div>
-                    <p className="text-xs text-blue-500 mt-2">
-                      Direct reduction of taxes owed
-                    </p>
-                  </div>
-                  
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 text-center">
-                    <h3 className="text-sm font-medium text-purple-600 mb-2">
-                      Instant Write-Off
-                      <InfoTooltip text="This is a tax deduction that reduces your taxable income — saving you 21% in corporate taxes. It's not a refundable credit, but still real money saved!" />
-                    </h3>
-                    <p className="text-2xl font-bold text-purple-700">{formatCurrency(results.section174ABenefit || 0)}</p>
-                    <p className="text-xs text-purple-600 mt-1">Tax deduction value</p>
-                    <p className="text-xs text-purple-500 mt-1">
-                      (Reduces taxable income by {formatCurrency(results.qres.total || 0)})
-                    </p>
-                    {parseInt(formData.taxYear) < 2025 && !results.federal.isSmallBusinessTaxpayer && (
-                      <p className="text-xs text-purple-600 mt-1">Available 2025+ for all businesses</p>
-                    )}
-                    {parseInt(formData.taxYear) >= 2022 && parseInt(formData.taxYear) <= 2024 && results.federal.isSmallBusinessTaxpayer && (
-                      <p className="text-xs text-purple-600 mt-1 font-medium">Retroactive for small businesses!</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* SECTION 5: QUALIFICATION - Why they qualify */}
+                {/* QUALIFICATION & SOCIAL PROOF - Condensed */}
                 {getQualificationReasons().length > 0 && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 className="font-medium text-blue-900 mb-2">✅ Why You Likely Qualify</h4>
-                    <ul className="text-sm text-blue-800 space-y-1">
-                      {getQualificationReasons().map(reason => (
-                        <li key={reason}>• {reason}</li>
-                      ))}
-                    </ul>
+                    <h4 className="font-medium text-blue-900 mb-2 text-center">✅ Why You Qualify</h4>
+                    <div className="text-sm text-blue-800 text-center">
+                      {getQualificationReasons().slice(0, 3).join(' • ')}
+                      {getQualificationReasons().length > 3 && ' + more'}
+                    </div>
                   </div>
                 )}
 
-                {/* SECTION 6: SOCIAL PROOF - High value indicator */}
+                {/* HIGH VALUE SOCIAL PROOF */}
                 {results.totalBenefit > 50000 && (
-                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-lg p-4 flex items-start gap-3">
-                    <span className="text-2xl">🌟</span>
-                    <div>
-                      <p className="font-bold text-gray-900">You're above average!</p>
-                      <p className="text-sm text-gray-700">
-                        Most small businesses claim $20K–$40K. Your work really qualifies.
-                      </p>
-                    </div>
+                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-300 rounded-lg p-4 text-center">
+                    <p className="font-bold text-gray-900">🌟 You're in the top 20% of R&D businesses</p>
+                    <p className="text-sm text-gray-700 mt-1">
+                      Most companies claim $20K–$40K. Your substantial R&D activity qualifies for major savings.
+                    </p>
                   </div>
                 )}
-
-                {/* SECTION 7: ADDITIONAL VALUE - Future opportunities */}
-                {(results.retroactiveBenefit > 0 || results.multiYearProjection > results.totalBenefit) && (
-                  <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white">
-                    <div className="flex items-center justify-center gap-2 mb-4">
-                      <span className="text-2xl">💰</span>
-                      <h3 className="text-xl font-bold">Your Total Savings Opportunity</h3>
-                    </div>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="text-center">
-                        <p className="text-white/80 mb-2 font-medium">This Year</p>
-                        <p className="text-3xl font-bold">{formatCurrency(results.totalBenefit || 0)}</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-white/80 mb-2 font-medium">Next 3 Years</p>
-                        <p className="text-3xl font-bold">{formatCurrency(results.multiYearProjection || 0)}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <LookbackUpsell />
-
-                {/* SECTION 8: RISK MITIGATION - Address concerns */}
-                <RiskMitigation />
 
                 {/* SECTION 9: SUPPORTING INFO - Detailed breakdown (collapsed by default) */}
                 <div className="bg-gray-50 rounded-lg p-6">
@@ -2000,61 +1833,48 @@ const CreditCalculator = () => {
                   )}
                 </div>
 
-                {/* SECTION 10: SHARE OPTIONS - Secondary actions */}
-                <div className="flex justify-center gap-4">
+                {/* OPTIONAL DETAILS - Highly condensed */}
+                <div className="bg-gray-50 rounded-lg p-4">
                   <button
-                    onClick={() => {
-                      const shareData = {
-                        company: formData.companyName,
-                        totalBenefit: results.totalBenefit,
-                        breakdown: results.details
-                      };
-                      navigator.clipboard.writeText(JSON.stringify(shareData, null, 2));
-                      alert('Report data copied! You can now share with your CPA.');
-                    }}
-                    className="text-sm text-blue-600 hover:text-blue-700 underline flex items-center gap-1"
+                    onClick={() => setShowDetails(!showDetails)}
+                    className="flex items-center justify-center w-full text-sm text-gray-600 hover:text-gray-800"
                   >
-                    <Share2 className="w-4 h-4" />
-                    Share Report with Your CPA
+                    <span>View calculation details</span>
+                    <ChevronRight className={`w-4 h-4 ml-1 transition-transform ${showDetails ? 'rotate-90' : ''}`} />
                   </button>
                   
-                  <button
-                    onClick={() => {
-                      const summary = `R&D Tax Credit Summary
-Company: ${formData.companyName}
-Tax Year: ${formData.taxYear}
-Total Tax Benefit: ${formatCurrency(results.totalBenefit)}
-- Federal Credit: ${formatCurrency(results.federal.creditAmount)}
-- State Credit: ${formatCurrency(results.state)}
-- Section 174A Deduction: ${formatCurrency(results.section174ABenefit)}
-Total Qualified R&D Expenses: ${formatCurrency(results.qres.total)}`;
-                      navigator.clipboard.writeText(summary);
-                      alert('Summary copied to clipboard!');
-                    }}
-                    className="text-sm text-gray-600 hover:text-gray-700 underline flex items-center gap-1"
-                  >
-                    <FileText className="w-3 h-3" />
-                    📋 Copy Summary
-                  </button>
+                  {showDetails && (
+                    <div className="mt-3 pt-3 border-t border-gray-200 text-sm space-y-2">
+                      <div className="flex justify-between">
+                        <span>Qualified R&D Expenses:</span>
+                        <span className="font-medium">{formatCurrency(results.qres.total)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Federal Credit ({(results.federal.rate * 100).toFixed(1)}%):</span>
+                        <span className="font-medium">{formatCurrency(results.federal.creditAmount)}</span>
+                      </div>
+                      {results.state > 0 && (
+                        <div className="flex justify-between">
+                          <span>State Credit:</span>
+                          <span className="font-medium">{formatCurrency(results.state)}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span>Section 174A Deduction (21%):</span>
+                        <span className="font-medium">{formatCurrency(results.section174ABenefit)}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </>
             )}
 
-            {/* SECTION 11: DISCLAIMERS - Keep at bottom for compliance */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="flex items-start">
-                <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 mr-2 flex-shrink-0" />
-                <div className="text-sm text-yellow-800">
-                  <p className="font-semibold mb-1">Important Disclaimers:</p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li><strong>This is not tax advice</strong> — we prepare forms for you to file or provide to your tax professional</li>
-                    <li>These are estimates based on simplified calculations</li>
-                    <li>Building custom GPTs and prompt engineering qualify as R&D when properly documented</li>
-                    <li>Documentation is required to substantiate all activities</li>
-                    <li>Consider consulting a tax professional for complex situations</li>
-                  </ul>
-                </div>
-              </div>
+            {/* MINIMAL DISCLAIMER */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-center">
+              <p className="text-sm text-yellow-800">
+                <AlertCircle className="w-4 h-4 inline mr-1" />
+                Document preparation service, not tax advice. Estimates based on provided information.
+              </p>
             </div>
 
             <button

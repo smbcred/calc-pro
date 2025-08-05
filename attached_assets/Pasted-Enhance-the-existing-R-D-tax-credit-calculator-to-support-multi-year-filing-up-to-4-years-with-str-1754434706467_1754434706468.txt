@@ -1,0 +1,85 @@
+Enhance the existing R&D tax credit calculator to support multi-year filing (up to 4 years) with strategic upselling throughout the user journey. The goal is to increase average order value by encouraging users to file multiple years while maintaining the same user-friendly experience.
+Key Business Rules
+
+Maximum lookback period: 4 years
+State credits: Only available for current tax year
+Multi-year discounts: 15% (2yr), 20% (3yr), 25% (4yr)
+Base pricing tiers remain unchanged
+
+User Experience Enhancements
+Step 1 (Company Info) - Introduce Multi-Year Option
+
+Add year selection after basic company info
+Default to single year but show value of multiple years
+Display savings percentage when multiple years selected
+Use social proof: "Most businesses have been using AI for 2+ years"
+
+Step 2 (Expenses) - Simplify Multi-Year Input
+
+Add year navigation (tabs or dropdown)
+Allow "copy previous year" functionality
+Show running total across all years
+Provide industry benchmarks for historical estimates
+
+Step 3 (Additional Credits) - Smart Recommendations
+
+Only show state credit option if current year is included
+Highlight which years qualify for Section 174A benefits
+Show cumulative impact of selections
+
+Step 4 (Results) - Maximize Conversion
+
+Display total recovery amount prominently (sum of all years)
+Show year-by-year breakdown in summary cards
+Emphasize multi-year savings with strikethrough pricing
+Add "per year" cost to make it feel smaller
+Include "One Big Beautiful Bill" urgency for 2022-2024 filings
+
+Strategic Upsell Points
+Entry Points
+
+Qualification Check: "Have you been using AI tools for more than one year?"
+Industry Examples: Show multi-year adoption patterns
+Year Started: If business is 2+ years old, suggest lookback
+
+During Data Entry
+
+Low First Year: "Many businesses increase AI spending - add more years?"
+High Expenses: "Maximize your recovery with prior years"
+Progress Save: "Want to calculate previous years too?"
+
+Results Page
+
+Single Year Selected: Show "left on table" messaging
+Partial Years: "Add [missing year] for just $X more"
+High Value: "Protect against audit with complete documentation"
+
+Smart Defaults & Nudges
+Auto-Recommendations Based On:
+
+Years in business (suggest matching lookback)
+Industry type (some adopted AI earlier)
+Expense levels (higher = more years recommended)
+Current tax year selection (if 2022-2024, push "new law" angle)
+
+Psychological Triggers
+
+Loss aversion: "Don't leave $XX,XXX unclaimed"
+Social proof: "Businesses like yours claim 3.2 years on average"
+Urgency: Countdown to July 2026 deadline
+Authority: "IRS allows up to 4 years of amendments"
+
+Pricing Display Strategy
+Frame Value Before Price
+
+Show total benefit across all years
+Display per-year average benefit
+Present package price with discount
+Calculate ROI as final proof point
+
+Comparison Points
+
+Individual year pricing (crossed out)
+"Per year" breakdown to minimize sticker shock
+Competitor pricing ("CPAs charge $X per year")
+Time value ("Save 20+ hours per year")

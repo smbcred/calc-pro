@@ -1,26 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, Info, DollarSign, Users, Package, AlertCircle, ChevronRight, ChevronLeft, Building, Shield, Lock, CheckCircle, Clock, TrendingUp, FileText, Share2, Zap } from 'lucide-react';
+import { Calculator, Info, DollarSign, Users, Package, AlertCircle, ChevronRight, ChevronLeft, Building, Shield, Lock, CheckCircle, Clock, TrendingUp, FileText, Share2, Zap, Calendar } from 'lucide-react';
 
 const CreditCalculator = () => {
   // State for calculator inputs
   const [formData, setFormData] = useState({
     // Basic info
     companyName: '',
-    taxYear: '2024',
     startupYear: '',
     grossReceipts: '',
     industry: '',
-    
-    // QRE inputs (Qualified Research Expenses)
-    w2Wages: '',
-    contractorCosts: '',
-    cloudCosts: '',
-    softwareLicenses: '',
-    supplies: '',
-    
-    // Percentage allocations (keeping original field names)
-    w2Percentage: '30',
-    contractorPercentage: '50',
+    selectedYears: ['2024'], // Array of selected tax years
     
     // Additional factors
     stateCredit: false,
@@ -28,6 +17,22 @@ const CreditCalculator = () => {
     priorYearCredit: false,
     priorYearAmount: ''
   });
+
+  // Multi-year data for each selected year
+  const [yearlyData, setYearlyData] = useState({
+    '2024': {
+      w2Wages: '',
+      contractorCosts: '',
+      cloudCosts: '',
+      softwareLicenses: '',
+      supplies: '',
+      w2Percentage: '30',
+      contractorPercentage: '50'
+    }
+  });
+
+  const [currentYear, setCurrentYear] = useState('2024'); // For year navigation
+  const [showMultiYearUpsell, setShowMultiYearUpsell] = useState(false);
 
   // State for qualification checks
   const [qualificationChecks, setQualificationChecks] = useState({
@@ -553,6 +558,55 @@ const CreditCalculator = () => {
     if (basePrice === 1000) return 375; // ~37%
     return 450; // 30% for $1500 tier
   };
+
+  // Multi-year discount calculation
+  const getMultiYearDiscount = (numYears: number) => {
+    if (numYears >= 4) return 0.25; // 25% discount for 4 years
+    if (numYears >= 3) return 0.20; // 20% discount for 3 years
+    if (numYears >= 2) return 0.15; // 15% discount for 2 years
+    return 0; // No discount for single year
+  };
+
+  // Available tax years (current year + 3 previous years)
+  const getAvailableYears = () => {
+    const currentYear = new Date().getFullYear();
+    return [currentYear, currentYear - 1, currentYear - 2, currentYear - 3];
+  };
+
+  // Helper function to add/remove years from selection
+  const toggleYear = (year: number) => {
+    const yearStr = year.toString();
+    const currentSelected = formData.selectedYears;
+    
+    if (currentSelected.includes(yearStr)) {
+      // Remove year
+      const newYears = currentSelected.filter(y => y !== yearStr);
+      setFormData(prev => ({ ...prev, selectedYears: newYears }));
+      
+      // Remove yearly data for this year
+      const newYearlyData = { ...yearlyData };
+      delete newYearlyData[yearStr];
+      setYearlyData(newYearlyData);
+    } else {
+      // Add year
+      const newYears = [...currentSelected, yearStr].sort().reverse(); // Most recent first
+      setFormData(prev => ({ ...prev, selectedYears: newYears }));
+      
+      // Initialize yearly data for this year
+      setYearlyData(prev => ({
+        ...prev,
+        [yearStr]: {
+          w2Wages: '',
+          contractorCosts: '',
+          cloudCosts: '',
+          softwareLicenses: '',
+          supplies: '',
+          w2Percentage: '30',
+          contractorPercentage: '50'
+        }
+      }));
+    }
+  };
   
   // Get qualification reasons for display
   const getQualificationReasons = () => {
@@ -613,6 +667,80 @@ const CreditCalculator = () => {
       </div>
     </div>
   );
+
+  // Multi-Year Selection Component
+  const MultiYearSelector = () => {
+    const availableYears = getAvailableYears();
+    const selectedCount = formData.selectedYears.length;
+    const discount = getMultiYearDiscount(selectedCount);
+    
+    return (
+      <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-6 border border-blue-200">
+        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <Calendar className="w-5 h-5 text-blue-600" />
+          Select Tax Years to File
+        </h3>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          {availableYears.map(year => {
+            const isSelected = formData.selectedYears.includes(year.toString());
+            const isCurrent = year === new Date().getFullYear();
+            
+            return (
+              <button
+                key={year}
+                onClick={() => toggleYear(year)}
+                className={`p-3 rounded-lg border-2 transition-all ${
+                  isSelected 
+                    ? 'border-blue-500 bg-blue-100 text-blue-800' 
+                    : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
+                }`}
+              >
+                <div className="text-lg font-bold">{year}</div>
+                <div className="text-xs">
+                  {isCurrent ? 'Current Year' : 'Lookback'}
+                </div>
+                {isSelected && (
+                  <div className="text-xs font-medium text-blue-600 mt-1">✓ Selected</div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {selectedCount > 1 && (
+          <div className="bg-green-100 rounded-lg p-4 border border-green-300">
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingUp className="w-5 h-5 text-green-600" />
+              <span className="font-bold text-green-800">
+                Multi-Year Savings: {Math.round(discount * 100)}% Discount!
+              </span>
+            </div>
+            <p className="text-sm text-green-700">
+              Filing {selectedCount} years together saves you money and maximizes your total recovery.
+            </p>
+          </div>
+        )}
+
+        {selectedCount === 1 && (
+          <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertCircle className="w-5 h-5 text-yellow-600" />
+              <span className="font-medium text-yellow-800">Consider Adding More Years</span>
+            </div>
+            <p className="text-sm text-yellow-700 mb-3">
+              Most businesses have been using AI tools for 2+ years. Add previous years to:
+            </p>
+            <ul className="text-sm text-yellow-700 space-y-1">
+              <li>• Get 15-25% multi-year discount</li>
+              <li>• Maximize total recovery amount</li>
+              <li>• Take advantage of "Big Beautiful Bill" deadline</li>
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Lookback Opportunity Component
   const LookbackUpsell = () => {
@@ -690,82 +818,128 @@ const CreditCalculator = () => {
     }
   }, []);
 
-  // Calculate QREs with percentage allocations and safe parsing
+  // Calculate QREs with percentage allocations and safe parsing for multi-year data
   const calculateQREs = () => {
-    // Safely parse all input values with defaults
-    const wages = safeParseFloat(formData.w2Wages, 0);
-    const contractors = safeParseFloat(formData.contractorCosts, 0);
-    const cloud = safeParseFloat(formData.cloudCosts, 0);
-    const software = safeParseFloat(formData.softwareLicenses, 0);
-    const supplies = safeParseFloat(formData.supplies, 0);
-    
-    // Parse R&D time percentages using safe parsing
-    const wagePercent = safeParsePercent(formData.w2Percentage, 30);
-    const contractorPercent = safeParsePercent(formData.contractorPercentage, 50);
+    const yearlyQREs = {};
+    let totalCombinedQRE = 0;
 
-    // Apply percentage allocations for wages and contractors
-    const qualifiedWages = wages * wagePercent;
-    const qualifiedContractors = contractors * contractorPercent * 0.65; // 65% of allocated contractor costs per IRS rules
-    const qualifiedCloud = cloud * 1.0;
-    const qualifiedSoftware = software * 1.0;
-    const qualifiedSupplies = supplies * 1.0;
+    formData.selectedYears.forEach(year => {
+      const data = yearlyData[year] || {};
+      
+      // Safely parse all input values with defaults
+      const wages = safeParseFloat(data.w2Wages, 0);
+      const contractors = safeParseFloat(data.contractorCosts, 0);
+      const cloud = safeParseFloat(data.cloudCosts, 0);
+      const software = safeParseFloat(data.softwareLicenses, 0);
+      const supplies = safeParseFloat(data.supplies, 0);
+      
+      // Parse R&D time percentages using safe parsing
+      const wagePercent = safeParsePercent(data.w2Percentage, 30);
+      const contractorPercent = safeParsePercent(data.contractorPercentage, 50);
 
-    const totalQREs = qualifiedWages + qualifiedContractors + qualifiedCloud + qualifiedSoftware + qualifiedSupplies;
+      // Apply percentage allocations for wages and contractors
+      const qualifiedWages = wages * wagePercent;
+      const qualifiedContractors = contractors * contractorPercent * 0.65; // 65% of allocated contractor costs per IRS rules
+      const qualifiedCloud = cloud * 1.0;
+      const qualifiedSoftware = software * 1.0;
+      const qualifiedSupplies = supplies * 1.0;
+
+      const yearTotalQREs = qualifiedWages + qualifiedContractors + qualifiedCloud + qualifiedSoftware + qualifiedSupplies;
+      totalCombinedQRE += yearTotalQREs;
+
+      yearlyQREs[year] = {
+        wages: qualifiedWages,
+        contractors: qualifiedContractors,
+        cloud: qualifiedCloud,
+        software: qualifiedSoftware,
+        supplies: qualifiedSupplies,
+        total: yearTotalQREs,
+        wagePercent: wagePercent,
+        contractorPercent: contractorPercent
+      };
+    });
 
     return {
-      wages: qualifiedWages,
-      contractors: qualifiedContractors,
-      cloud: qualifiedCloud,
-      software: qualifiedSoftware,
-      supplies: qualifiedSupplies,
-      total: totalQREs,
-      wagePercent: wagePercent,
-      contractorPercent: contractorPercent
+      yearlyQREs,
+      totalCombined: totalCombinedQRE,
+      numYears: formData.selectedYears.length,
+      selectedYears: formData.selectedYears,
+      // Legacy compatibility for existing code that expects single year structure
+      total: totalCombinedQRE,
+      wages: Object.values(yearlyQREs).reduce((sum, year) => sum + year.wages, 0),
+      contractors: Object.values(yearlyQREs).reduce((sum, year) => sum + year.contractors, 0),
+      cloud: Object.values(yearlyQREs).reduce((sum, year) => sum + year.cloud, 0),
+      software: Object.values(yearlyQREs).reduce((sum, year) => sum + year.software, 0),
+      supplies: Object.values(yearlyQREs).reduce((sum, year) => sum + year.supplies, 0)
     };
   };
 
-  // Calculate federal credit with safe parsing
+  // Calculate federal credit with multi-year support
   const calculateFederalCredit = (qres) => {
-    const currentYear = parseInt(formData.taxYear) || 2024;
-    const startYear = parseInt(formData.startupYear) || currentYear;
-    const isStartup = currentYear - startYear <= 5;
+    const startYear = parseInt(formData.startupYear) || 2024;
     const grossReceipts = safeParseFloat(formData.grossReceipts, 0);
-
-    const creditRate = 0.14;
-    const baseAmount = 0;
-    const creditable = Math.max(0, qres.total - baseAmount);
-    let federalCredit = creditable * creditRate;
-
-    let payrollTaxOffset = 0;
-    if (isStartup && grossReceipts < 5000000) {
-      payrollTaxOffset = Math.min(federalCredit, 500000);
-    }
-
+    const isStartup = (new Date().getFullYear() - startYear) <= 5;
     const isSmallBusinessTaxpayer = grossReceipts < 31000000;
-    let refundableCredit = 0;
-    if (isSmallBusinessTaxpayer && currentYear >= 2025) {
-      refundableCredit = Math.min(federalCredit * 0.5, 250000);
-    }
 
-    let section174ABenefit = 0;
-    if (
-      currentYear >= 2025 ||
-      (currentYear >= 2022 && currentYear <= 2024 && isSmallBusinessTaxpayer)
-    ) {
-      section174ABenefit = qres.total * 0.21;
-    }
+    const yearlyCredits = {};
+    let totalFederalCredit = 0;
+    let totalPayrollTaxOffset = 0;
+    let totalRefundableCredit = 0;
+    let totalSection174ABenefit = 0;
 
-    const regularCreditCap = grossReceipts * 0.75;
-    federalCredit = Math.min(federalCredit, regularCreditCap);
+    formData.selectedYears.forEach(year => {
+      const yearInt = parseInt(year);
+      const yearQRE = qres.yearlyQREs[year]?.total || 0;
+
+      const creditRate = 0.14;
+      const baseAmount = 0;
+      const creditable = Math.max(0, yearQRE - baseAmount);
+      let federalCredit = creditable * creditRate;
+
+      let payrollTaxOffset = 0;
+      if (isStartup && grossReceipts < 5000000) {
+        payrollTaxOffset = Math.min(federalCredit, 500000);
+      }
+
+      let refundableCredit = 0;
+      if (isSmallBusinessTaxpayer && yearInt >= 2025) {
+        refundableCredit = Math.min(federalCredit * 0.5, 250000);
+      }
+
+      let section174ABenefit = 0;
+      if (
+        yearInt >= 2025 ||
+        (yearInt >= 2022 && yearInt <= 2024 && isSmallBusinessTaxpayer)
+      ) {
+        section174ABenefit = yearQRE * 0.21;
+      }
+
+      const regularCreditCap = grossReceipts * 0.75;
+      federalCredit = Math.min(federalCredit, regularCreditCap);
+
+      yearlyCredits[year] = {
+        creditAmount: federalCredit,
+        payrollTaxOffset: payrollTaxOffset,
+        refundableCredit: refundableCredit,
+        section174ABenefit: section174ABenefit,
+        effectiveRate: yearQRE > 0 ? (federalCredit / yearQRE) : 0
+      };
+
+      totalFederalCredit += federalCredit;
+      totalPayrollTaxOffset += payrollTaxOffset;
+      totalRefundableCredit += refundableCredit;
+      totalSection174ABenefit += section174ABenefit;
+    });
 
     return {
-      creditAmount: federalCredit,
-      payrollTaxOffset: payrollTaxOffset,
-      refundableCredit: refundableCredit,
+      yearlyCredits,
+      creditAmount: totalFederalCredit,
+      payrollTaxOffset: totalPayrollTaxOffset,
+      refundableCredit: totalRefundableCredit,
       isStartupEligible: isStartup && grossReceipts < 5000000,
       isSmallBusinessTaxpayer: isSmallBusinessTaxpayer,
-      effectiveRate: qres.total > 0 ? (federalCredit / qres.total) : 0,
-      section174ABenefit: section174ABenefit
+      effectiveRate: qres.total > 0 ? (totalFederalCredit / qres.total) : 0,
+      section174ABenefit: totalSection174ABenefit
     };
   };
 
@@ -827,7 +1001,7 @@ const CreditCalculator = () => {
     return totalProjected;
   };
 
-  // Perform calculation
+  // Perform calculation with multi-year support
   const performCalculation = () => {
     const qres = calculateQREs();
     const federal = calculateFederalCredit(qres);
@@ -839,6 +1013,10 @@ const CreditCalculator = () => {
     const retroactiveBenefit = calculateRetroactiveBenefit(qres);
     const multiYearProjection = calculateMultiYearProjection(qres, federal, state);
     
+    // Multi-year specific calculations
+    const numYears = formData.selectedYears.length;
+    const multiYearDiscount = getMultiYearDiscount(numYears);
+    
     const results = {
       qres,
       federal,
@@ -849,7 +1027,12 @@ const CreditCalculator = () => {
       retroactiveBenefit,
       multiYearProjection,
       estimatedRefund: federal.payrollTaxOffset > 0 ? federal.payrollTaxOffset : totalCredit * 0.9,
-      details: generateDetailedBreakdown(qres, federal, state)
+      details: generateDetailedBreakdown(qres, federal, state),
+      // Multi-year specific data
+      numYears,
+      multiYearDiscount,
+      selectedYears: formData.selectedYears,
+      yearlyBreakdown: qres.yearlyQREs
     };
     
     setResults(results);
@@ -1025,22 +1208,10 @@ const CreditCalculator = () => {
                 <IndustryExamples industry={formData.industry} />
               </div>
 
+              {/* Multi-Year Selection - Strategic Upsell Point */}
+              <MultiYearSelector />
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <label className="block text-base font-semibold text-gray-800 mb-3">
-                    Tax Year
-                  </label>
-                  <select
-                    value={formData.taxYear}
-                    onChange={(e) => updateFormData('taxYear', e.target.value)}
-                    className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
-                  >
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                    <option value="2022">2022</option>
-                  </select>
-                </div>
 
                 <div>
                   <label className="block text-base font-semibold text-gray-800 mb-3">
@@ -1054,7 +1225,7 @@ const CreditCalculator = () => {
                     className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
                     placeholder="2020"
                     min="1900"
-                    max={formData.taxYear}
+                    max="2025"
                   />
                 </div>
               </div>
@@ -1098,13 +1269,84 @@ const CreditCalculator = () => {
       case 2:
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-6">Your AI & Technology Work</h2>
-            <p className="text-gray-600 mb-2">
-              Include all time and money spent on AI tools, custom GPTs, chatbots, automations, and process improvements
-            </p>
-            <p className="text-sm text-blue-700 font-medium mb-6 p-3 bg-blue-50 rounded-lg">
-              💡 If you've tinkered with AI or built a workflow that saves time — you're probably eligible.
-            </p>
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-4 text-gray-900">Your AI & Technology Expenses</h2>
+              <p className="text-lg text-gray-600">
+                Include all time and money spent on AI tools, custom GPTs, chatbots, automations, and process improvements
+              </p>
+            </div>
+
+            {/* Year Navigation for Multi-Year */}
+            {formData.selectedYears.length > 1 && (
+              <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-gray-900">Select Year to Enter Data</h3>
+                  <div className="text-sm text-gray-600">
+                    {formData.selectedYears.length} years selected
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  {formData.selectedYears.sort().reverse().map(year => (
+                    <button
+                      key={year}
+                      onClick={() => setCurrentYear(year)}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        currentYear === year
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {year}
+                      {Object.values(yearlyData[year] || {}).some(v => v && v !== '30' && v !== '50') && (
+                        <span className="ml-2 text-xs">✓</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                
+                {/* Copy Previous Year Button */}
+                {formData.selectedYears.length > 1 && currentYear !== formData.selectedYears.sort().reverse()[0] && (
+                  <div className="mt-4">
+                    <button
+                      onClick={() => {
+                        const previousYear = (parseInt(currentYear) + 1).toString();
+                        if (yearlyData[previousYear]) {
+                          setYearlyData(prev => ({
+                            ...prev,
+                            [currentYear]: { ...yearlyData[previousYear] }
+                          }));
+                        }
+                      }}
+                      className="bg-green-100 text-green-700 px-4 py-2 rounded-lg font-medium hover:bg-green-200 transition-all flex items-center gap-2"
+                    >
+                      <span>📋</span>
+                      Copy from {parseInt(currentYear) + 1}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <h3 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+                <span>💡</span>
+                Entering data for: <strong>{currentYear}</strong>
+              </h3>
+              <p className="text-sm text-blue-800">
+                Include all expenses and activities from {currentYear} related to AI, automation, and technology improvements.
+              </p>
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <h4 className="font-medium text-green-900 mb-2">💡 What counts as R&D?</h4>
+              <ul className="text-sm text-green-800 space-y-1">
+                <li>✓ Building custom GPTs or chatbots for your business</li>
+                <li>✓ Developing and testing AI prompts that work for your needs</li>
+                <li>✓ Creating automations with Zapier, Make, or custom code</li>
+                <li>✓ Time spent experimenting with AI to improve processes</li>
+                <li>✓ Integrating AI tools into your workflows</li>
+              </ul>
+            </div>
 
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
               <h4 className="font-medium text-green-900 mb-2">💡 What counts as R&D?</h4>
@@ -1128,14 +1370,17 @@ const CreditCalculator = () => {
                   <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
                   <input
                     type="number"
-                    value={formData.w2Wages}
-                    onChange={(e) => updateFormData('w2Wages', e.target.value)}
+                    value={yearlyData[currentYear]?.w2Wages || ''}
+                    onChange={(e) => setYearlyData(prev => ({
+                      ...prev,
+                      [currentYear]: { ...prev[currentYear], w2Wages: e.target.value }
+                    }))}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="50,000"
                   />
                 </div>
                 
-                {formData.w2Wages && (
+                {yearlyData[currentYear]?.w2Wages && (
                   <div className="mt-3 p-3 bg-gray-50 rounded-lg">
                     <label className="block text-xs font-medium text-gray-700 mb-2">
                       What % of their time is spent on R&D activities?
@@ -1147,16 +1392,19 @@ const CreditCalculator = () => {
                         min="0"
                         max="100"
                         step="5"
-                        value={formData.w2Percentage}
-                        onChange={(e) => updateFormData('w2Percentage', e.target.value)}
+                        value={yearlyData[currentYear]?.w2Percentage || '30'}
+                        onChange={(e) => setYearlyData(prev => ({
+                          ...prev,
+                          [currentYear]: { ...prev[currentYear], w2Percentage: e.target.value }
+                        }))}
                         className="flex-1"
                       />
                       <div className="w-16 text-center">
-                        <span className="text-sm font-medium">{formData.w2Percentage}%</span>
+                        <span className="text-sm font-medium">{yearlyData[currentYear]?.w2Percentage || '30'}%</span>
                       </div>
                     </div>
                     <p className="text-xs text-gray-600 mt-2">
-                      = {formatCurrency(safeParseFloat(formData.w2Wages) * safeParsePercent(formData.w2Percentage, 30))} in qualified wages
+                      = {formatCurrency(safeParseFloat(yearlyData[currentYear]?.w2Wages) * safeParsePercent(yearlyData[currentYear]?.w2Percentage, 30))} in qualified wages
                     </p>
                   </div>
                 )}
@@ -1172,14 +1420,17 @@ const CreditCalculator = () => {
                   <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
                   <input
                     type="number"
-                    value={formData.contractorCosts}
-                    onChange={(e) => updateFormData('contractorCosts', e.target.value)}
+                    value={yearlyData[currentYear]?.contractorCosts || ''}
+                    onChange={(e) => setYearlyData(prev => ({
+                      ...prev,
+                      [currentYear]: { ...prev[currentYear], contractorCosts: e.target.value }
+                    }))}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="20,000"
                   />
                 </div>
                 
-                {formData.contractorCosts && (
+                {yearlyData[currentYear]?.contractorCosts && (
                   <div className="mt-3 p-3 bg-gray-50 rounded-lg">
                     <label className="block text-xs font-medium text-gray-700 mb-2">
                       What % of contractor work was R&D?
@@ -1191,16 +1442,19 @@ const CreditCalculator = () => {
                         min="0"
                         max="100"
                         step="5"
-                        value={formData.contractorPercentage}
-                        onChange={(e) => updateFormData('contractorPercentage', e.target.value)}
+                        value={yearlyData[currentYear]?.contractorPercentage || '50'}
+                        onChange={(e) => setYearlyData(prev => ({
+                          ...prev,
+                          [currentYear]: { ...prev[currentYear], contractorPercentage: e.target.value }
+                        }))}
                         className="flex-1"
                       />
                       <div className="w-16 text-center">
-                        <span className="text-sm font-medium">{formData.contractorPercentage}%</span>
+                        <span className="text-sm font-medium">{yearlyData[currentYear]?.contractorPercentage || '50'}%</span>
                       </div>
                     </div>
                     <p className="text-xs text-gray-600 mt-2">
-                      = {formatCurrency(safeParseFloat(formData.contractorCosts) * safeParsePercent(formData.contractorPercentage, 50) * 0.65)} qualified (65% of allocated costs per IRS rules)
+                      = {formatCurrency(safeParseFloat(yearlyData[currentYear]?.contractorCosts) * safeParsePercent(yearlyData[currentYear]?.contractorPercentage, 50) * 0.65)} qualified (65% of allocated costs per IRS rules)
                     </p>
                   </div>
                 )}
@@ -1215,8 +1469,11 @@ const CreditCalculator = () => {
                   <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
                   <input
                     type="number"
-                    value={formData.cloudCosts}
-                    onChange={(e) => updateFormData('cloudCosts', e.target.value)}
+                    value={yearlyData[currentYear]?.cloudCosts || ''}
+                    onChange={(e) => setYearlyData(prev => ({
+                      ...prev,
+                      [currentYear]: { ...prev[currentYear], cloudCosts: e.target.value }
+                    }))}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="5,000"
                   />
@@ -1232,8 +1489,11 @@ const CreditCalculator = () => {
                   <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
                   <input
                     type="number"
-                    value={formData.softwareLicenses}
-                    onChange={(e) => updateFormData('softwareLicenses', e.target.value)}
+                    value={yearlyData[currentYear]?.softwareLicenses || ''}
+                    onChange={(e) => setYearlyData(prev => ({
+                      ...prev,
+                      [currentYear]: { ...prev[currentYear], softwareLicenses: e.target.value }
+                    }))}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="2,000"
                   />
@@ -1249,8 +1509,11 @@ const CreditCalculator = () => {
                   <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
                   <input
                     type="number"
-                    value={formData.supplies}
-                    onChange={(e) => updateFormData('supplies', e.target.value)}
+                    value={yearlyData[currentYear]?.supplies || ''}
+                    onChange={(e) => setYearlyData(prev => ({
+                      ...prev,
+                      [currentYear]: { ...prev[currentYear], supplies: e.target.value }
+                    }))}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="3,000"
                   />
@@ -1609,26 +1872,64 @@ const CreditCalculator = () => {
                     <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 mb-4">
                       <span className="text-sm font-semibold">✨ Your Personalized Results</span>
                     </div>
+                    {/* Multi-Year Headline */}
                     <h2 className="text-3xl md:text-4xl font-bold mb-3">
-                      You Could Save {formatCurrency(results.totalBenefit || 0)}
+                      {formData.selectedYears.length > 1 
+                        ? `${formData.selectedYears.length}-Year Total: ${formatCurrency(results.totalBenefit || 0)}`
+                        : `You Could Save ${formatCurrency(results.totalBenefit || 0)}`
+                      }
                     </h2>
 
-                    
-                    {/* Value Breakdown - Scannable */}
-                    <div className="grid grid-cols-3 gap-4 bg-white/10 rounded-xl p-4 mb-6">
+                    {/* Multi-Year Savings Badge */}
+                    {formData.selectedYears.length > 1 && results.multiYearDiscount > 0 && (
+                      <div className="inline-flex items-center gap-2 bg-green-400/20 rounded-full px-4 py-2 mb-4">
+                        <span className="text-sm font-bold">
+                          🎉 You saved {Math.round(results.multiYearDiscount * 100)}% with multi-year filing!
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Enhanced Value Breakdown */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-white/10 rounded-xl p-4 mb-6">
                       <div className="text-center">
                         <div className="text-2xl font-bold">{formatCurrency(results.federal.creditAmount || 0)}</div>
                         <div className="text-sm text-white/80">Federal Credit</div>
+                        {formData.selectedYears.length > 1 && (
+                          <div className="text-xs text-white/60">{formData.selectedYears.length} years</div>
+                        )}
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold">{formatCurrency(results.section174ABenefit || 0)}</div>
-                        <div className="text-sm text-white/80">Tax Deduction</div>
+                        <div className="text-sm text-white/80">Section 174A</div>
+                        {formData.selectedYears.length > 1 && (
+                          <div className="text-xs text-white/60">Tax deduction</div>
+                        )}
                       </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold">{results.state > 0 ? formatCurrency(results.state) : '$0'}</div>
+                      <div className="text-center md:col-span-1 col-span-2">
+                        <div className="text-2xl font-bold">{formatCurrency(results.state || 0)}</div>
                         <div className="text-sm text-white/80">State Credit</div>
+                        {formData.stateCredit && (
+                          <div className="text-xs text-white/60">Current year only</div>
+                        )}
                       </div>
                     </div>
+
+                    {/* Multi-Year Summary */}
+                    {formData.selectedYears.length > 1 && (
+                      <div className="bg-white/10 rounded-xl p-4 mb-6">
+                        <h3 className="text-lg font-bold mb-3">Filing Summary</h3>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-white/80">Years Selected:</span>
+                            <div className="font-medium">{formData.selectedYears.join(', ')}</div>
+                          </div>
+                          <div>
+                            <span className="text-white/80">Per Year Average:</span>
+                            <div className="font-medium">{formatCurrency((results.totalBenefit || 0) / formData.selectedYears.length)}</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Urgency - Condensed */}
                     <div className="bg-red-500/20 border border-red-300/30 rounded-lg p-3 mb-6">
@@ -1657,11 +1958,33 @@ const CreditCalculator = () => {
                     <div className="border-2 border-green-300 rounded-lg p-4 bg-green-50">
                       <div className="flex justify-between items-center mb-2">
                         <div>
-                          <h4 className="font-bold text-green-900">Federal R&D Credit Package</h4>
-                          <p className="text-sm text-green-700">IRS Form 6765 + documentation + filing guide</p>
+                          <h4 className="font-bold text-green-900">
+                            {formData.selectedYears.length > 1 
+                              ? `${formData.selectedYears.length}-Year Federal Package`
+                              : 'Federal R&D Credit Package'
+                            }
+                          </h4>
+                          <p className="text-sm text-green-700">
+                            IRS Form 6765 + documentation + filing guide
+                            {formData.selectedYears.length > 1 && (
+                              <span> • {formData.selectedYears.length} years of forms</span>
+                            )}
+                          </p>
+                          {formData.selectedYears.length > 1 && (
+                            <div className="text-xs text-green-600 mt-1">
+                              ✅ {Math.round(getMultiYearDiscount(formData.selectedYears.length) * 100)}% multi-year discount applied
+                            </div>
+                          )}
                         </div>
                         <div className="text-right">
-                          <div className="text-2xl font-bold text-green-700">${getTieredPricing(results.totalCredit).toLocaleString()}</div>
+                          <div className="text-2xl font-bold text-green-700">
+                            ${getTieredPricing(results.totalCredit, formData.selectedYears.length).toLocaleString()}
+                          </div>
+                          {formData.selectedYears.length > 1 && (
+                            <div className="text-sm text-green-600 line-through">
+                              ${(getTieredPricing(results.totalCredit) * formData.selectedYears.length).toLocaleString()}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1708,11 +2031,39 @@ const CreditCalculator = () => {
                     </div>
                   </div>
 
-                  {/* What's Included - Condensed */}
+                  {/* Competitive Advantage Box */}
+                  <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h4 className="font-bold text-gray-900 mb-3 text-center">💰 Why Choose Our Flat Fee vs CPAs?</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div className="text-center">
+                        <div className="font-bold text-red-600">Traditional CPAs</div>
+                        <div className="text-gray-600">10-35% of your refund</div>
+                        <div className="text-xs text-gray-500">(${formatCurrency(results.totalBenefit * 0.225)} on average)</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-bold text-green-600">Our Flat Fee</div>
+                        <div className="text-gray-600">
+                          ${((getTieredPricing(results.totalCredit, formData.selectedYears.length) + 
+                              ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
+                            ).toLocaleString()}
+                        </div>
+                        <div className="text-xs text-green-600">
+                          Save ${formatCurrency(results.totalBenefit * 0.225 - 
+                            (getTieredPricing(results.totalCredit, formData.selectedYears.length) + 
+                             ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0)))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* What's Included - Enhanced for Multi-Year */}
                   <div className="bg-gray-50 rounded-lg p-4 mb-6">
                     <h4 className="font-bold text-gray-900 mb-3 text-center">📦 Complete IRS-Ready Package</h4>
                     <div className="text-sm text-gray-700 text-center">
-                      ✓ Form 6765 • ✓ Technical documentation • ✓ Filing instructions
+                      ✓ Form 6765 • ✓ Technical documentation • ✓ Filing instructions • ✓ 24-48hr delivery
+                      {formData.selectedYears.length > 1 && (
+                        <span> • ✓ {formData.selectedYears.length} years of forms</span>
+                      )}
                       {formData.stateCredit && formData.selectedState && (
                         <span> • ✓ State credit forms</span>
                       )}
@@ -1724,18 +2075,30 @@ const CreditCalculator = () => {
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-xl font-bold text-gray-900">Total Investment:</span>
                       <span className="text-3xl font-bold text-green-600">
-                        ${((getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))).toLocaleString()}
+                        ${((getTieredPricing(results.totalCredit, formData.selectedYears.length) + 
+                            ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
+                          ).toLocaleString()}
                       </span>
                     </div>
                     
-                    {/* ROI Display - Right before CTA */}
+                    {/* ROI Display - Enhanced for multi-year */}
                     <div className="bg-green-50 rounded-xl p-4 mb-4 text-center border border-green-200">
                       <p className="text-lg font-bold text-green-800 mb-1">
-                        {Math.round(results.totalBenefit / (getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0)))}x Return on Investment
+                        {Math.round(results.totalBenefit / 
+                          (getTieredPricing(results.totalCredit, formData.selectedYears.length) + 
+                           ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
+                        )}x Return on Investment
                       </p>
                       <p className="text-sm text-green-700">
-                        Your ${((getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))).toLocaleString()} investment → {formatCurrency(results.totalBenefit)} in tax savings
+                        Your ${((getTieredPricing(results.totalCredit, formData.selectedYears.length) + 
+                                 ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
+                               ).toLocaleString()} investment → {formatCurrency(results.totalBenefit)} in tax savings
                       </p>
+                      {formData.selectedYears.length > 1 && (
+                        <p className="text-xs text-green-600 mt-1">
+                          That's {formatCurrency(results.totalBenefit / formData.selectedYears.length)} per year average!
+                        </p>
+                      )}
                     </div>
                     
                     <button

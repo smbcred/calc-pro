@@ -1,0 +1,106 @@
+Here's a comprehensive prompt for Replit to build an exact version of the calculator:
+
+---
+
+## **Prompt for Replit: Build R&D Tax Credit Calculator**
+
+I need you to create a complete, working R&D Tax Credit Calculator as a React application. I'm attaching a TSX file that contains the exact component code that needs to be implemented.
+
+### **Project Requirements:**
+
+**1. Create a new React project with:**
+- React 18+
+- TypeScript
+- Tailwind CSS for styling
+- Lucide React for icons
+
+**2. Project Structure:**
+```
+/src
+  /components
+    CreditCalculator.tsx (the attached file)
+  App.tsx
+  index.tsx
+  index.css
+```
+
+**3. Dependencies to install:**
+```json
+{
+  "react": "^18.0.0",
+  "react-dom": "^18.0.0",
+  "typescript": "^5.0.0",
+  "lucide-react": "latest",
+  "tailwindcss": "^3.0.0",
+  "@types/react": "^18.0.0",
+  "@types/react-dom": "^18.0.0"
+}
+```
+
+**4. Tailwind Configuration:**
+- Initialize Tailwind CSS with default configuration
+- Ensure all Tailwind directives are in index.css:
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+**5. App.tsx should be:**
+```tsx
+import CreditCalculator from './components/CreditCalculator';
+
+function App() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <CreditCalculator />
+    </div>
+  );
+}
+
+export default App;
+```
+
+**6. Implementation Notes:**
+- The calculator is a multi-step form (4 steps)
+- It uses localStorage for saving progress
+- All calculations should work exactly as coded
+- The component is self-contained with all logic included
+- No external API calls needed
+- Mobile responsive design is already included
+
+**7. Key Features to Verify:**
+- Step 1: Company information and qualification quiz
+- Step 2: R&D expense inputs with percentage sliders
+- Step 3: Additional credits selection
+- Step 4: Results with email gate and full breakdown
+- Progress saving/loading functionality
+- All calculations for federal, state, and Section 174A benefits
+
+**8. Styling Requirements:**
+- Use only Tailwind utility classes (no custom CSS needed)
+- Maintain all existing responsive breakpoints
+- Keep all hover states and transitions
+- Preserve the gradient backgrounds and shadow effects
+
+**9. Testing Checklist:**
+- Calculator loads without errors
+- Can navigate through all 4 steps
+- Calculations produce correct results
+- Email gate works properly
+- Progress saves and loads from localStorage
+- Mobile responsive layout works
+- All interactive elements (buttons, inputs, sliders) function
+
+**10. DO NOT:**
+- Modify the calculation logic
+- Change the component structure
+- Add additional dependencies beyond those listed
+- Alter the styling approach
+- Remove any features or functionality
+
+Please implement this exactly as specified in the attached TSX file. The calculator should be fully functional and ready to use immediately after setup.
+
+---
+
+This prompt should give Replit everything needed to create an exact working version of your calculator. Make sure to attach the `rd-calculator-enhanced-safe.tsx` file when using this prompt.

@@ -1779,39 +1779,50 @@ const CreditCalculator = () => {
 
                 {/* TIME SAVINGS & COMPETITIVE ADVANTAGE */}
                 <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6">
-                  <h4 className="font-bold text-gray-900 mb-4 text-center">⏰ Why Choose Our Flat-Fee Service?</h4>
+                  <h4 className="font-bold text-gray-900 mb-4 text-center">⏰ Why Choose Our Service?</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
-                      <h5 className="font-semibold text-green-800">Save Time & Money:</h5>
+                      <h5 className="font-semibold text-green-800">Save Massive Time & Effort:</h5>
                       <ul className="text-sm text-gray-700 space-y-2">
                         <li className="flex items-start gap-2">
                           <span className="text-green-600 mt-0.5">✓</span>
-                          <span><strong>Ready in 10 minutes</strong> vs. weeks with traditional CPAs</span>
+                          <span><strong>Complete in 1-2 hours</strong> vs. 40+ hours doing it yourself</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-green-600 mt-0.5">✓</span>
-                          <span><strong>Flat fee of ${getTieredPricing(results.totalCredit).toLocaleString()}</strong> vs. 15-25% of your refund</span>
+                          <span><strong>Delivered in 24-48 hours</strong> vs. weeks with traditional firms</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-green-600 mt-0.5">✓</span>
-                          <span><strong>No hourly billing</strong> — pay once, get everything</span>
+                          <span><strong>No research required</strong> — we handle all IRS complexity</span>
                         </li>
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h5 className="font-semibold text-blue-800">Cost Comparison:</h5>
-                      <div className="bg-white rounded-lg p-4 text-sm">
-                        <div className="flex justify-between mb-2">
-                          <span>Traditional CPA (20% fee):</span>
-                          <span className="font-bold text-red-600">${Math.round(results.totalBenefit * 0.2).toLocaleString()}</span>
+                      <h5 className="font-semibold text-blue-800">Industry Cost Comparison:</h5>
+                      <div className="bg-white rounded-lg p-4 text-sm space-y-2">
+                        <div className="grid grid-cols-3 gap-2 text-xs font-semibold text-gray-600 border-b pb-1">
+                          <span>Provider</span>
+                          <span>Typical Fee</span>
+                          <span>Your Cost</span>
                         </div>
-                        <div className="flex justify-between mb-2">
-                          <span>Our flat fee:</span>
+                        <div className="grid grid-cols-3 gap-2 text-xs">
+                          <span>Specialist Firms</span>
+                          <span className="text-red-600">15-35%</span>
+                          <span className="font-bold text-red-600">${Math.round(results.totalBenefit * 0.25).toLocaleString()}</span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs">
+                          <span>General CPAs</span>
+                          <span className="text-red-600">10-20%</span>
+                          <span className="font-bold text-red-600">${Math.round(results.totalBenefit * 0.15).toLocaleString()}</span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs border-t pt-1">
+                          <span className="font-bold">Our Flat Fee</span>
+                          <span className="font-bold text-green-600">Fixed</span>
                           <span className="font-bold text-green-600">${getTieredPricing(results.totalCredit).toLocaleString()}</span>
                         </div>
-                        <div className="border-t pt-2 flex justify-between">
-                          <span className="font-bold">You save:</span>
-                          <span className="font-bold text-green-700">${(Math.round(results.totalBenefit * 0.2) - getTieredPricing(results.totalCredit)).toLocaleString()}</span>
+                        <div className="bg-green-100 p-2 rounded text-center mt-2">
+                          <span className="font-bold text-green-800">You save: ${(Math.round(results.totalBenefit * 0.15) - getTieredPricing(results.totalCredit)).toLocaleString()}</span>
                         </div>
                       </div>
                     </div>
@@ -1875,82 +1886,92 @@ const CreditCalculator = () => {
 
 
 
-                {/* SECTION 9: SUPPORTING INFO - Detailed breakdown (collapsed by default) */}
-                <div className="bg-gray-50 rounded-lg p-6">
-                  <button
-                    onClick={() => setShowDetails(!showDetails)}
-                    className="flex items-center justify-between w-full text-left"
-                  >
-                    <h3 className="text-lg font-semibold">Detailed Breakdown</h3>
-                    <ChevronRight className={`w-5 h-5 transition-transform ${showDetails ? 'rotate-90' : ''}`} />
-                  </button>
-                  
-                  {showDetails && (
-                    <div className="mt-4 space-y-4">
-                      <div>
-                        <h4 className="font-medium mb-2">Your AI & Tech R&D Expenses</h4>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex justify-between">
-                            <span>Employee Time ({Math.round(results.qres.wagePercent * 100)}%)</span>
-                            <span>{formatCurrency(results.qres.wages)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Contractors ({Math.round(results.qres.contractorPercent * 100)}% × 65%)</span>
-                            <span>{formatCurrency(results.qres.contractors)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Cloud & APIs</span>
-                            <span>{formatCurrency(results.qres.cloud)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>AI Tools & Software</span>
-                            <span>{formatCurrency(results.qres.software)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Other Supplies</span>
-                            <span>{formatCurrency(results.qres.supplies)}</span>
-                          </div>
-                          <div className="flex justify-between font-semibold pt-2 border-t">
-                            <span>Total Qualified R&D</span>
-                            <span>{formatCurrency(results.qres.total)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
 
 
 
-                {/* OPTIONAL DETAILS - Highly condensed */}
+
+                {/* DETAILED BREAKDOWN OF YOUR REFUND */}
                 <div className="bg-gray-50 rounded-lg p-4">
                   <button
                     onClick={() => setShowDetails(!showDetails)}
                     className="flex items-center justify-center w-full text-sm text-gray-600 hover:text-gray-800"
                   >
-                    <span>View calculation details</span>
+                    <span>Detailed breakdown of your refund</span>
                     <ChevronRight className={`w-4 h-4 ml-1 transition-transform ${showDetails ? 'rotate-90' : ''}`} />
                   </button>
                   
                   {showDetails && (
-                    <div className="mt-3 pt-3 border-t border-gray-200 text-sm space-y-2">
-                      <div className="flex justify-between">
-                        <span>Qualified R&D Expenses:</span>
-                        <span className="font-medium">{formatCurrency(results.qres.total)}</span>
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <h4 className="font-medium mb-2">Your Qualified R&D Expenses</h4>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex justify-between">
+                            <span>Employee Time ({Math.round((results.qres.wagePercent || 0) * 100)}%)</span>
+                            <span>{formatCurrency(results.qres.wages || 0)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Contractors ({Math.round((results.qres.contractorPercent || 0) * 100)}% × 65%)</span>
+                            <span>{formatCurrency(results.qres.contractors || 0)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Cloud & APIs</span>
+                            <span>{formatCurrency(results.qres.cloud || 0)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>AI Tools & Software</span>
+                            <span>{formatCurrency(results.qres.software || 0)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Other Supplies</span>
+                            <span>{formatCurrency(results.qres.supplies || 0)}</span>
+                          </div>
+                          <div className="border-t pt-1 flex justify-between font-medium">
+                            <span>Total Qualified R&D Expenses</span>
+                            <span>{formatCurrency(results.qres.total || 0)}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span>Federal Credit ({(results.federal.rate * 100).toFixed(1)}%):</span>
-                        <span className="font-medium">{formatCurrency(results.federal.creditAmount || 0)}</span>
+                      
+                      <div>
+                        <h4 className="font-medium mb-2">Federal R&D Credit Calculation</h4>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex justify-between">
+                            <span>QRE × {((results.federal.rate || 0) * 100).toFixed(1)}% credit rate</span>
+                            <span>{formatCurrency(results.federal.creditAmount || 0)}</span>
+                          </div>
+                          {results.federal.isStartupEligible && (
+                            <div className="flex justify-between text-green-700">
+                              <span>Can offset payroll tax (startup eligible)</span>
+                              <span>Up to {formatCurrency(results.federal.payrollTaxOffset || 0)}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
+                      
                       {results.state > 0 && (
-                        <div className="flex justify-between">
-                          <span>State Credit:</span>
-                          <span className="font-medium">{formatCurrency(results.state)}</span>
+                        <div>
+                          <h4 className="font-medium mb-2">State Credit</h4>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span>{statesWithCredit.find(s => s.code === formData.selectedState)?.name} ({((statesWithCredit.find(s => s.code === formData.selectedState)?.rate || 0) * 100).toFixed(1)}%)</span>
+                              <span>{formatCurrency(results.state || 0)}</span>
+                            </div>
+                          </div>
                         </div>
                       )}
-                      <div className="flex justify-between">
-                        <span>Section 174A Deduction (21%):</span>
-                        <span className="font-medium">{formatCurrency(results.section174ABenefit)}</span>
+                      
+                      <div>
+                        <h4 className="font-medium mb-2">Section 174A Immediate Deduction</h4>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex justify-between">
+                            <span>R&D expenses × 21% tax rate</span>
+                            <span>{formatCurrency(results.section174ABenefit || 0)}</span>
+                          </div>
+                          <p className="text-xs text-gray-600 mt-1">
+                            This deduction reduces your taxable income by {formatCurrency(results.qres.total || 0)}, 
+                            saving approximately 21% in corporate taxes.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}

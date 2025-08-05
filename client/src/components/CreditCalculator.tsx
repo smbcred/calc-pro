@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, Info, DollarSign, Users, Package, AlertCircle, ChevronRight, ChevronLeft, Building, Shield, Lock, CheckCircle, Clock, TrendingUp, FileText, Share2 } from 'lucide-react';
+import { Calculator, Info, DollarSign, Users, Package, AlertCircle, ChevronRight, ChevronLeft, Building, Shield, Lock, CheckCircle, Clock, TrendingUp, FileText, Share2, Zap } from 'lucide-react';
 
 const CreditCalculator = () => {
   // State for calculator inputs
@@ -138,39 +138,60 @@ const CreditCalculator = () => {
     </div>
   );
 
-  // Enhanced Value Props Component with Urgency & Benefits
+  // Enhanced Value Props Component with Perfect Centering and Visual Appeal
   const ValueProps = () => {
     const currentMonth = new Date().getMonth();
     const isEndOfYear = currentMonth >= 10; // Nov/Dec
     
     return (
-      <div className="mb-8">
-        {/* Primary Value Props */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-4 text-center">
-            <div className="text-2xl mb-2">💰</div>
-            <h3 className="font-bold text-green-800 mb-1">Average $87K Saved</h3>
-            <p className="text-sm text-green-700">Cash refunds + tax credits</p>
-          </div>
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4 text-center">
-            <div className="text-2xl mb-2">⚡</div>
-            <h3 className="font-bold text-blue-800 mb-1">Ready in 10 Minutes</h3>
-            <p className="text-sm text-blue-700">No tax expertise required</p>
-          </div>
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-4 text-center">
-            <div className="text-2xl mb-2">🎯</div>
-            <h3 className="font-bold text-purple-800 mb-1">Built for AI Users</h3>
-            <p className="text-sm text-purple-700">ChatGPT, automations, & more</p>
+      <div className="mb-12">
+        {/* Primary Value Props with Better Spacing */}
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div className="bg-gradient-to-br from-green-50 via-white to-green-100 border border-green-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <DollarSign className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-green-800 mb-3">Average $125K Saved</h3>
+              <p className="text-base text-green-700 font-medium">Cash refunds + tax credits</p>
+              <div className="mt-3 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full inline-block">
+                Real cash back to your business
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 border border-blue-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <Clock className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-blue-800 mb-3">Ready in 10 Minutes</h3>
+              <p className="text-base text-blue-700 font-medium">No tax expertise required</p>
+              <div className="mt-3 text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block">
+                Simple step-by-step process
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-purple-50 via-white to-purple-100 border border-purple-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <Zap className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-purple-800 mb-3">Built for AI Users</h3>
+              <p className="text-base text-purple-700 font-medium">ChatGPT, automations, & more</p>
+              <div className="mt-3 text-sm text-purple-600 bg-purple-50 px-3 py-1 rounded-full inline-block">
+                93% of AI users qualify
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Urgency Banner */}
         {isEndOfYear && (
-          <div className="bg-gradient-to-r from-orange-100 to-red-100 border border-orange-300 rounded-xl p-4 mb-4">
-            <div className="flex items-center justify-center gap-2 text-orange-800">
-              <Clock className="w-5 h-5" />
-              <span className="font-bold">Tax Year Ending Soon!</span>
-              <span className="text-sm">Maximize your 2024 deductions before Dec 31st</span>
+          <div className="max-w-4xl mx-auto bg-gradient-to-r from-orange-100 to-red-100 border border-orange-300 rounded-2xl p-6">
+            <div className="flex items-center justify-center gap-3 text-orange-800">
+              <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
+                <Clock className="w-5 h-5 text-orange-700" />
+              </div>
+              <span className="text-lg font-bold">Tax Year Ending Soon!</span>
+              <span className="text-base">Maximize your 2024 deductions before Dec 31st</span>
             </div>
           </div>
         )}
@@ -178,32 +199,35 @@ const CreditCalculator = () => {
     );
   };
 
-  // Enhanced Branding Header with Stronger Copy
+  // Enhanced Branding Header with Perfect Centering and Spacing
   const BrandingHeader = () => (
-    <div className="text-center mb-8">
-      <div className="inline-flex items-center gap-2 text-sm text-blue-600 font-medium mb-3 bg-blue-50 px-3 py-1 rounded-full">
+    <div className="text-center mb-12 max-w-4xl mx-auto">
+      <div className="inline-flex items-center gap-3 text-sm text-blue-600 font-semibold mb-6 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
         <Building className="w-4 h-4" />
         <span>SMBTaxCredits.com</span>
       </div>
-      <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent leading-tight">
+      
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent leading-tight">
         Turn Your AI Tools Into Cash Refunds
       </h1>
-      <p className="text-gray-700 text-lg md:text-xl mb-4 max-w-2xl mx-auto">
-        Claim up to <span className="font-bold text-green-600">$500,000</span> in R&D tax credits for using ChatGPT, 
+      
+      <p className="text-gray-700 text-xl md:text-2xl mb-8 max-w-3xl mx-auto font-medium leading-relaxed">
+        Claim up to <span className="font-bold text-green-600 bg-green-50 px-2 py-1 rounded">$500,000</span> in R&D tax credits for using ChatGPT, 
         automation tools, and AI in your business
       </p>
-      <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
-        <span className="flex items-center gap-1">
-          <CheckCircle className="w-4 h-4 text-green-500" />
-          No tax knowledge required
+      
+      <div className="flex flex-wrap justify-center gap-6 text-base text-gray-600 max-w-2xl mx-auto">
+        <span className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full">
+          <CheckCircle className="w-5 h-5 text-green-500" />
+          <span className="font-medium">No tax knowledge required</span>
         </span>
-        <span className="flex items-center gap-1">
-          <CheckCircle className="w-4 h-4 text-green-500" />
-          IRS-compliant documentation
+        <span className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full">
+          <CheckCircle className="w-5 h-5 text-green-500" />
+          <span className="font-medium">IRS-compliant documentation</span>
         </span>
-        <span className="flex items-center gap-1">
-          <CheckCircle className="w-4 h-4 text-green-500" />
-          Instant results
+        <span className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full">
+          <CheckCircle className="w-5 h-5 text-green-500" />
+          <span className="font-medium">Instant results</span>
         </span>
       </div>
     </div>
@@ -905,108 +929,112 @@ const CreditCalculator = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-6">Tell us about your business</h2>
-            
-            <p className="text-sm text-gray-600 -mt-4 mb-4">
-              Even small businesses with no technical team can qualify.
-            </p>
+          <div className="space-y-8">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-bold mb-4 text-gray-900">Tell us about your business</h2>
+              <p className="text-lg text-gray-600 max-w-xl mx-auto">
+                Even small businesses with no technical team can qualify for substantial credits.
+              </p>
+            </div>
             
             <QualificationQuickCheck />
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Your business name
-              </label>
-              <input
-                type="text"
-                value={formData.companyName}
-                onChange={(e) => updateFormData('companyName', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Your Company, Inc."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Industry Type
-              </label>
-              <select
-                value={formData.industry}
-                onChange={(e) => updateFormData('industry', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select your industry</option>
-                {industries.map(ind => (
-                  <option key={ind.value} value={ind.value}>{ind.label}</option>
-                ))}
-              </select>
-              <IndustryExamples industry={formData.industry} />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-gray-50/50 rounded-xl p-8 space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tax Year
+                <label className="block text-base font-semibold text-gray-800 mb-3">
+                  Your business name
+                </label>
+                <input
+                  type="text"
+                  value={formData.companyName}
+                  onChange={(e) => updateFormData('companyName', e.target.value)}
+                  className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
+                  placeholder="Your Company, Inc."
+                />
+              </div>
+
+              <div>
+                <label className="block text-base font-semibold text-gray-800 mb-3">
+                  Industry Type
                 </label>
                 <select
-                  value={formData.taxYear}
-                  onChange={(e) => updateFormData('taxYear', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  value={formData.industry}
+                  onChange={(e) => updateFormData('industry', e.target.value)}
+                  className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
                 >
-                  <option value="2025">2025</option>
-                  <option value="2024">2024</option>
-                  <option value="2023">2023</option>
-                  <option value="2022">2022</option>
+                  <option value="">Select your industry</option>
+                  {industries.map(ind => (
+                    <option key={ind.value} value={ind.value}>{ind.label}</option>
+                  ))}
                 </select>
+                <IndustryExamples industry={formData.industry} />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <label className="block text-base font-semibold text-gray-800 mb-3">
+                    Tax Year
+                  </label>
+                  <select
+                    value={formData.taxYear}
+                    onChange={(e) => updateFormData('taxYear', e.target.value)}
+                    className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
+                  >
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-base font-semibold text-gray-800 mb-3">
+                    Year Business Started
+                    <InfoTooltip text="When your business started — newer companies get extra benefits!" />
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.startupYear}
+                    onChange={(e) => updateFormData('startupYear', e.target.value)}
+                    className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
+                    placeholder="2020"
+                    min="1900"
+                    max={formData.taxYear}
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Year Business Started
-                  <InfoTooltip text="When your business started — newer companies get extra benefits!" />
+                <label className="block text-base font-semibold text-gray-800 mb-3">
+                  Annual Revenue
+                  <InfoTooltip text="We need this to calculate your maximum credit and special benefits. Your data is encrypted and never shared." />
                 </label>
-                <input
-                  type="number"
-                  value={formData.startupYear}
-                  onChange={(e) => updateFormData('startupYear', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="2020"
-                  min="1900"
-                  max={formData.taxYear}
-                />
+                <div className="relative">
+                  <DollarSign className="absolute left-4 top-4 w-6 h-6 text-gray-400" />
+                  <input
+                    type="number"
+                    value={formData.grossReceipts}
+                    onChange={(e) => updateFormData('grossReceipts', e.target.value)}
+                    className="w-full pl-14 pr-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
+                    placeholder="1,000,000"
+                  />
+                </div>
+                <p className="text-sm text-blue-600 mt-3 font-medium bg-blue-50 px-4 py-2 rounded-lg">
+                  💡 Businesses under $5M can get cash refunds through payroll tax offsets
+                </p>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Annual Revenue
-                <InfoTooltip text="We need this to calculate your maximum credit and special benefits. Your data is encrypted and never shared." />
-              </label>
-              <div className="relative">
-                <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-                <input
-                  type="number"
-                  value={formData.grossReceipts}
-                  onChange={(e) => updateFormData('grossReceipts', e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="1,000,000"
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                💡 Businesses under $5M can get cash refunds through payroll tax offsets
-              </p>
             </div>
-
-            <div className="flex justify-between items-center">
+            
+            <div className="flex justify-between items-center pt-8 border-t border-gray-200">
               <SaveProgressButton />
               <button
                 onClick={() => setCurrentStep(2)}
                 disabled={!formData.companyName || !formData.startupYear || !formData.grossReceipts}
-                className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-5 px-10 rounded-2xl font-bold text-xl hover:from-blue-700 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
               >
                 Continue to Your AI Work 🚀
-                <ChevronRight className="ml-2 w-5 h-5" />
+                <ChevronRight className="ml-3 w-6 h-6" />
               </button>
             </div>
           </div>
@@ -1841,54 +1869,63 @@ Total Qualified R&D Expenses: ${formatCurrency(results.qres.total)}`;
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-slate-100 bg-[length:20px_20px] opacity-25"></div>
       
-      <div className="relative max-w-5xl mx-auto p-4 md:p-6">
-        {/* Main Calculator Container */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/50 p-6 md:p-10 relative overflow-hidden">
-          {/* Decorative Elements */}
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-blue-400/20 to-green-400/20 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
-          
-          <div className="relative z-10">
-            <BrandingHeader />
-            <TrustBar />
-            <ValueProps />
+      {/* Main Container with Perfect Centering */}
+      <div className="relative flex items-center justify-center min-h-screen py-12 px-4">
+        <div className="w-full max-w-4xl">
+          {/* Main Calculator Container */}
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 relative overflow-hidden">
+            {/* Decorative Elements */}
+            <div className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br from-blue-400/15 to-green-400/15 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-gradient-to-br from-green-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
             
-            {currentStep < 4 && <ProgressIndicator />}
-            
-            {/* Form Content Container */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 border border-gray-100 shadow-inner">
-              {renderStep()}
-            </div>
-          </div>
-        </div>
-        
-        {/* Enhanced Footer */}
-        <div className="text-center mt-8 space-y-4">
-          <div className="bg-white/60 backdrop-blur-sm rounded-xl px-6 py-4 inline-flex items-center gap-6 text-sm text-gray-600 border border-white/50">
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-green-600" />
-              <span>SSL Secured</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-blue-600" />
-              <span>GDPR Compliant</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-purple-600" />
-              <span>IRS Approved Methods</span>
+            <div className="relative z-10 px-8 py-12 md:px-12 md:py-16">
+              <BrandingHeader />
+              <TrustBar />
+              <ValueProps />
+              
+              {currentStep < 4 && <ProgressIndicator />}
+              
+              {/* Form Content Container with Better Spacing */}
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 md:p-10 border border-gray-100 shadow-lg mx-auto max-w-3xl">
+                {renderStep()}
+              </div>
             </div>
           </div>
           
-          <div className="text-xs text-gray-500 space-x-1">
-            <span className="font-medium text-blue-600">SMBTaxCredits.com</span>
-            <span>·</span>
-            <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Terms</a>
-            <span>·</span>
-            <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Privacy</a>
-            <span>·</span>
-            <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Contact</a>
-            <span>·</span>
-            <span className="text-gray-400">© 2024 All rights reserved</span>
+          {/* Enhanced Footer with Better Spacing */}
+          <div className="text-center mt-12 space-y-6">
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl px-8 py-5 inline-flex flex-wrap items-center justify-center gap-8 text-sm text-gray-600 border border-white/50 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-green-600" />
+                </div>
+                <span className="font-medium">SSL Secured</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Lock className="w-4 h-4 text-blue-600" />
+                </div>
+                <span className="font-medium">GDPR Compliant</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-purple-600" />
+                </div>
+                <span className="font-medium">IRS Approved</span>
+              </div>
+            </div>
+            
+            <div className="text-sm text-gray-500 space-x-2">
+              <span className="font-semibold text-blue-600">SMBTaxCredits.com</span>
+              <span>·</span>
+              <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Terms</a>
+              <span>·</span>
+              <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Privacy</a>
+              <span>·</span>
+              <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Contact</a>
+              <span>·</span>
+              <span className="text-gray-400">© 2024 All rights reserved</span>
+            </div>
           </div>
         </div>
       </div>

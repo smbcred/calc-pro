@@ -1209,7 +1209,7 @@ const CreditCalculator = () => {
               </div>
 
               {/* Multi-Year Selection - Strategic Upsell Point */}
-              <MultiYearSelector />
+
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
@@ -2031,30 +2031,7 @@ const CreditCalculator = () => {
                     </div>
                   </div>
 
-                  {/* Competitive Advantage Box */}
-                  <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <h4 className="font-bold text-gray-900 mb-3 text-center">💰 Why Choose Our Flat Fee vs CPAs?</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                      <div className="text-center">
-                        <div className="font-bold text-red-600">Traditional CPAs</div>
-                        <div className="text-gray-600">10-35% of your refund</div>
-                        <div className="text-xs text-gray-500">(${formatCurrency(results.totalBenefit * 0.225)} on average)</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="font-bold text-green-600">Our Flat Fee</div>
-                        <div className="text-gray-600">
-                          ${((getTieredPricing(results.totalCredit, formData.selectedYears.length) + 
-                              ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
-                            ).toLocaleString()}
-                        </div>
-                        <div className="text-xs text-green-600">
-                          Save ${formatCurrency(results.totalBenefit * 0.225 - 
-                            (getTieredPricing(results.totalCredit, formData.selectedYears.length) + 
-                             ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0)))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+
 
                   {/* What's Included - Enhanced for Multi-Year */}
                   <div className="bg-gray-50 rounded-lg p-4 mb-6">
@@ -2100,10 +2077,33 @@ const CreditCalculator = () => {
                         </p>
                       )}
                     </div>
+
+                    {/* Multi-Year Upsell Section - Only show if single year selected */}
+                    {formData.selectedYears.length === 1 && (
+                      <div className="border-2 border-orange-200 bg-orange-50 rounded-xl p-6 mb-6">
+                        <div className="text-center mb-4">
+                          <h3 className="text-xl font-bold text-orange-800 mb-2">🚀 Maximize Your Savings!</h3>
+                          <p className="text-orange-700">File multiple years and save big with our multi-year discount</p>
+                        </div>
+                        
+                        <MultiYearSelector />
+                        
+                        <div className="mt-4 bg-white rounded-lg p-4 border border-orange-200">
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-green-600 mb-1">
+                              Save up to 25% with multi-year filing
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              The more years you file, the bigger your discount
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     
                     <button
                       onClick={() => {
-                        const basePrice = getTieredPricing(results.totalCredit);
+                        const basePrice = getTieredPricing(results.totalCredit, formData.selectedYears.length);
                         const stateAddon = (formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0;
                         const totalPrice = basePrice + stateAddon;
                         

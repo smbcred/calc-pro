@@ -51,22 +51,50 @@ const CreditCalculator = () => {
   const [showFullResults, setShowFullResults] = useState(false);
 
   // States that offer R&D tax credits
+  // Supported states with detailed filing information
   const statesWithCredit = [
-    { code: 'AZ', name: 'Arizona', rate: 0.24 },
-    { code: 'CA', name: 'California', rate: 0.15 },
-    { code: 'CO', name: 'Colorado', rate: 0.03 },
-    { code: 'CT', name: 'Connecticut', rate: 0.06 },
-    { code: 'IL', name: 'Illinois', rate: 0.065 },
-    { code: 'IN', name: 'Indiana', rate: 0.15 },
-    { code: 'MA', name: 'Massachusetts', rate: 0.15 },
-    { code: 'MD', name: 'Maryland', rate: 0.10 },
-    { code: 'NJ', name: 'New Jersey', rate: 0.10 },
-    { code: 'NY', name: 'New York', rate: 0.05 },
-    { code: 'PA', name: 'Pennsylvania', rate: 0.10 },
-    { code: 'RI', name: 'Rhode Island', rate: 0.225 },
-    { code: 'TX', name: 'Texas', rate: 0.05 },
-    { code: 'UT', name: 'Utah', rate: 0.05 },
-    { code: 'WA', name: 'Washington', rate: 0.015 }
+    { code: 'AK', name: 'Alaska', rate: 0.18, form: 'Form 6390', method: 'PDF with return' },
+    { code: 'AR', name: 'Arkansas', rate: 0.20, form: 'AEDC Application', method: 'PDF/email application' },
+    { code: 'CA', name: 'California', rate: 0.15, form: 'CA Form 3523', method: 'File with return' },
+    { code: 'CO', name: 'Colorado', rate: 0.03, form: 'Form 112CR', method: 'Standard filing' },
+    { code: 'CT', name: 'Connecticut', rate: 0.06, form: 'Form CT-1120RC', method: 'C-corp only, paper accepted' },
+    { code: 'DE', name: 'Delaware', rate: 0.10, form: 'Form 2070AC', method: 'Standard filing' },
+    { code: 'GA', name: 'Georgia', rate: 0.10, form: 'Form IT-RD', method: 'Paper or e-file' },
+    { code: 'HI', name: 'Hawaii', rate: 0.20, form: 'Form N-346', method: 'PDF + annual survey' },
+    { code: 'ID', name: 'Idaho', rate: 0.05, form: 'Form 67', method: 'PDF accepted' },
+    { code: 'IL', name: 'Illinois', rate: 0.065, form: 'Schedule 1299-D', method: 'Standard filing' },
+    { code: 'IN', name: 'Indiana', rate: 0.15, form: 'Schedule IT-20REC', method: 'Paper or e-file' },
+    { code: 'KS', name: 'Kansas', rate: 0.065, form: 'Schedule K-53', method: 'No preapproval needed' },
+    { code: 'ME', name: 'Maine', rate: 0.05, form: 'Form 1040RC', method: 'PDF accepted' },
+    { code: 'MA', name: 'Massachusetts', rate: 0.15, form: 'Schedule RC', method: 'PDF accepted' },
+    { code: 'MN', name: 'Minnesota', rate: 0.10, form: 'Form RD', method: 'Refundable for SMBs' },
+    { code: 'NE', name: 'Nebraska', rate: 0.15, form: 'Form 3800N', method: 'PDF format' },
+    { code: 'NJ', name: 'New Jersey', rate: 0.10, form: 'Form 306', method: 'Paper/e-file supported' },
+    { code: 'NM', name: 'New Mexico', rate: 0.04, form: 'RPD-41246/41247', method: 'PDF acceptable' },
+    { code: 'ND', name: 'North Dakota', rate: 0.04, form: 'Schedule R&D', method: 'Paper-based' },
+    { code: 'OH', name: 'Ohio', rate: 0.075, form: 'Schedule R or CAT', method: 'Paper accepted' },
+    { code: 'RI', name: 'Rhode Island', rate: 0.225, form: 'Schedule RTC', method: 'PDF filing' },
+    { code: 'SC', name: 'South Carolina', rate: 0.05, form: 'Form TC-18', method: 'PDF accepted' },
+    { code: 'TX', name: 'Texas', rate: 0.05, form: 'Form 05-178', method: 'PDF Franchise Tax forms' },
+    { code: 'UT', name: 'Utah', rate: 0.05, form: 'TC-675R', method: 'PDF filing allowed' },
+    { code: 'VT', name: 'Vermont', rate: 0.27, form: 'Schedule RDC', method: '27% of federal credit' },
+    { code: 'WI', name: 'Wisconsin', rate: 0.05, form: 'Schedule R or CR', method: 'PDF accepted' }
+  ];
+
+  // Unsupported states with reasons
+  const unsupportedStates = [
+    { code: 'AZ', name: 'Arizona', reason: 'Requires Commerce Authority portal application for refundable portion' },
+    { code: 'FL', name: 'Florida', reason: 'Annual cap; must apply via FL Tax Credit Portal on March 20' },
+    { code: 'LA', name: 'Louisiana', reason: 'LED submission must be online (portal required)' },
+    { code: 'MD', name: 'Maryland', reason: 'Commerce Department application via portal due by Nov 15' },
+    { code: 'MO', name: 'Missouri', reason: 'DED requires application via portal or email' },
+    { code: 'PA', name: 'Pennsylvania', reason: 'myPATH portal mandatory for application by Dec 1' },
+    { code: 'VA', name: 'Virginia', reason: 'Form RDC must be submitted online via state portal' }
+  ];
+
+  // States with no R&D credit
+  const statesWithoutCredit = [
+    'Mississippi', 'North Carolina', 'Tennessee', 'Washington', 'District of Columbia', 'West Virginia'
   ];
 
   // Industry types for specific examples - expanded list
@@ -1235,34 +1263,103 @@ const CreditCalculator = () => {
             <h2 className="text-2xl font-bold mb-6">Boost your savings even more</h2>
 
             <div className="space-y-4">
-              <div className="border rounded-lg p-4">
+              <div className="border rounded-xl p-6 bg-gradient-to-br from-blue-50 to-green-50">
                 <label className="flex items-center cursor-pointer">
                   <input
                     type="checkbox"
                     checked={formData.stateCredit}
                     onChange={(e) => updateFormData('stateCredit', e.target.checked)}
-                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                    className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                   />
-                  <span className="ml-3 font-medium">My state offers R&D tax credits</span>
+                  <span className="ml-3 text-lg font-semibold text-gray-900">My state offers R&D tax credits</span>
                 </label>
                 
                 {formData.stateCredit && (
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Select Your State
-                    </label>
-                    <select
-                      value={formData.selectedState}
-                      onChange={(e) => updateFormData('selectedState', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Choose a state</option>
-                      {statesWithCredit.map(state => (
-                        <option key={state.code} value={state.code}>
-                          {state.name} ({(state.rate * 100).toFixed(1)}% credit)
-                        </option>
-                      ))}
-                    </select>
+                  <div className="mt-6 space-y-4">
+                    <div>
+                      <label className="block text-base font-semibold text-gray-800 mb-3">
+                        Select Your State
+                      </label>
+                      <select
+                        value={formData.selectedState}
+                        onChange={(e) => updateFormData('selectedState', e.target.value)}
+                        className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
+                      >
+                        <option value="">Choose a state</option>
+                        <optgroup label="✅ Supported States (Easy Filing)">
+                          {statesWithCredit.map(state => (
+                            <option key={state.code} value={state.code}>
+                              {state.name} - {(state.rate * 100).toFixed(1)}% credit ({state.method})
+                            </option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="⚠️ Complex Portal States (Contact Us)">
+                          {unsupportedStates.map(state => (
+                            <option key={state.code} value={state.code} disabled>
+                              {state.name} - Portal Required (Complex Process)
+                            </option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="❌ No State R&D Credit Available">
+                          {statesWithoutCredit.map(state => (
+                            <option key={state} disabled>
+                              {state} - No R&D Credit Program
+                            </option>
+                          ))}
+                        </optgroup>
+                      </select>
+                    </div>
+                    
+                    {/* Show selected state details */}
+                    {formData.selectedState && (
+                      <div className="bg-white rounded-xl p-4 border border-blue-200">
+                        {(() => {
+                          const selectedState = statesWithCredit.find(s => s.code === formData.selectedState);
+                          const unsupportedState = unsupportedStates.find(s => s.code === formData.selectedState);
+                          
+                          if (selectedState) {
+                            return (
+                              <div className="space-y-2">
+                                <h4 className="font-semibold text-green-800 flex items-center gap-2">
+                                  <CheckCircle className="w-5 h-5" />
+                                  {selectedState.name} R&D Credit Details
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                  <div>
+                                    <span className="font-medium">Credit Rate:</span>
+                                    <span className="ml-2 text-green-600 font-bold">{(selectedState.rate * 100).toFixed(1)}%</span>
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Required Form:</span>
+                                    <span className="ml-2">{selectedState.form}</span>
+                                  </div>
+                                  <div className="md:col-span-2">
+                                    <span className="font-medium">Filing Method:</span>
+                                    <span className="ml-2 text-blue-600">{selectedState.method}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          } else if (unsupportedState) {
+                            return (
+                              <div className="space-y-2">
+                                <h4 className="font-semibold text-orange-800 flex items-center gap-2">
+                                  <AlertCircle className="w-5 h-5" />
+                                  {unsupportedState.name} - Complex Process
+                                </h4>
+                                <p className="text-sm text-orange-700 bg-orange-50 p-3 rounded-lg">
+                                  <strong>Why it's complex:</strong> {unsupportedState.reason}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  Contact us for specialized assistance with portal-based state filings.
+                                </p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

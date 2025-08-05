@@ -212,35 +212,37 @@ const CreditCalculator = () => {
           </div>
         </div>
 
-        {/* Urgency Banner */}
-        <div className="max-w-5xl mx-auto bg-gradient-to-r from-orange-100 to-red-100 border border-orange-300 rounded-2xl p-6 mx-4">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <span className="text-2xl">🔥</span>
-              <span className="text-lg font-bold text-orange-800">Limited-Time Opportunity: New Law Supercharges R&D Credits</span>
-            </div>
-            <div className="space-y-2 text-sm text-orange-800">
-              <div className="flex items-center justify-center gap-1">
-                <span className="text-orange-600 font-bold">▸</span>
-                <span><strong>Amend 2022–2024 returns</strong> through July 3, 2026 — claim credits you missed</span>
+        {/* Show urgency banner only on step 1 */}
+        {currentStep === 1 && (
+          <div className="max-w-5xl mx-auto bg-gradient-to-r from-orange-100 to-red-100 border border-orange-300 rounded-2xl p-6 mx-4">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <span className="text-2xl">🔥</span>
+                <span className="text-lg font-bold text-orange-800">Limited-Time Opportunity: New Law Supercharges R&D Credits</span>
               </div>
-              <div className="flex items-center justify-center gap-1">
-                <span className="text-orange-600 font-bold">▸</span>
-                <span><strong>100% immediate expensing of R&D costs</strong> — retroactive to 2022 for qualifying businesses</span>
+              <div className="space-y-2 text-sm text-orange-800">
+                <div className="flex items-center justify-center gap-1">
+                  <span className="text-orange-600 font-bold">▸</span>
+                  <span><strong>Amend 2022–2024 returns</strong> through July 3, 2026 — claim credits you missed</span>
+                </div>
+                <div className="flex items-center justify-center gap-1">
+                  <span className="text-orange-600 font-bold">▸</span>
+                  <span><strong>100% immediate expensing of R&D costs</strong> — retroactive to 2022 for qualifying businesses</span>
+                </div>
+                <div className="flex items-center justify-center gap-1">
+                  <span className="text-orange-600 font-bold">▸</span>
+                  <span><strong>Expanded refundability</strong> for businesses under $31M in revenue — get cash back faster</span>
+                </div>
               </div>
-              <div className="flex items-center justify-center gap-1">
-                <span className="text-orange-600 font-bold">▸</span>
-                <span><strong>Expanded refundability</strong> for businesses under $31M in revenue — get cash back faster</span>
+              <div className="mt-4 p-2 bg-red-100 border border-red-300 rounded-lg">
+                <p className="text-sm font-bold text-red-900 flex items-center justify-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Act Fast: You must file amended returns by July 3, 2026 to unlock this one-time benefit.
+                </p>
               </div>
-            </div>
-            <div className="mt-4 p-2 bg-red-100 border border-red-300 rounded-lg">
-              <p className="text-sm font-bold text-red-900 flex items-center justify-center gap-2">
-                <Clock className="w-4 h-4" />
-                Act Fast: You must file amended returns by July 3, 2026 to unlock this one-time benefit.
-              </p>
             </div>
           </div>
-        </div>
+        )}
       </div>
     );
   };
@@ -1610,9 +1612,14 @@ const CreditCalculator = () => {
                     <h2 className="text-3xl md:text-4xl font-bold mb-3">
                       You Could Save {formatCurrency(results.totalBenefit || 0)}
                     </h2>
-                    <p className="text-xl text-white/90 mb-6">
-                      That's a {Math.round(results.totalBenefit / (getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0)))}x return on investment
-                    </p>
+                    <div className="bg-white/20 rounded-xl p-4 mb-6">
+                      <p className="text-lg font-bold mb-1">
+                        {Math.round(results.totalBenefit / (getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0)))}x Return on Investment
+                      </p>
+                      <p className="text-sm text-white/80">
+                        Your ${((getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))).toLocaleString()} investment → {formatCurrency(results.totalBenefit)} in tax savings
+                      </p>
+                    </div>
                     
                     {/* Value Breakdown - Scannable */}
                     <div className="grid grid-cols-3 gap-4 bg-white/10 rounded-xl p-4 mb-6">
@@ -1831,6 +1838,50 @@ const CreditCalculator = () => {
                       </div>
                     </div>
                   )}
+                </div>
+
+                {/* WHAT YOU'LL NEED TO CLAIM YOUR REFUND */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-bold text-blue-900 mb-3 text-center">📋 What You'll Need to Claim Your Credit</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div className="space-y-2">
+                      <h5 className="font-semibold text-blue-800">Employee Records:</h5>
+                      <ul className="text-blue-700 space-y-1">
+                        <li>• Payroll records for R&D staff</li>
+                        <li>• Time tracking logs</li>
+                        <li>• Job descriptions showing R&D duties</li>
+                      </ul>
+                    </div>
+                    <div className="space-y-2">
+                      <h5 className="font-semibold text-blue-800">Business Expenses:</h5>
+                      <ul className="text-blue-700 space-y-1">
+                        <li>• Cloud computing invoices</li>
+                        <li>• Software subscription receipts</li>
+                        <li>• Contractor agreements & payments</li>
+                      </ul>
+                    </div>
+                    <div className="space-y-2">
+                      <h5 className="font-semibold text-blue-800">Project Documentation:</h5>
+                      <ul className="text-blue-700 space-y-1">
+                        <li>• Development timelines</li>
+                        <li>• Technical specifications</li>
+                        <li>• Testing & iteration records</li>
+                      </ul>
+                    </div>
+                    <div className="space-y-2">
+                      <h5 className="font-semibold text-blue-800">Tax Documents:</h5>
+                      <ul className="text-blue-700 space-y-1">
+                        <li>• Previous tax returns</li>
+                        <li>• Gross receipts statements</li>
+                        <li>• Business formation documents</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="mt-4 p-3 bg-blue-100 rounded-lg text-center">
+                    <p className="text-sm text-blue-800 font-medium">
+                      💡 Our package includes a detailed checklist and guidance for gathering these documents
+                    </p>
+                  </div>
                 </div>
 
                 {/* OPTIONAL DETAILS - Highly condensed */}

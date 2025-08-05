@@ -40,7 +40,7 @@ const CreditCalculator = () => {
   });
 
   // State for calculation results
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState<any>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [savedProgress, setSavedProgress] = useState(false);
@@ -94,13 +94,13 @@ const CreditCalculator = () => {
   ];
 
   // Utility function to safely parse numbers
-  const safeParseFloat = (value, defaultValue = 0) => {
+  const safeParseFloat = (value: any, defaultValue = 0) => {
     const parsed = parseFloat(value);
     return isNaN(parsed) ? defaultValue : parsed;
   };
 
   // Utility function to safely parse percentages (0-100 range)
-  const safeParsePercent = (value, defaultValue = 0) => {
+  const safeParsePercent = (value: any, defaultValue = 0) => {
     const parsed = parseFloat(value);
     if (isNaN(parsed)) return defaultValue / 100;
     return Math.max(0, Math.min(100, parsed)) / 100;
@@ -161,7 +161,7 @@ const CreditCalculator = () => {
   );
 
   // Industry-Specific Examples Component - expanded
-  const IndustryExamples = ({ industry }) => {
+  const IndustryExamples = ({ industry }: { industry: string }) => {
     const examples = {
       ecommerce: [
         "Building custom GPTs for product descriptions",
@@ -380,7 +380,7 @@ const CreditCalculator = () => {
   };
   
   // Get tiered pricing based on credit amount
-  const getTieredPricing = (totalCredit) => {
+  const getTieredPricing = (totalCredit: any) => {
     const credit = safeParseFloat(totalCredit, 0);
     if (credit < 10000) return 500;
     if (credit < 50000) return 750;
@@ -390,8 +390,8 @@ const CreditCalculator = () => {
   
   // Get qualification reasons for display
   const getQualificationReasons = () => {
-    const reasons = [];
-    const labels = {
+    const reasons: string[] = [];
+    const labels: Record<string, string> = {
       aiTools: 'Using AI tools like ChatGPT or Claude',
       customGPTs: 'Built custom GPTs or chatbots',
       prompts: 'Developed prompt templates or libraries',
@@ -401,7 +401,7 @@ const CreditCalculator = () => {
     };
     
     Object.keys(qualificationChecks).forEach(key => {
-      if (qualificationChecks[key] && labels[key]) {
+      if ((qualificationChecks as any)[key] && labels[key]) {
         reasons.push(labels[key]);
       }
     });
@@ -871,104 +871,143 @@ const CreditCalculator = () => {
                   value={formData.grossReceipts}
                   onChange={(e) => updateFormData('grossReceipts', e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="1000000"
+                  placeholder="1,000,000"
                 />
               </div>
+              <p className="text-xs text-gray-500 mt-1">
+                💡 Businesses under $5M can get cash refunds through payroll tax offsets
+              </p>
             </div>
 
-            <UrgencyBanner />
-            <RiskMitigation />
+            <div className="flex justify-between items-center">
+              <SaveProgressButton />
+              <button
+                onClick={() => setCurrentStep(2)}
+                disabled={!formData.companyName || !formData.startupYear || !formData.grossReceipts}
+                className="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center"
+              >
+                Continue to Your AI Work
+                <ChevronRight className="ml-2 w-5 h-5" />
+              </button>
+            </div>
           </div>
         );
 
       case 2:
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-6">Your R&D Expenses</h2>
-            
-            <p className="text-sm text-gray-600 -mt-4 mb-6">
-              Enter your expenses below. We'll calculate the qualified portion based on how much time was spent on R&D activities.
+            <h2 className="text-2xl font-bold mb-6">Your AI & Technology Work</h2>
+            <p className="text-gray-600 mb-2">
+              Include all time and money spent on AI tools, custom GPTs, chatbots, automations, and process improvements
+            </p>
+            <p className="text-sm text-blue-700 font-medium mb-6 p-3 bg-blue-50 rounded-lg">
+              💡 If you've tinkered with AI or built a workflow that saves time — you're probably eligible.
             </p>
 
-            <div className="space-y-6">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <h4 className="font-medium text-green-900 mb-2">💡 What counts as R&D?</h4>
+              <ul className="text-sm text-green-800 space-y-1">
+                <li>✓ Building custom GPTs or chatbots for your business</li>
+                <li>✓ Developing and testing AI prompts that work for your needs</li>
+                <li>✓ Creating automations with Zapier, Make, or custom code</li>
+                <li>✓ Time spent experimenting with AI to improve processes</li>
+                <li>✓ Integrating AI tools into your workflows</li>
+              </ul>
+            </div>
+
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  W-2 Employee Wages & Benefits
-                  <InfoTooltip text="Total wages and benefits for W-2 employees. We'll apply the R&D percentage below." />
+                  <Users className="inline w-4 h-4 mr-1" />
+                  Total Employee Wages
+                  <InfoTooltip text="Total wages for employees who work on AI projects, automation, or tech improvements (we'll calculate the R&D portion next)" />
                 </label>
-                <div className="relative mb-3">
+                <div className="relative">
                   <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
                   <input
                     type="number"
                     value={formData.w2Wages}
                     onChange={(e) => updateFormData('w2Wages', e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="150000"
+                    placeholder="50,000"
                   />
                 </div>
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <label className="block text-sm font-medium text-blue-900 mb-2">
-                    % of time spent on R&D activities: {formData.w2Percentage}%
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={formData.w2Percentage}
-                    onChange={(e) => updateFormData('w2Percentage', e.target.value)}
-                    className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between text-xs text-blue-700 mt-1">
-                    <span>0%</span>
-                    <span>25%</span>
-                    <span>50%</span>
-                    <span>75%</span>
-                    <span>100%</span>
+                
+                {formData.w2Wages && (
+                  <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      What % of their time is spent on R&D activities?
+                      <span className="font-normal text-gray-500 ml-1">(Most businesses: 20-60%)</span>
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="5"
+                        value={formData.w2Percentage}
+                        onChange={(e) => updateFormData('w2Percentage', e.target.value)}
+                        className="flex-1"
+                      />
+                      <div className="w-16 text-center">
+                        <span className="text-sm font-medium">{formData.w2Percentage}%</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-2">
+                      = {formatCurrency(safeParseFloat(formData.w2Wages) * safeParsePercent(formData.w2Percentage, 30))} in qualified wages
+                    </p>
                   </div>
-                </div>
+                )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Contractor & Consultant Costs
-                  <InfoTooltip text="Payments to 1099 contractors and consultants. Only 65% of qualified contractor costs count per IRS rules." />
+                  <Package className="inline w-4 h-4 mr-1" />
+                  Total Contractor/Freelancer Costs
+                  <InfoTooltip text="Total paid to developers, AI consultants, automation experts, or anyone helping build your tech" />
                 </label>
-                <div className="relative mb-3">
+                <div className="relative">
                   <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
                   <input
                     type="number"
                     value={formData.contractorCosts}
                     onChange={(e) => updateFormData('contractorCosts', e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="50000"
+                    placeholder="20,000"
                   />
                 </div>
-                <div className="bg-green-50 p-3 rounded-lg">
-                  <label className="block text-sm font-medium text-green-900 mb-2">
-                    % of contractor work for R&D: {formData.contractorPercentage}%
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={formData.contractorPercentage}
-                    onChange={(e) => updateFormData('contractorPercentage', e.target.value)}
-                    className="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between text-xs text-green-700 mt-1">
-                    <span>0%</span>
-                    <span>25%</span>
-                    <span>50%</span>
-                    <span>75%</span>
-                    <span>100%</span>
+                
+                {formData.contractorCosts && (
+                  <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      What % of contractor work was R&D?
+                      <span className="font-normal text-gray-500 ml-1">(Typical: 40-80%)</span>
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="5"
+                        value={formData.contractorPercentage}
+                        onChange={(e) => updateFormData('contractorPercentage', e.target.value)}
+                        className="flex-1"
+                      />
+                      <div className="w-16 text-center">
+                        <span className="text-sm font-medium">{formData.contractorPercentage}%</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-2">
+                      = {formatCurrency(safeParseFloat(formData.contractorCosts) * safeParsePercent(formData.contractorPercentage, 50) * 0.65)} qualified (65% of allocated costs per IRS rules)
+                    </p>
                   </div>
-                </div>
+                )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cloud Computing & AWS Costs
-                  <InfoTooltip text="Cloud hosting, computing, and AI API costs (OpenAI, Claude, etc.) used for R&D activities." />
+                  Cloud & API Costs
+                  <InfoTooltip text="OpenAI API, AWS, Google Cloud, or any cloud services for your AI work" />
                 </label>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
@@ -977,15 +1016,15 @@ const CreditCalculator = () => {
                     value={formData.cloudCosts}
                     onChange={(e) => updateFormData('cloudCosts', e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="12000"
+                    placeholder="5,000"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Software Licenses & Tools
-                  <InfoTooltip text="Development tools, AI software subscriptions, and other software used in R&D work." />
+                  AI Tools & Software
+                  <InfoTooltip text="ChatGPT Plus, Claude Pro, Zapier, development tools, or any software for building" />
                 </label>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
@@ -994,15 +1033,15 @@ const CreditCalculator = () => {
                     value={formData.softwareLicenses}
                     onChange={(e) => updateFormData('softwareLicenses', e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="8000"
+                    placeholder="2,000"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Supplies & Materials
-                  <InfoTooltip text="Physical supplies, materials, and equipment used specifically for R&D activities." />
+                  Other Tech Supplies
+                  <InfoTooltip text="Hardware, testing tools, or any other supplies for your tech work" />
                 </label>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
@@ -1011,20 +1050,36 @@ const CreditCalculator = () => {
                     value={formData.supplies}
                     onChange={(e) => updateFormData('supplies', e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="5000"
+                    placeholder="3,000"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg mt-6">
-              <h4 className="font-medium text-gray-900 mb-2">Expense Tips:</h4>
-              <ul className="text-sm text-gray-700 space-y-1">
-                <li>• Include ChatGPT Plus, Claude Pro, and other AI subscriptions</li>
-                <li>• Development tools like GitHub, AWS, and hosting costs qualify</li>
-                <li>• Employee time spent on AI experimentation counts</li>
-                <li>• Contractor work on custom GPTs and automation qualifies</li>
-              </ul>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>💡 Pro tip:</strong> Include ALL experimentation time — testing prompts, trying different AI tools, and failed attempts all count as R&D!
+              </p>
+            </div>
+
+            <div className="flex gap-4 justify-between">
+              <button
+                onClick={() => setCurrentStep(1)}
+                className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 flex items-center"
+              >
+                <ChevronLeft className="mr-2 w-5 h-5" />
+                Back
+              </button>
+              <div className="flex gap-4">
+                <SaveProgressButton />
+                <button
+                  onClick={() => setCurrentStep(3)}
+                  className="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 flex items-center"
+                >
+                  Continue
+                  <ChevronRight className="ml-2 w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
         );
@@ -1032,43 +1087,31 @@ const CreditCalculator = () => {
       case 3:
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-6">Additional Credits & Benefits</h2>
-            
-            <p className="text-sm text-gray-600 -mt-4 mb-6">
-              Maximize your savings with state credits and other opportunities.
-            </p>
+            <h2 className="text-2xl font-bold mb-6">Boost your savings even more</h2>
 
-            <div className="space-y-6">
-              <div className="bg-white border border-gray-200 rounded-lg p-4">
-                <div className="flex items-start gap-3">
+            <div className="space-y-4">
+              <div className="border rounded-lg p-4">
+                <label className="flex items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    id="stateCredit"
                     checked={formData.stateCredit}
                     onChange={(e) => updateFormData('stateCredit', e.target.checked)}
-                    className="w-5 h-5 text-blue-600 rounded mt-0.5"
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                   />
-                  <div className="flex-1">
-                    <label htmlFor="stateCredit" className="font-medium text-gray-900 cursor-pointer">
-                      Claim state R&D tax credit
-                    </label>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Many states offer additional R&D credits on top of federal benefits.
-                    </p>
-                  </div>
-                </div>
+                  <span className="ml-3 font-medium">My state offers R&D tax credits</span>
+                </label>
                 
                 {formData.stateCredit && (
-                  <div className="mt-4 pl-8">
+                  <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Select your state
+                      Select Your State
                     </label>
                     <select
                       value={formData.selectedState}
                       onChange={(e) => updateFormData('selectedState', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     >
-                      <option value="">Choose your state</option>
+                      <option value="">Choose a state</option>
                       {statesWithCredit.map(state => (
                         <option key={state.code} value={state.code}>
                           {state.name} ({(state.rate * 100).toFixed(1)}% credit)
@@ -1079,29 +1122,21 @@ const CreditCalculator = () => {
                 )}
               </div>
 
-              <div className="bg-white border border-gray-200 rounded-lg p-4">
-                <div className="flex items-start gap-3">
+              <div className="border rounded-lg p-4">
+                <label className="flex items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    id="priorYearCredit"
                     checked={formData.priorYearCredit}
                     onChange={(e) => updateFormData('priorYearCredit', e.target.checked)}
-                    className="w-5 h-5 text-blue-600 rounded mt-0.5"
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                   />
-                  <div className="flex-1">
-                    <label htmlFor="priorYearCredit" className="font-medium text-gray-900 cursor-pointer">
-                      I have unused R&D credits from prior years
-                    </label>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Unused credits can be carried forward for up to 20 years.
-                    </p>
-                  </div>
-                </div>
+                  <span className="ml-3 font-medium">I've successfully claimed R&D credits before</span>
+                </label>
                 
                 {formData.priorYearCredit && (
-                  <div className="mt-4 pl-8">
+                  <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Estimated amount of unused credits
+                      Prior Year Credit Amount
                     </label>
                     <div className="relative">
                       <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
@@ -1110,7 +1145,7 @@ const CreditCalculator = () => {
                         value={formData.priorYearAmount}
                         onChange={(e) => updateFormData('priorYearAmount', e.target.value)}
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        placeholder="25000"
+                        placeholder="10,000"
                       />
                     </div>
                   </div>
@@ -1118,211 +1153,562 @@ const CreditCalculator = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg">
-              <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
-                <span className="text-lg">💡</span>
-                Pro Tips for Maximum Credits:
-              </h4>
-              <ul className="text-sm text-gray-700 space-y-1">
-                <li>• Document all AI experimentation and testing activities</li>
-                <li>• Keep records of failed experiments (they still qualify!)</li>
-                <li>• Track time spent on prompt engineering and optimization</li>
-                <li>• Consider amending prior years if you qualify retroactively</li>
-              </ul>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setCurrentStep(2)}
+                className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 flex items-center justify-center"
+              >
+                <ChevronLeft className="mr-2 w-5 h-5" />
+                Back
+              </button>
+              <button
+                onClick={() => {
+                  performCalculation();
+                  setCurrentStep(4);
+                }}
+                className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 flex items-center justify-center"
+              >
+                <Calculator className="mr-2 w-5 h-5" />
+                See My Savings
+              </button>
             </div>
           </div>
         );
 
       case 4:
-        // Perform calculation when reaching results step
-        if (!results) {
-          performCalculation();
-          return <div className="text-center py-8">Calculating your results...</div>;
-        }
-
-        if (!showFullResults && !emailSubmitted) {
-          return (
-            <div className="space-y-6">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold mb-4">Your R&D Tax Credit Estimate</h2>
-                <div className="text-4xl font-bold text-green-600 mb-2">
-                  {formatCurrency(results.totalBenefit)}
-                </div>
-                <p className="text-gray-600">Estimated total tax savings</p>
-              </div>
-
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6 text-center">
-                <div className="mb-4">
-                  <div className="w-16 h-16 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-4">
-                    <CheckCircle className="w-8 h-8 text-green-600" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">You Qualify!</h3>
-                  <p className="text-gray-600 mb-4">
-                    Based on your {getQualificationReasons().length} qualifying activities:
-                  </p>
-                  <ul className="text-sm text-gray-700 space-y-1 text-left max-w-md mx-auto">
-                    {getQualificationReasons().slice(0, 3).map((reason, index) => (
-                      <li key={index}>• {reason}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="bg-white rounded-lg p-4 mb-6">
-                  <h4 className="font-medium text-gray-900 mb-3">Get Your Complete Analysis</h4>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email for detailed breakdown"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-3"
-                  />
-                  <button
-                    onClick={() => {
-                      if (email) {
-                        setEmailSubmitted(true);
-                        setShowFullResults(true);
-                      }
-                    }}
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all"
-                  >
-                    Get My Complete Results
-                  </button>
-                  <p className="text-xs text-gray-500 mt-2">
-                    We'll never spam you. Unsubscribe anytime.
-                  </p>
-                </div>
-              </div>
-            </div>
-          );
-        }
+        if (!results) return null;
 
         return (
           <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold mb-4">Your Complete R&D Tax Credit Analysis</h2>
-              <div className="text-4xl font-bold text-green-600 mb-2">
-                {formatCurrency(results.totalBenefit)}
+            <h2 className="text-2xl font-bold mb-6">Your Tax Savings Opportunity</h2>
+            
+            <UrgencyBanner />
+
+            {/* Email Gate for Full Results */}
+            {!showFullResults ? (
+              <>
+                {/* Quick Summary - Show range ONLY if email not captured yet */}
+                <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white text-center">
+                  <h3 className="text-xl font-bold mb-2">Your Estimated Tax Benefit</h3>
+                  <p className="text-3xl font-bold">
+                    {formatCurrency(Math.floor(results.totalBenefit * 0.8))} - {formatCurrency(Math.ceil(results.totalBenefit * 1.2))}
+                  </p>
+                  <p className="text-sm opacity-90 mt-2">
+                    Based on businesses like yours claiming the R&D tax credit
+                  </p>
+                </div>
+
+                {/* Social Proof First */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                  <p className="text-gray-700 italic mb-2">
+                    "We thought R&D credits were just for big tech companies. Turns out our custom GPTs and automation work qualified for over $20,000!"
+                  </p>
+                  <p className="text-sm text-gray-600">— Sarah, Marketing Agency Owner</p>
+                </div>
+
+                {/* Email Capture Section */}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-100">
+                  <h3 className="text-lg font-semibold mb-2">Get your full breakdown + filing instructions</h3>
+                  <p className="text-gray-600 mb-4">
+                    We'll email your personalized report with exact calculations, documentation templates, and step-by-step claiming instructions.
+                  </p>
+                  {!emailSubmitted ? (
+                    <div className="space-y-4">
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="your@email.com"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <button
+                        onClick={() => {
+                          if (email && email.includes('@')) {
+                            console.log('Email captured:', email);
+                            console.log('Results data:', results.details);
+                            localStorage.setItem('rd_credit_email', email);
+                            localStorage.setItem('rd_credit_results', JSON.stringify(results));
+                            setEmailSubmitted(true);
+                            setTimeout(() => setShowFullResults(true), 1000);
+                          }
+                        }}
+                        disabled={!email || !email.includes('@')}
+                        className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                      >
+                        Send My Personalized Report
+                      </button>
+                      <p className="text-xs text-gray-500 text-center italic">
+                        Free instant access • No credit card required • Unsubscribe anytime
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-green-600 font-medium">✅ Success! Check your email at {email}</p>
+                      <p className="text-sm text-gray-600 mt-1">Your report is on its way (check spam if needed)</p>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Full Results - Shown After Email - OPTIMIZED ORDER */}
+                
+                {/* SECTION 1: VALUE - Show them the money first */}
+                <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white text-center">
+                  <h3 className="text-xl font-bold mb-2">Your Calculated Tax Benefit</h3>
+                  <p className="text-4xl font-bold">
+                    {formatCurrency(results.totalBenefit || 0)}
+                  </p>
+                  <p className="text-sm opacity-90 mt-2">
+                    Combined federal credits, state credits, and Section 174A deductions
+                  </p>
+                </div>
+
+                {/* SECTION 2: URGENCY - Limited-time opportunity */}
+                <div className="bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-300 rounded-lg p-5 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl flex-shrink-0">🔥</span>
+                    <div className="w-full">
+                      <h3 className="text-lg font-bold text-gray-900 mb-3">
+                        Limited-Time Opportunity: New Law Supercharges R&D Credits
+                      </h3>
+                      
+                      <div className="space-y-2 text-sm text-gray-800">
+                        <div className="flex items-start gap-2">
+                          <span className="text-orange-600 font-bold mt-0.5">▸</span>
+                          <p>
+                            <strong>Amend 2022–2024 returns</strong> through July 3, 2026 — claim credits you missed
+                          </p>
+                        </div>
+                        
+                        <div className="flex items-start gap-2">
+                          <span className="text-orange-600 font-bold mt-0.5">▸</span>
+                          <p>
+                            <strong>100% immediate expensing of R&D costs</strong> — retroactive to 2022 for qualifying businesses
+                          </p>
+                        </div>
+                        
+                        <div className="flex items-start gap-2">
+                          <span className="text-orange-600 font-bold mt-0.5">▸</span>
+                          <p>
+                            <strong>Expanded refundability</strong> for businesses under $31M in revenue — get cash back faster
+                          </p>
+                        </div>
+                        
+                        <div className="flex items-start gap-2">
+                          <span className="text-orange-600 font-bold mt-0.5">▸</span>
+                          <p>
+                            <strong>Permanent 100% bonus depreciation</strong> for eligible assets — maximize your deductions
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg">
+                        <p className="text-sm font-bold text-red-900 flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          Act Fast: You must file amended returns by July 3, 2026 to unlock this one-time benefit.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SECTION 3: PRIMARY CTA - Strike while the iron is hot */}
+                <div className="bg-gradient-to-b from-green-50 to-green-100 border-2 border-green-300 rounded-lg p-6">
+                  {/* Main Headline */}
+                  <div className="text-center mb-6">
+                    <p className="text-sm text-gray-600 mb-2">Your estimated tax benefit:</p>
+                    <p className="text-4xl font-bold text-green-700 mb-3">{formatCurrency(results.totalBenefit || 0)}</p>
+                    <h3 className="text-xl font-bold text-gray-800">
+                      Let's turn this into real money in your pocket
+                    </h3>
+                  </div>
+
+                  {/* What's Included - Clear List */}
+                  <div className="bg-white rounded-lg p-4 mb-6">
+                    <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                      <span className="text-lg">📦</span>
+                      Everything you need to claim your credit:
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <div>
+                          <span className="font-medium text-gray-800">IRS Form 6765</span>
+                          <p className="text-xs text-gray-600">All sections completed & calculated</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <div>
+                          <span className="font-medium text-gray-800">Technical Narrative</span>
+                          <p className="text-xs text-gray-600">IRS-compliant documentation</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <div>
+                          <span className="font-medium text-gray-800">Section 174A Deduction</span>
+                          <p className="text-xs text-gray-600">Immediate expensing calculations</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <div>
+                          <span className="font-medium text-gray-800">Compliance Memo</span>
+                          <p className="text-xs text-gray-600">"How this was prepared" documentation</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <div>
+                          <span className="font-medium text-gray-800">Recordkeeping Checklist</span>
+                          <p className="text-xs text-gray-600">What to save for audit protection</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <div>
+                          <span className="font-medium text-gray-800">Filing Instructions</span>
+                          <p className="text-xs text-gray-600">Step-by-step guide to file yourself or hand to your CPA</p>
+                        </div>
+                      </div>
+                      {formData.stateCredit && formData.selectedState && (
+                        <div className="flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <div>
+                            <span className="font-medium text-gray-800">State Forms</span>
+                            <p className="text-xs text-gray-600">{statesWithCredit.find(s => s.code === formData.selectedState)?.name} credit forms</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Pricing - Clear and Simple */}
+                  <div className="bg-white rounded-lg p-4 mb-6">
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-700">Your investment:</span>
+                        <span className="font-semibold">${getTieredPricing(results.totalCredit).toLocaleString()}</span>
+                      </div>
+                      {formData.stateCredit && formData.selectedState && (
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-gray-600">+ State paperwork</span>
+                          <span className="font-medium">$250</span>
+                        </div>
+                      )}
+                      <div className="border-t pt-2 flex justify-between items-center">
+                        <span className="font-bold text-lg">Total Due Today</span>
+                        <span className="font-bold text-2xl text-green-600">
+                          ${((getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? 250 : 0))).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* ROI Callout */}
+                    <div className="mt-3 p-3 bg-green-50 rounded text-center">
+                      <p className="text-sm text-green-800">
+                        <strong>That's a {Math.round((results.totalBenefit / (getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? 250 : 0))) * 100)}x return</strong> on your investment
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Main CTA Button */}
+                  <button
+                    onClick={() => {
+                      const basePrice = getTieredPricing(results.totalCredit);
+                      const stateAddon = (formData.stateCredit && formData.selectedState) ? 250 : 0;
+                      const totalPrice = basePrice + stateAddon;
+                      
+                      console.log('Proceeding to checkout with:', {
+                        email,
+                        results: results.details,
+                        totalBenefit: results.totalBenefit,
+                        basePrice,
+                        stateAddon,
+                        totalPrice,
+                        state: formData.selectedState
+                      });
+                      window.location.href = '/checkout';
+                    }}
+                    className="w-full bg-green-600 text-white py-4 px-8 rounded-lg font-bold text-lg hover:bg-green-700 transform hover:scale-105 transition-all shadow-lg"
+                  >
+                    Get My R&D Tax Credit Package →
+                  </button>
+                  
+                  {/* Trust Elements */}
+                  <div className="mt-4 space-y-2">
+                    <p className="text-sm text-center text-gray-700 font-medium">
+                      ⚡ Documents ready instantly after purchase
+                    </p>
+                    <p className="text-xs text-center text-gray-600">
+                      Join 2,847+ businesses who've successfully claimed their credits
+                    </p>
+                    <div className="flex justify-center items-center gap-4 text-xs text-gray-500">
+                      <span className="flex items-center gap-1">
+                        <Lock className="w-3 h-3" />
+                        Secure checkout
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Shield className="w-3 h-3" />
+                        100% IRS compliant
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" />
+                        No hidden fees
+                      </span>
+                    </div>
+                    
+                    {/* Service Disclaimer */}
+                    <div className="mt-3 pt-3 border-t border-green-200">
+                      <p className="text-xs text-center text-gray-600 italic">
+                        This is a document preparation service, not tax advice. We prepare IRS-compliant forms and documentation 
+                        for you to file yourself or provide to your tax professional.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SECTION 4: CREDIBILITY - Build trust with breakdown */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+                    <h3 className="text-sm font-medium text-green-600 mb-2">Total Tax Savings</h3>
+                    <p className="text-3xl font-bold text-green-700">{formatCurrency(results.totalBenefit || 0)}</p>
+                    <p className="text-xs text-green-600 mt-1">
+                      Combined credits + deductions
+                    </p>
+                    {results.federal.isStartupEligible && (
+                      <p className="text-xs text-green-700 font-medium mt-2 p-2 bg-green-100 rounded">
+                        💰 Up to {formatCurrency(results.federal.payrollTaxOffset)} can be a cash refund!
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+                    <h3 className="text-sm font-medium text-blue-600 mb-2">R&D Tax Credits</h3>
+                    <p className="text-2xl font-bold text-blue-700">{formatCurrency(results.totalCredit || 0)}</p>
+                    <div className="text-xs text-blue-600 mt-1 space-y-1">
+                      <div>Federal: {formatCurrency(results.federal.creditAmount || 0)}</div>
+                      {results.state > 0 && <div>State: {formatCurrency(results.state || 0)}</div>}
+                    </div>
+                    <p className="text-xs text-blue-500 mt-2">
+                      Direct reduction of taxes owed
+                    </p>
+                  </div>
+                  
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 text-center">
+                    <h3 className="text-sm font-medium text-purple-600 mb-2">
+                      Instant Write-Off
+                      <InfoTooltip text="This is a tax deduction that reduces your taxable income — saving you 21% in corporate taxes. It's not a refundable credit, but still real money saved!" />
+                    </h3>
+                    <p className="text-2xl font-bold text-purple-700">{formatCurrency(results.section174ABenefit || 0)}</p>
+                    <p className="text-xs text-purple-600 mt-1">Tax deduction value</p>
+                    <p className="text-xs text-purple-500 mt-1">
+                      (Reduces taxable income by {formatCurrency(results.qres.total || 0)})
+                    </p>
+                    {parseInt(formData.taxYear) < 2025 && !results.federal.isSmallBusinessTaxpayer && (
+                      <p className="text-xs text-purple-600 mt-1">Available 2025+ for all businesses</p>
+                    )}
+                    {parseInt(formData.taxYear) >= 2022 && parseInt(formData.taxYear) <= 2024 && results.federal.isSmallBusinessTaxpayer && (
+                      <p className="text-xs text-purple-600 mt-1 font-medium">Retroactive for small businesses!</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* SECTION 5: QUALIFICATION - Why they qualify */}
+                {getQualificationReasons().length > 0 && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 className="font-medium text-blue-900 mb-2">✅ Why You Likely Qualify</h4>
+                    <ul className="text-sm text-blue-800 space-y-1">
+                      {getQualificationReasons().map(reason => (
+                        <li key={reason}>• {reason}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* SECTION 6: SOCIAL PROOF - High value indicator */}
+                {results.totalBenefit > 50000 && (
+                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-lg p-4 flex items-start gap-3">
+                    <span className="text-2xl">🌟</span>
+                    <div>
+                      <p className="font-bold text-gray-900">You're above average!</p>
+                      <p className="text-sm text-gray-700">
+                        Most small businesses claim $20K–$40K. Your work really qualifies.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* SECTION 7: ADDITIONAL VALUE - Future opportunities */}
+                {(results.retroactiveBenefit > 0 || results.multiYearProjection > results.totalBenefit) && (
+                  <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white">
+                    <h3 className="text-xl font-bold mb-3">💰 Your Total Savings Opportunity</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="text-center">
+                        <p className="text-sm opacity-90 mb-1">This Year</p>
+                        <p className="text-2xl font-bold">{formatCurrency(results.totalBenefit || 0)}</p>
+                      </div>
+                      {results.retroactiveBenefit > 0 && (
+                        <div className="text-center">
+                          <p className="text-sm opacity-90 mb-1">Past Years Recovery</p>
+                          <p className="text-2xl font-bold">+{formatCurrency(results.retroactiveBenefit || 0)}</p>
+                        </div>
+                      )}
+                      <div className="text-center">
+                        <p className="text-sm opacity-90 mb-1">Next 3 Years</p>
+                        <p className="text-2xl font-bold">{formatCurrency(results.multiYearProjection || 0)}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <LookbackUpsell />
+
+                {/* SECTION 8: RISK MITIGATION - Address concerns */}
+                <RiskMitigation />
+
+                {/* SECTION 9: SUPPORTING INFO - Detailed breakdown (collapsed by default) */}
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <button
+                    onClick={() => setShowDetails(!showDetails)}
+                    className="flex items-center justify-between w-full text-left"
+                  >
+                    <h3 className="text-lg font-semibold">Detailed Breakdown</h3>
+                    <ChevronRight className={`w-5 h-5 transition-transform ${showDetails ? 'rotate-90' : ''}`} />
+                  </button>
+                  
+                  {showDetails && (
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <h4 className="font-medium mb-2">Your AI & Tech R&D Expenses</h4>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex justify-between">
+                            <span>Employee Time ({Math.round(results.qres.wagePercent * 100)}%)</span>
+                            <span>{formatCurrency(results.qres.wages)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Contractors ({Math.round(results.qres.contractorPercent * 100)}% × 65%)</span>
+                            <span>{formatCurrency(results.qres.contractors)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Cloud & APIs</span>
+                            <span>{formatCurrency(results.qres.cloud)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>AI Tools & Software</span>
+                            <span>{formatCurrency(results.qres.software)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Other Supplies</span>
+                            <span>{formatCurrency(results.qres.supplies)}</span>
+                          </div>
+                          <div className="flex justify-between font-semibold pt-2 border-t">
+                            <span>Total Qualified R&D</span>
+                            <span>{formatCurrency(results.qres.total)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* SECTION 10: SHARE OPTIONS - Secondary actions */}
+                <div className="flex justify-center gap-4">
+                  <button
+                    onClick={() => {
+                      const shareData = {
+                        company: formData.companyName,
+                        totalBenefit: results.totalBenefit,
+                        breakdown: results.details
+                      };
+                      navigator.clipboard.writeText(JSON.stringify(shareData, null, 2));
+                      alert('Report data copied! You can now share with your CPA.');
+                    }}
+                    className="text-sm text-blue-600 hover:text-blue-700 underline flex items-center gap-1"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share Report with Your CPA
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      const summary = `R&D Tax Credit Summary
+Company: ${formData.companyName}
+Tax Year: ${formData.taxYear}
+Total Tax Benefit: ${formatCurrency(results.totalBenefit)}
+- Federal Credit: ${formatCurrency(results.federal.creditAmount)}
+- State Credit: ${formatCurrency(results.state)}
+- Section 174A Deduction: ${formatCurrency(results.section174ABenefit)}
+Total Qualified R&D Expenses: ${formatCurrency(results.qres.total)}`;
+                      navigator.clipboard.writeText(summary);
+                      alert('Summary copied to clipboard!');
+                    }}
+                    className="text-sm text-gray-600 hover:text-gray-700 underline flex items-center gap-1"
+                  >
+                    <FileText className="w-3 h-3" />
+                    📋 Copy Summary
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* SECTION 11: DISCLAIMERS - Keep at bottom for compliance */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <div className="flex items-start">
+                <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 mr-2 flex-shrink-0" />
+                <div className="text-sm text-yellow-800">
+                  <p className="font-semibold mb-1">Important Disclaimers:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><strong>This is not tax advice</strong> — we prepare forms for you to file or provide to your tax professional</li>
+                    <li>These are estimates based on simplified calculations</li>
+                    <li>Building custom GPTs and prompt engineering qualify as R&D when properly documented</li>
+                    <li>Documentation is required to substantiate all activities</li>
+                    <li>Consider consulting a tax professional for complex situations</li>
+                  </ul>
+                </div>
               </div>
-              <p className="text-gray-600">Total estimated tax savings for {formData.taxYear}</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
-                <div className="text-2xl font-bold text-blue-600">
-                  {formatCurrency(results.federal.creditAmount)}
-                </div>
-                <div className="text-sm text-gray-600">Federal R&D Credit</div>
-              </div>
-              
-              {results.state > 0 && (
-                <div className="bg-white rounded-lg p-4 border border-gray-200">
-                  <div className="text-2xl font-bold text-purple-600">
-                    {formatCurrency(results.state)}
-                  </div>
-                  <div className="text-sm text-gray-600">State R&D Credit</div>
-                </div>
-              )}
-              
-              {results.section174ABenefit > 0 && (
-                <div className="bg-white rounded-lg p-4 border border-gray-200">
-                  <div className="text-2xl font-bold text-orange-600">
-                    {formatCurrency(results.section174ABenefit)}
-                  </div>
-                  <div className="text-sm text-gray-600">Section 174A Benefit</div>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-white rounded-lg p-6 border border-gray-200">
-              <h3 className="text-lg font-semibold mb-4">Qualified Research Expenses Breakdown</h3>
-              <div className="space-y-3">
-                {results.qres.wages > 0 && (
-                  <div className="flex justify-between">
-                    <span>W-2 Wages ({(results.qres.wagePercent * 100).toFixed(0)}% qualified)</span>
-                    <span className="font-medium">{formatCurrency(results.qres.wages)}</span>
-                  </div>
-                )}
-                {results.qres.contractors > 0 && (
-                  <div className="flex justify-between">
-                    <span>Contractor Costs (65% of {(results.qres.contractorPercent * 100).toFixed(0)}% qualified)</span>
-                    <span className="font-medium">{formatCurrency(results.qres.contractors)}</span>
-                  </div>
-                )}
-                {results.qres.cloud > 0 && (
-                  <div className="flex justify-between">
-                    <span>Cloud Computing Costs</span>
-                    <span className="font-medium">{formatCurrency(results.qres.cloud)}</span>
-                  </div>
-                )}
-                {results.qres.software > 0 && (
-                  <div className="flex justify-between">
-                    <span>Software Licenses</span>
-                    <span className="font-medium">{formatCurrency(results.qres.software)}</span>
-                  </div>
-                )}
-                {results.qres.supplies > 0 && (
-                  <div className="flex justify-between">
-                    <span>Supplies & Materials</span>
-                    <span className="font-medium">{formatCurrency(results.qres.supplies)}</span>
-                  </div>
-                )}
-                <div className="border-t pt-2 flex justify-between font-semibold">
-                  <span>Total Qualified Research Expenses</span>
-                  <span>{formatCurrency(results.qres.total)}</span>
-                </div>
-              </div>
-            </div>
-
-            <LookbackUpsell />
-
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-4">Next Steps</h3>
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
-                  <div>
-                    <div className="font-medium">Document Your Activities</div>
-                    <div className="text-sm text-gray-600">We'll provide templates to document your qualifying R&D work</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
-                  <div>
-                    <div className="font-medium">File Your Credit</div>
-                    <div className="text-sm text-gray-600">Complete Form 6765 with your tax return or amendment</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
-                  <div>
-                    <div className="font-medium">Get Your Refund</div>
-                    <div className="text-sm text-gray-600">Receive your credit as a refund or offset against future taxes</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="text-center">
-              <button
-                onClick={() => {
-                  const data = {
-                    company: formData.companyName,
-                    email: email,
-                    results: results,
-                    timestamp: new Date().toISOString()
-                  };
-                  console.log('Results data:', data);
-                  // Here you would typically send to your backend/CRM
-                }}
-                className="bg-gradient-to-r from-green-600 to-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:from-green-700 hover:to-blue-700 transition-all inline-flex items-center gap-2"
-              >
-                <Share2 className="w-4 h-4" />
-                Get Professional Help
-              </button>
-              <p className="text-sm text-gray-600 mt-2">
-                Connect with a tax professional to maximize your credits
-              </p>
-            </div>
+            <button
+              onClick={() => {
+                setCurrentStep(1);
+                setResults(null);
+                setEmail('');
+                setEmailSubmitted(false);
+                setShowFullResults(false);
+                setQualificationChecks({
+                  aiTools: false,
+                  customGPTs: false,
+                  prompts: false,
+                  automation: false,
+                  testing: false,
+                  improvement: false
+                });
+                setFormData({
+                  companyName: '',
+                  taxYear: '2024',
+                  startupYear: '',
+                  grossReceipts: '',
+                  industry: '',
+                  w2Wages: '',
+                  contractorCosts: '',
+                  cloudCosts: '',
+                  softwareLicenses: '',
+                  supplies: '',
+                  w2Percentage: '30',
+                  contractorPercentage: '50',
+                  stateCredit: false,
+                  selectedState: '',
+                  priorYearCredit: false,
+                  priorYearAmount: ''
+                });
+              }}
+              className="w-full text-center text-sm text-gray-500 hover:text-gray-700 underline mt-6"
+            >
+              Start over with a new calculation
+            </button>
           </div>
         );
 
@@ -1332,122 +1718,25 @@ const CreditCalculator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Trust Bar */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-4xl mx-auto px-4">
-          <TrustBar />
-        </div>
-      </div>
-
-      {/* Main Container */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        {/* Header Section */}
+    <div className="max-w-4xl mx-auto p-4 md:p-6">
+      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
         <BrandingHeader />
-        
-        {/* Value Props */}
+        <TrustBar />
         <ValueProps />
-
-        {/* Urgency Banner - Show on all steps */}
-        <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-lg mb-8 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Clock className="w-5 h-5" />
-            <span className="font-semibold">Limited Time: 2024 Tax Year</span>
-          </div>
-          <p className="text-sm opacity-90">
-            File by April 15th to claim credits for AI improvements made in 2024. Don't leave money on the table!
-          </p>
-        </div>
-
-        {/* Progress Indicator */}
-        <ProgressIndicator />
-
-        {/* Main Calculator Card */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="p-6 md:p-8">
-            {renderStep()}
-
-            {/* Navigation */}
-            <div className="flex justify-between items-center pt-6 border-t border-gray-100 mt-8">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-                  disabled={currentStep === 1}
-                  className="px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  Previous
-                </button>
-                <SaveProgressButton />
-              </div>
-              
-              {currentStep < 4 && (
-                <button
-                  onClick={() => setCurrentStep(Math.min(4, currentStep + 1))}
-                  className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 shadow-lg flex items-center gap-1"
-                >
-                  {currentStep === 3 ? 'Calculate My Credits' : 'Continue'}
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Testimonials Section - Show on step 1 */}
-        {currentStep === 1 && (
-          <div className="mt-12 bg-white rounded-xl p-8 shadow-sm">
-            <h3 className="text-xl font-bold text-center mb-8">Trusted by Small Businesses</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="mb-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-full mx-auto flex items-center justify-center">
-                    <span className="text-green-600 font-bold text-lg">$47K</span>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">"Claimed $47,000 for our AI chatbot development"</p>
-                <p className="text-xs text-gray-500">- Sarah, E-commerce Store</p>
-              </div>
-              <div className="text-center">
-                <div className="mb-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full mx-auto flex items-center justify-center">
-                    <span className="text-blue-600 font-bold text-lg">$23K</span>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">"Got $23,000 back for automating our workflows"</p>
-                <p className="text-xs text-gray-500">- Mike, Marketing Agency</p>
-              </div>
-              <div className="text-center">
-                <div className="mb-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full mx-auto flex items-center justify-center">
-                    <span className="text-purple-600 font-bold text-lg">$31K</span>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">"Claimed $31,000 for custom GPT development"</p>
-                <p className="text-xs text-gray-500">- Alex, SaaS Company</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Security Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <div className="flex items-center justify-center gap-4 mb-2">
-            <span className="flex items-center gap-1">
-              <Shield className="w-3 h-3" />
-              256-bit SSL
-            </span>
-            <span className="flex items-center gap-1">
-              <Lock className="w-3 h-3" />
-              No data sharing
-            </span>
-            <span className="flex items-center gap-1">
-              <CheckCircle className="w-3 h-3" />
-              SOC 2 Compliant
-            </span>
-          </div>
-          <p>Your information is secure and will never be shared with third parties.</p>
-        </div>
+        
+        {currentStep < 4 && <ProgressIndicator />}
+        {renderStep()}
+      </div>
+      
+      {/* Footer Links */}
+      <div className="text-center mt-6 text-xs text-gray-500">
+        <span className="font-medium">SMBTaxCredits.com</span>
+        <span className="mx-2">·</span>
+        <a href="#" className="hover:text-gray-700 transition-colors">Terms</a>
+        <span className="mx-2">·</span>
+        <a href="#" className="hover:text-gray-700 transition-colors">Privacy</a>
+        <span className="mx-2">·</span>
+        <a href="#" className="hover:text-gray-700 transition-colors">Contact</a>
       </div>
     </div>
   );

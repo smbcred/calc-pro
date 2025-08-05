@@ -49,6 +49,7 @@ const CreditCalculator = () => {
   const [email, setEmail] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [showFullResults, setShowFullResults] = useState(false);
+  const [showStateDetails, setShowStateDetails] = useState(false);
 
   // States that offer R&D tax credits
   // Supported states with detailed filing information
@@ -1399,67 +1400,99 @@ const CreditCalculator = () => {
               </button>
             </div>
 
-            {/* State Information Section - Below the buttons */}
-            <div className="mt-8 bg-gray-50 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">State R&D Credit Information</h3>
+            {/* State Information Section - Redesigned */}
+            <div className="mt-8">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">State R&D Credit Coverage</h3>
+                <p className="text-gray-600">See which states we support and how we can help</p>
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Supported States */}
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5" />
-                    States We Support (26)
-                  </h4>
-                  <div className="grid grid-cols-1 gap-1 text-sm">
-                    {statesWithCredit.map(state => (
-                      <div key={state.code} className="text-green-700">
-                        • {state.name} ({(state.rate * 100).toFixed(1)}%)
-                      </div>
-                    ))}
-                  </div>
+              {/* Visual Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white text-center">
+                  <div className="text-3xl font-bold mb-1">26</div>
+                  <div className="text-green-100 text-sm">States We Support</div>
+                  <div className="text-xs text-green-200 mt-1">Easy filing process</div>
                 </div>
+                
+                <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white text-center">
+                  <div className="text-3xl font-bold mb-1">7</div>
+                  <div className="text-orange-100 text-sm">Portal Required</div>
+                  <div className="text-xs text-orange-200 mt-1">Specialized assistance</div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl p-6 text-white text-center">
+                  <div className="text-3xl font-bold mb-1">6</div>
+                  <div className="text-gray-100 text-sm">No State Credits</div>
+                  <div className="text-xs text-gray-200 mt-1">Federal only</div>
+                </div>
+              </div>
 
-                {/* Complex Portal States */}
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-orange-800 mb-3 flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5" />
-                    Complex Portal States (7)
-                  </h4>
-                  <p className="text-sm text-orange-700 mb-3">
-                    These states require specialized portal filing:
-                  </p>
-                  <div className="grid grid-cols-1 gap-1 text-sm">
-                    {unsupportedStates.map(state => (
-                      <div key={state.code} className="text-orange-700">
-                        • {state.name}
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-xs text-gray-600 mt-3 italic">
-                    Contact us for assistance with these states.
-                  </p>
+              {/* Expandable Details */}
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                  <button
+                    onClick={() => setShowStateDetails(!showStateDetails)}
+                    className="w-full flex items-center justify-between text-left hover:text-blue-600 transition-colors"
+                  >
+                    <span className="font-semibold text-gray-900">View All State Details</span>
+                    <ChevronRight className={`w-5 h-5 transition-transform ${showStateDetails ? 'rotate-90' : ''}`} />
+                  </button>
                 </div>
+                
+                {showStateDetails && (
+                  <div className="p-6 space-y-6">
+                    {/* Supported States - Compact Grid */}
+                    <div>
+                      <h4 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4" />
+                        Supported States (26)
+                      </h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {statesWithCredit.map(state => (
+                          <div key={state.code} className="bg-green-50 rounded-lg p-2 text-center border border-green-200">
+                            <div className="font-medium text-green-800 text-sm">{state.name}</div>
+                            <div className="text-xs text-green-600">{(state.rate * 100).toFixed(1)}% credit</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-                {/* States Without Credits */}
-                <div className="bg-gray-100 border border-gray-300 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <Info className="w-5 h-5" />
-                    No R&D Credits (6)
-                  </h4>
-                  <p className="text-sm text-gray-600 mb-3">
-                    These states don't offer R&D credits:
-                  </p>
-                  <div className="grid grid-cols-1 gap-1 text-sm">
-                    {statesWithoutCredit.map(state => (
-                      <div key={state} className="text-gray-600">
-                        • {state}
+                    <div className="border-t border-gray-200 pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Complex Portal States */}
+                      <div>
+                        <h4 className="font-semibold text-orange-800 mb-3 flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4" />
+                          Portal Required States (7)
+                        </h4>
+                        <div className="space-y-2">
+                          {unsupportedStates.map(state => (
+                            <div key={state.code} className="bg-orange-50 rounded-lg p-3 border border-orange-200">
+                              <div className="font-medium text-orange-800">{state.name}</div>
+                              <div className="text-xs text-orange-600">Specialized assistance available</div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    ))}
+
+                      {/* States Without Credits */}
+                      <div>
+                        <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                          <Info className="w-4 h-4" />
+                          No State Credits (6)
+                        </h4>
+                        <div className="space-y-2">
+                          {statesWithoutCredit.map(state => (
+                            <div key={state} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                              <div className="font-medium text-gray-700">{state}</div>
+                              <div className="text-xs text-gray-500">Federal credits still available</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-3 italic">
-                    Federal credits still available.
-                  </p>
-                </div>
+                )}
               </div>
             </div>
           </div>

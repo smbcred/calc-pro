@@ -213,17 +213,34 @@ const CreditCalculator = () => {
         </div>
 
         {/* Urgency Banner */}
-        {isEndOfYear && (
-          <div className="max-w-5xl mx-auto bg-gradient-to-r from-orange-100 to-red-100 border border-orange-300 rounded-2xl p-6 mx-4">
-            <div className="flex items-center justify-center gap-3 text-orange-800">
-              <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
-                <Clock className="w-5 h-5 text-orange-700" />
+        <div className="max-w-5xl mx-auto bg-gradient-to-r from-orange-100 to-red-100 border border-orange-300 rounded-2xl p-6 mx-4">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <span className="text-2xl">🔥</span>
+              <span className="text-lg font-bold text-orange-800">Limited-Time Opportunity: New Law Supercharges R&D Credits</span>
+            </div>
+            <div className="space-y-2 text-sm text-orange-800">
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-orange-600 font-bold">▸</span>
+                <span><strong>Amend 2022–2024 returns</strong> through July 3, 2026 — claim credits you missed</span>
               </div>
-              <span className="text-lg font-bold">Tax Year Ending Soon!</span>
-              <span className="text-base">Maximize your 2024 deductions before Dec 31st</span>
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-orange-600 font-bold">▸</span>
+                <span><strong>100% immediate expensing of R&D costs</strong> — retroactive to 2022 for qualifying businesses</span>
+              </div>
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-orange-600 font-bold">▸</span>
+                <span><strong>Expanded refundability</strong> for businesses under $31M in revenue — get cash back faster</span>
+              </div>
+            </div>
+            <div className="mt-4 p-2 bg-red-100 border border-red-300 rounded-lg">
+              <p className="text-sm font-bold text-red-900 flex items-center justify-center gap-2">
+                <Clock className="w-4 h-4" />
+                Act Fast: You must file amended returns by July 3, 2026 to unlock this one-time benefit.
+              </p>
             </div>
           </div>
-        )}
+        </div>
       </div>
     );
   };
@@ -524,6 +541,15 @@ const CreditCalculator = () => {
     if (credit < 50000) return 750;
     if (credit < 100000) return 1000;
     return 1500;
+  };
+
+  // Get tiered state add-on pricing (50% to 30% based on tiers)
+  const getStateAddonPricing = (totalCredit: any) => {
+    const basePrice = getTieredPricing(totalCredit);
+    if (basePrice === 500) return Math.round(basePrice * 0.5); // 50% of lowest tier
+    if (basePrice === 750) return Math.round(basePrice * 0.45); // 45% scaling down
+    if (basePrice === 1000) return Math.round(basePrice * 0.35); // 35% scaling down  
+    return Math.round(basePrice * 0.3); // 30% of highest tier
   };
   
   // Get qualification reasons for display
@@ -1647,6 +1673,44 @@ const CreditCalculator = () => {
                     </h3>
                   </div>
 
+                  {/* State Credit Add-On Selection */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.stateCredit}
+                        onChange={(e) => updateFormData('stateCredit', e.target.checked)}
+                        className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                      />
+                      <div className="ml-3 flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-blue-900">Add State R&D Credit Filing</span>
+                          <span className="text-blue-700 font-bold">+${getStateAddonPricing(results.totalCredit)}</span>
+                        </div>
+                        <p className="text-sm text-blue-700 mt-1">
+                          Get additional state credits on top of your federal savings
+                        </p>
+                      </div>
+                    </label>
+                    
+                    {formData.stateCredit && (
+                      <div className="mt-4 pl-8">
+                        <select
+                          value={formData.selectedState}
+                          onChange={(e) => updateFormData('selectedState', e.target.value)}
+                          className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                          <option value="">Choose your state</option>
+                          {statesWithCredit.map(state => (
+                            <option key={state.code} value={state.code}>
+                              {state.name} - {(state.rate * 100).toFixed(1)}% credit
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+
                   {/* What's Included - Clear List */}
                   <div className="bg-white rounded-lg p-4 mb-6">
                     <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
@@ -1718,13 +1782,13 @@ const CreditCalculator = () => {
                       {formData.stateCredit && formData.selectedState && (
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-gray-600">+ State paperwork</span>
-                          <span className="font-medium">$250</span>
+                          <span className="font-medium">${getStateAddonPricing(results.totalCredit).toLocaleString()}</span>
                         </div>
                       )}
                       <div className="border-t pt-2 flex justify-between items-center">
                         <span className="font-bold text-lg">Total Due Today</span>
                         <span className="font-bold text-2xl text-green-600">
-                          ${((getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? 250 : 0))).toLocaleString()}
+                          ${((getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))).toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -1732,7 +1796,7 @@ const CreditCalculator = () => {
                     {/* ROI Callout */}
                     <div className="mt-3 p-3 bg-green-50 rounded text-center">
                       <p className="text-sm text-green-800">
-                        <strong>That's a {Math.round((results.totalBenefit / (getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? 250 : 0))) * 100)}x return</strong> on your investment
+                        <strong>That's a {Math.round(results.totalBenefit / (getTieredPricing(results.totalCredit) + ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0)))}x return</strong> on your investment
                       </p>
                     </div>
                   </div>
@@ -1741,7 +1805,7 @@ const CreditCalculator = () => {
                   <button
                     onClick={() => {
                       const basePrice = getTieredPricing(results.totalCredit);
-                      const stateAddon = (formData.stateCredit && formData.selectedState) ? 250 : 0;
+                      const stateAddon = (formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0;
                       const totalPrice = basePrice + stateAddon;
                       
                       console.log('Proceeding to checkout with:', {
@@ -1869,21 +1933,18 @@ const CreditCalculator = () => {
                 {/* SECTION 7: ADDITIONAL VALUE - Future opportunities */}
                 {(results.retroactiveBenefit > 0 || results.multiYearProjection > results.totalBenefit) && (
                   <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white">
-                    <h3 className="text-xl font-bold mb-3">💰 Your Total Savings Opportunity</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                      <span className="text-2xl">💰</span>
+                      <h3 className="text-xl font-bold">Your Total Savings Opportunity</h3>
+                    </div>
+                    <div className="grid grid-cols-2 gap-6">
                       <div className="text-center">
-                        <p className="text-sm opacity-90 mb-1">This Year</p>
-                        <p className="text-2xl font-bold">{formatCurrency(results.totalBenefit || 0)}</p>
+                        <p className="text-white/80 mb-2 font-medium">This Year</p>
+                        <p className="text-3xl font-bold">{formatCurrency(results.totalBenefit || 0)}</p>
                       </div>
-                      {results.retroactiveBenefit > 0 && (
-                        <div className="text-center">
-                          <p className="text-sm opacity-90 mb-1">Past Years Recovery</p>
-                          <p className="text-2xl font-bold">+{formatCurrency(results.retroactiveBenefit || 0)}</p>
-                        </div>
-                      )}
                       <div className="text-center">
-                        <p className="text-sm opacity-90 mb-1">Next 3 Years</p>
-                        <p className="text-2xl font-bold">{formatCurrency(results.multiYearProjection || 0)}</p>
+                        <p className="text-white/80 mb-2 font-medium">Next 3 Years</p>
+                        <p className="text-3xl font-bold">{formatCurrency(results.multiYearProjection || 0)}</p>
                       </div>
                     </div>
                   </div>

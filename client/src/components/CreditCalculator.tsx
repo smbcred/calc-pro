@@ -1348,17 +1348,6 @@ const CreditCalculator = () => {
               </ul>
             </div>
 
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-              <h4 className="font-medium text-green-900 mb-2">💡 What counts as R&D?</h4>
-              <ul className="text-sm text-green-800 space-y-1">
-                <li>✓ Building custom GPTs or chatbots for your business</li>
-                <li>✓ Developing and testing AI prompts that work for your needs</li>
-                <li>✓ Creating automations with Zapier, Make, or custom code</li>
-                <li>✓ Time spent experimenting with AI to improve processes</li>
-                <li>✓ Integrating AI tools into your workflows</li>
-              </ul>
-            </div>
-
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1865,78 +1854,79 @@ const CreditCalculator = () => {
               </>
             ) : (
               <>
-                {/* HERO VALUE SECTION - Lead with the money */}
-                <div className="bg-gradient-to-br from-green-600 via-green-500 to-blue-600 rounded-2xl p-8 text-white text-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
-                  <div className="relative z-10">
-                    <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 mb-4">
+                {/* HERO VALUE SECTION - Enhanced readability with distinct sections */}
+                <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-xl">
+                  {/* Header Section */}
+                  <div className="text-center mb-6">
+                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-full px-4 py-2 mb-4">
                       <span className="text-sm font-semibold">✨ Your Personalized Results</span>
                     </div>
-                    {/* Multi-Year Headline */}
-                    <h2 className="text-3xl md:text-4xl font-bold mb-3">
-                      {formData.selectedYears.length > 1 
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                      {formData.selectedYears && formData.selectedYears.length > 1 
                         ? `${formData.selectedYears.length}-Year Total: ${formatCurrency(results.totalBenefit || 0)}`
                         : `You Could Save ${formatCurrency(results.totalBenefit || 0)}`
                       }
                     </h2>
 
                     {/* Multi-Year Savings Badge */}
-                    {formData.selectedYears.length > 1 && results.multiYearDiscount > 0 && (
-                      <div className="inline-flex items-center gap-2 bg-green-400/20 rounded-full px-4 py-2 mb-4">
+                    {formData.selectedYears && formData.selectedYears.length > 1 && results.multiYearDiscount > 0 && (
+                      <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 rounded-full px-4 py-2 mb-4">
                         <span className="text-sm font-bold">
                           🎉 You saved {Math.round(results.multiYearDiscount * 100)}% with multi-year filing!
                         </span>
                       </div>
                     )}
+                  </div>
 
-                    {/* Enhanced Value Breakdown */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-white/10 rounded-xl p-4 mb-6">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold">{formatCurrency(results.federal.creditAmount || 0)}</div>
-                        <div className="text-sm text-white/80">Federal Credit</div>
-                        {formData.selectedYears.length > 1 && (
-                          <div className="text-xs text-white/60">{formData.selectedYears.length} years</div>
-                        )}
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold">{formatCurrency(results.section174ABenefit || 0)}</div>
-                        <div className="text-sm text-white/80">Section 174A</div>
-                        {formData.selectedYears.length > 1 && (
-                          <div className="text-xs text-white/60">Tax deduction</div>
-                        )}
-                      </div>
-                      <div className="text-center md:col-span-1 col-span-2">
-                        <div className="text-2xl font-bold">{formatCurrency(results.state || 0)}</div>
-                        <div className="text-sm text-white/80">State Credit</div>
-                        {formData.stateCredit && (
-                          <div className="text-xs text-white/60">Current year only</div>
-                        )}
-                      </div>
+                  {/* Enhanced Value Breakdown with Distinct Colors */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 text-center">
+                      <div className="text-3xl font-bold mb-2">{formatCurrency(results.federal.creditAmount || 0)}</div>
+                      <div className="text-blue-100 font-medium">Federal Credit</div>
+                      {formData.selectedYears && formData.selectedYears.length > 1 && (
+                        <div className="text-xs text-blue-200 mt-1">{formData.selectedYears.length} years</div>
+                      )}
                     </div>
+                    
+                    <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 text-center">
+                      <div className="text-3xl font-bold mb-2">{formatCurrency(results.section174ABenefit || 0)}</div>
+                      <div className="text-green-100 font-medium">Section 174A</div>
+                      {formData.selectedYears && formData.selectedYears.length > 1 && (
+                        <div className="text-xs text-green-200 mt-1">Tax deduction</div>
+                      )}
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-6 text-center">
+                      <div className="text-3xl font-bold mb-2">{formatCurrency(results.state || 0)}</div>
+                      <div className="text-purple-100 font-medium">State Credit</div>
+                      {formData.stateCredit && (
+                        <div className="text-xs text-purple-200 mt-1">Current year only</div>
+                      )}
+                    </div>
+                  </div>
 
-                    {/* Multi-Year Summary */}
-                    {formData.selectedYears.length > 1 && (
-                      <div className="bg-white/10 rounded-xl p-4 mb-6">
-                        <h3 className="text-lg font-bold mb-3">Filing Summary</h3>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="text-white/80">Years Selected:</span>
-                            <div className="font-medium">{formData.selectedYears.join(', ')}</div>
-                          </div>
-                          <div>
-                            <span className="text-white/80">Per Year Average:</span>
-                            <div className="font-medium">{formatCurrency((results.totalBenefit || 0) / formData.selectedYears.length)}</div>
-                          </div>
+                  {/* Multi-Year Summary */}
+                  {formData.selectedYears && formData.selectedYears.length > 1 && (
+                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-6">
+                      <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">Filing Summary</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="text-center">
+                          <div className="text-gray-600 text-sm mb-1">Years Selected</div>
+                          <div className="text-xl font-bold text-gray-900">{formData.selectedYears ? formData.selectedYears.join(', ') : '2024'}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-gray-600 text-sm mb-1">Per Year Average</div>
+                          <div className="text-xl font-bold text-gray-900">{formatCurrency((results.totalBenefit || 0) / (formData.selectedYears?.length || 1))}</div>
                         </div>
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {/* Urgency - Condensed */}
-                    <div className="bg-red-500/20 border border-red-300/30 rounded-lg p-3 mb-6">
-                      <div className="flex items-center justify-center gap-2 text-sm font-semibold">
-                        <Clock className="w-4 h-4" />
-                        <span>Limited Time: File amended returns by July 2026 for max benefit</span>
-                      </div>
+                  {/* Urgency Banner */}
+                  <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg p-4 mb-6">
+                    <div className="flex items-center justify-center gap-2 text-sm font-semibold">
+                      <Clock className="w-5 h-5" />
+                      <span>Limited Time: File amended returns by July 2026 for maximum benefit</span>
                     </div>
                   </div>
                 </div>
@@ -2079,7 +2069,7 @@ const CreditCalculator = () => {
                     </div>
 
                     {/* Multi-Year Upsell Section - Only show if single year selected */}
-                    {formData.selectedYears.length === 1 && (
+                    {formData.selectedYears && formData.selectedYears.length === 1 && (
                       <div className="border-2 border-orange-200 bg-orange-50 rounded-xl p-6 mb-6">
                         <div className="text-center mb-4">
                           <h3 className="text-xl font-bold text-orange-800 mb-2">🚀 Maximize Your Savings!</h3>

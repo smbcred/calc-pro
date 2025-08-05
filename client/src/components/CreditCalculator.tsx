@@ -543,13 +543,13 @@ const CreditCalculator = () => {
     return 1500;
   };
 
-  // Get tiered state add-on pricing (50% to 30% based on tiers)
+  // Get tiered state add-on pricing with exact pricing structure
   const getStateAddonPricing = (totalCredit: any) => {
     const basePrice = getTieredPricing(totalCredit);
-    if (basePrice === 500) return Math.round(basePrice * 0.5); // 50% of lowest tier
-    if (basePrice === 750) return Math.round(basePrice * 0.45); // 45% scaling down
-    if (basePrice === 1000) return Math.round(basePrice * 0.35); // 35% scaling down  
-    return Math.round(basePrice * 0.3); // 30% of highest tier
+    if (basePrice === 500) return 250;  // 50%
+    if (basePrice === 750) return 325;  // ~43%
+    if (basePrice === 1000) return 375; // ~37%
+    return 450; // 30% for $1500 tier
   };
   
   // Get qualification reasons for display

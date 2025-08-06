@@ -143,112 +143,29 @@ const CreditCalculator = () => {
 
   // Enhanced Trust Bar Component with Social Proof
   const TrustBar = () => (
-    <div style={{
-      backgroundColor: '#F9FAFB',
-      border: '1px solid #E5E7EB',
-      borderRadius: '8px',
-      padding: '24px',
-      marginBottom: '32px',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-    }}>
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: '32px'
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          color: '#22C55E',
-          fontWeight: 500,
-          fontSize: '14px'
-        }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            backgroundColor: '#F0FDF4',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <Shield size={20} style={{ color: '#22C55E' }} />
+    <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-green-100 rounded-xl py-4 px-6 mb-8">
+      <div className="flex flex-wrap justify-center items-center gap-6 text-sm">
+        <div className="flex items-center gap-2 text-green-700 font-medium">
+          <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+            <Shield className="w-3 h-3 text-green-600" />
           </div>
           <span>IRS Compliant Forms</span>
         </div>
-        
-        <div style={{ width: '1px', height: '32px', backgroundColor: '#E5E7EB' }} />
-        
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          color: '#5046E5',
-          fontWeight: 500,
-          fontSize: '14px'
-        }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            backgroundColor: '#EFF6FF',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <Lock size={20} style={{ color: '#5046E5' }} />
+        <div className="flex items-center gap-2 text-blue-700 font-medium">
+          <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+            <Lock className="w-3 h-3 text-blue-600" />
           </div>
           <span>Secure & Private</span>
         </div>
-        
-        <div style={{ width: '1px', height: '32px', backgroundColor: '#E5E7EB' }} />
-        
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          color: '#5046E5',
-          fontWeight: 600,
-          fontSize: '16px'
-        }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            backgroundColor: '#EFF6FF',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: '2px solid #5046E5'
-          }}>
-            <CheckCircle size={24} style={{ color: '#5046E5' }} />
+        <div className="flex items-center gap-2 text-purple-700 font-medium">
+          <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
+            <CheckCircle className="w-3 h-3 text-purple-600" />
           </div>
-          <span style={{ fontWeight: 700 }}>2,847+ Successfully Filed</span>
+          <span>2,847+ Successfully Filed</span>
         </div>
-        
-        <div style={{ width: '1px', height: '32px', backgroundColor: '#E5E7EB' }} />
-        
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          color: '#22C55E',
-          fontWeight: 500,
-          fontSize: '14px'
-        }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            backgroundColor: '#F0FDF4',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <TrendingUp size={20} style={{ color: '#22C55E' }} />
+        <div className="flex items-center gap-2 text-orange-700 font-medium">
+          <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+            <TrendingUp className="w-3 h-3 text-orange-600" />
           </div>
           <span>$127M+ Claimed</span>
         </div>
@@ -262,51 +179,39 @@ const CreditCalculator = () => {
     const isEndOfYear = currentMonth >= 10; // Nov/Dec
     
     return (
-      <div style={{ marginBottom: '48px' }}>
-        {/* Enhanced Value Props with Professional Card Design */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-8">
-            <div className="bg-white border border-gray-200 rounded-lg p-6 lg:p-8 text-center shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 group">
-              <div className="w-16 h-16 bg-green-50 rounded-lg flex items-center justify-center mx-auto mb-6 group-hover:bg-green-100 transition-colors">
-                <span className="text-3xl font-bold text-green-600">$</span>
+      <div className="mb-12">
+        {/* Primary Value Props with Perfect Centering */}
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 px-4">
+            <div className="bg-gradient-to-br from-green-50 via-white to-green-100 border border-green-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <span className="text-3xl font-bold text-white">$</span>
               </div>
-              <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3">
-                Average $25K+ Saved
-              </h3>
-              <p className="text-gray-600 font-medium mb-4">
-                Perfect for small businesses
-              </p>
-              <div className="inline-block bg-green-50 text-green-700 text-sm font-medium px-4 py-2 rounded-full border border-green-200">
+              <h3 className="text-2xl font-bold text-green-800 mb-3">Average $25K+ Saved</h3>
+              <p className="text-base text-green-700 font-medium">Perfect for small businesses</p>
+              <div className="mt-3 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full inline-block">
                 Real cash back to your business
               </div>
             </div>
             
-            <div className="bg-white border border-gray-200 rounded-lg p-6 lg:p-8 text-center shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 group">
-              <div className="w-16 h-16 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-100 transition-colors">
-                <Clock size={32} className="text-blue-600" />
+            <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 border border-blue-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <Clock className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3">
-                Ready in 10 Minutes
-              </h3>
-              <p className="text-gray-600 font-medium mb-4">
-                No tax expertise required
-              </p>
-              <div className="inline-block bg-blue-50 text-blue-700 text-sm font-medium px-4 py-2 rounded-full border border-blue-200">
+              <h3 className="text-2xl font-bold text-blue-800 mb-3">Ready in 10 Minutes</h3>
+              <p className="text-base text-blue-700 font-medium">No tax expertise required</p>
+              <div className="mt-3 text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block">
                 Simple step-by-step process
               </div>
             </div>
             
-            <div className="bg-white border border-gray-200 rounded-lg p-6 lg:p-8 text-center shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 group">
-              <div className="w-16 h-16 bg-cyan-50 rounded-lg flex items-center justify-center mx-auto mb-6 group-hover:bg-cyan-100 transition-colors">
-                <Zap size={32} className="text-cyan-600" />
+            <div className="bg-gradient-to-br from-purple-50 via-white to-purple-100 border border-purple-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <Zap className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3">
-                Built for AI Users
-              </h3>
-              <p className="text-gray-600 font-medium mb-4">
-                ChatGPT, automations, & more
-              </p>
-              <div className="inline-block bg-cyan-50 text-cyan-700 text-sm font-medium px-4 py-2 rounded-full border border-cyan-200">
+              <h3 className="text-2xl font-bold text-purple-800 mb-3">Built for AI Users</h3>
+              <p className="text-base text-purple-700 font-medium">ChatGPT, automations, & more</p>
+              <div className="mt-3 text-sm text-purple-600 bg-purple-50 px-3 py-1 rounded-full inline-block">
                 93% of AI users qualify
               </div>
             </div>
@@ -350,103 +255,33 @@ const CreditCalculator = () => {
 
   // Enhanced Branding Header with Perfect Centering and Spacing
   const BrandingHeader = () => (
-    <div style={{ textAlign: 'center', marginBottom: '48px' }} className="container-premium">
-      <div style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '8px',
-        fontSize: '14px',
-        color: '#5046E5',
-        fontWeight: 500,
-        marginBottom: '24px',
-        backgroundColor: 'white',
-        padding: '8px 16px',
-        borderRadius: '8px',
-        border: '1px solid #E5E7EB'
-      }}>
-        <Building size={16} />
+    <div className="text-center mb-12 max-w-4xl mx-auto">
+      <div className="inline-flex items-center gap-3 text-sm text-blue-600 font-semibold mb-6 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
+        <Building className="w-4 h-4" />
         <span>SMBTaxCredits.com</span>
       </div>
       
-      <h1 className="text-hero" style={{ 
-        marginBottom: '24px',
-        background: 'linear-gradient(135deg, #5046E5 0%, #22C55E 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        backgroundClip: 'text'
-      }}>
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent leading-tight">
         Turn Your AI Tools Into Cash Refunds
       </h1>
       
-      <p className="text-body" style={{ 
-        fontSize: '20px',
-        marginBottom: '32px',
-        maxWidth: '800px',
-        margin: '0 auto 32px auto',
-        lineHeight: 1.4
-      }}>
-        Claim up to <span style={{ 
-          fontWeight: 700, 
-          color: '#22C55E',
-          backgroundColor: '#F0FDF4',
-          padding: '4px 8px',
-          borderRadius: '8px'
-        }}>$500,000</span> in R&D tax credits for using ChatGPT, 
+      <p className="text-gray-700 text-xl md:text-2xl mb-8 max-w-3xl mx-auto font-medium leading-relaxed">
+        Claim up to <span className="font-bold text-green-600 bg-green-50 px-2 py-1 rounded">$500,000</span> in R&D tax credits for using ChatGPT, 
         automation tools, and AI in your business
       </p>
       
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        gap: '16px',
-        maxWidth: '600px',
-        margin: '0 auto'
-      }}>
-        <span style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          backgroundColor: 'white',
-          padding: '8px 16px',
-          borderRadius: '8px',
-          fontSize: '14px',
-          fontWeight: 500,
-          color: '#64748B',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <CheckCircle size={16} style={{ color: '#22C55E' }} />
-          <span>No tax knowledge required</span>
+      <div className="flex flex-wrap justify-center gap-6 text-base text-gray-600 max-w-2xl mx-auto">
+        <span className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full">
+          <CheckCircle className="w-5 h-5 text-green-500" />
+          <span className="font-medium">No tax knowledge required</span>
         </span>
-        <span style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          backgroundColor: 'white',
-          padding: '8px 16px',
-          borderRadius: '8px',
-          fontSize: '14px',
-          fontWeight: 500,
-          color: '#64748B',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <CheckCircle size={16} style={{ color: '#22C55E' }} />
-          <span>IRS-compliant documentation</span>
+        <span className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full">
+          <CheckCircle className="w-5 h-5 text-green-500" />
+          <span className="font-medium">IRS-compliant documentation</span>
         </span>
-        <span style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          backgroundColor: 'white',
-          padding: '8px 16px',
-          borderRadius: '8px',
-          fontSize: '14px',
-          fontWeight: 500,
-          color: '#64748B',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <CheckCircle size={16} style={{ color: '#22C55E' }} />
-          <span>Instant results</span>
+        <span className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full">
+          <CheckCircle className="w-5 h-5 text-green-500" />
+          <span className="font-medium">Instant results</span>
         </span>
       </div>
     </div>
@@ -1290,7 +1125,7 @@ const CreditCalculator = () => {
     </div>
   );
 
-  // Premium Progress Indicator
+  // World-Class Progress Indicator
   const ProgressIndicator = () => {
     const steps = [
       { 
@@ -1320,33 +1155,20 @@ const CreditCalculator = () => {
     ];
 
     return (
-      <div style={{ marginBottom: '48px', maxWidth: '800px', margin: '0 auto 48px auto' }}>
-        <div style={{ position: 'relative' }}>
+      <div className="mb-12 max-w-5xl mx-auto">
+        {/* Professional Progress Bar */}
+        <div className="relative">
           {/* Background Progress Line */}
-          <div style={{
-            position: 'absolute',
-            top: '48px',
-            left: '64px',
-            right: '64px',
-            height: '2px',
-            backgroundColor: '#E5E7EB',
-            borderRadius: '1px'
-          }}></div>
+          <div className="absolute top-12 left-0 right-0 h-0.5 bg-gradient-to-r from-gray-200 via-gray-200 to-gray-200 mx-8 md:mx-16"></div>
           
           {/* Active Progress Line */}
-          <div style={{
-            position: 'absolute',
-            top: '48px',
-            left: '64px',
-            height: '2px',
-            background: 'linear-gradient(135deg, #5046E5 0%, #22C55E 100%)',
-            borderRadius: '1px',
-            width: `calc(${((currentStep - 1) / 3) * 100}% - 128px)`,
-            transition: 'all 0.3s ease'
-          }} />
+          <div 
+            className="absolute top-12 left-0 h-0.5 gradient-primary mx-8 md:mx-16 transition-all duration-700 ease-out"
+            style={{width: `calc(${((currentStep - 1) / 3) * 100}% - 2rem)`}}
+          />
           
           {/* Step Indicators */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+          <div className="grid grid-cols-4 gap-4">
             {steps.map((stepInfo, index) => {
               const step = index + 1;
               const isActive = currentStep === step;
@@ -1354,85 +1176,43 @@ const CreditCalculator = () => {
               const IconComponent = stepInfo.icon;
               
               return (
-                <div key={step} style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  alignItems: 'center',
-                  position: 'relative'
-                }}>
+                <div key={step} className="flex flex-col items-center relative">
                   {/* Step Circle */}
-                  <div style={{
-                    position: 'relative',
-                    width: '96px',
-                    height: '96px',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: isCompleted 
-                      ? 'none' 
+                  <div className={`
+                    relative w-24 h-24 rounded-2xl flex items-center justify-center border-2 transition-all duration-500 shadow-lg
+                    ${isCompleted 
+                      ? 'gradient-primary border-transparent text-white transform scale-105' 
                       : isActive 
-                        ? '2px solid #5046E5' 
-                        : '1px solid #E5E7EB',
-                    backgroundColor: isCompleted 
-                      ? '#22C55E' 
-                      : isActive 
-                        ? 'white' 
-                        : 'white',
-                    color: isCompleted 
-                      ? 'white' 
-                      : isActive 
-                        ? '#5046E5' 
-                        : '#64748B',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                    transition: 'all 0.2s ease'
-                  }}>
+                        ? 'bg-white border-blue-500 text-blue-600 transform scale-110 shadow-xl' 
+                        : 'bg-white border-gray-200 text-gray-400'}
+                  `}>
                     {isCompleted ? (
-                      <CheckCircle size={32} />
+                      <CheckCircle className="w-8 h-8" />
                     ) : (
-                      <IconComponent size={32} />
+                      <IconComponent className="w-8 h-8" />
+                    )}
+                    
+                    {/* Active Pulse Effect */}
+                    {isActive && (
+                      <div className="absolute inset-0 rounded-2xl border-2 border-blue-500 animate-pulse"></div>
                     )}
                   </div>
                   
                   {/* Step Content */}
-                  <div style={{ 
-                    textAlign: 'center', 
-                    marginTop: '16px',
-                    maxWidth: '120px'
-                  }}>
-                    <h4 style={{
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      marginBottom: '4px',
-                      color: isActive ? '#5046E5' : isCompleted ? '#22C55E' : '#64748B'
-                    }}>
+                  <div className="text-center mt-4 max-w-[120px]">
+                    <h4 className={`font-semibold text-sm mb-1 ${
+                      isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-600'
+                    }`}>
                       {stepInfo.label}
                     </h4>
-                    <p style={{
-                      fontSize: '12px',
-                      color: '#64748B',
-                      marginBottom: '8px',
-                      lineHeight: 1.3
-                    }}>
+                    <p className="text-xs text-gray-500 mb-2">
                       {stepInfo.description}
                     </p>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '4px 8px',
-                      borderRadius: '8px',
-                      fontSize: '12px',
-                      fontWeight: 500,
-                      backgroundColor: isActive 
-                        ? '#EFF6FF' 
-                        : isCompleted 
-                          ? '#F0FDF4' 
-                          : '#F8FAFC',
-                      color: isActive 
-                        ? '#5046E5' 
-                        : isCompleted 
-                          ? '#22C55E' 
-                          : '#64748B'
-                    }}>
+                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                      isActive ? 'bg-blue-100 text-blue-700' : 
+                      isCompleted ? 'bg-green-100 text-green-700' : 
+                      'bg-gray-100 text-gray-500'
+                    }`}>
                       {isCompleted ? 'Complete' : stepInfo.estimated}
                     </span>
                   </div>
@@ -1442,49 +1222,28 @@ const CreditCalculator = () => {
           </div>
         </div>
         
-        {/* Enhanced Progress Summary with Better Mobile Layout */}
-        <div style={{ marginTop: '32px', textAlign: 'center' }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '24px',
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            padding: '16px 24px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            border: '1px solid #E5E7EB',
-            flexWrap: 'wrap',
-            justifyContent: 'center'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{
-                width: '8px',
-                height: '8px',
-                backgroundColor: '#5046E5',
-                borderRadius: '50%',
-                animation: 'pulse 2s infinite'
-              }} />
-              <span style={{
-                fontSize: '16px',
-                fontWeight: 600,
-                color: '#0F172A'
-              }}>
+        {/* Progress Summary */}
+        <div className="mt-8 text-center">
+          <div className="inline-flex items-center gap-3 bg-white rounded-2xl px-6 py-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-gray-700">
                 Step {currentStep} of 4
               </span>
             </div>
-            <div style={{ width: '1px', height: '16px', backgroundColor: '#E5E7EB' }} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Clock size={16} style={{ color: '#64748B' }} />
-              <span style={{ fontSize: '14px', color: '#64748B' }}>
+            <div className="w-px h-4 bg-gray-200"></div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-gray-400" />
+              <span className="text-sm text-gray-600">
                 ~{4 - currentStep + 1} min remaining
               </span>
             </div>
             {savedProgress && (
               <>
-                <div style={{ width: '1px', height: '16px', backgroundColor: '#E5E7EB' }} />
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <CheckCircle size={16} style={{ color: '#22C55E' }} />
-                  <span style={{ fontSize: '14px', color: '#22C55E' }}>Auto-saved</span>
+                <div className="w-px h-4 bg-gray-200"></div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-green-600">Auto-saved</span>
                 </div>
               </>
             )}
@@ -1519,54 +1278,54 @@ const CreditCalculator = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-12">
-            {/* Enhanced Hero Section with Better Spacing */}
-            <div className="text-center mb-16">
+          <div className="space-y-8">
+            {/* World-Class Hero Section */}
+            <div className="text-center mb-12">
               {/* Main Value Proposition */}
-              <div className="gradient-primary text-white rounded-lg p-12 md:p-16 mb-12 relative overflow-hidden">
+              <div className="gradient-primary text-white rounded-3xl p-8 md:p-12 mb-8 relative overflow-hidden">
                 {/* Background Decorations */}
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
                 <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
                 
                 <div className="relative z-10">
-                  <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tight leading-tight">
-                    Get <span className="text-yellow-300 text-6xl md:text-8xl">$500K+</span> Back from the IRS
+                  <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
+                    Get <span className="text-yellow-300">$25K+</span> Back from the IRS
                   </h1>
-                  <p className="text-xl md:text-2xl text-blue-100 mb-12 max-w-4xl mx-auto leading-relaxed">
+                  <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
                     Small businesses using AI tools can claim <strong className="text-white">substantial R&D tax credits</strong>. Get everything ready to <strong className="text-yellow-200">hand directly to your CPA</strong> for a <strong className="text-yellow-200">beautiful IRS refund check</strong> 
                   </p>
                   
-                  {/* Enhanced Social Proof Badges with Better Hierarchy */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-                      <div className="flex flex-col items-center gap-3 mb-3">
-                        <Users className="w-8 h-8 text-blue-200" />
-                        <span className="text-4xl font-black">2,847+</span>
+                  {/* Social Proof Badges */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                    <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4">
+                      <div className="flex items-center justify-center gap-3 mb-2">
+                        <Users className="w-6 h-6 text-blue-200" />
+                        <span className="text-3xl font-bold">1,200+</span>
                       </div>
-                      <p className="text-blue-100 font-semibold">Successfully Filed</p>
+                      <p className="text-blue-100 text-sm">Businesses Served</p>
                     </div>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-                      <div className="flex flex-col items-center gap-3 mb-3">
-                        <span className="text-3xl font-bold text-green-200">$</span>
-                        <span className="text-4xl font-black">47M+</span>
+                    <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4">
+                      <div className="flex items-center justify-center gap-3 mb-2">
+                        <span className="text-2xl font-bold text-green-200">$</span>
+                        <span className="text-3xl font-bold">47M+</span>
                       </div>
-                      <p className="text-blue-100 font-semibold">Tax Credits Recovered</p>
+                      <p className="text-blue-100 text-sm">Tax Credits Recovered</p>
                     </div>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-                      <div className="flex flex-col items-center gap-3 mb-3">
-                        <Shield className="w-8 h-8 text-yellow-200" />
-                        <span className="text-2xl font-black">100%</span>
+                    <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4">
+                      <div className="flex items-center justify-center gap-3 mb-2">
+                        <Shield className="w-6 h-6 text-yellow-200" />
+                        <span className="text-lg font-bold">100%</span>
                       </div>
-                      <p className="text-blue-100 font-semibold">Money-Back Guarantee</p>
+                      <p className="text-blue-100 text-sm">Money-Back Guarantee</p>
                     </div>
                   </div>
                 </div>
               </div>
               
-              {/* Enhanced Section Header */}
-              <div className="mb-12">
-                <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">Tell us about your business</h2>
-                <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              {/* Section Header */}
+              <div className="mb-8">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Tell us about your business</h2>
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
                   We'll calculate your exact credit amount and create a <strong>ready-to-file package</strong> you can hand directly to your CPA – or self-file with confidence for your <strong>IRS refund</strong>
                 </p>
               </div>
@@ -1574,24 +1333,11 @@ const CreditCalculator = () => {
             
             <QualificationQuickCheck />
             
-            <div style={{
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              padding: '48px',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              border: '1px solid #E5E7EB'
-            }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: '18px',
-                  fontWeight: 600,
-                  color: '#0F172A',
-                  marginBottom: '12px'
-                }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Building size={20} style={{ color: '#5046E5' }} />
+            <div className="card-elevated p-8 md:p-10 space-y-8">
+              <div className="space-y-4">
+                <label className="block text-lg font-semibold text-gray-900 mb-3">
+                  <span className="flex items-center gap-2">
+                    <Building className="w-5 h-5 text-blue-600" />
                     What's your business name?
                   </span>
                 </label>
@@ -1599,33 +1345,23 @@ const CreditCalculator = () => {
                   type="text"
                   value={formData.companyName}
                   onChange={(e) => updateFormData('companyName', e.target.value)}
-                  className="input-premium"
-                  style={{ width: '100%', fontSize: '18px' }}
+                  className="input-enhanced text-xl"
                   placeholder="Your Company, Inc."
                 />
-                <p style={{ fontSize: '14px', color: '#64748B' }}>
-                  This helps us personalize your tax credit package
-                </p>
+                <p className="text-sm text-gray-500">This helps us personalize your tax credit package</p>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: '18px',
-                  fontWeight: 600,
-                  color: '#0F172A',
-                  marginBottom: '12px'
-                }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Zap size={20} style={{ color: '#22C55E' }} />
+              <div className="space-y-4">
+                <label className="block text-lg font-semibold text-gray-900 mb-3">
+                  <span className="flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-green-600" />
                     What industry are you in?
                   </span>
                 </label>
                 <select
                   value={formData.industry}
                   onChange={(e) => updateFormData('industry', e.target.value)}
-                  className="input-premium"
-                  style={{ width: '100%', fontSize: '18px' }}
+                  className="input-enhanced text-xl"
                 >
                   <option value="">Choose your industry type</option>
                   {industries.map(ind => (
@@ -1783,19 +1519,12 @@ const CreditCalculator = () => {
               <button
                 onClick={() => setCurrentStep(2)}
                 disabled={!formData.companyName || !formData.grossReceipts || formData.selectedYears.length === 0}
-                className="btn-primary"
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  opacity: (!formData.companyName || !formData.grossReceipts || formData.selectedYears.length === 0) ? 0.5 : 1,
-                  cursor: (!formData.companyName || !formData.grossReceipts || formData.selectedYears.length === 0) ? 'not-allowed' : 'pointer'
-                }}
+                className="btn-primary w-full sm:w-auto text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                Continue to Your AI Work
-                <ChevronRight size={20} />
+                <span className="flex items-center gap-3">
+                  Continue to Your AI Work
+                  <ChevronRight className="w-6 h-6" />
+                </span>
               </button>
             </div>
           </div>
@@ -2125,29 +1854,19 @@ const CreditCalculator = () => {
             <div className="flex gap-4 justify-between">
               <button
                 onClick={() => setCurrentStep(1)}
-                className="btn-secondary"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
+                className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 flex items-center"
               >
-                <ChevronLeft size={16} />
+                <ChevronLeft className="mr-2 w-5 h-5" />
                 Back
               </button>
-              <div style={{ display: 'flex', gap: '16px' }}>
+              <div className="flex gap-4">
                 <SaveProgressButton />
                 <button
                   onClick={() => setCurrentStep(3)}
-                  className="btn-primary"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
+                  className="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 flex items-center"
                 >
                   Continue
-                  <ChevronRight size={16} />
+                  <ChevronRight className="ml-2 w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -2155,34 +1874,115 @@ const CreditCalculator = () => {
         );
 
       case 3:
+        // If email not captured yet, show email capture with partial results
         if (!emailSubmitted) {
-          return <div className="text-center p-8">
-            <h2 className="text-2xl font-bold mb-4">You qualify for R&D credits!</h2>
-            <p className="mb-6">Enter your email to get your personalized report.</p>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="border-2 border-gray-300 rounded p-3 mb-4 w-full max-w-md"
-              placeholder="your@email.com"
-            />
-            <br />
-            <button
-              onClick={() => {
-                if (email && email.includes('@')) {
-                  performCalculation();
-                  setEmailSubmitted(true);
-                }
-              }}
-              disabled={!email || !email.includes('@')}
-              className="bg-blue-600 text-white px-6 py-3 rounded disabled:bg-gray-400"
-            >
-              Get Report
-            </button>
-          </div>;
+          return (
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold mb-4 text-gray-900">You're qualified! 🎉</h2>
+                <p className="text-lg text-gray-600">
+                  Get your personalized R&D credit estimate sent to your inbox
+                </p>
+              </div>
+              
+              {/* Partial Results Teaser */}
+              <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-2xl p-8 text-center mb-8">
+                <h3 className="text-2xl font-bold mb-4">Your Preliminary Estimate</h3>
+                <div className="text-5xl font-bold mb-2">
+                  ${Math.round((results?.totalBenefit || 50000) * 0.7).toLocaleString()}+
+                </div>
+                <p className="text-green-100 text-lg">
+                  Potential tax savings (partial estimate)
+                </p>
+                <div className="mt-4 text-sm text-green-100">
+                  📧 Get your complete personalized report with exact calculations
+                </div>
+              </div>
+              
+              {/* Email Capture Form */}
+              <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-xl">
+                <h3 className="text-2xl font-bold text-center mb-4">Get Your Complete Report</h3>
+                <p className="text-gray-600 text-center mb-6">
+                  Enter your email to receive your detailed R&D credit analysis, filing instructions, and next steps.
+                </p>
+                <div className="max-w-md mx-auto">
+                  <div className="space-y-4">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-lg"
+                      placeholder="your@email.com"
+                    />
+                    <button
+                      onClick={() => {
+                        if (email && email.includes('@')) {
+                          console.log('Email captured:', email);
+                          performCalculation();
+                          setEmailSubmitted(true);
+                          setShowFullResults(true);
+                          // Stay on step 3 to show the state selection
+                        }
+                      }}
+                      disabled={!email || !email.includes('@')}
+                      className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-8 rounded-lg font-bold text-lg hover:from-blue-700 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed"
+                    >
+                      Get My Complete R&D Credit Report
+                    </button>
+                    <p className="text-xs text-gray-500 text-center">
+                      ✓ Instant access • ✓ No spam • ✓ Unsubscribe anytime
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Social Proof */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-4">Trusted by 1,200+ businesses</p>
+                    <div className="flex justify-center items-center gap-8 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span>Average 12-day processing</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-4 h-4 text-blue-600" />
+                        <span>IRS audit protection included</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Why CPAs Don't Mention This - After Email Capture */}
+              <div className="card-elevated border-l-4 border-orange-500 p-8 mt-8 bg-gradient-to-r from-orange-50 to-yellow-50">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-orange-900 mb-4">
+                      "Why didn't my CPA bring this up?"
+                    </h3>
+                    <div className="space-y-3 text-orange-800">
+                      <p className="leading-relaxed">
+                        <strong>Most CPAs focus on traditional tax services</strong> – handling 1040s, business deductions, and quarterly filings. R&D tax credits are a specialized area that requires specific expertise and additional time investment.
+                      </p>
+                      <p className="leading-relaxed">
+                        Think of it like specialized medical care. Your general practitioner handles most health needs, but specialists focus on specific areas. <strong>R&D credits require deep knowledge</strong> of IRS Section 41, qualification criteria, and proper documentation.
+                      </p>
+                      <div className="bg-orange-100 rounded-xl p-4 mt-4">
+                        <p className="font-medium text-orange-900 mb-2">The collaborative approach:</p>
+                        <p className="text-sm">We handle the specialized R&D credit work, then provide your CPA with complete documentation for seamless filing. <strong>Result: A tax refund check or direct deposit from the U.S. Treasury.</strong></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
         }
         
-        // Email captured - show state selection
+        // If email captured, show state selection options
         return (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold mb-6">
@@ -2317,19 +2117,12 @@ const CreditCalculator = () => {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex gap-4">
               <button
                 onClick={() => setCurrentStep(2)}
-                className="btn-secondary"
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px'
-                }}
+                className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 flex items-center justify-center"
               >
-                <ChevronLeft size={16} />
+                <ChevronLeft className="mr-2 w-5 h-5" />
                 Back
               </button>
               <button
@@ -2337,16 +2130,9 @@ const CreditCalculator = () => {
                   performCalculation();
                   setCurrentStep(4);
                 }}
-                className="btn-success"
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px'
-                }}
+                className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 flex items-center justify-center"
               >
-                <Calculator size={16} />
+                <Calculator className="mr-2 w-5 h-5" />
                 See My Savings
               </button>
             </div>
@@ -2534,12 +2320,7 @@ const CreditCalculator = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="your@business-email.com"
-                            className="input-premium"
-                            style={{ 
-                              width: '100%', 
-                              fontSize: '16px', 
-                              textAlign: 'center' 
-                            }}
+                            className="input-enhanced w-full text-lg text-center"
                           />
                         </div>
                         <button
@@ -2988,7 +2769,7 @@ const CreditCalculator = () => {
                         </div>
                       </div>
 
-                      {/* Premium Main CTA Button */}
+                      {/* Main CTA Button with Enhanced Copy */}
                       <button
                         onClick={() => {
                           const basePrice = getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1);
@@ -3006,39 +2787,20 @@ const CreditCalculator = () => {
                           });
                           window.location.href = '/checkout';
                         }}
-                        className="btn-success"
-                        style={{
-                          width: '100%',
-                          height: '72px',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '4px',
-                          fontSize: '18px',
-                          fontWeight: 700
-                        }}
+                        className="w-full relative bg-gradient-to-r from-green-600 via-green-700 to-blue-600 text-white py-6 px-8 rounded-2xl font-black text-xl hover:from-green-700 hover:to-blue-700 transform hover:scale-[1.02] transition-all shadow-2xl group overflow-hidden"
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {/* Button Animation */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-blue-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                        <div className="relative z-10 flex items-center justify-center gap-3">
                           <span>🚀 Claim My {formatCurrency(results.totalBenefit)} Tax Credit</span>
-                          <ArrowRight size={20} />
+                          <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                         </div>
-                        <div style={{ fontSize: '12px', fontWeight: 500, opacity: 0.9 }}>
-                          Instant access • Ready in 2-3 weeks
-                        </div>
+                        <div className="text-sm font-medium mt-1 opacity-90">Instant access • Ready in 2-3 weeks</div>
                       </button>
 
                       {/* Secondary CTA for Hesitant Users */}
                       <div className="mt-4 text-center">
-                        <button style={{
-                          color: '#5046E5',
-                          textDecoration: 'underline',
-                          fontWeight: 500,
-                          fontSize: '14px',
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer'
-                        }}>
+                        <button className="text-blue-600 underline font-medium hover:text-blue-800">
                           Download FREE R&D Credit Guide First →
                         </button>
                       </div>
@@ -3773,116 +3535,67 @@ const CreditCalculator = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#FAFAFA' }}>
-      {/* Premium Main Container */}
-      <div className="container-premium" style={{ 
-        paddingTop: '48px', 
-        paddingBottom: '48px',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '48px 24px'
-      }}>
-        {/* Main Calculator Container */}
-        <div className="card-premium" style={{ 
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          maxWidth: '1200px',
-          margin: '0 auto',
-          overflow: 'hidden'
-        }}>
-          <div style={{ padding: '48px 32px' }}>
-            <BrandingHeader />
-            <TrustBar />
-            <ValueProps />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-grid-slate-100 bg-[length:20px_20px] opacity-25"></div>
+      
+      {/* Main Container with Perfect Centering */}
+      <div className="relative flex items-center justify-center min-h-screen py-8 px-4">
+        <div className="w-full max-w-6xl">
+          {/* Main Calculator Container */}
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 relative overflow-hidden">
+            {/* Decorative Elements */}
+            <div className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br from-blue-400/15 to-green-400/15 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-gradient-to-br from-green-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
             
-            {currentStep < 4 && <ProgressIndicator />}
-            
-            {/* Form Content Container */}
-            <div style={{
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              padding: '32px',
-              border: '1px solid #E5E7EB',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              maxWidth: '800px',
-              margin: '0 auto'
-            }}>
-              {renderStep()}
-            </div>
-          </div>
-        </div>
-          
-        {/* Premium Footer */}
-        <div style={{ textAlign: 'center', marginTop: '48px' }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            padding: '24px',
-            display: 'inline-flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '32px',
-            fontSize: '14px',
-            color: '#64748B',
-            border: '1px solid #E5E7EB',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{
-                width: '24px',
-                height: '24px',
-                backgroundColor: '#F0FDF4',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <Shield size={12} style={{ color: '#22C55E' }} />
+            <div className="relative z-10 px-8 py-12 md:px-12 md:py-16">
+              <BrandingHeader />
+              <TrustBar />
+              <ValueProps />
+              
+              {currentStep < 4 && <ProgressIndicator />}
+              
+              {/* Form Content Container with Better Spacing */}
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 md:p-10 border border-gray-100 shadow-lg mx-auto max-w-3xl">
+                {renderStep()}
               </div>
-              <span style={{ fontWeight: 500 }}>SSL Secured</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{
-                width: '24px',
-                height: '24px',
-                backgroundColor: '#EFF6FF',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <Lock size={12} style={{ color: '#5046E5' }} />
-              </div>
-              <span style={{ fontWeight: 500 }}>GDPR Compliant</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{
-                width: '24px',
-                height: '24px',
-                backgroundColor: '#F5F3FF',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <CheckCircle size={12} style={{ color: '#5046E5' }} />
-              </div>
-              <span style={{ fontWeight: 500 }}>IRS Approved</span>
             </div>
           </div>
           
-          <div style={{ fontSize: '14px', color: '#64748B', marginTop: '24px' }}>
-            <span style={{ fontWeight: 500, color: '#5046E5' }}>SMBTaxCredits.com</span>
-            <span> · </span>
-            <a href="#" style={{ color: '#64748B', textDecoration: 'none' }}>Terms</a>
-            <span> · </span>
-            <a href="#" style={{ color: '#64748B', textDecoration: 'none' }}>Privacy</a>
-            <span> · </span>
-            <a href="#" style={{ color: '#64748B', textDecoration: 'none' }}>Contact</a>
-            <span> · </span>
-            <span style={{ color: '#9CA3AF' }}>© 2024 All rights reserved</span>
+          {/* Enhanced Footer with Better Spacing */}
+          <div className="text-center mt-12 space-y-6">
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl px-8 py-5 inline-flex flex-wrap items-center justify-center gap-8 text-sm text-gray-600 border border-white/50 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-green-600" />
+                </div>
+                <span className="font-medium">SSL Secured</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Lock className="w-4 h-4 text-blue-600" />
+                </div>
+                <span className="font-medium">GDPR Compliant</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-purple-600" />
+                </div>
+                <span className="font-medium">IRS Approved</span>
+              </div>
+            </div>
+            
+            <div className="text-sm text-gray-500 space-x-2">
+              <span className="font-semibold text-blue-600">SMBTaxCredits.com</span>
+              <span>·</span>
+              <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Terms</a>
+              <span>·</span>
+              <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Privacy</a>
+              <span>·</span>
+              <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Contact</a>
+              <span>·</span>
+              <span className="text-gray-400">© 2024 All rights reserved</span>
+            </div>
           </div>
         </div>
       </div>

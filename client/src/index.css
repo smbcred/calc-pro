@@ -1,37 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  /* Premium Design System - 6 Color Palette */
-  --primary: 245 66% 59%; /* #5046E5 - Rich indigo */
-  --primary-foreground: 0 0% 100%; /* Pure white */
+  /* Modern Professional Color Palette */
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(224, 71%, 4%);
+  --muted: hsl(210, 40%, 96%);
+  --muted-foreground: hsl(215, 14%, 34%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(224, 71%, 4%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(224, 71%, 4%);
+  --border: hsl(214, 32%, 91%);
+  --input: hsl(214, 32%, 91%);
   
-  --success: 142 71% 45%; /* #22C55E - Vibrant green */
-  --success-foreground: 0 0% 100%; /* Pure white */
+  /* Brand Colors - Professional Blue to Green Gradient */
+  --primary: hsl(214, 100%, 59%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(210, 40%, 96%);
+  --secondary-foreground: hsl(215, 25%, 27%);
+  --accent: hsl(142, 76%, 36%);
+  --accent-foreground: hsl(0, 0%, 100%);
   
-  --text-dark: 222 84% 5%; /* #0F172A - Near black */
-  --text-light: 215 25% 47%; /* #64748B - Soft gray */
-  
-  --background: 0 0% 98%; /* #FAFAFA - Off-white */
-  --surface: 0 0% 100%; /* #FFFFFF - Pure white */
-  
-  /* Semantic mappings for compatibility */
-  --foreground: var(--text-dark);
-  --muted: var(--background);
-  --muted-foreground: var(--text-light);
-  --card: var(--surface);
-  --card-foreground: var(--text-dark);
-  --border: 220 13% 91%; /* #E5E7EB */
-  --input: var(--border);
-  --ring: var(--primary);
-  --popover: var(--surface);
-  --popover-foreground: var(--text-dark);
+  /* Success/Error States */
+  --success: hsl(142, 76%, 36%);
+  --success-foreground: hsl(0, 0%, 100%);
+  --warning: hsl(38, 92%, 50%);
+  --warning-foreground: hsl(48, 96%, 89%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 100%);
   
   /* Interactive Elements */
-  --radius: 0.5rem; /* 8px everywhere */
+  --ring: hsl(214, 100%, 59%);
+  --radius: 0.75rem;
   
-  /* Container Constraints */
+  /* Spacing & Typography */
   --content-max-width: 1200px;
   --step-max-width: 800px;
 }
@@ -65,308 +71,113 @@
   }
 
   body {
-    @apply antialiased text-slate-900;
-    background-color: #FAFAFA;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    font-variant-numeric: tabular-nums;
+    @apply antialiased bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    line-height: 1.6;
   }
   
-  /* Premium Typography Scale */
+  /* Enhanced Typography Scale */
   h1 {
-    font-size: 48px;
-    font-weight: 700;
-    color: #0F172A;
-    line-height: 1.1;
-    letter-spacing: -0.025em;
+    @apply text-4xl md:text-5xl font-bold leading-tight tracking-tight;
   }
   
   h2 {
-    font-size: 32px;
-    font-weight: 700;
-    color: #0F172A;
-    line-height: 1.2;
-    letter-spacing: -0.025em;
+    @apply text-3xl md:text-4xl font-bold leading-tight tracking-tight;
   }
   
   h3 {
-    font-size: 20px;
-    font-weight: 500;
-    color: #0F172A;
-    line-height: 1.3;
+    @apply text-2xl md:text-3xl font-semibold leading-tight;
   }
   
   h4 {
-    font-size: 16px;
-    font-weight: 500;
-    color: #0F172A;
-    line-height: 1.3;
+    @apply text-xl md:text-2xl font-semibold leading-tight;
   }
   
-  p {
-    color: #64748B;
-    font-size: 16px;
-    line-height: 1.5;
-  }
-  
-  /* Premium Focus States */
+  /* Enhanced Focus States */
   button:focus-visible,
   input:focus-visible,
   select:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px #5046E5;
+    @apply outline-none ring-4 ring-blue-500/20 ring-offset-2;
   }
 }
 
 @layer utilities {
-  /* Premium Component System */
+  /* Professional gradient backgrounds */
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(214, 100%, 59%) 0%, hsl(142, 76%, 36%) 100%);
+  }
   
-  /* Enhanced Primary Button with More Padding */
+  .gradient-secondary {
+    background: linear-gradient(135deg, hsl(210, 40%, 96%) 0%, hsl(0, 0%, 100%) 100%);
+  }
+  
+  /* Elevated card styles */
+  .card-elevated {
+    @apply bg-white rounded-2xl shadow-lg border border-gray-100/50 hover:shadow-xl transition-all duration-300;
+  }
+  
+  .card-feature {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300;
+  }
+  
+  /* Professional button styles */
   .btn-primary {
-    background-color: #5046E5;
-    color: white;
-    height: 56px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: 8px;
-    padding: 16px 32px;
-    box-shadow: 0 2px 8px rgba(80, 70, 229, 0.2);
-    transition: all 0.2s ease;
-    border: none;
-    cursor: pointer;
+    @apply bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-semibold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 focus:ring-4 focus:ring-blue-500/20;
   }
   
-  .btn-primary:hover {
-    background-color: #4338CA;
-    box-shadow: 0 4px 12px rgba(80, 70, 229, 0.3);
-    transform: translateY(-1px);
-  }
-  
-  /* Secondary Button */
   .btn-secondary {
-    background-color: white;
-    color: #5046E5;
-    height: 48px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: 8px;
-    padding: 0 24px;
-    border: 1px solid #5046E5;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    transition: all 0.2s ease;
-    cursor: pointer;
+    @apply bg-white hover:bg-gray-50 text-gray-700 font-semibold py-4 px-8 rounded-xl border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md transition-all duration-300;
   }
   
-  .btn-secondary:hover {
-    background-color: #F8FAFC;
+  /* Enhanced form controls */
+  .input-enhanced {
+    @apply w-full px-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400;
   }
   
-  /* Success Button */
-  .btn-success {
-    background-color: #22C55E;
-    color: white;
-    height: 48px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: 8px;
-    padding: 0 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    transition: all 0.2s ease;
-    border: none;
-    cursor: pointer;
+  /* Status indicators */
+  .status-success {
+    @apply bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-800;
   }
   
-  .btn-success:hover {
-    background-color: #16A34A;
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  .status-warning {
+    @apply bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 text-amber-800;
   }
   
-  /* Premium Card */
-  .card-premium {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    padding: 32px;
-    transition: all 0.2s ease;
+  .status-info {
+    @apply bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 text-blue-800;
   }
   
-  .card-premium:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  /* Professional spacing */
+  .section-padding {
+    @apply py-16 md:py-24;
   }
   
-  /* Premium Input with Stronger Borders */
-  .input-premium {
-    height: 48px;
-    border: 2px solid #D1D5DB;
-    border-radius: 8px;
-    padding: 0 16px;
-    background-color: white;
-    font-size: 16px;
-    color: #0F172A;
-    transition: all 0.2s ease;
-    font-variant-numeric: tabular-nums;
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
   
-  .input-premium:hover {
-    border-color: #9CA3AF;
+  /* Advanced animations */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
   }
   
-  .input-premium:focus {
-    outline: none;
-    border: 2px solid #5046E5;
-    box-shadow: 0 0 0 3px rgba(80, 70, 229, 0.1);
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
   }
   
-  .input-premium::placeholder {
-    color: #64748B;
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   
-  /* 8px Grid Spacing */
-  .space-8 { gap: 8px; }
-  .space-16 { gap: 16px; }
-  .space-24 { gap: 24px; }
-  .space-32 { gap: 32px; }
-  .space-48 { gap: 48px; }
-  
-  .p-8 { padding: 8px; }
-  .p-16 { padding: 16px; }
-  .p-24 { padding: 24px; }
-  .p-32 { padding: 32px; }
-  .p-48 { padding: 48px; }
-  
-  .m-8 { margin: 8px; }
-  .m-16 { margin: 16px; }
-  .m-24 { margin: 24px; }
-  .m-32 { margin: 32px; }
-  .m-48 { margin: 48px; }
-  
-  /* Enhanced Container with Mobile Support */
-  .container-premium {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 16px;
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   
-  @media (min-width: 640px) {
-    .container-premium {
-      padding: 0 24px;
-    }
-  }
-  
-  /* Mobile-First Button Improvements */
-  @media (max-width: 640px) {
-    .btn-primary,
-    .btn-secondary,
-    .btn-success {
-      width: 100%;
-      justify-content: center;
-    }
-    
-    /* Enhanced Mobile Typography */
-    h1 {
-      font-size: clamp(28px, 8vw, 48px) !important;
-      line-height: 1.2 !important;
-    }
-    
-    h2 {
-      font-size: clamp(24px, 6vw, 32px) !important;
-    }
-    
-    h3 {
-      font-size: clamp(20px, 5vw, 24px) !important;
-    }
-    
-    /* Mobile Input Fields */
-    input, select, textarea {
-      font-size: 16px !important; /* Prevents zoom on iOS */
-    }
-    
-    /* Mobile Container Spacing */
-    .container-premium {
-      padding: 0 12px !important;
-    }
-  }
-  
-  /* Tablet Responsive Improvements */
-  @media (min-width: 641px) and (max-width: 1024px) {
-    .container-premium {
-      padding: 0 20px;
-    }
-    
-    /* Tablet Grid Adjustments */
-    .grid-responsive {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
-  }
-  
-  /* Enhanced Mobile Card Styling */
-  @media (max-width: 640px) {
-    .card-hover {
-      transform: none !important;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-    }
-    
-    /* Mobile-Optimized Spacing */
-    .space-y-6 > * + * {
-      margin-top: 1rem !important;
-    }
-    
-    .space-y-8 > * + * {
-      margin-top: 1.5rem !important;
-    }
-    
-    /* Mobile Button Stacking */
-    .flex-mobile-stack {
-      flex-direction: column !important;
-      gap: 0.75rem !important;
-    }
-  }
-  
-  /* Typography Utilities */
-  .text-dark {
-    color: #0F172A;
-  }
-  
-  .text-light {
-    color: #64748B;
-  }
-  
-  .text-hero {
-    font-size: 48px;
-    font-weight: 700;
-    color: #0F172A;
-    line-height: 1.1;
-  }
-  
-  .text-headline {
-    font-size: 32px;
-    font-weight: 700;
-    color: #0F172A;
-    line-height: 1.2;
-  }
-  
-  .text-subhead {
-    font-size: 20px;
-    font-weight: 500;
-    color: #0F172A;
-    line-height: 1.3;
-  }
-  
-  .text-body {
-    font-size: 16px;
-    font-weight: 400;
-    color: #64748B;
-    line-height: 1.5;
-  }
-  
-  .text-small {
-    font-size: 14px;
-    font-weight: 400;
-    color: #64748B;
-    line-height: 1.4;
+  /* Progress indicators */
+  .progress-ring {
+    @apply w-4 h-4 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin;
   }
 }

@@ -1986,11 +1986,16 @@ const CreditCalculator = () => {
                       <span className="text-sm font-semibold">✨ Your Personalized Results</span>
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-                      {formData.selectedYears && formData.selectedYears.length > 1 
-                        ? `${formData.selectedYears.length}-Year Total: ${formatCurrency(results.totalBenefit || 0)}`
-                        : `You Could Save ${formatCurrency(results.totalBenefit || 0)}`
-                      }
+                      You Could Save ${formatCurrency(results.totalBenefit || 0)}
                     </h2>
+                    {formData.selectedYears && formData.selectedYears.length > 0 && (
+                      <div className="text-lg text-blue-600 font-medium mb-2">
+                        {formData.selectedYears.length === 1 
+                          ? `For ${formData.selectedYears[0]} tax year`
+                          : `For ${formData.selectedYears[0]} + ${formData.selectedYears.length - 1} additional year${formData.selectedYears.length > 2 ? 's' : ''}`
+                        }
+                      </div>
+                    )}
 
                     {/* Multi-Year Savings Badge */}
                     {formData.selectedYears && formData.selectedYears.length > 1 && results.multiYearDiscount > 0 && (
@@ -2029,18 +2034,28 @@ const CreditCalculator = () => {
                     </div>
                   </div>
 
-                  {/* Multi-Year Summary */}
-                  {formData.selectedYears && formData.selectedYears.length > 1 && (
+                  {/* Average Per Year Estimate - Always show when there are results */}
+                  {formData.selectedYears && formData.selectedYears.length > 0 && (
                     <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-6">
-                      <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">Filing Summary</h3>
+                      <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">
+                        {formData.selectedYears.length === 1 ? 'Tax Year Summary' : 'Multi-Year Filing Summary'}
+                      </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="text-center">
-                          <div className="text-gray-600 text-sm mb-1">Years Selected</div>
-                          <div className="text-xl font-bold text-gray-900">{formData.selectedYears ? formData.selectedYears.join(', ') : '2024'}</div>
+                          <div className="text-gray-600 text-sm mb-1">Primary Year</div>
+                          <div className="text-xl font-bold text-gray-900">{formData.selectedYears[0]}</div>
+                          {formData.selectedYears.length > 1 && (
+                            <div className="text-sm text-blue-600 mt-1">
+                              + {formData.selectedYears.length - 1} additional year{formData.selectedYears.length > 2 ? 's' : ''}
+                            </div>
+                          )}
                         </div>
                         <div className="text-center">
-                          <div className="text-gray-600 text-sm mb-1">Per Year Average</div>
+                          <div className="text-gray-600 text-sm mb-1">Average Per Year <span className="text-xs">(Estimate)</span></div>
                           <div className="text-xl font-bold text-gray-900">{formatCurrency((results.totalBenefit || 0) / (formData.selectedYears?.length || 1))}</div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            Based on current year data
+                          </div>
                         </div>
                       </div>
                     </div>

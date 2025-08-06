@@ -159,6 +159,13 @@ export default {
         "button-bounce": "buttonBounce 150ms cubic-bezier(0.68, -0.55, 0.265, 1.55)",
         "stagger-in": "staggerIn 500ms cubic-bezier(0.4, 0, 0.2, 1) forwards",
         "progress-shine": "progressShine 2s infinite",
+        "mesh-flow": "meshFlow 8s ease-in-out infinite",
+        "gradient-shift": "gradientShift 3s ease-in-out infinite",
+        "chart-reveal": "chartReveal 700ms cubic-bezier(0.4, 0, 0.2, 1) forwards",
+        "bar-grow": "barGrow 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards",
+        "number-pulse": "numberPulse 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        "float": "float 6s ease-in-out infinite",
+        "float-delayed": "float 6s ease-in-out infinite 2s",
       },
       transitionDuration: {
         'fast': '150ms',

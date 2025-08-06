@@ -348,6 +348,8 @@
     outline: none;
   }
   
+  /* NEURO BUTTON DISABLED - was overriding Tailwind backgrounds */
+  /*
   .neuro-button {
     background: var(--background);
     border: none;
@@ -373,6 +375,7 @@
       inset -4px -4px 8px rgba(255, 255, 255, 0.7);
     transform: translateY(0);
   }
+  */
   
   /* Hover Effects with Gradient Borders */
   .card-premium {

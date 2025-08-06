@@ -1148,9 +1148,14 @@ const CreditCalculator = () => {
         </div>
         
         {/* Step Message */}
-        <div className="text-center bg-blue-50 rounded-xl py-3 px-6 mx-auto max-w-sm">
+        <div className="text-center bg-blue-50 rounded-xl py-3 px-6 mx-auto max-w-lg">
           <p className="text-base text-blue-800 font-medium">
             Step {currentStep} of 4 · Average time: <span className="font-bold text-blue-600">10 minutes</span>
+            {formData.selectedYears.length > 0 && (
+              <span className="block text-sm text-blue-600 mt-1">
+                Filing for: {formData.selectedYears.join(', ')}
+              </span>
+            )}
           </p>
         </div>
       </div>
@@ -1208,8 +1213,74 @@ const CreditCalculator = () => {
                 <IndustryExamples industry={formData.industry} />
               </div>
 
-              {/* Multi-Year Selection - Strategic Upsell Point */}
-
+              {/* Primary Tax Year Selection */}
+              <div>
+                <label className="block text-base font-semibold text-gray-800 mb-3">
+                  Primary Tax Year to File
+                  <InfoTooltip text="Select the main tax year you want to file for. You can add additional years later for multi-year savings." />
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {getAvailableYears().map(year => {
+                    const isSelected = formData.selectedYears.includes(year.toString());
+                    const isCurrent = year === new Date().getFullYear();
+                    
+                    return (
+                      <button
+                        key={year}
+                        type="button"
+                        onClick={() => {
+                          // For Step 1, only allow single year selection
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            selectedYears: [year.toString()],
+                            taxYear: year.toString()
+                          }));
+                          // Initialize yearly data for this year
+                          setYearlyData({
+                            [year.toString()]: {
+                              w2Wages: '',
+                              contractorCosts: '',
+                              cloudCosts: '',
+                              softwareLicenses: '',
+                              supplies: '',
+                              w2Percentage: '30',
+                              contractorPercentage: '50'
+                            }
+                          });
+                        }}
+                        className={`p-4 rounded-xl border-2 transition-all text-center ${
+                          isSelected 
+                            ? 'border-blue-500 bg-blue-100 text-blue-800' 
+                            : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
+                        }`}
+                      >
+                        <div className="text-xl font-bold">{year}</div>
+                        <div className="text-sm text-gray-600">
+                          {isCurrent ? 'Current Year' : 'Lookback'}
+                        </div>
+                        {isSelected && (
+                          <div className="text-sm font-medium text-blue-600 mt-1">✓ Selected</div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                {/* Selected Year Confirmation */}
+                {formData.selectedYears.length > 0 && (
+                  <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-center gap-2 text-blue-800">
+                      <Calendar className="w-4 h-4" />
+                      <span className="text-sm font-medium">
+                        Filing for tax year {formData.selectedYears[0]}
+                      </span>
+                    </div>
+                    <p className="text-xs text-blue-600 mt-1">
+                      You can add additional years in Step 4 for multi-year savings up to 25% off!
+                    </p>
+                  </div>
+                )}
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
@@ -1256,7 +1327,7 @@ const CreditCalculator = () => {
               <SaveProgressButton />
               <button
                 onClick={() => setCurrentStep(2)}
-                disabled={!formData.companyName || !formData.startupYear || !formData.grossReceipts}
+                disabled={!formData.companyName || !formData.startupYear || !formData.grossReceipts || formData.selectedYears.length === 0}
                 className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-5 px-10 rounded-2xl font-bold text-xl hover:from-blue-700 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
               >
                 Continue to Your AI Work 🚀
@@ -1270,9 +1341,19 @@ const CreditCalculator = () => {
         return (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4 text-gray-900">Your AI & Technology Expenses</h2>
+              <h2 className="text-3xl font-bold mb-4 text-gray-900">
+                Your AI & Technology Expenses
+                {formData.selectedYears.length === 1 && (
+                  <span className="text-blue-600"> for {formData.selectedYears[0]}</span>
+                )}
+              </h2>
               <p className="text-lg text-gray-600">
                 Include all time and money spent on AI tools, custom GPTs, chatbots, automations, and process improvements
+                {formData.selectedYears.length > 1 && (
+                  <span className="block text-blue-600 font-medium mt-1">
+                    Currently entering data for {currentYear}
+                  </span>
+                )}
               </p>
             </div>
 
@@ -1541,7 +1622,17 @@ const CreditCalculator = () => {
       case 3:
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-6">Boost your savings even more</h2>
+            <h2 className="text-2xl font-bold mb-6">
+              Boost your savings even more
+              {formData.selectedYears.length === 1 && (
+                <span className="text-blue-600"> for {formData.selectedYears[0]}</span>
+              )}
+              {formData.selectedYears.length > 1 && (
+                <span className="block text-lg text-blue-600 font-medium mt-1">
+                  Filing for {formData.selectedYears.length} years: {formData.selectedYears.join(', ')}
+                </span>
+              )}
+            </h2>
 
             <div className="space-y-4">
               <div className="border rounded-xl p-6 bg-gradient-to-br from-blue-50 to-green-50">
@@ -1783,7 +1874,17 @@ const CreditCalculator = () => {
 
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-6">Your Tax Savings Opportunity</h2>
+            <h2 className="text-2xl font-bold mb-6">
+              Your Tax Savings Opportunity
+              {formData.selectedYears.length === 1 && (
+                <span className="text-blue-600"> for {formData.selectedYears[0]}</span>
+              )}
+              {formData.selectedYears.length > 1 && (
+                <span className="block text-lg text-blue-600 font-medium mt-1">
+                  {formData.selectedYears.length}-Year Filing: {formData.selectedYears.join(', ')}
+                </span>
+              )}
+            </h2>
             
             <UrgencyBanner />
 

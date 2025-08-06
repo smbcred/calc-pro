@@ -2756,6 +2756,122 @@ const CreditCalculator = () => {
                   </div>
                 </div>
 
+                {/* TIME SAVINGS COMPARISON - New prominent section */}
+                <div className="bg-gradient-to-r from-red-50 to-green-50 border-2 border-orange-300 rounded-xl p-8 mb-6">
+                  <h3 className="text-2xl font-bold text-center mb-6 text-gray-900">⏰ Time Investment: DIY vs Our Service</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* DIY Column */}
+                    <div className="bg-red-100 rounded-xl p-6 border-2 border-red-300">
+                      <h4 className="text-xl font-bold text-red-800 text-center mb-4">😰 Do It Yourself</h4>
+                      <div className="space-y-3 text-sm">
+                        <div className="flex justify-between items-center py-2 border-b border-red-200">
+                          <span>Understand IRS Rules (§41, §174)</span>
+                          <span className="font-bold text-red-700">5-10 hrs</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-red-200">
+                          <span>Determine Eligibility & 4-part test</span>
+                          <span className="font-bold text-red-700">2-4 hrs</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-red-200">
+                          <span>Aggregate Financial Data</span>
+                          <span className="font-bold text-red-700">3-8 hrs</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-red-200">
+                          <span>Build Expense Documentation</span>
+                          <span className="font-bold text-red-700">2-5 hrs</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-red-200">
+                          <span>Write Technical Justification</span>
+                          <span className="font-bold text-red-700">5-10 hrs</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-red-200">
+                          <span>Complete IRS Form 6765</span>
+                          <span className="font-bold text-red-700">2-4 hrs</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-red-200">
+                          <span>Review & Cross-check</span>
+                          <span className="font-bold text-red-700">1-2 hrs</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2">
+                          <span>Maintain Audit Documentation</span>
+                          <span className="font-bold text-red-700">2-5 hrs</span>
+                        </div>
+                      </div>
+                      <div className="mt-4 pt-4 border-t-2 border-red-300 text-center">
+                        <div className="text-2xl font-black text-red-600">25-50 HOURS</div>
+                        <div className="text-sm text-red-700 mt-1">Plus risk of errors & audits</div>
+                      </div>
+                    </div>
+
+                    {/* Our Service Column */}
+                    <div className="bg-green-100 rounded-xl p-6 border-2 border-green-400">
+                      <h4 className="text-xl font-bold text-green-800 text-center mb-4">😎 Our Service</h4>
+                      <div className="space-y-4 text-sm">
+                        <div className="bg-green-200 rounded-lg p-4 text-center">
+                          <div className="text-4xl font-black text-green-700 mb-2">2-3 WEEKS</div>
+                          <div className="text-green-800 font-medium">Complete professional package</div>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                              <span className="text-white text-xs font-bold">✓</span>
+                            </div>
+                            <span className="font-medium">All IRS rules applied correctly</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                              <span className="text-white text-xs font-bold">✓</span>
+                            </div>
+                            <span className="font-medium">Eligibility analysis included</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                              <span className="text-white text-xs font-bold">✓</span>
+                            </div>
+                            <span className="font-medium">Expense categorization done</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                              <span className="text-white text-xs font-bold">✓</span>
+                            </div>
+                            <span className="font-medium">Technical narrative written</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                              <span className="text-white text-xs font-bold">✓</span>
+                            </div>
+                            <span className="font-medium">Form 6765 completed</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                              <span className="text-white text-xs font-bold">✓</span>
+                            </div>
+                            <span className="font-medium">Audit protection included</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4 pt-4 border-t-2 border-green-400 text-center">
+                        <div className="text-lg font-bold text-green-800">YOUR TIME INVESTMENT:</div>
+                        <div className="text-2xl font-black text-green-600">1-2 HOURS</div>
+                        <div className="text-sm text-green-700 mt-1">Just answer our questions</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom Impact Statement */}
+                  <div className="mt-6 text-center">
+                    <div className="inline-flex items-center gap-3 bg-yellow-100 border-2 border-yellow-400 rounded-full px-6 py-3">
+                      <span className="text-2xl">⚡</span>
+                      <span className="text-lg font-bold text-yellow-800">
+                        Save 25-50+ hours of complex tax work
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
                 {/* TIME SAVINGS & COMPETITIVE ADVANTAGE */}
                 <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6">
                   <h4 className="font-bold text-gray-900 mb-4 text-center">⏰ Why Choose Our Service?</h4>
@@ -2765,7 +2881,7 @@ const CreditCalculator = () => {
                       <ul className="text-sm text-gray-700 space-y-2">
                         <li className="flex items-start gap-2">
                           <span className="text-green-600 mt-0.5">✓</span>
-                          <span><strong>Complete in 1-2 hours</strong> vs. 40+ hours doing it yourself</span>
+                          <span><strong>Complete in 1-2 hours</strong> vs. 25-50+ hours doing it yourself</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-green-600 mt-0.5">✓</span>

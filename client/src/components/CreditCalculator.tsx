@@ -291,10 +291,10 @@ const CreditCalculator = () => {
   const IndustryExamples = ({ industry }: { industry: string }) => {
     const examples = {
       freelancer: [
-        "Building AI tools to automate client work",
-        "Creating custom GPTs for your services", 
-        "Testing new software to improve deliverables",
-        "Developing automations to scale your business"
+        "Using ChatGPT to write client proposals faster",
+        "Building custom workflows to automate repetitive tasks", 
+        "Testing new AI tools to improve service delivery",
+        "Creating content templates using AI assistance"
       ],
       ecommerce: [
         "Building custom GPTs for product descriptions",
@@ -339,22 +339,22 @@ const CreditCalculator = () => {
         "Customer service chatbots"
       ],
       realestate: [
-        "Property valuation AI models",
-        "Automated listing descriptions",
-        "Lead qualification chatbots",
-        "Market analysis automation"
+        "ChatGPT scripts for property descriptions that sell faster",
+        "Using AI to analyze market trends and pricing",
+        "Building automated lead qualification systems",
+        "Testing virtual tour and staging technologies"
       ],
       restaurant: [
-        "AI menu optimization",
-        "Inventory management systems",
-        "Customer preference analysis",
-        "Automated ordering chatbots"
+        "Using AI to predict busy times and reduce food waste",
+        "ChatGPT for creating seasonal menu descriptions",
+        "Testing inventory management apps with AI features",
+        "Building automated customer ordering systems"
       ],
       construction: [
-        "Project estimation AI tools",
-        "Safety compliance automation",
-        "Resource optimization systems",
-        "Bid proposal generators"
+        "AI tools to estimate project costs more accurately",
+        "Using ChatGPT to write detailed project proposals",
+        "Testing drone technology for site inspections",
+        "Building automated safety compliance checklists"
       ],
       education: [
         "Custom learning GPTs",
@@ -455,7 +455,7 @@ const CreditCalculator = () => {
         
         <div className="grid grid-cols-1 gap-3">
           {[
-            { key: 'aiTools', label: 'We use ChatGPT, Claude, or other AI tools for work', icon: '🤖', popular: true },
+            { key: 'aiTools', label: 'We use ChatGPT, Claude, or other AI tools to improve our work', icon: '🤖', popular: true },
             { key: 'customGPTs', label: 'We\'ve built custom GPTs or chatbots', icon: '⚡', premium: true },
             { key: 'prompts', label: 'We\'ve developed prompt templates or libraries', icon: '📝' },
             { key: 'automation', label: 'We\'ve automated tasks with Zapier, Make, or code', icon: '🔄', popular: true },
@@ -642,7 +642,7 @@ const CreditCalculator = () => {
   const getQualificationReasons = () => {
     const reasons: string[] = [];
     const labels: Record<string, string> = {
-      aiTools: 'Using AI tools like ChatGPT or Claude',
+      aiTools: 'Using ChatGPT, Claude, or similar AI tools to improve business operations',
       customGPTs: 'Built custom GPTs or chatbots',
       prompts: 'Developed prompt templates or libraries',
       automation: 'Automated tasks with Zapier, Make, or code',
@@ -670,7 +670,7 @@ const CreditCalculator = () => {
           <span className="text-lg">📊</span>
           <div className="text-xs text-gray-600">
             <strong className="text-gray-900">We're too small</strong>
-            <p>Credits start at just $10K in AI tool expenses</p>
+            <p>Credits start at just $10K in ChatGPT and automation expenses</p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -759,7 +759,7 @@ const CreditCalculator = () => {
               <span className="font-medium text-yellow-800">Consider Adding More Years</span>
             </div>
             <p className="text-sm text-yellow-700 mb-3">
-              Most businesses have been using AI tools for 2+ years. Add previous years to:
+              Most businesses have been using ChatGPT and automation tools for 2+ years. Add previous years to:
             </p>
             <ul className="text-sm text-yellow-700 space-y-1">
               <li>• Get 15-25% multi-year discount</li>
@@ -1261,16 +1261,16 @@ const CreditCalculator = () => {
   // Industry-specific value propositions
   const getIndustryValueProp = (industry: string) => {
     const valueProp = {
-      freelancer: { title: "Freelancers average $18K in credits", description: "AI tool subscriptions, custom automation development, and testing qualify", avgSavings: "$18K" },
+      freelancer: { title: "Freelancers average $18K in credits", description: "ChatGPT subscriptions, workflow automation, and client delivery improvements qualify", avgSavings: "$18K" },
       saas: { title: "SaaS companies average $85K in credits", description: "Development time, cloud infrastructure, and AI integrations qualify", avgSavings: "$85K" },
       agency: { title: "Agencies average $42K in credits", description: "Custom tools, automation development, and client solution R&D qualify", avgSavings: "$42K" },
       ecommerce: { title: "E-commerce businesses average $31K in credits", description: "Inventory management systems, AI chatbots, and personalization tools qualify", avgSavings: "$31K" },
-      consulting: { title: "Consultants average $22K in credits", description: "Custom methodologies, AI tools, and process improvements qualify", avgSavings: "$22K" },
+      consulting: { title: "Consultants average $22K in credits", description: "ChatGPT for research, custom analysis tools, and client methodology development qualify", avgSavings: "$22K" },
       manufacturing: { title: "Manufacturers average $127K in credits", description: "Process optimization, IoT systems, and quality control automation qualify", avgSavings: "$127K" },
       healthcare: { title: "Healthcare practices average $64K in credits", description: "Patient management systems, AI diagnostics, and workflow automation qualify", avgSavings: "$64K" }
     };
     
-    return valueProp[industry] || { title: "Small businesses average $31K in credits", description: "AI tools, automation, and process improvements typically qualify", avgSavings: "$31K" };
+    return valueProp[industry] || { title: "Small businesses average $31K in credits", description: "ChatGPT, automation tools, and business process improvements typically qualify", avgSavings: "$31K" };
   };
 
   // Render current step
@@ -1292,7 +1292,7 @@ const CreditCalculator = () => {
                     Get <span className="text-yellow-300">$25K+</span> Back from the IRS
                   </h1>
                   <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-                    Small businesses using AI tools can claim <strong className="text-white">substantial R&D tax credits</strong>. Get everything ready to <strong className="text-yellow-200">hand directly to your CPA</strong> for a <strong className="text-yellow-200">beautiful IRS refund check</strong> 
+                    Small businesses using ChatGPT, automation, and AI tools can claim <strong className="text-white">substantial R&D tax credits</strong>. Get everything ready to <strong className="text-yellow-200">hand directly to your CPA</strong> for a <strong className="text-yellow-200">beautiful IRS refund check</strong> 
                   </p>
                   
                   {/* Social Proof Badges */}
@@ -1545,7 +1545,7 @@ const CreditCalculator = () => {
                   )}
                 </h2>
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                  Include all time and money spent on AI tools, custom GPTs, chatbots, automations, and process improvements
+                  Include all time and money spent on ChatGPT, automation tools, custom workflows, and business improvements
                   {formData.selectedYears.length > 1 && (
                     <span className="block text-blue-600 font-medium mt-2">
                       Currently entering data for {currentYear}
@@ -1558,7 +1558,7 @@ const CreditCalculator = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
                 <div className="bg-blue-50 rounded-xl p-4">
                   <div className="text-2xl font-bold text-blue-600">90%</div>
-                  <div className="text-sm text-blue-700">of AI tool costs qualify</div>
+                  <div className="text-sm text-blue-700">of ChatGPT & AI tool costs qualify</div>
                 </div>
                 <div className="bg-green-50 rounded-xl p-4">
                   <div className="text-2xl font-bold text-green-600">65%</div>
@@ -1658,7 +1658,7 @@ const CreditCalculator = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      <span>Integrating AI tools into workflows</span>
+                      <span>Using ChatGPT to improve business processes</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
@@ -1847,7 +1847,7 @@ const CreditCalculator = () => {
 
             <div className="bg-blue-50 p-4 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>💡 Pro tip:</strong> Include ALL experimentation time — testing prompts, trying different AI tools, and failed attempts all count as R&D!
+                <strong>💡 Pro tip:</strong> Include ALL experimentation time — testing ChatGPT prompts, trying different automation tools, and failed attempts all count as R&D!
               </p>
             </div>
 
@@ -2436,7 +2436,7 @@ const CreditCalculator = () => {
                             : results.section174ABenefit || 0
                         )}
                       </div>
-                      <div className="text-green-100 font-medium">Section 174A</div>
+                      <div className="text-green-100 font-medium">Tax Deduction</div>
                       {formData.selectedYears && formData.selectedYears.length > 1 && (
                         <div className="text-xs text-green-200 mt-1">Tax deduction</div>
                       )}
@@ -3390,7 +3390,7 @@ const CreditCalculator = () => {
                         <h4 className="font-medium mb-2">Federal R&D Credit Calculation (Tax Year {formData.selectedYears[0]})</h4>
                         <div className="space-y-1 text-sm">
                           <div className="flex justify-between">
-                            <span>QRE × {((results.federal.rate || 0) * 100).toFixed(1)}% credit rate</span>
+                            <span>Qualified expenses × {((results.federal.rate || 0) * 100).toFixed(1)}% credit rate</span>
                             <span>{formatCurrency(results.federal.creditAmount || 0)}</span>
                           </div>
                           {results.federal.isStartupEligible && (
@@ -3415,7 +3415,7 @@ const CreditCalculator = () => {
                       )}
                       
                       <div>
-                        <h4 className="font-medium mb-2">Section 174A Immediate Deduction (Tax Year {formData.selectedYears[0]})</h4>
+                        <h4 className="font-medium mb-2">Additional Tax Deduction Benefit (Tax Year {formData.selectedYears[0]})</h4>
                         <div className="space-y-1 text-sm">
                           <div className="flex justify-between">
                             <span>R&D expenses × 21% tax rate</span>

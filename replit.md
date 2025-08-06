@@ -18,6 +18,7 @@ Preferred communication style: Simple, everyday language.
 
 ## UI Component System
 - **Advanced Design System**: Professional-grade component library with fluid typography (Inter + SF Pro Display), enhanced color palette with warmer neutrals, and comprehensive spacing system based on 8px grid
+- **Primary Component Classes**: Structured CSS component system with `.btn-primary` for main CTAs, `.btn-secondary` for alternate actions, `.card-results` for output displays, `.form-field` for all inputs, and `.status-badge` for indicators
 - **Shadcn/UI Components**: Comprehensive set of accessible, customizable UI components built on Radix UI primitives with enhanced animations
 - **Motion-Enabled Tailwind CSS**: Extended utility-first CSS framework with comprehensive animation system, easing functions, and interaction states
 - **Component Architecture**: Modular, reusable components with sophisticated hover states, loading animations, and micro-interactions

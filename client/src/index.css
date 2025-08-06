@@ -471,6 +471,238 @@ select.input-enhanced.text-xl:focus {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
 }
 
+/* ========================================
+   COMPONENT CLASS SYSTEM
+   Primary patterns for consistent styling
+   ======================================== */
+
+/* Button System */
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-semibold text-xl shadow-lg transition-all duration-300;
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  transform: translateZ(0); /* Enable hardware acceleration */
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--easing-natural);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) translateZ(0);
+  box-shadow: 
+    0 10px 20px rgba(59, 130, 246, 0.3),
+    0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover::before {
+  opacity: 1;
+}
+
+.btn-primary:active {
+  transform: translateY(-1px) translateZ(0);
+  transition: transform var(--duration-fast) var(--easing-natural);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-primary:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium text-lg border-2 transition-all duration-300;
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--neutral-300);
+  color: var(--neutral-700);
+  backdrop-filter: blur(8px);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* Card System */
+.card-results {
+  @apply rounded-2xl border transition-all duration-500;
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: 
+    0 8px 25px -5px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-results::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.05) 0%, 
+    rgba(16, 185, 129, 0.05) 50%, 
+    rgba(34, 197, 94, 0.05) 100%);
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--easing-natural);
+}
+
+.card-results:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 20px 40px -12px rgba(0, 0, 0, 0.15),
+    0 8px 16px -4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+}
+
+.card-results:hover::before {
+  opacity: 1;
+}
+
+/* Form Field System */
+.form-field {
+  @apply w-full rounded-xl border transition-all duration-300 focus:outline-none;
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--neutral-200);
+  color: var(--foreground);
+  padding: 16px 20px;
+  font-weight: 500;
+  font-size: inherit;
+  font-family: inherit;
+  box-shadow: 
+    inset 2px 2px 6px rgba(0, 0, 0, 0.05),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.8),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.form-field:hover:not(:focus) {
+  background: rgba(255, 255, 255, 1);
+  border-color: var(--neutral-300);
+  transform: translateY(-1px);
+  box-shadow: 
+    inset 2px 2px 6px rgba(0, 0, 0, 0.06),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.85),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.form-field:focus {
+  background: rgba(255, 255, 255, 1);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 1px 1px 4px rgba(0, 0, 0, 0.08),
+    inset -1px -1px 4px rgba(255, 255, 255, 0.9),
+    0 0 0 3px hsla(214, 100%, 48%, 0.1),
+    0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.form-field::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+  font-weight: 400;
+}
+
+.form-field:focus::placeholder {
+  opacity: 0.7;
+}
+
+/* Select Field Enhancement */
+select.form-field {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 12px center !important;
+  background-repeat: no-repeat !important;
+  background-size: 16px !important;
+  padding-right: 40px !important;
+  cursor: pointer;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+}
+
+select.form-field:focus {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+}
+
+/* Status Badge System */
+.status-badge {
+  @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold border transition-all duration-200;
+  background: var(--background);
+  border-color: var(--border);
+  color: var(--foreground);
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Status Badge Variants */
+.status-badge.success {
+  background: linear-gradient(135deg, 
+    hsl(142, 72%, 96%) 0%, 
+    hsl(142, 60%, 94%) 100%);
+  color: hsl(142, 72%, 29%);
+  border-color: hsl(142, 60%, 85%);
+}
+
+.status-badge.warning {
+  background: linear-gradient(135deg, 
+    hsl(38, 92%, 96%) 0%, 
+    hsl(38, 80%, 94%) 100%);
+  color: hsl(38, 92%, 30%);
+  border-color: hsl(38, 80%, 85%);
+}
+
+.status-badge.info {
+  background: linear-gradient(135deg, 
+    hsl(203, 89%, 96%) 0%, 
+    hsl(203, 80%, 94%) 100%);
+  color: hsl(203, 89%, 35%);
+  border-color: hsl(203, 80%, 85%);
+}
+
+.status-badge.error {
+  background: linear-gradient(135deg, 
+    hsl(0, 84%, 96%) 0%, 
+    hsl(0, 70%, 94%) 100%);
+  color: hsl(0, 84%, 45%);
+  border-color: hsl(0, 70%, 85%);
+}
+
+.status-badge.premium {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
 /* Advanced Animation Keyframes */
 @keyframes shimmer {
   0% { background-position: -200% 0; }

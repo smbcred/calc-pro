@@ -691,7 +691,7 @@ const CreditCalculator = () => {
           <span className="text-lg">👨‍💼</span>
           <div className="text-xs text-gray-600">
             <strong className="text-gray-900">"My CPA never mentioned this"</strong>
-            <p>Most CPAs focus on basic taxes - R&D credits require specialized knowledge</p>
+            <p>We include a CPA cover letter explaining everything professionally</p>
           </div>
         </div>
       </div>
@@ -1956,6 +1956,79 @@ const CreditCalculator = () => {
                         <span>Complete documentation package to support your filing</span>
                       </div>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* What SMBs Really Want to Know */}
+              <div className="card-elevated border border-blue-200 p-8 mt-8 bg-gradient-to-br from-blue-50 to-green-50">
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">What Small Business Owners Really Want to Know</h3>
+                  <p className="text-gray-600">Simple answers to your practical questions</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Users className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h5 className="font-bold text-gray-900 mb-2">"How do I explain this to my CPA?"</h5>
+                        <p className="text-sm text-gray-700">
+                          <strong className="text-green-600">We include a CPA cover letter</strong> explaining everything in professional terms. Your CPA gets organized documentation that makes their job easier.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <AlertTriangle className="w-5 h-5 text-orange-600" />
+                      </div>
+                      <div>
+                        <h5 className="font-bold text-gray-900 mb-2">"What if I already filed my taxes?"</h5>
+                        <p className="text-sm text-gray-700">
+                          <strong className="text-green-600">You can amend returns for 3 years.</strong> We help you file amendments to claim missed credits from previous years.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Clock className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <h5 className="font-bold text-gray-900 mb-2">"Can I claim past years I missed?"</h5>
+                        <p className="text-sm text-gray-700">
+                          <strong className="text-green-600">Yes! Go back 3 years.</strong> Many clients recover $50K+ in missed credits from previous years of AI and automation work.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <FileText className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <h5 className="font-bold text-gray-900 mb-2">"What records do I need to keep?"</h5>
+                        <p className="text-sm text-gray-700">
+                          <strong className="text-green-600">Checklist included for record keeping.</strong> Simple checklist shows exactly what to save for future audits.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-4 border border-green-200">
+                  <div className="text-center">
+                    <p className="font-semibold text-gray-900 mb-1">✅ Everything handled for you</p>
+                    <p className="text-sm text-gray-700">CPA cover letter + amendment support + record-keeping checklist + professional documentation</p>
                   </div>
                 </div>
               </div>

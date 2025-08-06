@@ -94,6 +94,17 @@
   /* Reading Optimization */
   --reading-measure: 65ch;     /* Optimal reading line length */
   --reading-measure-wide: 75ch; /* Wide reading measure */
+  
+  /* Motion Design System */
+  --easing-natural: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --easing-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --easing-sharp: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  
+  --duration-fast: 150ms;      /* Quick micro-interactions */
+  --duration-normal: 300ms;    /* Standard transitions */
+  --duration-slow: 500ms;      /* Deliberate animations */
+  --duration-deliberate: 700ms; /* Emphasis animations */
 }
 
 .dark {
@@ -219,39 +230,60 @@
     background: linear-gradient(135deg, var(--neutral-100) 0%, hsl(210, 25%, 97%) 100%);
   }
   
-  /* Enhanced Card System - 5 Elevation Levels */
+  /* Enhanced Card System - 5 Elevation Levels with Motion */
   .card-flat {
     background-color: var(--card);
     border: 1px solid var(--neutral-200);
-    @apply rounded-2xl transition-all duration-300;
+    border-radius: 1rem;
+    transition: all var(--duration-normal) var(--easing-natural);
   }
   
   .card-low {
     background-color: var(--card);
     border: 1px solid var(--neutral-200);
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    @apply rounded-2xl transition-all duration-300;
+    border-radius: 1rem;
+    transition: all var(--duration-normal) var(--easing-natural);
   }
   
   .card-medium {
     background-color: var(--card);
     border: 1px solid var(--neutral-200);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    @apply rounded-2xl transition-all duration-300;
+    border-radius: 1rem;
+    transition: all var(--duration-normal) var(--easing-natural);
   }
   
   .card-high {
     background-color: var(--card);
     border: 1px solid var(--neutral-200);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    @apply rounded-2xl transition-all duration-300;
+    border-radius: 1rem;
+    transition: all var(--duration-normal) var(--easing-natural);
   }
   
   .card-highest {
     background-color: var(--card);
     border: 1px solid var(--neutral-200);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    @apply rounded-2xl transition-all duration-300;
+    border-radius: 1rem;
+    transition: all var(--duration-normal) var(--easing-natural);
+  }
+  
+  /* Enhanced Card Hover States */
+  .card-interactive {
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--easing-natural);
+  }
+  
+  .card-interactive:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+      0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+      0 10px 10px -5px rgba(0, 0, 0, 0.04),
+      0 0 0 2px var(--blue-primary),
+      0 0 20px rgba(59, 130, 246, 0.15);
+    border-color: var(--blue-primary);
   }
   
   /* Glass Morphism Cards */
@@ -309,21 +341,45 @@
     @apply card-medium;
   }
   
-  /* Enhanced Button System */
+  /* Enhanced Button System with Advanced Motion */
   .btn-primary {
-    @apply text-white font-semibold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:ring-4 focus:ring-offset-2 relative overflow-hidden;
+    @apply text-white font-semibold py-4 px-8 rounded-xl shadow-lg relative overflow-hidden;
     background: var(--gradient-primary);
     box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all var(--duration-normal) var(--easing-natural);
+    position: relative;
+  }
+  
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-primary-hover);
+    opacity: 0;
+    transition: opacity var(--duration-normal) var(--easing-natural);
   }
   
   .btn-primary:hover {
-    background: var(--gradient-primary-hover);
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 
+      0 15px 25px -5px rgba(0, 0, 0, 0.15),
+      0 0 20px rgba(59, 130, 246, 0.3);
+    animation: buttonBounce var(--duration-fast) var(--easing-bounce);
+  }
+  
+  .btn-primary:hover::before {
+    opacity: 1;
   }
   
   .btn-primary:active {
     transform: translateY(-1px) scale(0.98);
-    transition: transform 0.1s ease;
+    transition: transform var(--duration-fast) var(--easing-sharp);
+  }
+  
+  @keyframes buttonBounce {
+    0%, 100% { transform: translateY(-2px) scale(1.02); }
+    50% { transform: translateY(-3px) scale(1.03); }
   }
   
   .btn-primary:focus {
@@ -874,5 +930,187 @@
     50% { transform: scale(1.05) rotate(-5deg); }
     75% { transform: scale(1.02) rotate(2deg); }
     100% { transform: scale(1) rotate(0deg); }
+  }
+  
+  /* Advanced Interactive Elements */
+  
+  /* Enhanced Link Animations */
+  .link-animated {
+    position: relative;
+    text-decoration: none;
+    transition: color var(--duration-normal) var(--easing-natural);
+  }
+  
+  .link-animated::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+    transition: width var(--duration-normal) var(--easing-natural);
+  }
+  
+  .link-animated:hover {
+    color: var(--blue-primary);
+  }
+  
+  .link-animated:hover::after {
+    width: 100%;
+  }
+  
+  /* Icon Animations */
+  .icon-interactive {
+    transition: all var(--duration-normal) var(--easing-bounce);
+    transform-origin: center;
+  }
+  
+  .icon-interactive:hover {
+    transform: scale(1.1) rotate(5deg);
+    color: var(--blue-primary);
+  }
+  
+  .icon-spin:hover {
+    transform: rotate(180deg) scale(1.1);
+  }
+  
+  /* Stagger Animation System */
+  .stagger-container .stagger-item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: staggerIn var(--duration-slow) var(--easing-natural) forwards;
+  }
+  
+  .stagger-container .stagger-item:nth-child(1) { animation-delay: 0ms; }
+  .stagger-container .stagger-item:nth-child(2) { animation-delay: 100ms; }
+  .stagger-container .stagger-item:nth-child(3) { animation-delay: 200ms; }
+  .stagger-container .stagger-item:nth-child(4) { animation-delay: 300ms; }
+  .stagger-container .stagger-item:nth-child(5) { animation-delay: 400ms; }
+  .stagger-container .stagger-item:nth-child(6) { animation-delay: 500ms; }
+  
+  @keyframes staggerIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Advanced Loading States */
+  .skeleton-wave {
+    background: linear-gradient(
+      90deg, 
+      var(--neutral-200) 25%, 
+      var(--neutral-100) 50%, 
+      var(--neutral-200) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeletonWave 1.5s infinite;
+    border-radius: 0.5rem;
+  }
+  
+  @keyframes skeletonWave {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  
+  /* Determinate Progress Bar */
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: var(--neutral-200);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: width var(--duration-slow) var(--easing-natural);
+    position: relative;
+  }
+  
+  .progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    animation: progressShine 2s infinite;
+  }
+  
+  @keyframes progressShine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  
+  /* Success Celebrations */
+  .success-checkmark {
+    animation: checkmarkDraw 0.6s var(--easing-natural) forwards;
+  }
+  
+  @keyframes checkmarkDraw {
+    0% {
+      stroke-dasharray: 0 50;
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dasharray: 50 50;
+      stroke-dashoffset: 0;
+    }
+  }
+  
+  .success-confetti {
+    animation: confetti 0.8s var(--easing-bounce);
+  }
+  
+  @keyframes confetti {
+    0% {
+      transform: scale(0) rotate(0deg);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.2) rotate(180deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) rotate(360deg);
+      opacity: 1;
+    }
+  }
+  
+  /* Error Shake with Recovery */
+  .error-shake {
+    animation: errorShake 0.5s var(--easing-sharp);
+  }
+  
+  @keyframes errorShake {
+    0%, 20%, 40%, 60%, 80%, 100% {
+      transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(-4px);
+    }
+    15%, 35%, 55%, 75%, 95% {
+      transform: translateX(4px);
+    }
+  }
+  
+  .recovery-bounce {
+    animation: recoveryBounce 0.6s var(--easing-bounce) 0.5s forwards;
+  }
+  
+  @keyframes recoveryBounce {
+    0% { transform: scale(0.9); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
   }
 }

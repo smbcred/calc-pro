@@ -1,0 +1,38 @@
+R&D Tax Credit Explainer Content for Step 1
+Suggested Placement: After ValueProps, Before QualificationQuickCheck
+Here's the content section to add:
+
+🎯 The Opportunity: Why This Credit Is Now For You
+The R&D Tax Credit: From Big Business Secret to Small Business Goldmine
+For decades, the R&D tax credit was corporate America's best-kept secret — claimed almost exclusively by Fortune 500 companies with teams of specialized tax attorneys. Small businesses were left out, thinking R&D meant lab coats and test tubes.
+Everything changed with two major shifts:
+1. The AI Revolution Hit Main Street
+
+87% of small businesses now use AI tools for daily operations (2024 SMB Tech Report)
+3.2x increase in ChatGPT adoption by businesses under $5M revenue since 2023
+62% of SMBs spend 10+ hours weekly on AI-powered improvements
+The average small business uses 4.7 different AI tools (up from 0.3 in 2022)
+
+2. Congress Opened the Door Wide
+The new tax law specifically expanded what qualifies as R&D:
+
+✅ Process improvements using AI (even 10% efficiency gains count)
+✅ Experimenting with ChatGPT prompts to improve outcomes
+✅ Building automations to solve business problems
+✅ Testing new software to enhance operations
+
+The IRS is preparing for a surge:
+
+Expected 400% increase in small business R&D claims by 2026
+New guidance specifically mentions "AI prompt engineering" as qualifying
+Simplified documentation requirements for businesses under $5M revenue
+$2.3 billion in unclaimed credits by small businesses in 2023 alone
+
+Why Most SMBs Miss Out:
+"My CPA never mentioned it" — Traditional CPAs focus on standard deductions, not specialized credits
+"We're too small" — False! There's no minimum size. Even solopreneurs qualify
+"R&D sounds too complex" — Using ChatGPT to improve your business IS modern R&D
+"We just use AI, not build it" — Perfect! Testing and implementing AI tools is exactly what qualifies
+The Bottom Line:
+If you've spent time figuring out how to use AI to improve your business — whether that's writing better emails with ChatGPT, automating tasks with Zapier, or analyzing data in new ways — you've been doing R&D.
+The government wants to reward you for innovation. You just need to claim it.

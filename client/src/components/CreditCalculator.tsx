@@ -2735,7 +2735,7 @@ const CreditCalculator = () => {
                           </div>
                           <div className="text-lg font-bold text-orange-700 mb-2">Return on Investment</div>
                           <div className="text-sm text-orange-600">
-                            Your ${getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1).toLocaleString()} investment → {formatCurrency(results.totalBenefit)} in tax savings
+                            Your {formatCurrency(getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1))} investment → {formatCurrency(results.totalBenefit)} in tax savings
                           </div>
                         </div>
                       </div>
@@ -2792,7 +2792,7 @@ const CreditCalculator = () => {
                         {/* Button Animation */}
                         <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-blue-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                         <div className="relative z-10 flex items-center justify-center gap-3">
-                          <span>🚀 Claim My ${formatCurrency(results.totalBenefit)} Tax Credit</span>
+                          <span>🚀 Claim My {formatCurrency(results.totalBenefit)} Tax Credit</span>
                           <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                         </div>
                         <div className="text-sm font-medium mt-1 opacity-90">Instant access • Ready in 2-3 weeks</div>
@@ -2834,18 +2834,18 @@ const CreditCalculator = () => {
                           <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2">
                             <CheckCircle className="w-6 h-6 text-green-600" />
                           </div>
-                          <div className="text-xs font-bold text-gray-800">Money-Back</div>
-                          <div className="text-xs text-gray-600">60-day guarantee</div>
+                          <div className="text-xs font-bold text-gray-800">Quality Service</div>
+                          <div className="text-xs text-gray-600">Document preparation</div>
                         </div>
                       </div>
                       
-                      {/* Risk Reversal Guarantee */}
+                      {/* Value Highlights */}
                       <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-4 text-center border border-green-300">
-                        <div className="font-bold text-green-800 mb-2">🛡️ TRIPLE GUARANTEE</div>
+                        <div className="font-bold text-green-800 mb-2">📋 WHAT YOU GET</div>
                         <div className="text-sm text-green-700 space-y-1">
-                          <div>✅ Get at least 3x your investment back or full refund</div>
-                          <div>✅ Complete audit protection & defense included</div>
-                          <div>✅ Your CPA will thank you for the professional package</div>
+                          <div>✅ Complete forms package ready for filing</div>
+                          <div>✅ Supporting documentation and calculations</div>
+                          <div>✅ Step-by-step filing instructions included</div>
                         </div>
                       </div>
                     </div>
@@ -3133,7 +3133,7 @@ const CreditCalculator = () => {
                         <p className="text-sm text-gray-700 leading-relaxed">
                           IRS direct deposits your refund - recent clients averaged 8.2 weeks
                         </p>
-                        <div className="mt-2 text-xs text-purple-600 font-medium">💰 ${formatCurrency(results.totalBenefit)} coming your way</div>
+                        <div className="mt-2 text-xs text-purple-600 font-medium">💰 {formatCurrency(results.totalBenefit)} coming your way</div>
                       </div>
                     </div>
                   </div>
@@ -3169,9 +3169,9 @@ const CreditCalculator = () => {
                           <AlertTriangle className="w-5 h-5 text-red-600" />
                         </div>
                         <div>
-                          <h5 className="font-bold text-gray-900 mb-2">"What if the IRS audits me?"</h5>
+                          <h5 className="font-bold text-gray-900 mb-2">"What if the IRS has questions?"</h5>
                           <p className="text-sm text-gray-700">
-                            <strong className="text-green-600">Great news:</strong> Our package includes bulletproof audit protection. In 5+ years and 3,847+ claims, we've never lost an audit. You get complete defense documentation and our expert guidance if questioned.
+                            <strong className="text-green-600">Good question:</strong> Our package includes thorough documentation and supporting materials. Everything is organized to help you respond to any IRS inquiries with proper records.
                           </p>
                         </div>
                       </div>
@@ -3185,7 +3185,7 @@ const CreditCalculator = () => {
                         <div>
                           <h5 className="font-bold text-gray-900 mb-2">"How quickly can I get my refund?"</h5>
                           <p className="text-sm text-gray-700">
-                            Most clients file within <strong>24-48 hours</strong> of receiving our package. The IRS typically processes refunds in <strong>6-12 weeks</strong>. One recent client got ${formatCurrency(34000)} in just 8 weeks!
+                            Most clients file within <strong>24-48 hours</strong> of receiving our package. The IRS typically processes refunds in <strong>6-12 weeks</strong>. One recent client got {formatCurrency(34000)} in just 8 weeks!
                           </p>
                         </div>
                       </div>
@@ -3197,9 +3197,9 @@ const CreditCalculator = () => {
                           <Shield className="w-5 h-5 text-green-600" />
                         </div>
                         <div>
-                          <h5 className="font-bold text-gray-900 mb-2">"What if I don't get 3x my investment?"</h5>
+                          <h5 className="font-bold text-gray-900 mb-2">"What if my situation is different?"</h5>
                           <p className="text-sm text-gray-700">
-                            <strong className="text-green-600">100% money-back guarantee.</strong> If your credit is less than 3x our fee, we refund everything. No questions, no hassle. That's how confident we are in your success.
+                            <strong className="text-green-600">Every business is unique.</strong> Our package includes detailed instructions for various scenarios and business types. You'll have everything needed to adapt to your specific situation.
                           </p>
                         </div>
                       </div>
@@ -3213,7 +3213,7 @@ const CreditCalculator = () => {
                         <div>
                           <h5 className="font-bold text-gray-900 mb-2">"Will my CPA be okay with this?"</h5>
                           <p className="text-sm text-gray-700">
-                            CPAs <strong>love</strong> our professional packages! Everything is IRS-compliant and ready to file. You're bringing them a perfectly prepared, profitable project instead of hours of research work.
+                            Most CPAs appreciate <strong>organized documentation</strong>! Everything follows IRS guidelines and comes ready to file. You're bringing them prepared materials instead of asking them to start from scratch.
                           </p>
                         </div>
                       </div>
@@ -3230,7 +3230,7 @@ const CreditCalculator = () => {
                           <div className="text-green-600">Success Rate</div>
                         </div>
                         <div>
-                          <div className="font-bold text-blue-700">${formatCurrency(7420)}</div>
+                          <div className="font-bold text-blue-700">{formatCurrency(7420)}</div>
                           <div className="text-blue-600">Average Credit</div>
                         </div>
                         <div>
@@ -3445,7 +3445,7 @@ const CreditCalculator = () => {
                   </div>
                   <div className="flex-1">
                     <blockquote className="text-lg text-gray-800 italic mb-3">
-                      "Just got our ${formatCurrency(18500)} refund deposited yesterday! My CPA was amazed at how professional and complete everything was. The whole process took me 3 hours total - best ROI we've ever seen."
+                      "Just got our {formatCurrency(18500)} refund deposited yesterday! My CPA was amazed at how organized and complete everything was. The whole process took me 3 hours total - best ROI we've ever seen."
                     </blockquote>
                     <div className="text-sm text-gray-600">
                       <strong>— Michael Rodriguez</strong>, SaaS Startup Founder
@@ -3479,8 +3479,8 @@ const CreditCalculator = () => {
                   <div className="text-xs text-gray-700 leading-relaxed">
                     <p className="font-semibold mb-2">Quick Legal Notes:</p>
                     <p>
-                      This service prepares professional tax documents for R&D credit claims. We provide forms and documentation - not tax advice. 
-                      <strong className="text-green-700"> Perfect to hand to your CPA or file yourself.</strong> Calculations are estimates based on your input.
+                      This service prepares tax documents for R&D credit claims. We provide forms and documentation - not tax advice. 
+                      <strong className="text-green-700"> Ready to hand to your CPA or file yourself.</strong> Calculations are estimates based on your input.
                       <span className="text-blue-600 font-medium"> Questions? Call (555) 123-R&D anytime.</span>
                     </p>
                   </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, Info, Users, Package, AlertCircle, ChevronRight, ChevronLeft, Building, Shield, Lock, CheckCircle, Clock, TrendingUp, FileText, Share2, Zap, Calendar, AlertTriangle, Quote } from 'lucide-react';
+import { Calculator, Info, Users, Package, AlertCircle, ChevronRight, ChevronLeft, Building, Shield, Lock, CheckCircle, Clock, TrendingUp, FileText, Share2, Zap, Calendar, AlertTriangle, Quote, Check, Trophy, DollarSign, Target } from 'lucide-react';
 
 const CreditCalculator = () => {
   // State for calculator inputs
@@ -2756,220 +2756,242 @@ const CreditCalculator = () => {
                   </div>
                 </div>
 
-                {/* TIME SAVINGS COMPARISON - New prominent section */}
-                <div className="bg-gradient-to-r from-red-50 to-green-50 border-2 border-orange-300 rounded-xl p-8 mb-6">
-                  <h3 className="text-2xl font-bold text-center mb-6 text-gray-900">⏰ Time Investment: DIY vs Our Service</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* DIY Column */}
-                    <div className="bg-red-100 rounded-xl p-6 border-2 border-red-300">
-                      <h4 className="text-xl font-bold text-red-800 text-center mb-4">😰 Do It Yourself</h4>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between items-center py-2 border-b border-red-200">
-                          <span>Understand IRS Rules (§41, §174)</span>
-                          <span className="font-bold text-red-700">5-10 hrs</span>
-                        </div>
-                        <div className="flex justify-between items-center py-2 border-b border-red-200">
-                          <span>Determine Eligibility & 4-part test</span>
-                          <span className="font-bold text-red-700">2-4 hrs</span>
-                        </div>
-                        <div className="flex justify-between items-center py-2 border-b border-red-200">
-                          <span>Aggregate Financial Data</span>
-                          <span className="font-bold text-red-700">3-8 hrs</span>
-                        </div>
-                        <div className="flex justify-between items-center py-2 border-b border-red-200">
-                          <span>Build Expense Documentation</span>
-                          <span className="font-bold text-red-700">2-5 hrs</span>
-                        </div>
-                        <div className="flex justify-between items-center py-2 border-b border-red-200">
-                          <span>Write Technical Justification</span>
-                          <span className="font-bold text-red-700">5-10 hrs</span>
-                        </div>
-                        <div className="flex justify-between items-center py-2 border-b border-red-200">
-                          <span>Complete IRS Form 6765</span>
-                          <span className="font-bold text-red-700">2-4 hrs</span>
-                        </div>
-                        <div className="flex justify-between items-center py-2 border-b border-red-200">
-                          <span>Review & Cross-check</span>
-                          <span className="font-bold text-red-700">1-2 hrs</span>
-                        </div>
-                        <div className="flex justify-between items-center py-2">
-                          <span>Maintain Audit Documentation</span>
-                          <span className="font-bold text-red-700">2-5 hrs</span>
-                        </div>
-                      </div>
-                      <div className="mt-4 pt-4 border-t-2 border-red-300 text-center">
-                        <div className="text-2xl font-black text-red-600">25-50 HOURS</div>
-                        <div className="text-sm text-red-700 mt-1">Plus risk of errors & audits</div>
-                      </div>
-                    </div>
-
-                    {/* Our Service Column */}
-                    <div className="bg-green-100 rounded-xl p-6 border-2 border-green-400">
-                      <h4 className="text-xl font-bold text-green-800 text-center mb-4">😎 Our Service</h4>
-                      <div className="space-y-4 text-sm">
-                        <div className="bg-green-200 rounded-lg p-4 text-center">
-                          <div className="text-4xl font-black text-green-700 mb-2">2-3 WEEKS</div>
-                          <div className="text-green-800 font-medium">Complete professional package</div>
-                        </div>
-                        
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">✓</span>
-                            </div>
-                            <span className="font-medium">All IRS rules applied correctly</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">✓</span>
-                            </div>
-                            <span className="font-medium">Eligibility analysis included</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">✓</span>
-                            </div>
-                            <span className="font-medium">Expense categorization done</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">✓</span>
-                            </div>
-                            <span className="font-medium">Technical narrative written</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">✓</span>
-                            </div>
-                            <span className="font-medium">Form 6765 completed</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">✓</span>
-                            </div>
-                            <span className="font-medium">Audit protection included</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-4 pt-4 border-t-2 border-green-400 text-center">
-                        <div className="text-lg font-bold text-green-800">YOUR TIME INVESTMENT:</div>
-                        <div className="text-2xl font-black text-green-600">1-2 HOURS</div>
-                        <div className="text-sm text-green-700 mt-1">Just answer our questions</div>
-                      </div>
-                    </div>
+                {/* ENHANCED TIME SAVINGS COMPARISON */}
+                <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-green-50 border border-slate-200 rounded-2xl p-8 mb-8 shadow-xl">
+                  {/* Background Pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <div className="absolute top-0 left-0 w-40 h-40 bg-blue-500 rounded-full -translate-x-20 -translate-y-20"></div>
+                    <div className="absolute bottom-0 right-0 w-32 h-32 bg-green-500 rounded-full translate-x-16 translate-y-16"></div>
                   </div>
 
-                  {/* Bottom Impact Statement */}
-                  <div className="mt-6 text-center">
-                    <div className="inline-flex items-center gap-3 bg-yellow-100 border-2 border-yellow-400 rounded-full px-6 py-3">
-                      <span className="text-2xl">⚡</span>
-                      <span className="text-lg font-bold text-yellow-800">
-                        Save 25-50+ hours of complex tax work
-                      </span>
+                  <div className="relative z-10">
+                    <div className="text-center mb-8">
+                      <div className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full px-6 py-3 mb-4 shadow-lg">
+                        <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-green-500 rounded-full flex items-center justify-center">
+                          <Clock className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-slate-800">Time Investment: DIY vs Our Service</h3>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      {/* DIY Column - Enhanced */}
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl transform rotate-1"></div>
+                        <div className="relative bg-white rounded-2xl p-6 border-2 border-red-300 shadow-lg">
+                          <div className="text-center mb-6">
+                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                              <span className="text-3xl">😰</span>
+                            </div>
+                            <h4 className="text-2xl font-bold text-red-800">Do It Yourself</h4>
+                            <p className="text-sm text-red-600 mt-1">The hard way</p>
+                          </div>
+                          
+                          <div className="space-y-3 mb-6">
+                            {[
+                              { task: "Understand IRS Rules (§41, §174)", hours: "5-10 hrs" },
+                              { task: "Determine Eligibility & 4-part test", hours: "2-4 hrs" },
+                              { task: "Aggregate Financial Data", hours: "3-8 hrs" },
+                              { task: "Build Expense Documentation", hours: "2-5 hrs" },
+                              { task: "Write Technical Justification", hours: "5-10 hrs" },
+                              { task: "Complete IRS Form 6765", hours: "2-4 hrs" },
+                              { task: "Review & Cross-check", hours: "1-2 hrs" },
+                              { task: "Maintain Audit Documentation", hours: "2-5 hrs" }
+                            ].map((item, index) => (
+                              <div key={index} className="flex justify-between items-start py-2 border-b border-red-100 last:border-b-0">
+                                <span className="text-sm text-gray-700 flex-1 pr-3">{item.task}</span>
+                                <span className="font-bold text-red-700 text-sm whitespace-nowrap">{item.hours}</span>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          <div className="bg-red-50 rounded-xl p-4 border-2 border-red-200 text-center">
+                            <div className="text-3xl font-black text-red-600 mb-1">25-50+ HOURS</div>
+                            <div className="text-sm text-red-700">Plus risk of errors & IRS audits</div>
+                          </div>
+                        </div>
+                      </div>
 
-                {/* TIME SAVINGS & COMPETITIVE ADVANTAGE */}
-                <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6">
-                  <h4 className="font-bold text-gray-900 mb-4 text-center">⏰ Why Choose Our Service?</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <h5 className="font-semibold text-green-800">Save Massive Time & Effort:</h5>
-                      <ul className="text-sm text-gray-700 space-y-2">
-                        <li className="flex items-start gap-2">
-                          <span className="text-green-600 mt-0.5">✓</span>
-                          <span><strong>Complete in 1-2 hours</strong> vs. 25-50+ hours doing it yourself</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-green-600 mt-0.5">✓</span>
-                          <span><strong>Delivered in 24-48 hours</strong> vs. weeks with traditional firms</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-green-600 mt-0.5">✓</span>
-                          <span><strong>No research required</strong> — we handle all IRS complexity</span>
-                        </li>
-                      </ul>
+                      {/* Our Service Column - Enhanced */}
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl transform -rotate-1"></div>
+                        <div className="relative bg-white rounded-2xl p-6 border-2 border-green-400 shadow-lg">
+                          <div className="text-center mb-6">
+                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                              <span className="text-3xl">😎</span>
+                            </div>
+                            <h4 className="text-2xl font-bold text-green-800">Our Service</h4>
+                            <p className="text-sm text-green-600 mt-1">The smart way</p>
+                          </div>
+
+                          <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-6 mb-6 border border-green-200">
+                            <div className="text-center">
+                              <div className="text-4xl font-black bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">
+                                2-3 WEEKS
+                              </div>
+                              <div className="text-green-800 font-medium">Complete professional package delivered</div>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 gap-3 mb-6">
+                            {[
+                              "All IRS rules applied correctly",
+                              "Eligibility analysis included", 
+                              "Expense categorization done",
+                              "Technical narrative written",
+                              "Form 6765 completed",
+                              "Audit protection included"
+                            ].map((item, index) => (
+                              <div key={index} className="flex items-center gap-3">
+                                <div className="w-7 h-7 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-sm">
+                                  <Check className="w-4 h-4 text-white font-bold" />
+                                </div>
+                                <span className="text-sm font-medium text-gray-700">{item}</span>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          <div className="bg-green-50 rounded-xl p-4 border-2 border-green-300 text-center">
+                            <div className="text-lg font-bold text-green-800 mb-1">YOUR TIME INVESTMENT:</div>
+                            <div className="text-3xl font-black text-green-600 mb-1">1-2 HOURS</div>
+                            <div className="text-sm text-green-700">Just answer our questions</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="space-y-3">
-                      <h5 className="font-semibold text-blue-800">Industry Cost Comparison:</h5>
-                      <div className="bg-white rounded-lg p-4 text-sm space-y-2">
-                        <div className="grid grid-cols-3 gap-2 text-xs font-semibold text-gray-600 border-b pb-1">
-                          <span>Provider</span>
-                          <span>Typical Fee</span>
-                          <span>Your Cost</span>
+
+                    {/* Enhanced Impact Statement */}
+                    <div className="mt-8 text-center">
+                      <div className="inline-flex items-center gap-4 bg-gradient-to-r from-yellow-100 to-orange-100 border-2 border-yellow-300 rounded-2xl px-8 py-4 shadow-lg">
+                        <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center">
+                          <Zap className="w-6 h-6 text-white" />
                         </div>
-                        <div className="grid grid-cols-3 gap-2 text-xs">
-                          <span>Big CPA Firms</span>
-                          <span className="text-red-600">15-35%</span>
-                          <span className="font-bold text-red-600">${Math.round(results.totalBenefit * 0.25).toLocaleString()}</span>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 text-xs">
-                          <span>Small Business CPAs</span>
-                          <span className="text-red-600">10-20%</span>
-                          <span className="font-bold text-red-600">${Math.round(results.totalBenefit * 0.15).toLocaleString()}</span>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 text-xs border-t pt-1">
-                          <span className="font-bold">Our Flat Fee</span>
-                          <span className="font-bold text-green-600">Fixed</span>
-                          <span className="font-bold text-green-600">${getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1).toLocaleString()}</span>
-                        </div>
-                        <div className="bg-green-100 p-2 rounded text-center mt-2">
-                          <span className="font-bold text-green-800">You save: ${(Math.round(results.totalBenefit * 0.15) - getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1)).toLocaleString()}</span>
+                        <div className="text-left">
+                          <div className="text-xl font-bold text-yellow-900">Save 25-50+ hours</div>
+                          <div className="text-sm text-yellow-800">of complex tax work & research</div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* CPA FIRM COMPARISON TABLE */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                  <h4 className="font-bold text-blue-900 mb-4 text-center">Why Choose Us Over Specialty Tax Firms?</h4>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead className="bg-blue-100 rounded-lg">
-                        <tr>
-                          <th className="text-left p-3 rounded-l-lg">Service</th>
-                          <th className="text-center p-3 text-blue-800 font-bold">Our Service</th>
-                          <th className="text-center p-3 rounded-r-lg">Specialty CPAs & Payroll Firms</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white">
-                        <tr className="border-b border-blue-100">
-                          <td className="p-3 font-medium">Cost</td>
-                          <td className="p-3 text-center text-green-600 font-bold">${getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1).toLocaleString()}</td>
-                          <td className="p-3 text-center text-red-600">
-                            $${formData.selectedYears && formData.selectedYears.length > 1 
-                              ? (6000 * formData.selectedYears.length).toLocaleString()
-                              : '6,000'} - $${formData.selectedYears && formData.selectedYears.length > 1 
-                              ? (12000 * formData.selectedYears.length).toLocaleString()
-                              : '12,000'}
-                          </td>
-                        </tr>
-                        <tr className="border-b border-blue-100">
-                          <td className="p-3 font-medium">Timeline</td>
-                          <td className="p-3 text-center text-green-600 font-bold">2-3 weeks</td>
-                          <td className="p-3 text-center text-red-600">2-4 months</td>
-                        </tr>
-                        <tr className="border-b border-blue-100">
-                          <td className="p-3 font-medium">Process</td>
-                          <td className="p-3 text-center text-green-600 font-bold">Streamlined questionnaire</td>
-                          <td className="p-3 text-center text-red-600">Multiple meetings & reviews</td>
-                        </tr>
-                        <tr className="border-b border-blue-100">
-                          <td className="p-3 font-medium">Audit Protection</td>
-                          <td className="p-3 text-center text-green-600 font-bold">✓ Included</td>
-                          <td className="p-3 text-center text-red-600">Extra $1,500+</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-medium">CPA Integration</td>
-                          <td className="p-3 text-center text-green-600 font-bold">✓ Ready-to-file package</td>
-                          <td className="p-3 text-center text-red-600">Additional coordination needed</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                {/* COMBINED: WHY CHOOSE OUR SERVICE - Enhanced */}
+                <div className="bg-gradient-to-br from-slate-50 to-blue-50 border border-slate-200 rounded-2xl p-8 mb-8 shadow-lg">
+                  <div className="text-center mb-8">
+                    <div className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full px-6 py-3 mb-2 shadow-sm">
+                      <Trophy className="w-6 h-6 text-blue-600" />
+                      <h3 className="text-2xl font-bold text-slate-800">Why Choose Our Service?</h3>
+                    </div>
+                    <p className="text-slate-600">Compare us to traditional options</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    {/* Time & Process Benefits */}
+                    <div className="space-y-4">
+                      <h4 className="text-lg font-bold text-green-800 flex items-center gap-2">
+                        <Clock className="w-5 h-5" />
+                        Massive Time & Effort Savings
+                      </h4>
+                      <div className="space-y-3">
+                        {[
+                          { text: "Complete in 1-2 hours", detail: "vs. 25-50+ hours doing it yourself" },
+                          { text: "Delivered in 2-3 weeks", detail: "vs. 2-4 months with traditional firms" },
+                          { text: "No research required", detail: "we handle all IRS complexity" },
+                          { text: "Ready-to-file package", detail: "your CPA can submit immediately" },
+                          { text: "100% audit protection", detail: "we defend you if questioned" }
+                        ].map((item, index) => (
+                          <div key={index} className="flex items-start gap-3 p-3 bg-white/60 rounded-lg border border-green-100">
+                            <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <Check className="w-3 h-3 text-white" />
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-900">{item.text}</span>
+                              <div className="text-sm text-gray-600">{item.detail}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Cost Comparison */}
+                    <div className="space-y-4">
+                      <h4 className="text-lg font-bold text-blue-800 flex items-center gap-2">
+                        <DollarSign className="w-5 h-5" />
+                        Cost Comparison vs Competitors
+                      </h4>
+                      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead className="bg-slate-100">
+                              <tr>
+                                <th className="text-left p-4 font-semibold text-slate-700">Provider Type</th>
+                                <th className="text-center p-4 font-semibold text-slate-700">Typical Cost</th>
+                                <th className="text-center p-4 font-semibold text-slate-700">Timeline</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr className="border-b border-slate-100">
+                                <td className="p-4 text-slate-700">Specialty CPAs</td>
+                                <td className="p-4 text-center text-red-600 font-semibold">
+                                  $${formData.selectedYears && formData.selectedYears.length > 1 
+                                    ? (8000 * formData.selectedYears.length).toLocaleString()
+                                    : '8,000'} - $${formData.selectedYears && formData.selectedYears.length > 1 
+                                    ? (15000 * formData.selectedYears.length).toLocaleString()
+                                    : '15,000'}+
+                                </td>
+                                <td className="p-4 text-center text-red-600">2-4 months</td>
+                              </tr>
+                              <tr className="border-b border-slate-100">
+                                <td className="p-4 text-slate-700">Big CPA Firms</td>
+                                <td className="p-4 text-center text-red-600 font-semibold">
+                                  15-35% of credit
+                                </td>
+                                <td className="p-4 text-center text-red-600">3-6 months</td>
+                              </tr>
+                              <tr className="bg-green-50">
+                                <td className="p-4 text-slate-700 font-semibold">Our Service</td>
+                                <td className="p-4 text-center text-green-600 font-bold text-lg">
+                                  ${getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1).toLocaleString()}
+                                </td>
+                                <td className="p-4 text-center text-green-600 font-semibold">2-3 weeks</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div className="bg-gradient-to-r from-green-100 to-blue-100 p-4 text-center border-t border-slate-200">
+                          <div className="text-lg font-bold text-slate-800">
+                            💰 You save: $${((formData.selectedYears && formData.selectedYears.length > 1 
+                              ? (8000 * formData.selectedYears.length) 
+                              : 8000) - getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1)).toLocaleString()}+ vs specialists
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Key Differentiators */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-gradient-to-br from-green-100 to-green-50 rounded-xl p-6 border border-green-200">
+                      <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mb-4">
+                        <Shield className="w-6 h-6 text-white" />
+                      </div>
+                      <h5 className="font-bold text-green-900 mb-2">Audit Protection</h5>
+                      <p className="text-sm text-green-800">Included at no extra cost vs $1,500+ with other firms</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl p-6 border border-blue-200">
+                      <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4">
+                        <Users className="w-6 h-6 text-white" />
+                      </div>
+                      <h5 className="font-bold text-blue-900 mb-2">CPA Integration</h5>
+                      <p className="text-sm text-blue-800">Ready-to-file package vs additional coordination needed</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-purple-100 to-purple-50 rounded-xl p-6 border border-purple-200">
+                      <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mb-4">
+                        <Zap className="w-6 h-6 text-white" />
+                      </div>
+                      <h5 className="font-bold text-purple-900 mb-2">Streamlined Process</h5>
+                      <p className="text-sm text-purple-800">Simple questionnaire vs multiple meetings & reviews</p>
+                    </div>
                   </div>
                 </div>
 

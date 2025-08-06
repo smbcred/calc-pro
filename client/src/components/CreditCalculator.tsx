@@ -2014,7 +2014,13 @@ const CreditCalculator = () => {
                   {/* Enhanced Value Breakdown with Distinct Colors */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 text-center">
-                      <div className="text-3xl font-bold mb-2">{formatCurrency(results.federal.creditAmount || 0)}</div>
+                      <div className="text-3xl font-bold mb-2">
+                        {formatCurrency(
+                          formData.selectedYears && formData.selectedYears.length > 1 
+                            ? (results.federal.creditAmount || 0) + ((results.federal.creditAmount || 0) * 0.8 * ((formData.selectedYears?.length || 1) - 1))
+                            : results.federal.creditAmount || 0
+                        )}
+                      </div>
                       <div className="text-blue-100 font-medium">Federal Credit</div>
                       {formData.selectedYears && formData.selectedYears.length > 1 && (
                         <div className="text-xs text-blue-200 mt-1">{formData.selectedYears.length} years</div>
@@ -2022,7 +2028,13 @@ const CreditCalculator = () => {
                     </div>
                     
                     <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 text-center">
-                      <div className="text-3xl font-bold mb-2">{formatCurrency(results.section174ABenefit || 0)}</div>
+                      <div className="text-3xl font-bold mb-2">
+                        {formatCurrency(
+                          formData.selectedYears && formData.selectedYears.length > 1 
+                            ? (results.section174ABenefit || 0) + ((results.section174ABenefit || 0) * 0.8 * ((formData.selectedYears?.length || 1) - 1))
+                            : results.section174ABenefit || 0
+                        )}
+                      </div>
                       <div className="text-green-100 font-medium">Section 174A</div>
                       {formData.selectedYears && formData.selectedYears.length > 1 && (
                         <div className="text-xs text-green-200 mt-1">Tax deduction</div>
@@ -2109,36 +2121,45 @@ const CreditCalculator = () => {
                             )}
                           </p>
                           
-                          {/* Year-by-year breakdown for multi-year */}
+                          {/* Simplified multi-year package display */}
                           {formData.selectedYears && formData.selectedYears.length > 1 && (
-                            <div className="mt-3 space-y-2">
-                              <div className="text-xs font-semibold text-green-800 mb-2">Year-by-Year Breakdown:</div>
-                              {formData.selectedYears.map((year, index) => {
-                                const isFirstYear = index === 0;
-                                const yearPrice = isFirstYear 
-                                  ? getTieredPricing(results.totalCredit, 1) 
-                                  : Math.round(getTieredPricing(results.totalCredit, 1) * (1 - getMultiYearDiscount(formData.selectedYears.length)));
-                                const discount = isFirstYear ? 0 : getMultiYearDiscount(formData.selectedYears.length);
-                                
-                                return (
-                                  <div key={year} className="flex justify-between items-center text-xs">
-                                    <span className="text-green-700">
-                                      {year} {isFirstYear ? '(Current)' : '(Additional)'}
-                                    </span>
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-green-900 font-medium">${yearPrice.toLocaleString()}</span>
-                                      {!isFirstYear && (
-                                        <span className="text-green-600">({Math.round(discount * 100)}% off)</span>
-                                      )}
-                                    </div>
+                            <div className="mt-3">
+                              <div className="text-sm text-green-700 mb-2">
+                                Per Year Cost: <span className="font-bold">
+                                  ${Math.round(getTieredPricing(results.totalCredit, formData.selectedYears.length) / formData.selectedYears.length).toLocaleString()}
+                                </span>
+                              </div>
+                              
+                              {/* Savings callout */}
+                              <div className="bg-green-100 border border-green-300 rounded-lg p-2 mb-2">
+                                <div className="text-xs font-semibold text-green-800">
+                                  ✓ You Save ${calculateMultiYearSavings(
+                                    getTieredPricing(results.totalCredit, 1), 
+                                    formData.selectedYears.length
+                                  ).toLocaleString()} with multi-year package
+                                </div>
+                                <div className="text-xs text-green-600">
+                                  Individual years would cost ${(getTieredPricing(results.totalCredit, 1) * formData.selectedYears.length).toLocaleString()}
+                                </div>
+                              </div>
+                              
+                              {/* What's included */}
+                              <div className="text-xs text-green-700 space-y-1">
+                                <div className="font-semibold mb-1">What's Included:</div>
+                                {formData.selectedYears.map((year, index) => (
+                                  <div key={year} className="flex items-center gap-1">
+                                    <span className="text-green-600">✓</span>
+                                    <span>{year} Tax Year - {index === 0 ? 'Current filing' : index === formData.selectedYears.length - 1 ? 'Retroactive recovery' : 'Amended return'}</span>
                                   </div>
-                                );
-                              })}
-                              <div className="text-xs text-green-600 mt-2 pt-2 border-t border-green-200">
-                                ✅ Total multi-year discount: ${calculateMultiYearSavings(
-                                  getTieredPricing(results.totalCredit, 1), 
-                                  formData.selectedYears.length
-                                ).toLocaleString()} saved
+                                ))}
+                                <div className="flex items-center gap-1 mt-1 pt-1 border-t border-green-200">
+                                  <span className="text-green-600">✓</span>
+                                  <span>All forms, narratives, and documentation</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-green-600">✓</span>
+                                  <span>Step-by-step filing instructions</span>
+                                </div>
                               </div>
                             </div>
                           )}

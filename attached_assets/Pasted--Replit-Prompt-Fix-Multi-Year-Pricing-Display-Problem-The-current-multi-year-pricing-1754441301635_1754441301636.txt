@@ -1,0 +1,92 @@
+## **Replit Prompt: Fix Multi-Year Pricing Display**
+
+### **Problem**
+The current multi-year pricing breakdown shows confusing individual year discounts that don't make mathematical sense. We need a cleaner, clearer pricing display.
+
+### **Solution Requirements**
+Replace the current year-by-year breakdown with a simpler package-based pricing display that:
+1. Shows one clear total price
+2. Emphasizes savings without confusing math
+3. Makes the value proposition immediately obvious
+4. Reduces cognitive load on the customer
+
+### **Implementation**
+
+Replace the current pricing section in Step 4 results with this structure:
+
+```
+4-Year Federal Package
+[Subtitle: IRS Form 6765 + complete documentation • All years included]
+
+[Large Price Display]
+Your Investment: $2,250
+Per Year Cost: $563
+
+[Savings Callout - Green background]
+✓ You Save $750 with multi-year package
+(Individual years would cost $3,000)
+
+[What's Included - Simple list]
+✓ 2022 Tax Year - Retroactive recovery
+✓ 2023 Tax Year - Amended return
+✓ 2024 Tax Year - Recent credits  
+✓ 2025 Tax Year - Current filing
+✓ All forms, narratives, and documentation
+✓ Step-by-step filing instructions
+
+[Optional: Add State Package]
++ Add [State] Credits (2025 only): $225
+```
+
+### **Key Changes**
+1. **Remove** individual year pricing breakdown
+2. **Show** total package price prominently  
+3. **Add** per-year cost to make it feel affordable
+4. **Highlight** total savings in dollars (not percentages)
+5. **List** what's included without prices
+6. **Keep** state add-on separate and simple
+
+### **Pricing Logic to Implement**
+```javascript
+// Calculate package price based on selected years and tier
+const getPackagePrice = (tier, years) => {
+  const basePrice = getTierPrice(tier);
+  const multipliers = {
+    1: 1.0,
+    2: 1.7,
+    3: 2.4,
+    4: 3.0
+  };
+  return basePrice * multipliers[years];
+};
+
+// Calculate savings
+const getSavings = (tier, years) => {
+  const basePrice = getTierPrice(tier);
+  const individualCost = basePrice * years;
+  const packagePrice = getPackagePrice(tier, years);
+  return individualCost - packagePrice;
+};
+
+// Get per-year cost
+const getPerYearCost = (tier, years) => {
+  return Math.round(getPackagePrice(tier, years) / years);
+};
+```
+
+### **Visual Design Notes**
+- Use large, bold font for total price
+- Make "per year" cost smaller but visible
+- Use green for savings callout
+- Keep included items as simple checkmarks
+- Don't show math or calculations
+- State add-on appears only if current year is selected
+
+### **Copy Guidelines**
+- Use "Investment" instead of "Cost"
+- Say "You Save" not "Discount"
+- List years by name, not just numbers
+- Emphasize "complete" and "all included"
+- Keep language simple and benefit-focused
+
+This approach eliminates confusion while maintaining transparency about what customers receive for their investment.

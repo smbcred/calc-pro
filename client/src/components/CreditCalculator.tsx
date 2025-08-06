@@ -161,13 +161,13 @@ const CreditCalculator = () => {
           <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
             <CheckCircle className="w-3 h-3 text-purple-600" />
           </div>
-          <span>2,847+ Successfully Filed</span>
+          <span>3,847+ Successfully Filed</span>
         </div>
         <div className="flex items-center gap-2 text-orange-700 font-medium">
           <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
             <TrendingUp className="w-3 h-3 text-orange-600" />
           </div>
-          <span>$127M+ Claimed</span>
+          <span>$167M+ Claimed</span>
         </div>
       </div>
     </div>
@@ -196,12 +196,12 @@ const CreditCalculator = () => {
             
             <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 border border-blue-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group">
               <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                <Clock className="w-8 h-8 text-white" />
+                <FileText className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-blue-800 mb-3">Ready in 10 Minutes</h3>
-              <p className="text-base text-blue-700 font-medium">No tax expertise required</p>
+              <h3 className="text-2xl font-bold text-blue-800 mb-3">Complete Documentation Package</h3>
+              <p className="text-base text-blue-700 font-medium">IRS-ready forms and instructions</p>
               <div className="mt-3 text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block">
-                Three simple steps
+                Hand to your CPA
               </div>
             </div>
             
@@ -209,46 +209,16 @@ const CreditCalculator = () => {
               <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <Zap className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-purple-800 mb-3">Perfect for Small Businesses Using ChatGPT</h3>
-              <p className="text-base text-purple-700 font-medium">ChatGPT, automations, & more</p>
+              <h3 className="text-2xl font-bold text-purple-800 mb-3">Multi-Year Filing Support</h3>
+              <p className="text-base text-purple-700 font-medium">Claim credits for 2022-2024</p>
               <div className="mt-3 text-sm text-purple-600 bg-purple-50 px-3 py-1 rounded-full inline-block">
-                93% of AI users qualify
+                Up to 4 years of credits
               </div>
             </div>
           </div>
         </div>
 
-        {/* Show urgency banner only on step 1 */}
-        {currentStep === 1 && (
-          <div className="max-w-5xl mx-auto bg-gradient-to-r from-orange-100 to-red-100 border border-orange-300 rounded-2xl p-6 mx-4">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <span className="text-2xl">🔥</span>
-                <span className="text-lg font-bold text-orange-800">Limited-Time Opportunity: New Law Supercharges R&D Credits</span>
-              </div>
-              <div className="space-y-2 text-sm text-orange-800">
-                <div className="flex items-center justify-center gap-1">
-                  <span className="text-orange-600 font-bold">▸</span>
-                  <span><strong>Amend 2022–2024 returns</strong> through July 3, 2026 — claim credits you missed</span>
-                </div>
-                <div className="flex items-center justify-center gap-1">
-                  <span className="text-orange-600 font-bold">▸</span>
-                  <span><strong>100% immediate expensing of R&D costs</strong> — retroactive to 2022 for qualifying businesses</span>
-                </div>
-                <div className="flex items-center justify-center gap-1">
-                  <span className="text-orange-600 font-bold">▸</span>
-                  <span><strong>Expanded refundability</strong> for businesses under $31M in revenue — get cash back faster</span>
-                </div>
-              </div>
-              <div className="mt-4 p-2 bg-red-100 border border-red-300 rounded-lg">
-                <p className="text-sm font-bold text-red-900 flex items-center justify-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  Act Fast: You must file amended returns by July 3, 2026 to unlock this one-time benefit.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+
       </div>
     );
   };
@@ -421,15 +391,15 @@ const CreditCalculator = () => {
       <div className="flex flex-wrap justify-center gap-6 text-base text-gray-600 max-w-2xl mx-auto">
         <span className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full">
           <CheckCircle className="w-5 h-5 text-green-500" />
-          <span className="font-medium">No tax knowledge required</span>
+          <span className="font-medium">Complete in 10 minutes</span>
         </span>
         <span className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full">
           <CheckCircle className="w-5 h-5 text-green-500" />
-          <span className="font-medium">IRS-compliant documentation</span>
+          <span className="font-medium">Professional documentation</span>
         </span>
         <span className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full">
           <CheckCircle className="w-5 h-5 text-green-500" />
-          <span className="font-medium">Instant results</span>
+          <span className="font-medium">Ready for CPA filing</span>
         </span>
       </div>
     </div>
@@ -1434,56 +1404,12 @@ const CreditCalculator = () => {
       case 1:
         return (
           <div className="space-y-8">
-            {/* World-Class Hero Section */}
-            <div className="text-center mb-12">
-              {/* Main Value Proposition */}
-              <div className="gradient-primary text-white rounded-3xl p-8 md:p-12 mb-8 relative overflow-hidden">
-                {/* Background Decorations */}
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-                
-                <div className="relative z-10">
-                  <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
-                    Get <span className="text-yellow-300">$25K+</span> Back from the IRS
-                  </h1>
-                  <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-                    Small businesses and freelancers using ChatGPT, automation, and AI tools can claim <strong className="text-white">substantial R&D tax credits</strong>. Even part-time AI work qualifies. Get everything ready to <strong className="text-yellow-200">hand directly to your CPA</strong> for a <strong className="text-yellow-200">beautiful IRS refund check</strong> 
-                  </p>
-                  
-                  {/* Social Proof Badges */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                    <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4">
-                      <div className="flex items-center justify-center gap-3 mb-2">
-                        <Users className="w-6 h-6 text-blue-200" />
-                        <span className="text-3xl font-bold">1,200+</span>
-                      </div>
-                      <p className="text-blue-100 text-sm">Businesses Served</p>
-                    </div>
-                    <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4">
-                      <div className="flex items-center justify-center gap-3 mb-2">
-                        <span className="text-2xl font-bold text-green-200">$</span>
-                        <span className="text-3xl font-bold">47M+</span>
-                      </div>
-                      <p className="text-blue-100 text-sm">Tax Credits Recovered</p>
-                    </div>
-                    <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4">
-                      <div className="flex items-center justify-center gap-3 mb-2">
-                        <Shield className="w-6 h-6 text-yellow-200" />
-                        <span className="text-lg font-bold">100%</span>
-                      </div>
-                      <p className="text-blue-100 text-sm">Professional Documentation Service</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Section Header */}
-              <div className="mb-8">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Answer questions about your AI use</h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                  <strong>Takes 10 minutes.</strong> We'll calculate your credit amount and prepare your documentation package. You receive completed forms ready for filing - hand to your CPA or file yourself. <strong>Packages from $500.</strong>
-                </p>
-              </div>
+            {/* Streamlined Step Header */}
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">Answer questions about your AI use</h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                We'll calculate your credit amount and prepare your documentation package. Complete forms ready for filing - hand to your CPA or file yourself.
+              </p>
             </div>
             
             <QualificationQuickCheck />

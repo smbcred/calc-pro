@@ -1473,13 +1473,13 @@ const CreditCalculator = () => {
                   </span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     min="0"
                     value={formData.grossReceipts}
                     onChange={(e) => updateFormData('grossReceipts', e.target.value)}
-                    className="input-enhanced pl-11 text-xl"
+                    className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400 text-xl"
                     placeholder="1,000,000"
                   />
                 </div>
@@ -1680,7 +1680,7 @@ const CreditCalculator = () => {
                   <InfoTooltip text="Total wages for employees who work on AI projects, automation, or tech improvements (we'll calculate the R&D portion next)" />
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     min="0"
@@ -1689,7 +1689,7 @@ const CreditCalculator = () => {
                       ...prev,
                       [currentYear]: { ...prev[currentYear], w2Wages: e.target.value }
                     }))}
-                    className="input-enhanced pl-11 text-xl"
+                    className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400 text-xl"
                     placeholder="50,000"
                   />
                 </div>
@@ -1736,7 +1736,7 @@ const CreditCalculator = () => {
                   <InfoTooltip text="Total paid to developers, AI consultants, automation experts, or anyone helping build your tech" />
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     min="0"
@@ -1745,7 +1745,7 @@ const CreditCalculator = () => {
                       ...prev,
                       [currentYear]: { ...prev[currentYear], contractorCosts: e.target.value }
                     }))}
-                    className="input-enhanced pl-11 text-xl"
+                    className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400 text-xl"
                     placeholder="20,000"
                   />
                 </div>
@@ -1787,7 +1787,7 @@ const CreditCalculator = () => {
                   <InfoTooltip text="OpenAI API, AWS, Google Cloud, or any cloud services for your AI work" />
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     min="0"
@@ -1796,7 +1796,7 @@ const CreditCalculator = () => {
                       ...prev,
                       [currentYear]: { ...prev[currentYear], cloudCosts: e.target.value }
                     }))}
-                    className="input-enhanced pl-11"
+                    className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400"
                     placeholder="5,000"
                   />
                 </div>
@@ -1808,7 +1808,7 @@ const CreditCalculator = () => {
                   <InfoTooltip text="ChatGPT Plus, Claude Pro, Zapier, development tools, or any software for building" />
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     min="0"
@@ -1817,7 +1817,7 @@ const CreditCalculator = () => {
                       ...prev,
                       [currentYear]: { ...prev[currentYear], softwareLicenses: e.target.value }
                     }))}
-                    className="input-enhanced pl-11"
+                    className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400"
                     placeholder="2,000"
                   />
                 </div>
@@ -1829,7 +1829,7 @@ const CreditCalculator = () => {
                   <InfoTooltip text="Hardware, testing tools, or any other supplies for your tech work" />
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     min="0"
@@ -1838,7 +1838,7 @@ const CreditCalculator = () => {
                       ...prev,
                       [currentYear]: { ...prev[currentYear], supplies: e.target.value }
                     }))}
-                    className="input-enhanced pl-11"
+                    className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400"
                     placeholder="3,000"
                   />
                 </div>
@@ -2102,13 +2102,13 @@ const CreditCalculator = () => {
                       Prior Year Credit Amount
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                      <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                       <input
                         type="number"
                         min="0"
                         value={formData.priorYearAmount}
                         onChange={(e) => updateFormData('priorYearAmount', e.target.value)}
-                        className="input-enhanced pl-11"
+                        className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400"
                         placeholder="10,000"
                       />
                     </div>

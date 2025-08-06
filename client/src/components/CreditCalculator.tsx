@@ -1899,32 +1899,6 @@ const CreditCalculator = () => {
                 </div>
               </div>
               
-              {/* Why CPAs Don't Mention This - Before Email Capture */}
-              <div className="card-elevated border-l-4 border-orange-500 p-8 mb-8 bg-gradient-to-r from-orange-50 to-yellow-50">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                    <AlertTriangle className="w-6 h-6 text-orange-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-orange-900 mb-4">
-                      "Why didn't my CPA bring this up?"
-                    </h3>
-                    <div className="space-y-3 text-orange-800">
-                      <p className="leading-relaxed">
-                        <strong>Most CPAs focus on basic tax preparation</strong> – they handle your 1040s, business deductions, and quarterly filings. R&D tax credits are a specialized area requiring different expertise.
-                      </p>
-                      <p className="leading-relaxed">
-                        It's like asking your family doctor to perform surgery. They're excellent at what they do, but <strong>R&D credits require specialized knowledge</strong> of IRS Section 41, qualification criteria, and proper documentation.
-                      </p>
-                      <div className="bg-orange-100 rounded-xl p-4 mt-4">
-                        <p className="font-medium text-orange-900 mb-2">The good news:</p>
-                        <p className="text-sm">Once we prepare everything, your CPA can file it easily – we provide all the forms, calculations, and documentation they need. <strong>Result: a check or direct deposit from the U.S. Treasury.</strong></p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {/* Email Capture Form */}
               <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-xl">
                 <h3 className="text-2xl font-bold text-center mb-4">Get Your Complete Report</h3>
@@ -1973,6 +1947,32 @@ const CreditCalculator = () => {
                       <div className="flex items-center gap-2">
                         <Shield className="w-4 h-4 text-blue-600" />
                         <span>IRS audit protection included</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Why CPAs Don't Mention This - After Email Capture */}
+              <div className="card-elevated border-l-4 border-orange-500 p-8 mt-8 bg-gradient-to-r from-orange-50 to-yellow-50">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-orange-900 mb-4">
+                      "Why didn't my CPA bring this up?"
+                    </h3>
+                    <div className="space-y-3 text-orange-800">
+                      <p className="leading-relaxed">
+                        <strong>Most CPAs focus on traditional tax services</strong> – handling 1040s, business deductions, and quarterly filings. R&D tax credits are a specialized area that requires specific expertise and additional time investment.
+                      </p>
+                      <p className="leading-relaxed">
+                        Think of it like specialized medical care. Your general practitioner handles most health needs, but specialists focus on specific areas. <strong>R&D credits require deep knowledge</strong> of IRS Section 41, qualification criteria, and proper documentation.
+                      </p>
+                      <div className="bg-orange-100 rounded-xl p-4 mt-4">
+                        <p className="font-medium text-orange-900 mb-2">The collaborative approach:</p>
+                        <p className="text-sm">We handle the specialized R&D credit work, then provide your CPA with complete documentation for seamless filing. <strong>Result: A tax refund check or direct deposit from the U.S. Treasury.</strong></p>
                       </div>
                     </div>
                   </div>
@@ -2497,7 +2497,7 @@ const CreditCalculator = () => {
                     </h3>
                     <p className="text-gray-600">
                       Complete IRS documentation your CPA can file immediately - or you can self-file with confidence. 
-                      <span className="block mt-2 text-green-600 font-medium">Result: Beautiful check or direct deposit from the U.S. Treasury</span>
+                      <span className="block mt-2 text-green-600 font-medium">Result: Tax refund check or direct deposit from the U.S. Treasury</span>
                     </p>
                   </div>
 
@@ -2691,7 +2691,7 @@ const CreditCalculator = () => {
                       )}
                     </div>
 
-                    {/* Multi-Year Selection Section - Always visible for upselling */}
+                    {/* Combined Multi-Year Selection & Discount Section */}
                     <div className={`border-2 rounded-xl p-6 mb-6 ${
                       formData.selectedYears && formData.selectedYears.length === 1 
                         ? 'border-orange-200 bg-orange-50' 
@@ -2701,45 +2701,20 @@ const CreditCalculator = () => {
                         {formData.selectedYears && formData.selectedYears.length === 1 ? (
                           <>
                             <h3 className="text-xl font-bold text-orange-800 mb-2">🚀 Maximize Your Savings!</h3>
-                            <p className="text-orange-700">File multiple years and save big with our multi-year discount</p>
+                            <p className="text-orange-700">File multiple years and save up to 25% with our multi-year discount</p>
                           </>
                         ) : (
                           <>
-                            <h3 className="text-xl font-bold text-green-800 mb-2">📅 Multi-Year Filing Selected</h3>
-                            <p className="text-green-700">Great choice! You're saving with our multi-year discount</p>
+                            <h3 className="text-xl font-bold text-green-800 mb-2">📅 Multi-Year Filing: {Math.round(getMultiYearDiscount(formData.selectedYears?.length || 1) * 100)}% Discount Applied!</h3>
+                            <p className="text-green-700">You're saving ${calculateMultiYearSavings(
+                              getTieredPricing(results.totalCredit, 1), 
+                              formData.selectedYears?.length || 1
+                            ).toLocaleString()} vs individual year pricing</p>
                           </>
                         )}
                       </div>
                       
                       <MultiYearSelector />
-                      
-                      {/* Dynamic pricing preview */}
-                      <div className="mt-4 bg-white rounded-lg p-4 border border-gray-200">
-                        <div className="text-center">
-                          {formData.selectedYears && formData.selectedYears.length === 1 ? (
-                            <>
-                              <div className="text-lg font-bold text-green-600 mb-1">
-                                Save up to 25% with multi-year filing
-                              </div>
-                              <div className="text-sm text-gray-600">
-                                The more years you file, the bigger your discount
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <div className="text-lg font-bold text-green-600 mb-1">
-                                {Math.round(getMultiYearDiscount(formData.selectedYears?.length || 1) * 100)}% Multi-Year Discount Applied
-                              </div>
-                              <div className="text-sm text-gray-600">
-                                You're saving ${calculateMultiYearSavings(
-                                  getTieredPricing(results.totalCredit, 1), 
-                                  formData.selectedYears?.length || 1
-                                ).toLocaleString()} vs individual year pricing
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
                     </div>
                     
                     <button
@@ -2835,41 +2810,47 @@ const CreditCalculator = () => {
 
                 {/* CPA FIRM COMPARISON TABLE */}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                  <h4 className="font-bold text-blue-900 mb-4 text-center">Why Choose Us Over Big CPA Firms?</h4>
+                  <h4 className="font-bold text-blue-900 mb-4 text-center">Why Choose Us Over Specialty Tax Firms?</h4>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead className="bg-blue-100 rounded-lg">
                         <tr>
                           <th className="text-left p-3 rounded-l-lg">Service</th>
                           <th className="text-center p-3 text-blue-800 font-bold">Our Service</th>
-                          <th className="text-center p-3 rounded-r-lg">Big CPA Firms</th>
+                          <th className="text-center p-3 rounded-r-lg">Specialty CPAs & Payroll Firms</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white">
                         <tr className="border-b border-blue-100">
                           <td className="p-3 font-medium">Cost</td>
                           <td className="p-3 text-center text-green-600 font-bold">${getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1).toLocaleString()}</td>
-                          <td className="p-3 text-center text-red-600">$5,000 - $15,000</td>
+                          <td className="p-3 text-center text-red-600">
+                            $${formData.selectedYears && formData.selectedYears.length > 1 
+                              ? (6000 * formData.selectedYears.length).toLocaleString()
+                              : '6,000'} - $${formData.selectedYears && formData.selectedYears.length > 1 
+                              ? (12000 * formData.selectedYears.length).toLocaleString()
+                              : '12,000'}
+                          </td>
                         </tr>
                         <tr className="border-b border-blue-100">
                           <td className="p-3 font-medium">Timeline</td>
-                          <td className="p-3 text-center text-green-600 font-bold">5 minutes</td>
-                          <td className="p-3 text-center text-red-600">4-8 weeks</td>
+                          <td className="p-3 text-center text-green-600 font-bold">2-3 weeks</td>
+                          <td className="p-3 text-center text-red-600">2-4 months</td>
                         </tr>
                         <tr className="border-b border-blue-100">
                           <td className="p-3 font-medium">Process</td>
-                          <td className="p-3 text-center text-green-600 font-bold">Self-service</td>
-                          <td className="p-3 text-center text-red-600">Multiple meetings</td>
+                          <td className="p-3 text-center text-green-600 font-bold">Streamlined questionnaire</td>
+                          <td className="p-3 text-center text-red-600">Multiple meetings & reviews</td>
                         </tr>
                         <tr className="border-b border-blue-100">
                           <td className="p-3 font-medium">Audit Protection</td>
                           <td className="p-3 text-center text-green-600 font-bold">✓ Included</td>
-                          <td className="p-3 text-center text-red-600">Extra $2,000+</td>
+                          <td className="p-3 text-center text-red-600">Extra $1,500+</td>
                         </tr>
                         <tr>
-                          <td className="p-3 font-medium">Money-Back Guarantee</td>
-                          <td className="p-3 text-center text-green-600 font-bold">✓ 100%</td>
-                          <td className="p-3 text-center text-red-600">Limited</td>
+                          <td className="p-3 font-medium">CPA Integration</td>
+                          <td className="p-3 text-center text-green-600 font-bold">✓ Ready-to-file package</td>
+                          <td className="p-3 text-center text-red-600">Additional coordination needed</td>
                         </tr>
                       </tbody>
                     </table>

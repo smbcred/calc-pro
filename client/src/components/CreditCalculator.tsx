@@ -2430,6 +2430,43 @@ const CreditCalculator = () => {
                   </div>
                 </div>
 
+                {/* LLC/S-CORP PASS-THROUGH BENEFITS */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <h4 className="font-bold text-green-900 mb-3 text-center">🏢 LLC & S-Corp Owners: You Have Two Strategic Options</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div className="bg-white rounded-lg p-4 border border-green-300">
+                      <h5 className="font-semibold text-green-800 mb-2">Option 1: Personal Tax Return</h5>
+                      <ul className="text-green-700 space-y-1 mb-3">
+                        <li>• Credits "pass through" to your Form 1040</li>
+                        <li>• Reduces your personal income tax dollar-for-dollar</li>
+                        <li>• Use against taxes from all income sources</li>
+                        <li>• Carry forward up to 20 years if unused</li>
+                      </ul>
+                      <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
+                        Best for profitable owners with personal tax liability
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white rounded-lg p-4 border border-green-300">
+                      <h5 className="font-semibold text-green-800 mb-2">Option 2: Payroll Tax Offset</h5>
+                      <ul className="text-green-700 space-y-1 mb-3">
+                        <li>• Offset up to $500,000 against payroll taxes</li>
+                        <li>• Reduces employer Social Security & Medicare taxes</li>
+                        <li>• Available if under $5M revenue & under 5 years old</li>
+                        <li>• Get cash back even without income tax liability</li>
+                      </ul>
+                      <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
+                        Perfect for startups with payroll but no profits yet
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 p-3 bg-green-100 rounded-lg text-center">
+                    <p className="text-sm text-green-800 font-medium">
+                      💡 Our package includes guidance on which option maximizes your savings based on your situation
+                    </p>
+                  </div>
+                </div>
+
                 {/* WHAT YOU'LL NEED TO CLAIM YOUR REFUND */}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <h4 className="font-bold text-blue-900 mb-3 text-center">📋 What You'll Need to Claim Your Credit</h4>

@@ -1986,7 +1986,11 @@ const CreditCalculator = () => {
                       <span className="text-sm font-semibold">✨ Your Personalized Results</span>
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-                      You Could Save ${formatCurrency(results.totalBenefit || 0)}
+                      You Could Save {formatCurrency(
+                        formData.selectedYears && formData.selectedYears.length > 1 
+                          ? (results.totalBenefit || 0) + ((results.totalBenefit || 0) * 0.8 * ((formData.selectedYears?.length || 1) - 1))
+                          : results.totalBenefit || 0
+                      )}
                     </h2>
                     {formData.selectedYears && formData.selectedYears.length > 0 && (
                       <div className="text-lg text-blue-600 font-medium mb-2">
@@ -2051,10 +2055,15 @@ const CreditCalculator = () => {
                           )}
                         </div>
                         <div className="text-center">
-                          <div className="text-gray-600 text-sm mb-1">Average Per Year <span className="text-xs">(Estimate)</span></div>
-                          <div className="text-xl font-bold text-gray-900">{formatCurrency((results.totalBenefit || 0) / (formData.selectedYears?.length || 1))}</div>
+                          <div className="text-gray-600 text-sm mb-1">Total Multi-Year Benefit <span className="text-xs">(Estimate)</span></div>
+                          <div className="text-xl font-bold text-gray-900">
+                            {formatCurrency(
+                              (results.totalBenefit || 0) + // Current year
+                              ((results.totalBenefit || 0) * 0.8 * ((formData.selectedYears?.length || 1) - 1)) // Additional years at 80% estimate
+                            )}
+                          </div>
                           <div className="text-xs text-gray-500 mt-1">
-                            Based on current year data
+                            Current year + estimated additional years
                           </div>
                         </div>
                       </div>
@@ -2099,9 +2108,38 @@ const CreditCalculator = () => {
                               <span> • {formData.selectedYears.length} years of forms</span>
                             )}
                           </p>
+                          
+                          {/* Year-by-year breakdown for multi-year */}
                           {formData.selectedYears && formData.selectedYears.length > 1 && (
-                            <div className="text-xs text-green-600 mt-1">
-                              ✅ {Math.round(getMultiYearDiscount(formData.selectedYears.length) * 100)}% multi-year discount applied
+                            <div className="mt-3 space-y-2">
+                              <div className="text-xs font-semibold text-green-800 mb-2">Year-by-Year Breakdown:</div>
+                              {formData.selectedYears.map((year, index) => {
+                                const isFirstYear = index === 0;
+                                const yearPrice = isFirstYear 
+                                  ? getTieredPricing(results.totalCredit, 1) 
+                                  : Math.round(getTieredPricing(results.totalCredit, 1) * (1 - getMultiYearDiscount(formData.selectedYears.length)));
+                                const discount = isFirstYear ? 0 : getMultiYearDiscount(formData.selectedYears.length);
+                                
+                                return (
+                                  <div key={year} className="flex justify-between items-center text-xs">
+                                    <span className="text-green-700">
+                                      {year} {isFirstYear ? '(Current)' : '(Additional)'}
+                                    </span>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-green-900 font-medium">${yearPrice.toLocaleString()}</span>
+                                      {!isFirstYear && (
+                                        <span className="text-green-600">({Math.round(discount * 100)}% off)</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                              <div className="text-xs text-green-600 mt-2 pt-2 border-t border-green-200">
+                                ✅ Total multi-year discount: ${calculateMultiYearSavings(
+                                  getTieredPricing(results.totalCredit, 1), 
+                                  formData.selectedYears.length
+                                ).toLocaleString()} saved
+                              </div>
                             </div>
                           )}
                         </div>

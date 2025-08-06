@@ -141,15 +141,32 @@ const CreditCalculator = () => {
     return Math.max(0, Math.min(100, parsed)) / 100;
   };
 
-  // Enhanced Trust Bar Component with Social Proof
-  const TrustBar = () => (
-    <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-green-100 rounded-xl py-4 px-6 mb-8">
-      <div className="flex flex-wrap justify-center items-center gap-6 text-sm">
+  // Combined Trust & Benefits Section
+  const CombinedTrustSection = () => (
+    <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-green-100 rounded-2xl py-6 px-8 mb-8">
+      {/* Top Row - Process Benefits */}
+      <div className="flex flex-wrap justify-center items-center gap-8 text-base mb-4">
+        <span className="flex items-center gap-3 text-green-700 font-medium">
+          <CheckCircle className="w-5 h-5 text-green-600" />
+          <span>Complete in 10 minutes</span>
+        </span>
+        <span className="flex items-center gap-3 text-blue-700 font-medium">
+          <FileText className="w-5 h-5 text-blue-600" />
+          <span>Professional documentation</span>
+        </span>
+        <span className="flex items-center gap-3 text-purple-700 font-medium">
+          <Users className="w-5 h-5 text-purple-600" />
+          <span>Ready for CPA filing</span>
+        </span>
+      </div>
+      
+      {/* Bottom Row - Trust & Social Proof */}
+      <div className="flex flex-wrap justify-center items-center gap-8 text-sm pt-4 border-t border-green-200">
         <div className="flex items-center gap-2 text-green-700 font-medium">
           <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
             <Shield className="w-3 h-3 text-green-600" />
           </div>
-          <span>IRS Compliant Forms</span>
+          <span>IRS Compliant</span>
         </div>
         <div className="flex items-center gap-2 text-blue-700 font-medium">
           <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
@@ -161,7 +178,7 @@ const CreditCalculator = () => {
           <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
             <CheckCircle className="w-3 h-3 text-purple-600" />
           </div>
-          <span>3,847+ Successfully Filed</span>
+          <span>3,847+ Filed</span>
         </div>
         <div className="flex items-center gap-2 text-orange-700 font-medium">
           <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
@@ -388,20 +405,7 @@ const CreditCalculator = () => {
         automation tools, and AI in your business
       </p>
       
-      <div className="flex flex-wrap justify-center gap-6 text-base text-gray-600 max-w-2xl mx-auto">
-        <span className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full">
-          <CheckCircle className="w-5 h-5 text-green-500" />
-          <span className="font-medium">Complete in 10 minutes</span>
-        </span>
-        <span className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full">
-          <CheckCircle className="w-5 h-5 text-green-500" />
-          <span className="font-medium">Professional documentation</span>
-        </span>
-        <span className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full">
-          <CheckCircle className="w-5 h-5 text-green-500" />
-          <span className="font-medium">Ready for CPA filing</span>
-        </span>
-      </div>
+
     </div>
   );
 
@@ -3726,7 +3730,7 @@ const CreditCalculator = () => {
             
             <div className="relative z-10 px-8 py-12 md:px-12 md:py-16">
               <BrandingHeader />
-              <TrustBar />
+              <CombinedTrustSection />
               <ValueProps />
               
               {currentStep === 1 && <RDCreditExplainer />}

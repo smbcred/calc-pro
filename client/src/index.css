@@ -210,7 +210,7 @@
   }
   
   /* Enhanced Focus States */
-  button:focus-visible,
+  /* button:focus-visible, */
   input:focus-visible,
   select:focus-visible {
     @apply outline-none ring-4 ring-blue-500/20 ring-offset-2;
@@ -412,7 +412,8 @@
     @apply card-medium;
   }
   
-  /* Enhanced Button System with Advanced Motion */
+  /* Enhanced Button System - COMPLETELY DISABLED to fix Tailwind conflicts */
+  /*
   .btn-primary {
     @apply text-white font-semibold py-4 px-8 rounded-xl shadow-lg relative overflow-hidden;
     background: var(--gradient-primary);
@@ -425,18 +426,6 @@
     position: relative;
     z-index: 1;
   }
-  
-  /* Ensure regular buttons work correctly - DISABLED temporarily to fix conflicts */
-  /*
-  button:not(.btn-primary) {
-    position: relative;
-  }
-  
-  button:not(.btn-primary) * {
-    position: relative;
-    z-index: 1;
-  }
-  */
   
   .btn-primary::before {
     content: '';
@@ -470,12 +459,14 @@
     0%, 100% { transform: translateY(-2px) scale(1.02); }
     50% { transform: translateY(-3px) scale(1.03); }
   }
+  */
   
+  /* Button system completely disabled - references removed */
+  /*
   .btn-primary:focus {
     ring-color: hsl(214, 100%, 48%, 0.3);
   }
   
-  /* Success State Animation */
   .btn-success {
     @apply btn-primary;
     background: linear-gradient(135deg, var(--success), hsl(142, 72%, 35%));
@@ -488,12 +479,14 @@
     100% { transform: scale(1); }
   }
   
-  /* Loading State */
   .btn-loading {
     @apply btn-primary pointer-events-none;
     opacity: 0.7;
   }
+  */
   
+  /* ALL BUTTON CSS DISABLED to prevent Tailwind conflicts */
+  /*
   .btn-loading::after {
     content: '';
     position: absolute;
@@ -533,6 +526,7 @@
     transform: translateY(0) scale(0.98);
     transition: transform 0.1s ease;
   }
+  */
   
   /* Shimmer Loading Effect */
   .shimmer {

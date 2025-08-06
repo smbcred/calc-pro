@@ -421,6 +421,21 @@
     position: relative;
   }
   
+  .btn-primary * {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Ensure regular buttons work correctly */
+  button:not(.btn-primary) {
+    position: relative;
+  }
+  
+  button:not(.btn-primary) * {
+    position: relative;
+    z-index: 1;
+  }
+  
   .btn-primary::before {
     content: '';
     position: absolute;
@@ -428,6 +443,7 @@
     background: var(--gradient-primary-hover);
     opacity: 0;
     transition: opacity var(--duration-normal) var(--easing-natural);
+    z-index: 0;
   }
   
   .btn-primary:hover {

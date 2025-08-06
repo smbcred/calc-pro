@@ -205,7 +205,7 @@ const CreditCalculator = () => {
                 <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                   <span className="text-3xl font-bold text-white">$</span>
                 </div>
-                <h3 className="text-2xl font-bold text-green-800 mb-3">Average $25K+ Saved</h3>
+                <h3 className="text-2xl font-bold text-green-800 mb-3">$25K+ Average</h3>
                 <p className="text-base text-green-700 font-medium">Perfect for small businesses</p>
               </div>
               <div className="mt-3 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full inline-block">
@@ -218,7 +218,7 @@ const CreditCalculator = () => {
                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                   <FileText className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-blue-800 mb-3">Complete Documentation</h3>
+                <h3 className="text-2xl font-bold text-blue-800 mb-3">Ready Documentation</h3>
                 <p className="text-base text-blue-700 font-medium">IRS-ready forms and instructions</p>
               </div>
               <div className="mt-3 text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block">
@@ -231,7 +231,7 @@ const CreditCalculator = () => {
                 <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                   <Zap className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-purple-800 mb-3">Multi-Year Filing Support</h3>
+                <h3 className="text-2xl font-bold text-purple-800 mb-3">Multi-Year Filing</h3>
                 <p className="text-base text-purple-700 font-medium">Claim credits for 2022-2024</p>
               </div>
               <div className="mt-3 text-sm text-purple-600 bg-purple-50 px-3 py-1 rounded-full inline-block">

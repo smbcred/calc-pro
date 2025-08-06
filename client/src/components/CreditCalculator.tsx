@@ -141,27 +141,10 @@ const CreditCalculator = () => {
     return Math.max(0, Math.min(100, parsed)) / 100;
   };
 
-  // Combined Trust & Benefits Section
-  const CombinedTrustSection = () => (
-    <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-green-100 rounded-2xl py-6 px-8 mb-8">
-      {/* Top Row - Process Benefits */}
-      <div className="flex flex-wrap justify-center items-center gap-8 text-base mb-4">
-        <span className="flex items-center gap-3 text-green-700 font-medium">
-          <CheckCircle className="w-5 h-5 text-green-600" />
-          <span>Complete in 10 minutes</span>
-        </span>
-        <span className="flex items-center gap-3 text-blue-700 font-medium">
-          <FileText className="w-5 h-5 text-blue-600" />
-          <span>Professional documentation</span>
-        </span>
-        <span className="flex items-center gap-3 text-purple-700 font-medium">
-          <Users className="w-5 h-5 text-purple-600" />
-          <span>Ready for CPA filing</span>
-        </span>
-      </div>
-      
-      {/* Bottom Row - Trust & Social Proof */}
-      <div className="flex flex-wrap justify-center items-center gap-8 text-sm pt-4 border-t border-green-200">
+  // Simplified Trust Section - No Fake Social Proof
+  const TrustSection = () => (
+    <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-green-100 rounded-2xl py-4 px-8 mb-8">
+      <div className="flex flex-wrap justify-center items-center gap-8 text-base">
         <div className="flex items-center gap-2 text-green-700 font-medium">
           <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
             <Shield className="w-3 h-3 text-green-600" />
@@ -176,15 +159,9 @@ const CreditCalculator = () => {
         </div>
         <div className="flex items-center gap-2 text-purple-700 font-medium">
           <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
-            <CheckCircle className="w-3 h-3 text-purple-600" />
+            <Clock className="w-3 h-3 text-purple-600" />
           </div>
-          <span>3,847+ Filed</span>
-        </div>
-        <div className="flex items-center gap-2 text-orange-700 font-medium">
-          <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
-            <TrendingUp className="w-3 h-3 text-orange-600" />
-          </div>
-          <span>$167M+ Claimed</span>
+          <span>Complete in 10 minutes</span>
         </div>
       </div>
     </div>
@@ -218,8 +195,8 @@ const CreditCalculator = () => {
                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                   <FileText className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-blue-800 mb-3">Ready Documentation</h3>
-                <p className="text-base text-blue-700 font-medium">IRS-ready forms and instructions</p>
+                <h3 className="text-2xl font-bold text-blue-800 mb-3">Ready Forms</h3>
+                <p className="text-base text-blue-700 font-medium">IRS-compliant documentation</p>
               </div>
               <div className="mt-3 text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block">
                 Hand to your CPA
@@ -231,7 +208,7 @@ const CreditCalculator = () => {
                 <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                   <Zap className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-purple-800 mb-3">Multi-Year Filing</h3>
+                <h3 className="text-2xl font-bold text-purple-800 mb-3">Multi-Year</h3>
                 <p className="text-base text-purple-700 font-medium">Claim credits for 2022-2024</p>
               </div>
               <div className="mt-3 text-sm text-purple-600 bg-purple-50 px-3 py-1 rounded-full inline-block">
@@ -3736,7 +3713,7 @@ const CreditCalculator = () => {
             
             <div className="relative z-10 px-8 py-12 md:px-12 md:py-16">
               <BrandingHeader />
-              <CombinedTrustSection />
+              <TrustSection />
               <ValueProps />
               
               {currentStep === 1 && <RDCreditExplainer />}

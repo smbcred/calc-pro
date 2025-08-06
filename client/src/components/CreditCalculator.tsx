@@ -2860,7 +2860,7 @@ const CreditCalculator = () => {
                           <span>🚀 Get My Filing Package</span>
                           <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                         </div>
-                        <div className="text-sm font-medium mt-1 opacity-90">Instant access • Ready in 2-3 weeks</div>
+                        <div className="text-sm font-medium mt-1 opacity-90">Complete documentation package • Professional forms ready for filing</div>
                       </button>
 
                       {/* Secondary CTA for Hesitant Users */}
@@ -2899,8 +2899,8 @@ const CreditCalculator = () => {
                           <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2">
                             <CheckCircle className="w-6 h-6 text-green-600" />
                           </div>
-                          <div className="text-xs font-bold text-gray-800">Quality Service</div>
-                          <div className="text-xs text-gray-600">Document preparation</div>
+                          <div className="text-xs font-bold text-gray-800">Document Service</div>
+                          <div className="text-xs text-gray-600">Professional preparation</div>
                         </div>
                       </div>
                       
@@ -3401,92 +3401,130 @@ const CreditCalculator = () => {
 
 
 
-                {/* DETAILED BREAKDOWN OF YOUR REFUND */}
+                {/* WHAT YOU GET - DOCUMENT SERVICE FOCUS */}
+                <div className="bg-gradient-to-br from-blue-50 to-green-50 border-2 border-blue-200 rounded-2xl p-8">
+                  <div className="text-center mb-6">
+                    <h4 className="text-2xl font-bold text-gray-900 mb-2">📋 Your Complete Filing Package</h4>
+                    <p className="text-gray-600">Document preparation service - everything IRS-ready for your refund</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <FileText className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <h5 className="font-bold text-gray-900 mb-2">IRS Forms (Ready to File)</h5>
+                          <ul className="text-sm text-gray-700 space-y-1">
+                            <li>• Form 6765 (R&D Credit) - Pre-filled</li>
+                            <li>• Supporting schedules and calculations</li>
+                            <li>• State forms (if applicable)</li>
+                            <li>• Amendment forms (for past years)</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Users className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                          <h5 className="font-bold text-gray-900 mb-2">CPA Communication Kit</h5>
+                          <ul className="text-sm text-gray-700 space-y-1">
+                            <li>• Professional cover letter for your CPA</li>
+                            <li>• Explanation of calculations and support</li>
+                            <li>• Filing instructions and deadlines</li>
+                            <li>• Contact info for questions</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <CheckCircle className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div>
+                          <h5 className="font-bold text-gray-900 mb-2">Documentation Support</h5>
+                          <ul className="text-sm text-gray-700 space-y-1">
+                            <li>• Record-keeping checklist for future audits</li>
+                            <li>• Supporting documentation templates</li>
+                            <li>• Qualification summary and reasoning</li>
+                            <li>• Best practices for ongoing compliance</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Clock className="w-5 h-5 text-orange-600" />
+                        </div>
+                        <div>
+                          <h5 className="font-bold text-gray-900 mb-2">Step-by-Step Instructions</h5>
+                          <ul className="text-sm text-gray-700 space-y-1">
+                            <li>• How to file with your CPA or yourself</li>
+                            <li>• What to expect from the IRS process</li>
+                            <li>• Timeline for receiving your refund</li>
+                            <li>• Troubleshooting common issues</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-4 border border-green-200">
+                    <div className="text-center">
+                      <p className="font-semibold text-gray-900 mb-1">🎯 Document Preparation Service</p>
+                      <p className="text-sm text-gray-700">We prepare your documentation package - you receive completed forms ready for filing. Hand to your CPA or file yourself.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SIMPLIFIED CALCULATION SUMMARY */}
                 <div className="bg-gray-50 rounded-lg p-4">
                   <button
                     onClick={() => setShowDetails(!showDetails)}
                     className="flex items-center justify-center w-full text-sm text-gray-600 hover:text-gray-800"
                   >
-                    <span>Detailed breakdown of your refund</span>
+                    <span>View calculation summary</span>
                     <ChevronRight className={`w-4 h-4 ml-1 transition-transform ${showDetails ? 'rotate-90' : ''}`} />
                   </button>
                   
                   {showDetails && (
-                    <div className="mt-4 space-y-4">
-                      <div>
-                        <h4 className="font-medium mb-2">Your Qualified R&D Expenses (Tax Year {formData.selectedYears[0]})</h4>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex justify-between">
-                            <span>Employee Time ({Math.round((results.qres.wagePercent || 0) * 100)}%)</span>
-                            <span>{formatCurrency(results.qres.wages || 0)}</span>
+                    <div className="mt-4 space-y-3">
+                      <div className="bg-white rounded-lg p-4">
+                        <h4 className="font-medium mb-3 text-center">Your Tax Credit Breakdown</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between items-center">
+                            <span>Federal R&D Credit</span>
+                            <span className="font-bold text-green-600">{formatCurrency(results.federal.creditAmount || 0)}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span>Contractors {
-                              (results.qres.contractorPercent || 0) > 0 
-                                ? `(${Math.round(results.qres.contractorPercent * 100)}% × 65%)`
-                                : '(0%)'
-                            }</span>
-                            <span>{formatCurrency(results.qres.contractors || 0)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Cloud & APIs</span>
-                            <span>{formatCurrency(results.qres.cloud || 0)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>AI Tools & Software</span>
-                            <span>{formatCurrency(results.qres.software || 0)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Other Supplies</span>
-                            <span>{formatCurrency(results.qres.supplies || 0)}</span>
-                          </div>
-                          <div className="border-t pt-1 flex justify-between font-medium">
-                            <span>Total Qualified R&D Expenses</span>
-                            <span>{formatCurrency(results.qres.total || 0)}</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <h4 className="font-medium mb-2">Federal R&D Credit Calculation (Tax Year {formData.selectedYears[0]})</h4>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex justify-between">
-                            <span>Qualified expenses × {((results.federal.rate || 0) * 100).toFixed(1)}% credit rate</span>
-                            <span>{formatCurrency(results.federal.creditAmount || 0)}</span>
-                          </div>
-                          {results.federal.isStartupEligible && (
-                            <div className="flex justify-between text-green-700">
-                              <span>Can offset payroll tax (startup eligible)</span>
-                              <span>Up to {formatCurrency(results.federal.payrollTaxOffset || 0)}</span>
+                          {results.state > 0 && (
+                            <div className="flex justify-between items-center">
+                              <span>State Credit</span>
+                              <span className="font-bold text-blue-600">{formatCurrency(results.state || 0)}</span>
                             </div>
                           )}
+                          {(results.section174ABenefit || 0) > 0 && (
+                            <div className="flex justify-between items-center">
+                              <span>Additional Tax Savings</span>
+                              <span className="font-bold text-purple-600">{formatCurrency(results.section174ABenefit || 0)}</span>
+                            </div>
+                          )}
+                          <div className="border-t pt-2 flex justify-between items-center">
+                            <span className="font-bold">Total Potential Benefit</span>
+                            <span className="font-bold text-xl text-green-600">{formatCurrency(results.totalBenefit)}</span>
+                          </div>
                         </div>
                       </div>
-                      
-                      {results.state > 0 && (
-                        <div>
-                          <h4 className="font-medium mb-2">State Credit (Tax Year {formData.selectedYears[0]})</h4>
-                          <div className="space-y-1 text-sm">
-                            <div className="flex justify-between">
-                              <span>{statesWithCredit.find(s => s.code === formData.selectedState)?.name} ({((statesWithCredit.find(s => s.code === formData.selectedState)?.rate || 0) * 100).toFixed(1)}%)</span>
-                              <span>{formatCurrency(results.state || 0)}</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      
-                      <div>
-                        <h4 className="font-medium mb-2">Additional Tax Deduction Benefit (Tax Year {formData.selectedYears[0]})</h4>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex justify-between">
-                            <span>R&D expenses × 21% tax rate</span>
-                            <span>{formatCurrency(results.section174ABenefit || 0)}</span>
-                          </div>
-                          <p className="text-xs text-gray-600 mt-1">
-                            This deduction reduces your taxable income by {formatCurrency(results.qres.total || 0)}, 
-                            saving approximately 21% in corporate taxes.
-                          </p>
-                        </div>
+                      <div className="text-center text-xs text-gray-600">
+                        Based on your AI activities and business expenses for tax year {formData.selectedYears[0]}
                       </div>
                     </div>
                   )}

@@ -105,26 +105,27 @@ const CreditCalculator = () => {
 
   // Industry types for specific examples - expanded list
   const industries = [
-    { value: 'ecommerce', label: 'E-commerce/Retail' },
+    { value: 'freelancer', label: 'Freelancer/Solopreneur' },
+    { value: 'ecommerce', label: 'E-commerce/Online Store' },
     { value: 'saas', label: 'Software/SaaS' },
     { value: 'agency', label: 'Marketing/Creative Agency' },
     { value: 'consulting', label: 'Consulting/Professional Services' },
     { value: 'manufacturing', label: 'Manufacturing/Production' },
-    { value: 'healthcare', label: 'Healthcare/Medical' },
-    { value: 'finance', label: 'Finance/Insurance' },
+    { value: 'healthcare', label: 'Healthcare/Medical Practice' },
+    { value: 'finance', label: 'Finance/Accounting' },
     { value: 'realestate', label: 'Real Estate/Property Management' },
     { value: 'restaurant', label: 'Restaurant/Food Service' },
     { value: 'construction', label: 'Construction/Contracting' },
     { value: 'education', label: 'Education/Training' },
-    { value: 'nonprofit', label: 'Non-Profit/NGO' },
+    { value: 'nonprofit', label: 'Non-Profit Organization' },
     { value: 'legal', label: 'Legal Services' },
     { value: 'logistics', label: 'Logistics/Transportation' },
     { value: 'fitness', label: 'Fitness/Wellness' },
-    { value: 'media', label: 'Media/Publishing' },
+    { value: 'media', label: 'Media/Content Creation' },
     { value: 'travel', label: 'Travel/Hospitality' },
     { value: 'automotive', label: 'Automotive/Dealership' },
     { value: 'agriculture', label: 'Agriculture/Farming' },
-    { value: 'other', label: 'Other' }
+    { value: 'other', label: 'Other Business Type' }
   ];
 
   // Utility function to safely parse numbers
@@ -186,8 +187,8 @@ const CreditCalculator = () => {
               <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <DollarSign className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-green-800 mb-3">Average $125K Saved</h3>
-              <p className="text-base text-green-700 font-medium">Cash refunds + tax credits</p>
+              <h3 className="text-2xl font-bold text-green-800 mb-3">Average $25K+ Saved</h3>
+              <p className="text-base text-green-700 font-medium">Perfect for small businesses</p>
               <div className="mt-3 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full inline-block">
                 Real cash back to your business
               </div>
@@ -289,6 +290,12 @@ const CreditCalculator = () => {
   // Industry-Specific Examples Component - expanded
   const IndustryExamples = ({ industry }: { industry: string }) => {
     const examples = {
+      freelancer: [
+        "Building AI tools to automate client work",
+        "Creating custom GPTs for your services", 
+        "Testing new software to improve deliverables",
+        "Developing automations to scale your business"
+      ],
       ecommerce: [
         "Building custom GPTs for product descriptions",
         "AI-powered customer service chatbots",
@@ -1299,7 +1306,7 @@ const CreditCalculator = () => {
                       </span>
                     </div>
                     <p className="text-xs text-blue-600 mt-1">
-                      You can add additional years in Step 4 for multi-year savings up to 25% off!
+                      Add additional years in Step 4 for multi-year savings up to 25% off!
                     </p>
                   </div>
                 )}
@@ -1339,9 +1346,14 @@ const CreditCalculator = () => {
                     placeholder="1,000,000"
                   />
                 </div>
-                <p className="text-sm text-blue-600 mt-3 font-medium bg-blue-50 px-4 py-2 rounded-lg">
-                  💡 Businesses under $5M can get cash refunds through payroll tax offsets
-                </p>
+                <div className="space-y-2 mt-3">
+                  <p className="text-sm text-blue-600 font-medium bg-blue-50 px-4 py-2 rounded-lg">
+                    💡 Small businesses under $5M get immediate cash refunds
+                  </p>
+                  <p className="text-sm text-green-600 font-medium bg-green-50 px-4 py-2 rounded-lg">
+                    🏢 LLC & S-Corp owners: Claim credits on your personal tax return (pass-through benefits)
+                  </p>
+                </div>
               </div>
 
             </div>
@@ -1442,13 +1454,15 @@ const CreditCalculator = () => {
             </div>
 
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-              <h4 className="font-medium text-green-900 mb-2">💡 What counts as R&D?</h4>
+              <h4 className="font-medium text-green-900 mb-2">💡 What counts as R&D for small businesses?</h4>
               <ul className="text-sm text-green-800 space-y-1">
                 <li>✓ Building custom GPTs or chatbots for your business</li>
                 <li>✓ Developing and testing AI prompts that work for your needs</li>
                 <li>✓ Creating automations with Zapier, Make, or custom code</li>
                 <li>✓ Time spent experimenting with AI to improve processes</li>
                 <li>✓ Integrating AI tools into your workflows</li>
+                <li>✓ Testing new software or systems to solve business problems</li>
+                <li>✓ Building apps, websites, or digital tools for your customers</li>
               </ul>
             </div>
 
@@ -2394,12 +2408,12 @@ const CreditCalculator = () => {
                           <span>Your Cost</span>
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-xs">
-                          <span>Specialist Firms</span>
+                          <span>Big CPA Firms</span>
                           <span className="text-red-600">15-35%</span>
                           <span className="font-bold text-red-600">${Math.round(results.totalBenefit * 0.25).toLocaleString()}</span>
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-xs">
-                          <span>General CPAs</span>
+                          <span>Small Business CPAs</span>
                           <span className="text-red-600">10-20%</span>
                           <span className="font-bold text-red-600">${Math.round(results.totalBenefit * 0.15).toLocaleString()}</span>
                         </div>

@@ -1469,18 +1469,18 @@ const CreditCalculator = () => {
               <div className="space-y-4">
                 <label className="block text-lg font-semibold text-gray-900 mb-3">
                   <span className="flex items-center gap-2">
-                    <DollarSign className="w-5 h-5 text-green-600" />
+                    <span className="text-green-600 font-bold">$</span>
                     What's your annual revenue?
                   </span>
                   <InfoTooltip text="We need this to calculate your maximum credit and special benefits. Your data is encrypted and never shared." />
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-5 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
+                  <span className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     value={formData.grossReceipts}
                     onChange={(e) => updateFormData('grossReceipts', e.target.value)}
-                    className="input-enhanced pl-16 text-xl"
+                    className="input-enhanced pl-12 text-xl"
                     placeholder="1,000,000"
                   />
                 </div>

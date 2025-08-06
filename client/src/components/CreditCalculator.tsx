@@ -1464,8 +1464,6 @@ const CreditCalculator = () => {
                 )}
               </div>
 
-
-
               <div className="space-y-4">
                 <label className="block text-lg font-semibold text-gray-900 mb-3">
                   <span className="flex items-center gap-2">
@@ -1475,12 +1473,12 @@ const CreditCalculator = () => {
                   </span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-semibold pointer-events-none z-10">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     value={formData.grossReceipts}
                     onChange={(e) => updateFormData('grossReceipts', e.target.value)}
-                    className="w-full px-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400 pl-12 text-xl"
+                    className="input-enhanced pl-11 text-xl"
                     placeholder="1,000,000"
                   />
                 </div>
@@ -2096,12 +2094,12 @@ const CreditCalculator = () => {
                       Prior Year Credit Amount
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 top-2.5 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                       <input
                         type="number"
                         value={formData.priorYearAmount}
                         onChange={(e) => updateFormData('priorYearAmount', e.target.value)}
-                        className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="input-enhanced pl-11"
                         placeholder="10,000"
                       />
                     </div>
@@ -2319,8 +2317,6 @@ const CreditCalculator = () => {
                         <button
                           onClick={() => {
                             if (email && email.includes('@')) {
-                              console.log('Email captured:', email);
-                              console.log('Results data:', results.details);
                               localStorage.setItem('rd_credit_email', email);
                               localStorage.setItem('rd_credit_results', JSON.stringify(results));
                               setEmailSubmitted(true);

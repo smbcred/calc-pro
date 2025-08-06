@@ -24,6 +24,9 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Shadow System**: 6-level depth scale (shadow-xs to shadow-2xl) with interactive states for consistent visual hierarchy and depth perception
 - **Standardized Design Tokens**: Unified border radius scale (--radius-xs to --radius-2xl), consistent spacing system (--spacing-xs to --spacing-4xl based on 8px grid), and universal transition duration (--duration-normal) across all components
 - **Color Consistency**: All interactive elements use CSS variables for colors, ensuring consistent theming and easy maintenance across light/dark modes
+- **Universal Button System**: Single reusable gradient pattern (.btn-gradient) replacing all custom button implementations for consistency
+- **Unified Neumorphic Inputs**: All form fields (.form-field, .input-field, .neuro-input) use consistent neumorphic design with inset shadows and unified interaction states
+- **Systematic Card Elevations**: Standardized 5-level card system (.card-low to .card-highest) replacing custom shadows throughout the application
 - **Shadcn/UI Components**: Comprehensive set of accessible, customizable UI components built on Radix UI primitives with enhanced animations and unified interactive behavior
 - **Motion-Enabled Tailwind CSS**: Extended utility-first CSS framework with comprehensive animation system, easing functions, and interaction states
 - **Component Architecture**: Modular, reusable components with sophisticated hover states, loading animations, and micro-interactions following unified interactive patterns

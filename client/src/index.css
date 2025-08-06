@@ -338,7 +338,7 @@
     box-shadow: var(--shadow-lg);
   }
   
-  /* Interactive Card Enhancements */
+  /* Interactive Card Enhancements - Unified Elevation System */
   .card-low:hover,
   .card-medium:hover,
   .card-high:hover,
@@ -353,53 +353,36 @@
   .card-highest:focus-visible {
     box-shadow: 
       0 0 0 3px hsla(214, 100%, 48%, 0.15),
-      var(--shadow-md);
+      var(--shadow-lg);
+  }
+  
+  /* Apply Unified Card Elevation Instead of Custom Shadows */
+  .card-custom {
+    @apply card-medium;
+  }
+  
+  .card-featured {
+    @apply card-high;
+  }
+  
+  .card-hero {
+    @apply card-highest;
   }
 
-  /* Glassmorphism Effects */
+  /* Glassmorphism Effects - Unified Shadow System */
   .glass-light {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 
-      0 8px 32px 0 rgba(31, 38, 135, 0.1),
-      inset 0 2px 8px 0 rgba(255, 255, 255, 0.4);
+    box-shadow: var(--shadow-lg);
+    border-radius: var(--radius-lg);
   }
 
-  /* Enhanced Input System with Unified Tokens */
-  .neuro-input,
-  .input-enhanced {
-    @apply input-interactive;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-xs);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-md) var(--spacing-lg);
-    font-weight: 500;
-    color: var(--foreground);
-    width: 100%;
-    font-size: inherit;
-    font-family: inherit;
-  }
-  
-  .neuro-input:focus,
-  .input-enhanced:focus {
-    background: rgba(255, 255, 255, 1);
-    border-color: var(--primary);
-    box-shadow: 
-      0 0 0 3px hsla(214, 100%, 48%, 0.1),
-      var(--shadow-lg);
-    outline: none;
-    transform: translateY(-1px);
-  }
-  
-  .neuro-input:hover:not(:focus),
-  .input-enhanced:hover:not(:focus) {
-    background: rgba(255, 255, 255, 1);
-    border-color: var(--neutral-300);
-    box-shadow: var(--shadow-sm);
-    transform: translateY(-1px);
+  /* Legacy Input Classes - Now Use Unified System */
+  .legacy-input {
+    /* Deprecated: Use .form-field instead */
+    @apply form-field;
   }
 
   /* Enhanced Select Styling - More Aggressive Override */
@@ -464,13 +447,12 @@
     content: '';
     position: absolute;
     inset: 0;
-    padding: 1px;
+    padding: var(--spacing-xs);
     background: var(--gradient-primary);
     border-radius: inherit;
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: subtract;
     opacity: 0;
-    transition: opacity 0.3s ease;
   }
   
   .card-premium:hover::before {
@@ -589,12 +571,13 @@ select.input-enhanced.text-xl:focus {
 }
 
 /* ========================================
-   COMPONENT CLASS SYSTEM
-   Primary patterns for consistent styling
+   UNIFIED BUTTON SYSTEM
+   Single reusable gradient pattern
    ======================================== */
 
-/* Button System - Unified Spacing and Radius */
-.btn-primary {
+/* Primary Gradient Button - Universal Pattern */
+.btn-primary,
+.btn-gradient {
   @apply inline-flex items-center justify-center gap-3 font-semibold text-xl interactive;
   padding: var(--spacing-md) var(--spacing-2xl);
   border-radius: var(--radius-xl);
@@ -613,33 +596,37 @@ select.input-enhanced.text-xl:focus {
   inset: 0;
   background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
   opacity: 0;
-  transition: opacity var(--duration-normal) var(--easing-natural);
 }
 
-.btn-primary:hover {
+/* Universal Gradient Button States */
+.btn-primary:hover,
+.btn-gradient:hover {
   background: var(--gradient-primary-hover);
   transform: translateY(-3px) translateZ(0);
   box-shadow: var(--shadow-xl);
 }
 
-.btn-primary:hover::before {
+.btn-primary:hover::before,
+.btn-gradient:hover::before {
   opacity: 1;
 }
 
-.btn-primary:focus-visible {
+.btn-primary:focus-visible,
+.btn-gradient:focus-visible {
   box-shadow: 
     0 0 0 3px rgba(255, 255, 255, 0.3),
     0 0 0 6px hsla(214, 100%, 48%, 0.2),
     var(--shadow-xl);
 }
 
-.btn-primary:active {
+.btn-primary:active,
+.btn-gradient:active {
   transform: translateY(-1px) translateZ(0) scale(0.98);
   box-shadow: var(--shadow-lg);
-  transition: all var(--duration-fast) var(--easing-sharp);
 }
 
-.btn-primary:disabled {
+.btn-primary:disabled,
+.btn-gradient:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
@@ -647,7 +634,8 @@ select.input-enhanced.text-xl:focus {
   background: var(--neutral-300);
 }
 
-.btn-primary:disabled:hover {
+.btn-primary:disabled:hover,
+.btn-gradient:disabled:hover {
   transform: none;
   box-shadow: var(--shadow-sm);
   background: var(--neutral-300);
@@ -720,32 +708,53 @@ select.input-enhanced.text-xl:focus {
     var(--shadow-xl);
 }
 
-/* Form Field System - Unified Spacing and Radius */
-.form-field {
+/* ========================================
+   UNIFIED NEUMORPHIC INPUT SYSTEM
+   Consistent design across all form fields
+   ======================================== */
+
+.form-field,
+.input-field,
+.neuro-input,
+.input-enhanced {
   @apply w-full border focus:outline-none input-interactive;
   border-radius: var(--radius-xl);
   background: rgba(255, 255, 255, 0.95);
-  border-color: var(--neutral-200);
+  border: 1px solid var(--border);
   color: var(--foreground);
   padding: var(--spacing-md) var(--spacing-lg);
   font-weight: 500;
   font-size: inherit;
   font-family: inherit;
-  box-shadow: var(--shadow-xs);
+  box-shadow: 
+    inset 2px 2px 6px rgba(0, 0, 0, 0.05),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.8),
+    var(--shadow-xs);
 }
 
-.form-field:hover:not(:focus) {
+.form-field:hover:not(:focus),
+.input-field:hover:not(:focus),
+.neuro-input:hover:not(:focus),
+.input-enhanced:hover:not(:focus) {
   background: rgba(255, 255, 255, 1);
   border-color: var(--neutral-300);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 
+    inset 2px 2px 6px rgba(0, 0, 0, 0.06),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.85),
+    var(--shadow-sm);
 }
 
-.form-field:focus {
+.form-field:focus,
+.input-field:focus,
+.neuro-input:focus,
+.input-enhanced:focus {
   background: rgba(255, 255, 255, 1);
   border-color: var(--primary);
   transform: translateY(-2px);
   box-shadow: 
+    inset 1px 1px 4px rgba(0, 0, 0, 0.08),
+    inset -1px -1px 4px rgba(255, 255, 255, 0.9),
     0 0 0 3px hsla(214, 100%, 48%, 0.1),
     var(--shadow-lg);
 }
@@ -1112,18 +1121,14 @@ select.form-field:focus {
     var(--shadow-sm);
 }
 
+/* Premium Badge - Uses Unified Gradient System */
 .trust-badge-premium {
-  background: var(--gradient-primary);
-  color: white;
-  border: none;
-  box-shadow: var(--shadow-md);
+  @apply btn-gradient;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 600;
   animation: pulseGlow 3s ease-in-out infinite;
-}
-
-.trust-badge-premium:hover {
-  background: var(--gradient-primary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-lg);
 }
 
 .security-indicator {

@@ -89,13 +89,13 @@ const CreditCalculator = () => {
 
   // Unsupported states with reasons
   const unsupportedStates = [
-    { code: 'AZ', name: 'Arizona', reason: 'Requires Commerce Authority portal application for refundable portion' },
-    { code: 'FL', name: 'Florida', reason: 'Annual cap; must apply via FL Tax Credit Portal on March 20' },
-    { code: 'LA', name: 'Louisiana', reason: 'LED submission must be online (portal required)' },
-    { code: 'MD', name: 'Maryland', reason: 'Commerce Department application via portal due by Nov 15' },
-    { code: 'MO', name: 'Missouri', reason: 'DED requires application via portal or email' },
-    { code: 'PA', name: 'Pennsylvania', reason: 'myPATH portal mandatory for application by Dec 1' },
-    { code: 'VA', name: 'Virginia', reason: 'Form RDC must be submitted online via state portal' }
+    { code: 'AZ', name: 'Arizona', reason: 'Requires additional application process with state commerce department' },
+    { code: 'FL', name: 'Florida', reason: 'Annual cap and specific application deadline on March 20th' },
+    { code: 'LA', name: 'Louisiana', reason: 'Must submit application online through state system' },
+    { code: 'MD', name: 'Maryland', reason: 'Requires additional application with commerce department by Nov 15' },
+    { code: 'MO', name: 'Missouri', reason: 'Requires additional application process with state development office' },
+    { code: 'PA', name: 'Pennsylvania', reason: 'Must apply through state system by Dec 1' },
+    { code: 'VA', name: 'Virginia', reason: 'Must submit additional form online through state system' }
   ];
 
   // States with no R&D credit
@@ -528,7 +528,7 @@ const CreditCalculator = () => {
           <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
           <div className="text-sm text-yellow-900">
             <strong>Amendment Opportunity:</strong> You can still amend your {lastYear} return — but time is running out. 
-            The Big Beautiful Bill gives you a one-time opportunity to claim retroactive deductions.
+            Recent tax law changes give you a one-time opportunity to claim retroactive deductions.
           </div>
         </div>
       );
@@ -771,7 +771,7 @@ const CreditCalculator = () => {
             <ul className="text-sm text-yellow-700 space-y-1">
               <li>• Get 15-25% multi-year discount</li>
               <li>• Maximize total recovery amount</li>
-              <li>• Take advantage of "Big Beautiful Bill" deadline</li>
+              <li>• Take advantage of new tax law deadline</li>
             </ul>
           </div>
         )}
@@ -1975,7 +1975,7 @@ const CreditCalculator = () => {
                         <strong>Most CPAs focus on traditional tax services</strong> – handling 1040s, business deductions, and quarterly filings. R&D tax credits are a specialized area that requires specific expertise and additional time investment.
                       </p>
                       <p className="leading-relaxed">
-                        Think of it like specialized medical care. Your general practitioner handles most health needs, but specialists focus on specific areas. <strong>R&D credits require deep knowledge</strong> of IRS Section 41, qualification criteria, and proper documentation.
+                        Think of it like specialized medical care. Your general practitioner handles most health needs, but specialists focus on specific areas. <strong>R&D credits require deep knowledge</strong> of complex tax rules, qualification criteria, and proper documentation.
                       </p>
                       <div className="bg-orange-100 rounded-xl p-4 mt-4">
                         <p className="font-medium text-orange-900 mb-2">The good news:</p>
@@ -2076,10 +2076,10 @@ const CreditCalculator = () => {
                                   {unsupportedState.name} - Complex Process
                                 </h4>
                                 <p className="text-sm text-orange-700 bg-orange-50 p-3 rounded-lg">
-                                  <strong>Why it's complex:</strong> {unsupportedState.reason}
+                                  <strong>Extra steps required:</strong> {unsupportedState.reason}
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                  Contact us for specialized assistance with portal-based state filings.
+                                  Some states require extra steps. Contact us for specialized assistance.
                                 </p>
                               </div>
                             );
@@ -2161,7 +2161,7 @@ const CreditCalculator = () => {
                 
                 <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white text-center">
                   <div className="text-3xl font-bold mb-1">7</div>
-                  <div className="text-orange-100 text-sm">Portal Required</div>
+                  <div className="text-orange-100 text-sm">Extra Steps Required</div>
                   <div className="text-xs text-orange-200 mt-1">Specialized assistance</div>
                 </div>
                 
@@ -2207,7 +2207,7 @@ const CreditCalculator = () => {
                       <div>
                         <h4 className="font-semibold text-orange-800 mb-3 flex items-center gap-2">
                           <AlertCircle className="w-4 h-4" />
-                          Portal Required States (7)
+                          States with Extra Steps (7)
                         </h4>
                         <div className="space-y-2">
                           {unsupportedStates.map(state => (

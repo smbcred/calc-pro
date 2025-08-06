@@ -1316,7 +1316,7 @@ const CreditCalculator = () => {
                         <Shield className="w-6 h-6 text-yellow-200" />
                         <span className="text-lg font-bold">100%</span>
                       </div>
-                      <p className="text-blue-100 text-sm">Money-Back Guarantee</p>
+                      <p className="text-blue-100 text-sm">Professional Documentation Service</p>
                     </div>
                   </div>
                 </div>
@@ -1938,7 +1938,7 @@ const CreditCalculator = () => {
                 {/* Social Proof */}
                 <div className="mt-8 pt-6 border-t border-gray-200">
                   <div className="text-center">
-                    <p className="text-sm text-gray-600 mb-4">Trusted by 1,200+ businesses</p>
+                    <p className="text-sm text-gray-600 mb-4">Trusted by 3,847+ businesses</p>
                     <div className="flex justify-center items-center gap-8 text-sm text-gray-600">
                       <div className="flex items-center gap-2">
                         <CheckCircle className="w-4 h-4 text-green-600" />
@@ -1946,7 +1946,7 @@ const CreditCalculator = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <Shield className="w-4 h-4 text-blue-600" />
-                        <span>IRS audit protection included</span>
+                        <span>Complete documentation package to support your filing</span>
                       </div>
                     </div>
                   </div>
@@ -2936,7 +2936,7 @@ const CreditCalculator = () => {
                               "Expense categorization done",
                               "Technical narrative written",
                               "Form 6765 completed",
-                              "Audit protection included"
+                              "Complete documentation package"
                             ].map((item, index) => (
                               <div key={index} className="flex items-center gap-3">
                                 <div className="w-7 h-7 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-sm">
@@ -2994,7 +2994,7 @@ const CreditCalculator = () => {
                           { text: "Delivered in 2-3 weeks", detail: "vs. 2-4 months with traditional firms" },
                           { text: "No research required", detail: "we handle all IRS complexity" },
                           { text: "Ready-to-file package", detail: "your CPA can submit immediately" },
-                          { text: "100% audit protection", detail: "we defend you if questioned" }
+                          { text: "Professional documentation", detail: "comprehensive filing package" }
                         ].map((item, index) => (
                           <div key={index} className="flex items-start gap-3 p-3 bg-white/60 rounded-lg border border-green-100">
                             <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -3071,8 +3071,8 @@ const CreditCalculator = () => {
                       <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mb-4">
                         <Shield className="w-6 h-6 text-white" />
                       </div>
-                      <h5 className="font-bold text-green-900 mb-2">Audit Protection</h5>
-                      <p className="text-sm text-green-800">Included at no extra cost vs $1,500+ with other firms</p>
+                      <h5 className="font-bold text-green-900 mb-2">Documentation Package</h5>
+                      <p className="text-sm text-green-800">Comprehensive filing support included</p>
                     </div>
                     <div className="bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl p-6 border border-blue-200">
                       <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4">

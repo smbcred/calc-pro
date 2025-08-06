@@ -1333,7 +1333,7 @@ const CreditCalculator = () => {
               <div className="mb-8">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Tell us about your business</h2>
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                  We'll calculate your exact credit amount and create a <strong>ready-to-file package</strong> you can hand directly to your CPA – or self-file with confidence for your <strong>IRS refund</strong>
+                  We'll calculate your credit amount and <strong>prepare your documentation package.</strong> You receive completed forms ready for filing - hand to your CPA or file yourself. <strong>Packages from $500.</strong>
                 </p>
               </div>
             </div>
@@ -2312,10 +2312,10 @@ const CreditCalculator = () => {
                         <FileText className="w-8 h-8 text-white" />
                       </div>
                       <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                        Get Your Complete Tax Credit Package
+                        We Prepare Your Documentation Package
                       </h3>
                       <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                        Get everything needed to <strong>hand directly to your CPA</strong> or self-file with confidence. Complete with IRS-ready forms and documentation for your <strong>beautiful check or direct deposit</strong> from the Treasury.
+                        <strong>You receive completed forms ready for filing.</strong> Hand to your CPA or file yourself - we're a <strong>document preparation service, not tax advisors.</strong> Everything is IRS-ready for your refund.
                       </p>
                     </div>
 
@@ -2575,16 +2575,15 @@ const CreditCalculator = () => {
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-green-700">
-                            ${getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1).toLocaleString()}
+                            Packages from $500
                           </div>
                           <div className="text-xs text-green-600 mt-1">
-                            Or 3 payments of ${Math.round(getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1) / 3).toLocaleString()}
+                            {formData.selectedYears && formData.selectedYears.length > 1 ? (
+                              <>Save 20% on multi-year filings</>
+                            ) : (
+                              <>Or 3 monthly payments available</>
+                            )}
                           </div>
-                          {formData.selectedYears && formData.selectedYears.length > 1 && (
-                            <div className="text-sm text-green-600 line-through">
-                              ${(getTieredPricing(results.totalCredit, 1) * formData.selectedYears.length).toLocaleString()}
-                            </div>
-                          )}
                           {formData.selectedYears && formData.selectedYears.length > 1 && (
                             <div className="text-xs text-green-600 mt-1">
                               Save ${calculateMultiYearSavings(
@@ -2658,11 +2657,9 @@ const CreditCalculator = () => {
                   {/* Total & CTA */}
                   <div className="border-t pt-4">
                     <div className="flex justify-between items-center mb-4">
-                      <span className="text-xl font-bold text-gray-900">Total Investment:</span>
+                      <span className="text-xl font-bold text-gray-900">Package Price:</span>
                       <span className="text-3xl font-bold text-green-600">
-                        ${((getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1) + 
-                            ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
-                          ).toLocaleString()}
+                        From $500{formData.stateCredit && formData.selectedState ? ' + state add-on' : ''}
                       </span>
                     </div>
                     
@@ -2671,29 +2668,20 @@ const CreditCalculator = () => {
                     <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl p-8 mb-8 text-center shadow-2xl">
                       <div className="mb-4">
                         <div className="text-6xl font-black mb-2">
-                          {Math.round((
-                            formData.selectedYears && formData.selectedYears.length > 1 
-                              ? ((results.totalBenefit || 0) * formData.selectedYears.length) // Total multi-year benefit
-                              : results.totalBenefit || 0
-                          ) / 
-                          (getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1) + 
-                           ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
-                          )}x
+                          {Math.round((results.totalBenefit || 0) / 750)}x
                         </div>
                         <div className="text-2xl font-bold text-green-100">Return on Investment</div>
                       </div>
                       <div className="text-lg text-green-100">
-                        Your ${((getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1) + 
-                                 ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
-                               ).toLocaleString()} investment → {formatCurrency(
+                        Starting from $500{formData.stateCredit && formData.selectedState ? ' + state add-on' : ''} → {formatCurrency(
                           formData.selectedYears && formData.selectedYears.length > 1 
-                            ? ((results.totalBenefit || 0) * formData.selectedYears.length) // Accurate multi-year total
+                            ? ((results.totalBenefit || 0) * formData.selectedYears.length)
                             : results.totalBenefit || 0
-                        )} in tax savings
+                        )} in potential tax savings
                       </div>
                       {formData.selectedYears && formData.selectedYears.length > 1 && (
                         <div className="mt-3 text-lg font-semibold text-yellow-200">
-                          📈 Filing {formData.selectedYears.length} years: {formatCurrency((results.totalBenefit || 0) * formData.selectedYears.length / formData.selectedYears.length)} per year average!
+                          📈 Save 20% on multi-year filings: {formatCurrency((results.totalBenefit || 0) * formData.selectedYears.length / formData.selectedYears.length)} per year average!
                         </div>
                       )}
                     </div>
@@ -2708,15 +2696,12 @@ const CreditCalculator = () => {
                         {formData.selectedYears && formData.selectedYears.length === 1 ? (
                           <>
                             <h3 className="text-xl font-bold text-orange-800 mb-2">🚀 Maximize Your Savings!</h3>
-                            <p className="text-orange-700">File multiple years and save up to 25% with our multi-year discount</p>
+                            <p className="text-orange-700">Save 20% on multi-year filings - packages from $500</p>
                           </>
                         ) : (
                           <>
-                            <h3 className="text-xl font-bold text-green-800 mb-2">📅 Multi-Year Filing: {Math.round(getMultiYearDiscount(formData.selectedYears?.length || 1) * 100)}% Discount Applied!</h3>
-                            <p className="text-green-700">You're saving ${calculateMultiYearSavings(
-                              getTieredPricing(results.totalCredit, 1), 
-                              formData.selectedYears?.length || 1
-                            ).toLocaleString()} vs individual year pricing</p>
+                            <h3 className="text-xl font-bold text-green-800 mb-2">📅 Multi-Year Filing: 20% Discount Applied!</h3>
+                            <p className="text-green-700">You're saving 20% vs individual year pricing with our multi-year package</p>
                           </>
                         )}
                       </div>
@@ -2738,11 +2723,11 @@ const CreditCalculator = () => {
                       <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-6 mb-6 border-2 border-yellow-400">
                         <div className="text-center">
                           <div className="text-4xl font-black text-orange-800 mb-2">
-                            {Math.round((results.totalBenefit / Math.max(getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1), 1)))}:1
+                            {Math.round((results.totalBenefit / 750))}:1
                           </div>
                           <div className="text-lg font-bold text-orange-700 mb-2">Return on Investment</div>
                           <div className="text-sm text-orange-600">
-                            Your {formatCurrency(getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1))} investment → {formatCurrency(results.totalBenefit)} in tax savings
+                            Starting from $500 → {formatCurrency(results.totalBenefit)} in potential tax savings
                           </div>
                         </div>
                       </div>
@@ -3054,7 +3039,7 @@ const CreditCalculator = () => {
                               <tr className="bg-green-50">
                                 <td className="p-4 text-slate-700 font-semibold">Our Service</td>
                                 <td className="p-4 text-center text-green-600 font-bold text-lg">
-                                  ${getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1).toLocaleString()}
+                                  From $500
                                 </td>
                                 <td className="p-4 text-center text-green-600 font-semibold">2-3 weeks</td>
                               </tr>
@@ -3063,9 +3048,7 @@ const CreditCalculator = () => {
                         </div>
                         <div className="bg-gradient-to-r from-green-100 to-blue-100 p-4 text-center border-t border-slate-200">
                           <div className="text-lg font-bold text-slate-800">
-                            💰 You save: ${((formData.selectedYears && formData.selectedYears.length > 1 
-                              ? (8000 * formData.selectedYears.length) 
-                              : 8000) - getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1)).toLocaleString()}+ vs specialists
+                            💰 You save: $7,500+ vs specialists (packages from $500)
                           </div>
                         </div>
                       </div>
@@ -3125,9 +3108,9 @@ const CreditCalculator = () => {
                         <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg transform group-hover:scale-110 transition-transform">
                           <FileText className="w-8 h-8 text-white" />
                         </div>
-                        <h5 className="font-bold text-gray-900 mb-2 text-lg">Hand to Your CPA</h5>
+                        <h5 className="font-bold text-gray-900 mb-2 text-lg">Ready-to-File Package</h5>
                         <p className="text-sm text-gray-700 leading-relaxed">
-                          Give professional package to your CPA or file yourself - everything is IRS-ready
+                          You receive completed forms ready for filing. Hand to your CPA or file yourself - we're a document preparation service
                         </p>
                         <div className="mt-2 text-xs text-green-600 font-medium">⏰ Takes 2-4 hours max</div>
                       </div>
@@ -3490,8 +3473,7 @@ const CreditCalculator = () => {
                   <div className="text-xs text-gray-700 leading-relaxed">
                     <p className="font-semibold mb-2">Quick Legal Notes:</p>
                     <p>
-                      This service prepares tax documents for R&D credit claims. We provide forms and documentation - not tax advice. 
-                      <strong className="text-green-700"> Ready to hand to your CPA or file yourself.</strong> Calculations are estimates based on your input.
+                      <strong>We're a document preparation service, not tax advisors.</strong> We prepare your documentation package - you receive completed forms ready for filing. Hand to your CPA or file yourself. Calculations are estimates based on your input.
                       <span className="text-blue-600 font-medium"> Questions? Call (555) 123-R&D anytime.</span>
                     </p>
                   </div>

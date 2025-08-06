@@ -1125,69 +1125,129 @@ const CreditCalculator = () => {
     </div>
   );
 
-  // Enhanced Progress Indicator with Benefits Messaging
+  // World-Class Progress Indicator
   const ProgressIndicator = () => {
     const steps = [
-      { label: 'Company Info', benefit: '2 min', icon: '🏢' },
-      { label: 'Your AI Work', benefit: '3 min', icon: '🤖' },
-      { label: 'Extra Credits', benefit: '2 min', icon: '💰' },
-      { label: 'Your Results', benefit: 'Cash!', icon: '🎉' }
+      { 
+        label: 'Company Info', 
+        description: 'Basic details', 
+        icon: Building,
+        estimated: '1 min'
+      },
+      { 
+        label: 'AI Activities', 
+        description: 'Qualifying work', 
+        icon: Zap,
+        estimated: '2 min'
+      },
+      { 
+        label: 'Get Results', 
+        description: 'Email & calculate', 
+        icon: Calculator,
+        estimated: '1 min'
+      },
+      { 
+        label: 'Your Package', 
+        description: 'Choose & purchase', 
+        icon: Package,
+        estimated: 'Done!'
+      }
     ];
 
     return (
-      <div className="mb-8 max-w-4xl mx-auto">
-        {/* Progress Bar with Perfect Centering */}
+      <div className="mb-12 max-w-5xl mx-auto">
+        {/* Professional Progress Bar */}
         <div className="relative">
-          <div className="flex items-center justify-between mb-6 px-4">
+          {/* Background Progress Line */}
+          <div className="absolute top-12 left-0 right-0 h-0.5 bg-gradient-to-r from-gray-200 via-gray-200 to-gray-200 mx-8 md:mx-16"></div>
+          
+          {/* Active Progress Line */}
+          <div 
+            className="absolute top-12 left-0 h-0.5 gradient-primary mx-8 md:mx-16 transition-all duration-700 ease-out"
+            style={{width: `calc(${((currentStep - 1) / 3) * 100}% - 2rem)`}}
+          />
+          
+          {/* Step Indicators */}
+          <div className="grid grid-cols-4 gap-4">
             {steps.map((stepInfo, index) => {
               const step = index + 1;
-              const isActive = currentStep >= step;
+              const isActive = currentStep === step;
               const isCompleted = currentStep > step;
+              const IconComponent = stepInfo.icon;
               
               return (
-                <div key={step} className="flex flex-col items-center relative z-10 bg-white rounded-full p-2">
+                <div key={step} className="flex flex-col items-center relative">
+                  {/* Step Circle */}
                   <div className={`
-                    w-16 h-16 rounded-full flex items-center justify-center font-bold mb-3 border-3 transition-all duration-300 shadow-lg
-                    ${isActive 
-                      ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white border-transparent transform scale-110' 
-                      : 'bg-white text-gray-400 border-gray-300'}
-                    ${isCompleted ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white' : ''}
+                    relative w-24 h-24 rounded-2xl flex items-center justify-center border-2 transition-all duration-500 shadow-lg
+                    ${isCompleted 
+                      ? 'gradient-primary border-transparent text-white transform scale-105' 
+                      : isActive 
+                        ? 'bg-white border-blue-500 text-blue-600 transform scale-110 shadow-xl' 
+                        : 'bg-white border-gray-200 text-gray-400'}
                   `}>
-                    <span className="text-2xl">
-                      {isCompleted ? '✓' : stepInfo.icon}
-                    </span>
+                    {isCompleted ? (
+                      <CheckCircle className="w-8 h-8" />
+                    ) : (
+                      <IconComponent className="w-8 h-8" />
+                    )}
+                    
+                    {/* Active Pulse Effect */}
+                    {isActive && (
+                      <div className="absolute inset-0 rounded-2xl border-2 border-blue-500 animate-pulse"></div>
+                    )}
                   </div>
-                  <div className="text-center min-w-[100px]">
-                    <span className="text-sm font-semibold text-gray-800 block">{stepInfo.label}</span>
-                    <span className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full mt-1 inline-block">
-                      {stepInfo.benefit}
+                  
+                  {/* Step Content */}
+                  <div className="text-center mt-4 max-w-[120px]">
+                    <h4 className={`font-semibold text-sm mb-1 ${
+                      isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-600'
+                    }`}>
+                      {stepInfo.label}
+                    </h4>
+                    <p className="text-xs text-gray-500 mb-2">
+                      {stepInfo.description}
+                    </p>
+                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                      isActive ? 'bg-blue-100 text-blue-700' : 
+                      isCompleted ? 'bg-green-100 text-green-700' : 
+                      'bg-gray-100 text-gray-500'
+                    }`}>
+                      {isCompleted ? 'Complete' : stepInfo.estimated}
                     </span>
                   </div>
                 </div>
               );
             })}
           </div>
-          
-          {/* Progress Line */}
-          <div className="absolute top-8 left-0 right-0 h-1 bg-gray-200 rounded-full mx-16">
-            <div 
-              className="h-full bg-gradient-to-r from-blue-400 to-green-400 rounded-full transition-all duration-500"
-              style={{width: `${((currentStep - 1) / 3) * 100}%`}}
-            />
-          </div>
         </div>
         
-        {/* Step Message */}
-        <div className="text-center bg-blue-50 rounded-xl py-3 px-6 mx-auto max-w-lg">
-          <p className="text-base text-blue-800 font-medium">
-            Step {currentStep} of 4 · Average time: <span className="font-bold text-blue-600">3-5 minutes</span>
-            <span className="block text-xs text-blue-600 mt-1">✓ Progress automatically saved</span>
-            {formData.selectedYears.length > 0 && (
-              <span className="block text-sm text-blue-600 mt-1">
-                Filing for: {formData.selectedYears.join(', ')}
+        {/* Progress Summary */}
+        <div className="mt-8 text-center">
+          <div className="inline-flex items-center gap-3 bg-white rounded-2xl px-6 py-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-gray-700">
+                Step {currentStep} of 4
               </span>
+            </div>
+            <div className="w-px h-4 bg-gray-200"></div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-gray-400" />
+              <span className="text-sm text-gray-600">
+                ~{4 - currentStep + 1} min remaining
+              </span>
+            </div>
+            {savedProgress && (
+              <>
+                <div className="w-px h-4 bg-gray-200"></div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-green-600">Auto-saved</span>
+                </div>
+              </>
             )}
-          </p>
+          </div>
         </div>
       </div>
     );
@@ -1219,78 +1279,117 @@ const CreditCalculator = () => {
       case 1:
         return (
           <div className="space-y-8">
-            {/* Hero Value Proposition */}
-            <div className="text-center mb-8">
-              <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-2xl p-6 mb-6">
-                <h2 className="text-4xl font-bold mb-3">Get $25K+ Back from the IRS</h2>
-                <p className="text-xl text-green-100 mb-4">
-                  Small businesses using AI tools can claim substantial R&D tax credits
-                </p>
-                <div className="flex justify-center items-center gap-8 text-sm">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5" />
-                    <span>1,200+ businesses served</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="w-5 h-5" />
-                    <span>$47M+ recovered</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-5 h-5" />
-                    <span>100% money-back guarantee</span>
+            {/* World-Class Hero Section */}
+            <div className="text-center mb-12">
+              {/* Main Value Proposition */}
+              <div className="gradient-primary text-white rounded-3xl p-8 md:p-12 mb-8 relative overflow-hidden">
+                {/* Background Decorations */}
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                
+                <div className="relative z-10">
+                  <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
+                    Get <span className="text-yellow-300">$25K+</span> Back from the IRS
+                  </h1>
+                  <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+                    Small businesses using AI tools can claim <strong className="text-white">substantial R&D tax credits</strong> – even with zero technical team
+                  </p>
+                  
+                  {/* Social Proof Badges */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                    <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4">
+                      <div className="flex items-center justify-center gap-3 mb-2">
+                        <Users className="w-6 h-6 text-blue-200" />
+                        <span className="text-3xl font-bold">1,200+</span>
+                      </div>
+                      <p className="text-blue-100 text-sm">Businesses Served</p>
+                    </div>
+                    <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4">
+                      <div className="flex items-center justify-center gap-3 mb-2">
+                        <DollarSign className="w-6 h-6 text-green-200" />
+                        <span className="text-3xl font-bold">$47M+</span>
+                      </div>
+                      <p className="text-blue-100 text-sm">Tax Credits Recovered</p>
+                    </div>
+                    <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4">
+                      <div className="flex items-center justify-center gap-3 mb-2">
+                        <Shield className="w-6 h-6 text-yellow-200" />
+                        <span className="text-lg font-bold">100%</span>
+                      </div>
+                      <p className="text-blue-100 text-sm">Money-Back Guarantee</p>
+                    </div>
                   </div>
                 </div>
               </div>
               
-              <h3 className="text-2xl font-bold mb-2 text-gray-900">Tell us about your business</h3>
-              <p className="text-lg text-gray-600 max-w-xl mx-auto">
-                Even small businesses with no technical team can qualify for substantial credits.
-              </p>
+              {/* Section Header */}
+              <div className="mb-8">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Tell us about your business</h2>
+                <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                  We'll calculate your exact credit amount and show you how to claim it in <strong>3 simple steps</strong>
+                </p>
+              </div>
             </div>
             
             <QualificationQuickCheck />
             
-            <div className="bg-gray-50/50 rounded-xl p-8 space-y-6">
-              <div>
-                <label className="block text-base font-semibold text-gray-800 mb-3">
-                  Your business name
+            <div className="card-elevated p-8 md:p-10 space-y-8">
+              <div className="space-y-4">
+                <label className="block text-lg font-semibold text-gray-900 mb-3">
+                  <span className="flex items-center gap-2">
+                    <Building className="w-5 h-5 text-blue-600" />
+                    What's your business name?
+                  </span>
                 </label>
                 <input
                   type="text"
                   value={formData.companyName}
                   onChange={(e) => updateFormData('companyName', e.target.value)}
-                  className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
+                  className="input-enhanced text-xl"
                   placeholder="Your Company, Inc."
                 />
+                <p className="text-sm text-gray-500">This helps us personalize your tax credit package</p>
               </div>
 
-              <div>
-                <label className="block text-base font-semibold text-gray-800 mb-3">
-                  Industry Type
+              <div className="space-y-4">
+                <label className="block text-lg font-semibold text-gray-900 mb-3">
+                  <span className="flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-green-600" />
+                    What industry are you in?
+                  </span>
                 </label>
                 <select
                   value={formData.industry}
                   onChange={(e) => updateFormData('industry', e.target.value)}
-                  className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
+                  className="input-enhanced text-xl"
                 >
-                  <option value="">Select your industry</option>
+                  <option value="">Choose your industry type</option>
                   {industries.map(ind => (
                     <option key={ind.value} value={ind.value}>{ind.label}</option>
                   ))}
                 </select>
                 <IndustryExamples industry={formData.industry} />
                 
-                {/* Industry-Specific Value Props */}
+                {/* Enhanced Industry-Specific Value Props */}
                 {formData.industry && (
-                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <h4 className="font-bold text-blue-900 mb-2">
-                      {getIndustryValueProp(formData.industry).title}
-                    </h4>
-                    <p className="text-sm text-blue-800">
-                      {getIndustryValueProp(formData.industry).description}
-                    </p>
-                    <div className="text-xs text-blue-600 font-bold mt-1">
-                      Average savings: {getIndustryValueProp(formData.industry).avgSavings}
+                  <div className="mt-6 status-info rounded-2xl p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <TrendingUp className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-bold text-blue-900 mb-3">
+                          {getIndustryValueProp(formData.industry).title}
+                        </h4>
+                        <p className="text-blue-800 mb-3 leading-relaxed">
+                          {getIndustryValueProp(formData.industry).description}
+                        </p>
+                        <div className="inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full">
+                          <span className="text-sm font-bold text-blue-700">
+                            Typical savings: {getIndustryValueProp(formData.industry).avgSavings}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1367,42 +1466,66 @@ const CreditCalculator = () => {
 
 
 
-              <div>
-                <label className="block text-base font-semibold text-gray-800 mb-3">
-                  Annual Revenue
+              <div className="space-y-4">
+                <label className="block text-lg font-semibold text-gray-900 mb-3">
+                  <span className="flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-green-600" />
+                    What's your annual revenue?
+                  </span>
                   <InfoTooltip text="We need this to calculate your maximum credit and special benefits. Your data is encrypted and never shared." />
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-4 top-4 w-6 h-6 text-gray-400" />
+                  <DollarSign className="absolute left-5 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
                   <input
                     type="number"
                     value={formData.grossReceipts}
                     onChange={(e) => updateFormData('grossReceipts', e.target.value)}
-                    className="w-full pl-14 pr-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
+                    className="input-enhanced pl-16 text-xl"
                     placeholder="1,000,000"
                   />
                 </div>
-                <div className="space-y-2 mt-3">
-                  <p className="text-sm text-blue-600 font-medium bg-blue-50 px-4 py-2 rounded-lg">
-                    💡 Small businesses under $5M get immediate cash refunds
-                  </p>
-                  <p className="text-sm text-green-600 font-medium bg-green-50 px-4 py-2 rounded-lg">
-                    🏢 LLC & S-Corp owners: Claim credits on your personal tax return (pass-through benefits)
-                  </p>
+                <p className="text-sm text-gray-500">This determines your eligibility for special startup benefits</p>
+                
+                {/* Enhanced Benefits Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                  <div className="status-success rounded-2xl p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <Zap className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-green-900 mb-1">Under $5M Revenue?</h4>
+                        <p className="text-sm text-green-700">Get immediate cash refunds instead of waiting for tax savings</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="status-info rounded-2xl p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <Building className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-blue-900 mb-1">LLC & S-Corp Benefits</h4>
+                        <p className="text-sm text-blue-700">Claim credits on your personal return with pass-through advantages</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
             </div>
             
-            <div className="flex justify-between items-center pt-8 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center pt-8 border-t border-gray-100">
               <SaveProgressButton />
               <button
                 onClick={() => setCurrentStep(2)}
                 disabled={!formData.companyName || !formData.grossReceipts || formData.selectedYears.length === 0}
-                className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-5 px-10 rounded-2xl font-bold text-xl hover:from-blue-700 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                className="btn-primary w-full sm:w-auto text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                Continue to Your AI Work 🚀
-                <ChevronRight className="ml-3 w-6 h-6" />
+                <span className="flex items-center gap-3">
+                  Continue to Your AI Work
+                  <ChevronRight className="w-6 h-6" />
+                </span>
               </button>
             </div>
           </div>
@@ -1411,21 +1534,42 @@ const CreditCalculator = () => {
       case 2:
         return (
           <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4 text-gray-900">
-                Your AI & Technology Expenses
-                {formData.selectedYears.length === 1 && (
-                  <span className="text-blue-600"> for {formData.selectedYears[0]}</span>
-                )}
-              </h2>
-              <p className="text-lg text-gray-600">
-                Include all time and money spent on AI tools, custom GPTs, chatbots, automations, and process improvements
-                {formData.selectedYears.length > 1 && (
-                  <span className="block text-blue-600 font-medium mt-1">
-                    Currently entering data for {currentYear}
-                  </span>
-                )}
-              </p>
+            <div className="text-center mb-10">
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 gradient-primary rounded-2xl mb-4">
+                  <Zap className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+                  Your AI & Technology Expenses
+                  {formData.selectedYears.length === 1 && (
+                    <span className="text-blue-600"> for {formData.selectedYears[0]}</span>
+                  )}
+                </h2>
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                  Include all time and money spent on AI tools, custom GPTs, chatbots, automations, and process improvements
+                  {formData.selectedYears.length > 1 && (
+                    <span className="block text-blue-600 font-medium mt-2">
+                      Currently entering data for {currentYear}
+                    </span>
+                  )}
+                </p>
+              </div>
+              
+              {/* Qualification Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                <div className="bg-blue-50 rounded-xl p-4">
+                  <div className="text-2xl font-bold text-blue-600">90%</div>
+                  <div className="text-sm text-blue-700">of AI tool costs qualify</div>
+                </div>
+                <div className="bg-green-50 rounded-xl p-4">
+                  <div className="text-2xl font-bold text-green-600">65%</div>
+                  <div className="text-sm text-green-700">of contractor costs qualify</div>
+                </div>
+                <div className="bg-purple-50 rounded-xl p-4">
+                  <div className="text-2xl font-bold text-purple-600">100%</div>
+                  <div className="text-sm text-purple-700">of cloud/API costs qualify</div>
+                </div>
+              </div>
             </div>
 
             {/* Year Navigation for Multi-Year */}
@@ -1489,28 +1633,55 @@ const CreditCalculator = () => {
               </p>
             </div>
 
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-              <h4 className="font-medium text-green-900 mb-2">💡 What counts as R&D for small businesses?</h4>
-              <ul className="text-sm text-green-800 space-y-1">
-                <li>✓ Building custom GPTs or chatbots for your business</li>
-                <li>✓ Developing and testing AI prompts that work for your needs</li>
-                <li>✓ Creating automations with Zapier, Make, or custom code</li>
-                <li>✓ Time spent experimenting with AI to improve processes</li>
-                <li>✓ Integrating AI tools into your workflows</li>
-                <li>✓ Testing new software or systems to solve business problems</li>
-                <li>✓ Building apps, websites, or digital tools for your customers</li>
-              </ul>
+            <div className="status-success rounded-2xl p-6 mb-8">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                  <CheckCircle className="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-green-900 mb-4">What counts as R&D for small businesses?</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-green-800">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span>Building custom GPTs or chatbots</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span>Developing and testing AI prompts</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span>Creating automations (Zapier, Make)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span>Experimenting with AI processes</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span>Integrating AI tools into workflows</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span>Testing new software solutions</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Users className="inline w-4 h-4 mr-1" />
-                  Total Employee Wages
+            {/* Enhanced Expense Form */}
+            <div className="card-elevated p-8 space-y-8">
+              <div className="space-y-4">
+                <label className="block text-lg font-semibold text-gray-900 mb-3">
+                  <span className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-blue-600" />
+                    Total Employee Wages
+                  </span>
                   <InfoTooltip text="Total wages for employees who work on AI projects, automation, or tech improvements (we'll calculate the R&D portion next)" />
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+                  <DollarSign className="absolute left-5 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
                   <input
                     type="number"
                     value={yearlyData[currentYear]?.w2Wages || ''}
@@ -1518,18 +1689,19 @@ const CreditCalculator = () => {
                       ...prev,
                       [currentYear]: { ...prev[currentYear], w2Wages: e.target.value }
                     }))}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="input-enhanced pl-16 text-xl"
                     placeholder="50,000"
                   />
                 </div>
+                <p className="text-sm text-gray-500">Include salaries for anyone working on AI, automation, or tech improvements</p>
                 
                 {yearlyData[currentYear]?.w2Wages && (
-                  <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                  <div className="mt-6 status-info rounded-2xl p-6">
+                    <label className="block text-base font-semibold text-blue-900 mb-4">
                       What % of their time is spent on R&D activities?
-                      <span className="font-normal text-gray-500 ml-1">(Most businesses: 20-60%)</span>
+                      <span className="font-normal text-blue-700 ml-2">(Most businesses: 20-60%)</span>
                     </label>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4 mb-4">
                       <input
                         type="range"
                         min="0"
@@ -1540,27 +1712,31 @@ const CreditCalculator = () => {
                           ...prev,
                           [currentYear]: { ...prev[currentYear], w2Percentage: e.target.value }
                         }))}
-                        className="flex-1"
+                        className="flex-1 h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
                       />
-                      <div className="w-16 text-center">
-                        <span className="text-sm font-medium">{yearlyData[currentYear]?.w2Percentage || '30'}%</span>
+                      <div className="bg-blue-100 px-4 py-2 rounded-xl text-center min-w-[60px]">
+                        <span className="text-lg font-bold text-blue-800">{yearlyData[currentYear]?.w2Percentage || '30'}%</span>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-600 mt-2">
-                      = {formatCurrency(safeParseFloat(yearlyData[currentYear]?.w2Wages) * safeParsePercent(yearlyData[currentYear]?.w2Percentage, 30))} in qualified wages
-                    </p>
+                    <div className="bg-blue-100 rounded-xl p-4">
+                      <p className="text-blue-800 font-medium">
+                        Qualified wages: <span className="text-xl font-bold">{formatCurrency(safeParseFloat(yearlyData[currentYear]?.w2Wages) * safeParsePercent(yearlyData[currentYear]?.w2Percentage, 30))}</span>
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Package className="inline w-4 h-4 mr-1" />
-                  Total Contractor/Freelancer Costs
+              <div className="space-y-4">
+                <label className="block text-lg font-semibold text-gray-900 mb-3">
+                  <span className="flex items-center gap-2">
+                    <Package className="w-5 h-5 text-green-600" />
+                    Total Contractor/Freelancer Costs
+                  </span>
                   <InfoTooltip text="Total paid to developers, AI consultants, automation experts, or anyone helping build your tech" />
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+                  <DollarSign className="absolute left-5 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
                   <input
                     type="number"
                     value={yearlyData[currentYear]?.contractorCosts || ''}
@@ -1568,10 +1744,11 @@ const CreditCalculator = () => {
                       ...prev,
                       [currentYear]: { ...prev[currentYear], contractorCosts: e.target.value }
                     }))}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="input-enhanced pl-16 text-xl"
                     placeholder="20,000"
                   />
                 </div>
+                <p className="text-sm text-gray-500">Include payments to developers, AI consultants, automation specialists, etc.</p>
                 
                 {yearlyData[currentYear]?.contractorCosts && (
                   <div className="mt-3 p-3 bg-gray-50 rounded-lg">
@@ -2047,15 +2224,24 @@ const CreditCalculator = () => {
             {/* Email Gate for Full Results */}
             {!showFullResults ? (
               <>
-                {/* Quick Summary - Show range ONLY if email not captured yet */}
-                <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white text-center">
-                  <h3 className="text-xl font-bold mb-2">Your Estimated Tax Benefit</h3>
-                  <p className="text-3xl font-bold">
-                    {formatCurrency(Math.floor(results.totalBenefit * 0.8))} - {formatCurrency(Math.ceil(results.totalBenefit * 1.2))}
-                  </p>
-                  <p className="text-sm opacity-90 mt-2">
-                    Based on businesses like yours claiming the R&D tax credit
-                  </p>
+                {/* Enhanced Quick Summary */}
+                <div className="gradient-primary rounded-3xl p-8 text-white text-center relative overflow-hidden">
+                  {/* Background Decorations */}
+                  <div className="absolute -top-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                  <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
+                  
+                  <div className="relative z-10">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-6">
+                      <TrendingUp className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-2xl md:text-3xl font-bold mb-4">Your Estimated Tax Benefit</h3>
+                    <p className="text-4xl md:text-5xl font-black mb-4 text-yellow-300">
+                      {formatCurrency(Math.floor(results.totalBenefit * 0.8))} - {formatCurrency(Math.ceil(results.totalBenefit * 1.2))}
+                    </p>
+                    <p className="text-lg text-blue-100 max-w-md mx-auto leading-relaxed">
+                      Based on businesses like yours successfully claiming the R&D tax credit
+                    </p>
+                  </div>
                 </div>
 
                 {/* Social Proof First */}
@@ -2066,47 +2252,90 @@ const CreditCalculator = () => {
                   <p className="text-sm text-gray-600">— Sarah, Marketing Agency Owner</p>
                 </div>
 
-                {/* Email Capture Section */}
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-100">
-                  <h3 className="text-lg font-semibold mb-2">Get your full breakdown + filing instructions</h3>
-                  <p className="text-gray-600 mb-4">
-                    We'll email your personalized report with exact calculations, documentation templates, and step-by-step claiming instructions.
-                  </p>
-                  {!emailSubmitted ? (
-                    <div className="space-y-4">
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="your@email.com"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                      <button
-                        onClick={() => {
-                          if (email && email.includes('@')) {
-                            console.log('Email captured:', email);
-                            console.log('Results data:', results.details);
-                            localStorage.setItem('rd_credit_email', email);
-                            localStorage.setItem('rd_credit_results', JSON.stringify(results));
-                            setEmailSubmitted(true);
-                            setTimeout(() => setShowFullResults(true), 1000);
-                          }
-                        }}
-                        disabled={!email || !email.includes('@')}
-                        className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                      >
-                        Send My Personalized Report
-                      </button>
-                      <p className="text-xs text-gray-500 text-center italic">
-                        Free instant access • No credit card required • Unsubscribe anytime
+                {/* Enhanced Email Capture Section */}
+                <div className="card-elevated gradient-secondary p-8 relative overflow-hidden">
+                  {/* Background Decoration */}
+                  <div className="absolute -top-6 -right-6 w-32 h-32 bg-blue-200/30 rounded-full blur-2xl"></div>
+                  <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-green-200/30 rounded-full blur-2xl"></div>
+                  
+                  <div className="relative z-10">
+                    <div className="text-center mb-6">
+                      <div className="inline-flex items-center justify-center w-16 h-16 gradient-primary rounded-2xl mb-4">
+                        <FileText className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                        Get Your Complete Tax Credit Package
+                      </h3>
+                      <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                        Receive your personalized report with <strong>exact calculations</strong>, professional documentation templates, and step-by-step filing instructions
                       </p>
                     </div>
-                  ) : (
-                    <div className="text-center py-4">
-                      <p className="text-green-600 font-medium">✅ Success! Check your email at {email}</p>
-                      <p className="text-sm text-gray-600 mt-1">Your report is on its way (check spam if needed)</p>
-                    </div>
-                  )}
+
+                    {!emailSubmitted ? (
+                      <div className="max-w-md mx-auto space-y-6">
+                        <div className="relative">
+                          <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="your@business-email.com"
+                            className="input-enhanced w-full text-lg text-center"
+                          />
+                        </div>
+                        <button
+                          onClick={() => {
+                            if (email && email.includes('@')) {
+                              console.log('Email captured:', email);
+                              console.log('Results data:', results.details);
+                              localStorage.setItem('rd_credit_email', email);
+                              localStorage.setItem('rd_credit_results', JSON.stringify(results));
+                              setEmailSubmitted(true);
+                              setTimeout(() => setShowFullResults(true), 1000);
+                            }
+                          }}
+                          disabled={!email || !email.includes('@')}
+                          className="btn-primary w-full text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                        >
+                          <span className="flex items-center justify-center gap-3">
+                            <FileText className="w-6 h-6" />
+                            Get My Personalized Report
+                            <ChevronRight className="w-6 h-6" />
+                          </span>
+                        </button>
+                        
+                        {/* Trust Indicators */}
+                        <div className="grid grid-cols-3 gap-4 text-center text-sm">
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                              <Zap className="w-4 h-4 text-green-600" />
+                            </div>
+                            <span className="text-gray-600">Instant Access</span>
+                          </div>
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                              <Shield className="w-4 h-4 text-blue-600" />
+                            </div>
+                            <span className="text-gray-600">No Credit Card</span>
+                          </div>
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                              <Lock className="w-4 h-4 text-purple-600" />
+                            </div>
+                            <span className="text-gray-600">Unsubscribe Anytime</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                          <CheckCircle className="w-8 h-8 text-green-600" />
+                        </div>
+                        <h4 className="text-xl font-bold text-green-800 mb-2">Success! Report Sent</h4>
+                        <p className="text-green-700 mb-1">Check your email at {email}</p>
+                        <p className="text-sm text-gray-600">Your personalized report is on its way (check spam folder if needed)</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </>
             ) : (

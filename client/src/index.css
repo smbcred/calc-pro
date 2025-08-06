@@ -72,9 +72,28 @@
   --ring: hsl(214, 100%, 48%);
   --radius: 0.75rem;
   
-  /* Spacing & Typography */
-  --content-max-width: 1200px;
-  --step-max-width: 800px;
+  /* Enhanced Spacing System - 8px Base Grid */
+  --spacing-xs: 4px;    /* 0.25rem - Fine adjustments */
+  --spacing-sm: 8px;    /* 0.5rem - Base grid unit */
+  --spacing-md: 16px;   /* 1rem - Standard spacing */
+  --spacing-lg: 24px;   /* 1.5rem - Section spacing */
+  --spacing-xl: 32px;   /* 2rem - Large spacing */
+  --spacing-2xl: 48px;  /* 3rem - Major spacing */
+  --spacing-3xl: 64px;  /* 4rem - Section dividers */
+  --spacing-4xl: 80px;  /* 5rem - Large sections */
+  --spacing-5xl: 96px;  /* 6rem - Major sections */
+  --spacing-6xl: 120px; /* 7.5rem - Hero sections */
+  
+  /* Container System */
+  --container-full: 1280px;    /* Modern display optimal */
+  --container-content: 1200px; /* Standard content width */
+  --container-medium: 960px;   /* Article/form content */
+  --container-narrow: 680px;   /* Reading optimal (65-75 chars) */
+  --container-step: 800px;     /* Form step width */
+  
+  /* Reading Optimization */
+  --reading-measure: 65ch;     /* Optimal reading line length */
+  --reading-measure-wide: 75ch; /* Wide reading measure */
 }
 
 .dark {
@@ -474,11 +493,12 @@
       0 0 0 3px hsla(38, 92%, 50%, 0.15);
   }
   
-  /* Enhanced Status Indicators */
+  /* Enhanced Status Indicators with Proper Spacing */
   .status-success {
     background: linear-gradient(135deg, hsl(142, 72%, 96%) 0%, hsl(142, 60%, 94%) 100%);
     border-color: hsl(142, 72%, 80%);
     color: var(--success);
+    padding: var(--spacing-md) var(--spacing-lg);
     @apply border rounded-lg;
   }
   
@@ -486,6 +506,7 @@
     background: linear-gradient(135deg, hsl(38, 92%, 96%) 0%, hsl(38, 80%, 94%) 100%);
     border-color: hsl(38, 92%, 80%);
     color: var(--warning);
+    padding: var(--spacing-md) var(--spacing-lg);
     @apply border rounded-lg;
   }
   
@@ -493,6 +514,7 @@
     background: linear-gradient(135deg, hsl(203, 89%, 96%) 0%, hsl(203, 80%, 94%) 100%);
     border-color: hsl(203, 89%, 80%);
     color: var(--info);
+    padding: var(--spacing-md) var(--spacing-lg);
     @apply border rounded-lg;
   }
   
@@ -500,16 +522,161 @@
     background: linear-gradient(135deg, hsl(0, 84%, 96%) 0%, hsl(0, 70%, 94%) 100%);
     border-color: hsl(0, 84%, 80%);
     color: var(--destructive);
+    padding: var(--spacing-md) var(--spacing-lg);
     @apply border rounded-lg;
   }
   
-  /* Professional spacing */
-  .section-padding {
-    @apply py-16 md:py-24;
+  /* Data Section Spacing */
+  .data-section {
+    padding: var(--spacing-2xl);
+    margin-bottom: var(--spacing-xl);
   }
   
+  .data-section-dense {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  /* Visual Flow Helpers */
+  .breathing-room {
+    margin-top: var(--spacing-2xl);
+    margin-bottom: var(--spacing-2xl);
+  }
+  
+  .breathing-room-lg {
+    margin-top: var(--spacing-3xl);
+    margin-bottom: var(--spacing-3xl);
+  }
+  
+  .visual-separator {
+    margin-top: var(--spacing-4xl);
+    margin-bottom: var(--spacing-4xl);
+    border-top: 1px solid var(--neutral-200);
+    padding-top: var(--spacing-4xl);
+  }
+  
+  /* Enhanced Spacing System */
+  .space-xs { margin: var(--spacing-xs); }
+  .space-sm { margin: var(--spacing-sm); }
+  .space-md { margin: var(--spacing-md); }
+  .space-lg { margin: var(--spacing-lg); }
+  .space-xl { margin: var(--spacing-xl); }
+  .space-2xl { margin: var(--spacing-2xl); }
+  .space-3xl { margin: var(--spacing-3xl); }
+  .space-4xl { margin: var(--spacing-4xl); }
+  .space-5xl { margin: var(--spacing-5xl); }
+  .space-6xl { margin: var(--spacing-6xl); }
+  
+  /* Enhanced Section Padding */
+  .section-padding {
+    padding-top: var(--spacing-4xl);
+    padding-bottom: var(--spacing-4xl);
+  }
+  
+  .section-padding-lg {
+    padding-top: var(--spacing-5xl);
+    padding-bottom: var(--spacing-5xl);
+  }
+  
+  .section-padding-xl {
+    padding-top: var(--spacing-6xl);
+    padding-bottom: var(--spacing-6xl);
+  }
+  
+  @media (min-width: 768px) {
+    .section-padding {
+      padding-top: var(--spacing-5xl);
+      padding-bottom: var(--spacing-5xl);
+    }
+    
+    .section-padding-lg {
+      padding-top: var(--spacing-6xl);
+      padding-bottom: var(--spacing-6xl);
+    }
+    
+    .section-padding-xl {
+      padding-top: 8rem;
+      padding-bottom: 8rem;
+    }
+  }
+  
+  /* Enhanced Container System */
+  .container-full {
+    max-width: var(--container-full);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+  }
+  
+  .container-content {
+    max-width: var(--container-content);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+  }
+  
+  .container-medium {
+    max-width: var(--container-medium);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+  }
+  
+  .container-narrow {
+    max-width: var(--container-narrow);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+  }
+  
+  .container-step {
+    max-width: var(--container-step);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+  }
+  
+  @media (min-width: 640px) {
+    .container-full,
+    .container-content,
+    .container-medium,
+    .container-narrow,
+    .container-step {
+      padding-left: var(--spacing-lg);
+      padding-right: var(--spacing-lg);
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container-full,
+    .container-content,
+    .container-medium,
+    .container-narrow,
+    .container-step {
+      padding-left: var(--spacing-xl);
+      padding-right: var(--spacing-xl);
+    }
+  }
+  
+  /* Reading Optimization */
+  .prose-optimal {
+    max-width: var(--reading-measure);
+    line-height: 1.625;
+  }
+  
+  .prose-optimal-wide {
+    max-width: var(--reading-measure-wide);
+    line-height: 1.625;
+  }
+  
+  /* Legacy alias for backward compatibility */
   .container-custom {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply container-full;
   }
   
   /* Advanced animations */

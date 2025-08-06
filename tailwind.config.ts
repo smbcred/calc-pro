@@ -152,6 +152,27 @@ export default {
         "completePulse": "completePulse 0.6s ease-out",
         "celebrate": "celebrate 0.8s ease-out",
       },
+      spacing: {
+        'xs': '4px',     // 0.25rem
+        'sm': '8px',     // 0.5rem
+        'md': '16px',    // 1rem
+        'lg': '24px',    // 1.5rem
+        'xl': '32px',    // 2rem
+        '2xl': '48px',   // 3rem
+        '3xl': '64px',   // 4rem
+        '4xl': '80px',   // 5rem
+        '5xl': '96px',   // 6rem
+        '6xl': '120px',  // 7.5rem
+      },
+      maxWidth: {
+        'container-full': '1280px',
+        'container-content': '1200px',
+        'container-medium': '960px',
+        'container-narrow': '680px',
+        'container-step': '800px',
+        'reading': '65ch',
+        'reading-wide': '75ch',
+      },
       backdropBlur: {
         'xs': '2px',
         'sm': '4px',

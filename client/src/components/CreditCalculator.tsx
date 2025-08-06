@@ -3029,9 +3029,9 @@ const CreditCalculator = () => {
                               <tr className="border-b border-slate-100">
                                 <td className="p-4 text-slate-700">Specialty CPAs</td>
                                 <td className="p-4 text-center text-red-600 font-semibold">
-                                  $${formData.selectedYears && formData.selectedYears.length > 1 
+                                  ${formData.selectedYears && formData.selectedYears.length > 1 
                                     ? (8000 * formData.selectedYears.length).toLocaleString()
-                                    : '8,000'} - $${formData.selectedYears && formData.selectedYears.length > 1 
+                                    : '8,000'} - ${formData.selectedYears && formData.selectedYears.length > 1 
                                     ? (15000 * formData.selectedYears.length).toLocaleString()
                                     : '15,000'}+
                                 </td>
@@ -3056,7 +3056,7 @@ const CreditCalculator = () => {
                         </div>
                         <div className="bg-gradient-to-r from-green-100 to-blue-100 p-4 text-center border-t border-slate-200">
                           <div className="text-lg font-bold text-slate-800">
-                            💰 You save: $${((formData.selectedYears && formData.selectedYears.length > 1 
+                            💰 You save: ${((formData.selectedYears && formData.selectedYears.length > 1 
                               ? (8000 * formData.selectedYears.length) 
                               : 8000) - getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1)).toLocaleString()}+ vs specialists
                           </div>
@@ -3360,7 +3360,11 @@ const CreditCalculator = () => {
                             <span>{formatCurrency(results.qres.wages || 0)}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span>Contractors ({Math.round((results.qres.contractorPercent || 0) * 100)}% × 65%)</span>
+                            <span>Contractors {
+                              (results.qres.contractorPercent || 0) > 0 
+                                ? `(${Math.round(results.qres.contractorPercent * 100)}% × 65%)`
+                                : '(0%)'
+                            }</span>
                             <span>{formatCurrency(results.qres.contractors || 0)}</span>
                           </div>
                           <div className="flex justify-between">

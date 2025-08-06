@@ -13,8 +13,6 @@ const CreditCalculator = () => {
     selectedYears: ['2024'], // Array of selected tax years
     
     // Additional factors
-    stateCredit: false,
-    selectedState: '',
     priorYearCredit: false,
     priorYearAmount: ''
   });
@@ -55,54 +53,7 @@ const CreditCalculator = () => {
   const [email, setEmail] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [showFullResults, setShowFullResults] = useState(false);
-  const [showStateDetails, setShowStateDetails] = useState(false);
 
-  // States that offer R&D tax credits
-  // Supported states with detailed filing information
-  const statesWithCredit = [
-    { code: 'AK', name: 'Alaska', rate: 0.18, form: 'Form 6390', method: 'PDF with return' },
-    { code: 'AR', name: 'Arkansas', rate: 0.20, form: 'AEDC Application', method: 'PDF/email application' },
-    { code: 'CA', name: 'California', rate: 0.15, form: 'CA Form 3523', method: 'File with return' },
-    { code: 'CO', name: 'Colorado', rate: 0.03, form: 'Form 112CR', method: 'Standard filing' },
-    { code: 'CT', name: 'Connecticut', rate: 0.06, form: 'Form CT-1120RC', method: 'C-corp only, paper accepted' },
-    { code: 'DE', name: 'Delaware', rate: 0.10, form: 'Form 2070AC', method: 'Standard filing' },
-    { code: 'GA', name: 'Georgia', rate: 0.10, form: 'Form IT-RD', method: 'Paper or e-file' },
-    { code: 'HI', name: 'Hawaii', rate: 0.20, form: 'Form N-346', method: 'PDF + annual survey' },
-    { code: 'ID', name: 'Idaho', rate: 0.05, form: 'Form 67', method: 'PDF accepted' },
-    { code: 'IL', name: 'Illinois', rate: 0.065, form: 'Schedule 1299-D', method: 'Standard filing' },
-    { code: 'IN', name: 'Indiana', rate: 0.15, form: 'Schedule IT-20REC', method: 'Paper or e-file' },
-    { code: 'KS', name: 'Kansas', rate: 0.065, form: 'Schedule K-53', method: 'No preapproval needed' },
-    { code: 'ME', name: 'Maine', rate: 0.05, form: 'Form 1040RC', method: 'PDF accepted' },
-    { code: 'MA', name: 'Massachusetts', rate: 0.15, form: 'Schedule RC', method: 'PDF accepted' },
-    { code: 'MN', name: 'Minnesota', rate: 0.10, form: 'Form RD', method: 'Refundable for SMBs' },
-    { code: 'NE', name: 'Nebraska', rate: 0.15, form: 'Form 3800N', method: 'PDF format' },
-    { code: 'NJ', name: 'New Jersey', rate: 0.10, form: 'Form 306', method: 'Paper/e-file supported' },
-    { code: 'NM', name: 'New Mexico', rate: 0.04, form: 'RPD-41246/41247', method: 'PDF acceptable' },
-    { code: 'ND', name: 'North Dakota', rate: 0.04, form: 'Schedule R&D', method: 'Paper-based' },
-    { code: 'OH', name: 'Ohio', rate: 0.075, form: 'Schedule R or CAT', method: 'Paper accepted' },
-    { code: 'RI', name: 'Rhode Island', rate: 0.225, form: 'Schedule RTC', method: 'PDF filing' },
-    { code: 'SC', name: 'South Carolina', rate: 0.05, form: 'Form TC-18', method: 'PDF accepted' },
-    { code: 'TX', name: 'Texas', rate: 0.05, form: 'Form 05-178', method: 'PDF Franchise Tax forms' },
-    { code: 'UT', name: 'Utah', rate: 0.05, form: 'TC-675R', method: 'PDF filing allowed' },
-    { code: 'VT', name: 'Vermont', rate: 0.27, form: 'Schedule RDC', method: '27% of federal credit' },
-    { code: 'WI', name: 'Wisconsin', rate: 0.05, form: 'Schedule R or CR', method: 'PDF accepted' }
-  ];
-
-  // Unsupported states with reasons
-  const unsupportedStates = [
-    { code: 'AZ', name: 'Arizona', reason: 'Requires additional application process with state commerce department' },
-    { code: 'FL', name: 'Florida', reason: 'Annual cap and specific application deadline on March 20th' },
-    { code: 'LA', name: 'Louisiana', reason: 'Must submit application online through state system' },
-    { code: 'MD', name: 'Maryland', reason: 'Requires additional application with commerce department by Nov 15' },
-    { code: 'MO', name: 'Missouri', reason: 'Requires additional application process with state development office' },
-    { code: 'PA', name: 'Pennsylvania', reason: 'Must apply through state system by Dec 1' },
-    { code: 'VA', name: 'Virginia', reason: 'Must submit additional form online through state system' }
-  ];
-
-  // States with no R&D credit
-  const statesWithoutCredit = [
-    'Mississippi', 'North Carolina', 'Tennessee', 'Washington', 'District of Columbia', 'West Virginia'
-  ];
 
   // Industry types for specific examples - expanded list
   const industries = [
@@ -654,54 +605,20 @@ const CreditCalculator = () => {
     return null;
   };
   
-  // Get tiered pricing based on credit amount and number of years
-  const getTieredPricing = (totalCredit: any, numYears: number = 1) => {
-    const credit = safeParseFloat(totalCredit, 0);
+  // Get federal-only pricing based on credit amount
+  const getFederalPricing = (federalCredit: number) => {
+    const credit = safeParseFloat(federalCredit, 0);
     
-    // Determine base price tier
-    let basePrice;
-    if (credit < 10000) basePrice = 500;
-    else if (credit < 50000) basePrice = 750;
-    else if (credit < 100000) basePrice = 1000;
-    else basePrice = 1500;
-    
-    // Apply multi-year pricing model
-    if (numYears === 1) {
-      return basePrice; // 100% of base price
-    } else if (numYears === 2) {
-      return Math.round(basePrice * 1.70); // 170% of base price (15% off second year)
-    } else if (numYears === 3) {
-      return Math.round(basePrice * 2.40); // 240% of base price (20% off years 2-3)
-    } else if (numYears >= 4) {
-      return Math.round(basePrice * 3.00); // 300% of base price (25% off years 2-4)
-    }
-    
-    return basePrice;
+    // Federal pricing tiers: Under $10K = $500, $10K-50K = $750, $50K-100K = $1000, Over $100K = $1500
+    if (credit < 10000) return 500;
+    else if (credit < 50000) return 750;
+    else if (credit < 100000) return 1000;
+    else return 1500;
   };
 
-  // Get tiered state add-on pricing with exact pricing structure
-  const getStateAddonPricing = (totalCredit: any) => {
-    const basePrice = getTieredPricing(totalCredit);
-    if (basePrice === 500) return 250;  // 50%
-    if (basePrice === 750) return 325;  // ~43%
-    if (basePrice === 1000) return 375; // ~37%
-    return 450; // 30% for $1500 tier
-  };
 
-  // Multi-year discount calculation - shows the effective discount percentage
-  const getMultiYearDiscount = (numYears: number) => {
-    if (numYears >= 4) return 0.25; // 25% discount on years 2-4
-    if (numYears >= 3) return 0.20; // 20% discount on years 2-3
-    if (numYears >= 2) return 0.15; // 15% discount on second year
-    return 0; // No discount for single year
-  };
 
-  // Calculate actual savings vs individual year pricing
-  const calculateMultiYearSavings = (basePrice: number, numYears: number) => {
-    const individualYearTotal = basePrice * numYears;
-    const multiYearPrice = getTieredPricing(basePrice, numYears);
-    return individualYearTotal - multiYearPrice;
-  };
+
 
   // Available tax years (current year + 3 previous years)
   const getAvailableYears = () => {
@@ -815,7 +732,7 @@ const CreditCalculator = () => {
   const MultiYearSelector = () => {
     const availableYears = getAvailableYears();
     const selectedCount = formData.selectedYears?.length || 0;
-    const discount = getMultiYearDiscount(selectedCount);
+    const discount = 0; // Simplified federal-only pricing - no discounts
     
     return (
       <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-6 border border-blue-200">
@@ -1086,15 +1003,7 @@ const CreditCalculator = () => {
     };
   };
 
-  // Calculate state credit
-  const calculateStateCredit = (qres) => {
-    if (!formData.stateCredit || !formData.selectedState) return 0;
-    
-    const state = statesWithCredit.find(s => s.code === formData.selectedState);
-    if (!state) return 0;
-    
-    return qres.total * state.rate;
-  };
+
 
   // Calculate retroactive benefit
   const calculateRetroactiveBenefit = (currentQres) => {
@@ -1118,62 +1027,31 @@ const CreditCalculator = () => {
     return benefit;
   };
 
-  // Calculate multi-year projection
-  const calculateMultiYearProjection = (qres, federal, state) => {
-    const growthRate = 1.1;
-    let totalProjected = 0;
-    
-    for (let year = 0; year < 3; year++) {
-      const projectedQres = qres.total * Math.pow(growthRate, year);
-      const projectedFederal = projectedQres * federal.effectiveRate;
-      const projectedState = state > 0 ? projectedQres * (state / qres.total) : 0;
-      
-      const currentYear = parseInt(formData.taxYear) || 2024;
-      const projectedYear = currentYear + year;
-      let projected174A = 0;
-      
-      if (projectedYear >= 2025) {
-        projected174A = projectedQres * 0.21;
-      } else if (projectedYear >= 2022 && projectedYear <= 2024 && federal.isSmallBusinessTaxpayer) {
-        projected174A = projectedQres * 0.21;
-      }
-      
-      totalProjected += projectedFederal + projectedState + projected174A;
-    }
-    
-    return totalProjected;
-  };
 
-  // Perform calculation with multi-year support
+
+  // Perform calculation - federal only
   const performCalculation = () => {
     const qres = calculateQREs();
     const federal = calculateFederalCredit(qres);
-    const state = calculateStateCredit(qres);
     
-    const totalCredit = federal.creditAmount + state;
+    const totalCredit = federal.creditAmount;
     const totalBenefit = totalCredit + (federal.section174ABenefit || 0);
     
     const retroactiveBenefit = calculateRetroactiveBenefit(qres);
-    const multiYearProjection = calculateMultiYearProjection(qres, federal, state);
     
-    // Multi-year specific calculations
-    const numYears = formData.selectedYears.length;
-    const multiYearDiscount = getMultiYearDiscount(numYears);
+    // Federal-only pricing
+    const pricing = getFederalPricing(totalCredit);
     
     const results = {
       qres,
       federal,
-      state,
       totalCredit,
       totalBenefit,
       section174ABenefit: federal.section174ABenefit || 0,
       retroactiveBenefit,
-      multiYearProjection,
       estimatedRefund: federal.payrollTaxOffset > 0 ? federal.payrollTaxOffset : totalCredit * 0.9,
-      details: generateDetailedBreakdown(qres, federal, state),
-      // Multi-year specific data
-      numYears,
-      multiYearDiscount,
+      pricing,
+      details: generateDetailedBreakdown(qres, federal),
       selectedYears: formData.selectedYears,
       yearlyBreakdown: qres.yearlyQREs
     };
@@ -1181,8 +1059,8 @@ const CreditCalculator = () => {
     setResults(results);
   };
 
-  // Generate detailed breakdown
-  const generateDetailedBreakdown = (qres, federal, state) => {
+  // Generate detailed breakdown - federal only
+  const generateDetailedBreakdown = (qres, federal) => {
     const currentYear = parseInt(formData.taxYear) || 2024;
     const isRetroactive174A = currentYear >= 2022 && currentYear <= 2024 && federal.isSmallBusinessTaxpayer;
     
@@ -1206,13 +1084,9 @@ const CreditCalculator = () => {
         section174ABenefit: federal.section174ABenefit,
         isRetroactive174A: isRetroactive174A
       },
-      stateCredit: {
-        state: formData.selectedState,
-        amount: state
-      },
       section174ABenefit: federal.section174ABenefit || 0,
       isRetroactive174A: isRetroactive174A,
-      totalBenefit: federal.creditAmount + state + (federal.section174ABenefit || 0)
+      totalBenefit: federal.creditAmount + (federal.section174ABenefit || 0)
     };
   };
 
@@ -2141,90 +2015,28 @@ const CreditCalculator = () => {
 
 
 
-            <div className="space-y-4">
+            {/* Federal-Only with Coming Soon for State Credits */}
+            <div className="space-y-6">
               <div className="border rounded-xl p-6 bg-gradient-to-br from-blue-50 to-green-50">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.stateCredit}
-                    onChange={(e) => updateFormData('stateCredit', e.target.checked)}
-                    className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                  />
-                  <span className="ml-3 text-lg font-semibold text-gray-900">My state offers R&D tax credits</span>
-                </label>
-                
-                {formData.stateCredit && (
-                  <div className="mt-6 space-y-4">
-                    <div>
-                      <label className="block text-base font-semibold text-gray-800 mb-3">
-                        Select Your State
-                      </label>
-                      <select
-                        value={formData.selectedState}
-                        onChange={(e) => updateFormData('selectedState', e.target.value)}
-                        className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
-                      >
-                        <option value="">Choose a state</option>
-                        {statesWithCredit.map(state => (
-                          <option key={state.code} value={state.code}>
-                            {state.name} - {(state.rate * 100).toFixed(1)}% credit
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    
-                    {/* Show selected state details */}
-                    {formData.selectedState && (
-                      <div className="bg-white rounded-xl p-4 border border-blue-200">
-                        {(() => {
-                          const selectedState = statesWithCredit.find(s => s.code === formData.selectedState);
-                          const unsupportedState = unsupportedStates.find(s => s.code === formData.selectedState);
-                          
-                          if (selectedState) {
-                            return (
-                              <div className="space-y-2">
-                                <h4 className="font-semibold text-green-800 flex items-center gap-2">
-                                  <CheckCircle className="w-5 h-5" />
-                                  {selectedState.name} R&D Credit Details
-                                </h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                  <div>
-                                    <span className="font-medium">Credit Rate:</span>
-                                    <span className="ml-2 text-green-600 font-bold">{(selectedState.rate * 100).toFixed(1)}%</span>
-                                  </div>
-                                  <div>
-                                    <span className="font-medium">Required Form:</span>
-                                    <span className="ml-2">{selectedState.form}</span>
-                                  </div>
-                                  <div className="md:col-span-2">
-                                    <span className="font-medium">Filing Method:</span>
-                                    <span className="ml-2 text-blue-600">{selectedState.method}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          } else if (unsupportedState) {
-                            return (
-                              <div className="space-y-2">
-                                <h4 className="font-semibold text-orange-800 flex items-center gap-2">
-                                  <AlertCircle className="w-5 h-5" />
-                                  {unsupportedState.name} - Complex Process
-                                </h4>
-                                <p className="text-sm text-orange-700 bg-orange-50 p-3 rounded-lg">
-                                  <strong>Extra steps required:</strong> {unsupportedState.reason}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                  Some states require extra steps. Contact us for specialized assistance.
-                                </p>
-                              </div>
-                            );
-                          }
-                          return null;
-                        })()}
-                      </div>
-                    )}
-                  </div>
-                )}
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Federal R&D Tax Credit</h3>
+                <div className="flex items-center gap-3 mb-3">
+                  <CheckCircle className="w-6 h-6 text-green-600" />
+                  <span className="text-lg font-semibold text-green-800">Eligible for federal credits</span>
+                </div>
+                <p className="text-gray-700">You qualify for federal R&D tax credits based on your AI activities and business expenses.</p>
+              </div>
+
+              <div className="border rounded-xl p-6 bg-gradient-to-br from-gray-50 to-gray-100 opacity-75">
+                <h3 className="text-xl font-bold text-gray-700 mb-4 flex items-center gap-2">
+                  <Clock className="w-6 h-6" />
+                  State R&D Tax Credits
+                </h3>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <p className="text-yellow-800 font-medium">Coming Soon!</p>
+                  <p className="text-sm text-yellow-700 mt-1">
+                    State credit support will be available in our next update. For now, we focus on maximizing your federal credits.
+                  </p>
+                </div>
               </div>
 
               <div className="border rounded-lg p-4">
@@ -2279,101 +2091,7 @@ const CreditCalculator = () => {
               </button>
             </div>
 
-            {/* State Information Section - Redesigned */}
-            <div className="mt-8">
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">State R&D Credit Coverage</h3>
-                <p className="text-gray-600">See which states we support and how we can help</p>
-              </div>
-              
-              {/* Visual Summary Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white text-center">
-                  <div className="text-3xl font-bold mb-1">26</div>
-                  <div className="text-green-100 text-sm">States We Support</div>
-                  <div className="text-xs text-green-200 mt-1">Easy filing process</div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white text-center">
-                  <div className="text-3xl font-bold mb-1">7</div>
-                  <div className="text-orange-100 text-sm">Extra Steps Required</div>
-                  <div className="text-xs text-orange-200 mt-1">Specialized assistance</div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl p-6 text-white text-center">
-                  <div className="text-3xl font-bold mb-1">6</div>
-                  <div className="text-gray-100 text-sm">No State Credits</div>
-                  <div className="text-xs text-gray-200 mt-1">Federal only</div>
-                </div>
-              </div>
 
-              {/* Expandable Details */}
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                  <button
-                    onClick={() => setShowStateDetails(!showStateDetails)}
-                    className="w-full flex items-center justify-between text-left hover:text-blue-600 transition-colors"
-                  >
-                    <span className="font-semibold text-gray-900">View All State Details</span>
-                    <ChevronRight className={`w-5 h-5 transition-transform ${showStateDetails ? 'rotate-90' : ''}`} />
-                  </button>
-                </div>
-                
-                {showStateDetails && (
-                  <div className="p-6 space-y-6">
-                    {/* Supported States - Compact Grid */}
-                    <div>
-                      <h4 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4" />
-                        Supported States (26)
-                      </h4>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {statesWithCredit.map(state => (
-                          <div key={state.code} className="bg-green-50 rounded-lg p-2 text-center border border-green-200">
-                            <div className="font-medium text-green-800 text-sm">{state.name}</div>
-                            <div className="text-xs text-green-600">{(state.rate * 100).toFixed(1)}% credit</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="border-t border-gray-200 pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Complex Portal States */}
-                      <div>
-                        <h4 className="font-semibold text-orange-800 mb-3 flex items-center gap-2">
-                          <AlertCircle className="w-4 h-4" />
-                          States with Extra Steps (7)
-                        </h4>
-                        <div className="space-y-2">
-                          {unsupportedStates.map(state => (
-                            <div key={state.code} className="bg-orange-50 rounded-lg p-3 border border-orange-200">
-                              <div className="font-medium text-orange-800">{state.name}</div>
-                              <div className="text-xs text-orange-600">Specialized assistance available</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* States Without Credits */}
-                      <div>
-                        <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                          <Info className="w-4 h-4" />
-                          No State Credits (6)
-                        </h4>
-                        <div className="space-y-2">
-                          {statesWithoutCredit.map(state => (
-                            <div key={state} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                              <div className="font-medium text-gray-700">{state}</div>
-                              <div className="text-xs text-gray-500">Federal credits still available</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
           </div>
         );
 
@@ -2545,10 +2263,10 @@ const CreditCalculator = () => {
                     )}
 
                     {/* Multi-Year Savings Badge */}
-                    {formData.selectedYears && formData.selectedYears.length > 1 && results.multiYearDiscount > 0 && (
+                    {formData.selectedYears && formData.selectedYears.length > 1 && (
                       <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 rounded-full px-4 py-2 mb-4">
                         <span className="text-sm font-bold">
-                          🎉 You saved {Math.round(results.multiYearDiscount * 100)}% with multi-year filing!
+                          🎉 Federal-only simplified pricing applied!
                         </span>
                       </div>
                     )}
@@ -2585,11 +2303,9 @@ const CreditCalculator = () => {
                     </div>
                     
                     <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-6 text-center">
-                      <div className="text-3xl font-bold mb-2">{formatCurrency(results.state || 0)}</div>
-                      <div className="text-purple-100 font-medium">State Credit</div>
-                      {formData.stateCredit && (
-                        <div className="text-xs text-purple-200 mt-1">Current year only</div>
-                      )}
+                      <div className="text-3xl font-bold mb-2">{formatCurrency(results.totalBenefit || 0)}</div>
+                      <div className="text-purple-100 font-medium">Total Benefits</div>
+                      <div className="text-xs text-purple-200 mt-1">Federal credits + deductions</div>
                     </div>
                   </div>
 
@@ -2670,20 +2386,17 @@ const CreditCalculator = () => {
                             <div className="mt-3">
                               <div className="text-sm text-green-700 mb-2">
                                 Per Year Cost: <span className="font-bold">
-                                  ${Math.round(getTieredPricing(results.totalCredit, formData.selectedYears.length) / formData.selectedYears.length).toLocaleString()}
+                                  ${getFederalPricing(results.totalCredit).toLocaleString()}
                                 </span>
                               </div>
                               
                               {/* Savings callout */}
                               <div className="bg-green-100 border border-green-300 rounded-lg p-2 mb-2">
                                 <div className="text-xs font-semibold text-green-800">
-                                  ✓ You Save ${calculateMultiYearSavings(
-                                    getTieredPricing(results.totalCredit, 1), 
-                                    formData.selectedYears.length
-                                  ).toLocaleString()} with multi-year package
+                                  ✓ Federal credits for all years
                                 </div>
                                 <div className="text-xs text-green-600">
-                                  Individual years would cost ${(getTieredPricing(results.totalCredit, 1) * formData.selectedYears.length).toLocaleString()}
+                                  Simplified federal-only pricing
                                 </div>
                               </div>
                               
@@ -2714,62 +2427,32 @@ const CreditCalculator = () => {
                           </div>
                           <div className="text-xs text-green-600 mt-1">
                             {formData.selectedYears && formData.selectedYears.length > 1 ? (
-                              <>Save 20% on multi-year filings</>
+                              <>Federal-only pricing</>
                             ) : (
                               <>Or 3 monthly payments available</>
                             )}
                           </div>
                           {formData.selectedYears && formData.selectedYears.length > 1 && (
                             <div className="text-xs text-green-600 mt-1">
-                              Save ${calculateMultiYearSavings(
-                                getTieredPricing(results.totalCredit, 1), 
-                                formData.selectedYears.length
-                              ).toLocaleString()}
+                              Federal credits only
                             </div>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    {/* State Add-On */}
-                    <div className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                      formData.stateCredit ? 'border-blue-300 bg-blue-50' : 'border-gray-200 bg-gray-50'
-                    }`}>
-                      <label className="flex justify-between items-center cursor-pointer">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3">
-                            <input
-                              type="checkbox"
-                              checked={formData.stateCredit}
-                              onChange={(e) => updateFormData('stateCredit', e.target.checked)}
-                              className="w-5 h-5 text-blue-600 rounded"
-                            />
-                            <div>
-                              <h4 className="font-bold text-gray-900">Add State Credit Filing</h4>
-                              <p className="text-sm text-gray-600">State forms + additional savings</p>
-                            </div>
-                          </div>
-                          {formData.stateCredit && (
-                            <div className="mt-3 ml-8">
-                              <select
-                                value={formData.selectedState}
-                                onChange={(e) => updateFormData('selectedState', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                              >
-                                <option value="">Choose your state</option>
-                                {statesWithCredit.map(state => (
-                                  <option key={state.code} value={state.code}>
-                                    {state.name} - {(state.rate * 100).toFixed(1)}% credit
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          )}
+                    {/* Federal-Only Package Notice */}
+                    <div className="border-2 border-green-300 bg-green-50 rounded-lg p-4">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="w-6 h-6 text-green-600" />
+                        <div>
+                          <h4 className="font-bold text-gray-900">Federal R&D Tax Credit Package</h4>
+                          <p className="text-sm text-gray-600">Complete IRS-ready documentation for your federal credits</p>
                         </div>
-                        <div className="text-right ml-4">
-                          <div className="text-xl font-bold text-blue-700">+${getStateAddonPricing(results.totalCredit)}</div>
-                        </div>
-                      </label>
+                      </div>
+                      <div className="mt-2 text-xs text-blue-600 bg-blue-100 rounded px-2 py-1 inline-block">
+                        State credits coming soon!
+                      </div>
                     </div>
                   </div>
 
@@ -2783,9 +2466,7 @@ const CreditCalculator = () => {
                       {formData.selectedYears.length > 1 && (
                         <span> • ✓ {formData.selectedYears.length} years of forms</span>
                       )}
-                      {formData.stateCredit && formData.selectedState && (
-                        <span> • ✓ State credit forms</span>
-                      )}
+
                     </div>
                   </div>
                   
@@ -2794,7 +2475,7 @@ const CreditCalculator = () => {
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-xl font-bold text-gray-900">Package Price:</span>
                       <span className="text-3xl font-bold text-green-600">
-                        From $500{formData.stateCredit && formData.selectedState ? ' + state add-on' : ''}
+                        From $500
                       </span>
                     </div>
                     
@@ -2808,7 +2489,7 @@ const CreditCalculator = () => {
                         <div className="text-2xl font-bold text-green-100">Return on Investment</div>
                       </div>
                       <div className="text-lg text-green-100">
-                        Starting from $500{formData.stateCredit && formData.selectedState ? ' + state add-on' : ''} → {formatCurrency(
+                        Starting from $500 → {formatCurrency(
                           formData.selectedYears && formData.selectedYears.length > 1 
                             ? ((results.totalBenefit || 0) * formData.selectedYears.length)
                             : results.totalBenefit || 0
@@ -2816,7 +2497,7 @@ const CreditCalculator = () => {
                       </div>
                       {formData.selectedYears && formData.selectedYears.length > 1 && (
                         <div className="mt-3 text-lg font-semibold text-yellow-200">
-                          📈 Save 20% on multi-year filings: {formatCurrency((results.totalBenefit || 0) * formData.selectedYears.length / formData.selectedYears.length)} per year average!
+                          📈 Federal credits for all years: {formatCurrency((results.totalBenefit || 0) * formData.selectedYears.length / formData.selectedYears.length)} per year average!
                         </div>
                       )}
                     </div>
@@ -2831,12 +2512,12 @@ const CreditCalculator = () => {
                         {formData.selectedYears && formData.selectedYears.length === 1 ? (
                           <>
                             <h3 className="text-xl font-bold text-orange-800 mb-2">🚀 Maximize Your Savings!</h3>
-                            <p className="text-orange-700">Save 20% on multi-year filings - packages from $500</p>
+                            <p className="text-orange-700">Federal credits for multiple years - packages from $500</p>
                           </>
                         ) : (
                           <>
-                            <h3 className="text-xl font-bold text-green-800 mb-2">📅 Multi-Year Filing: 20% Discount Applied!</h3>
-                            <p className="text-green-700">You're saving 20% vs individual year pricing with our multi-year package</p>
+                            <h3 className="text-xl font-bold text-green-800 mb-2">📅 Multi-Year Filing: Federal Credits Applied!</h3>
+                            <p className="text-green-700">Federal credits for all selected years with simplified pricing</p>
                           </>
                         )}
                       </div>
@@ -2899,8 +2580,8 @@ const CreditCalculator = () => {
                       {/* Main CTA Button with Enhanced Copy */}
                       <button
                         onClick={() => {
-                          const basePrice = getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1);
-                          const stateAddon = (formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0;
+                          const basePrice = getFederalPricing(results.totalCredit);
+                          const stateAddon = 0; // State credits removed - federal only
                           const totalPrice = basePrice + stateAddon;
                           
                           console.log('Proceeding to checkout with:', {
@@ -2910,7 +2591,7 @@ const CreditCalculator = () => {
                             basePrice,
                             stateAddon,
                             totalPrice,
-                            state: formData.selectedState
+                            packageType: 'federal-only'
                           });
                           window.location.href = '/checkout';
                         }}
@@ -3567,12 +3248,7 @@ const CreditCalculator = () => {
                             <span>Federal R&D Credit</span>
                             <span className="font-bold text-green-600">{formatCurrency(results.federal.creditAmount || 0)}</span>
                           </div>
-                          {results.state > 0 && (
-                            <div className="flex justify-between items-center">
-                              <span>State Credit</span>
-                              <span className="font-bold text-blue-600">{formatCurrency(results.state || 0)}</span>
-                            </div>
-                          )}
+
                           {(results.section174ABenefit || 0) > 0 && (
                             <div className="flex justify-between items-center">
                               <span>Additional Tax Savings</span>
@@ -3695,8 +3371,6 @@ const CreditCalculator = () => {
                   supplies: '',
                   w2Percentage: '30',
                   contractorPercentage: '50',
-                  stateCredit: false,
-                  selectedState: '',
                   priorYearCredit: false,
                   priorYearAmount: ''
                 });

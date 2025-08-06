@@ -1,0 +1,63 @@
+Remove all state R&D credit functionality from the R&D tax credit calculator application. The calculator should only calculate federal R&D credits and display pricing based on the federal credit amount. Add a simple "coming soon" message where state credits would have been mentioned.
+Remove the Following Features:
+
+State Credit Pricing
+
+Remove the "State Add-On (+30%)" pricing tier
+Remove the "Total w/ State" pricing column
+Display only base federal pricing: $500, $750, $1,000, $1,500 based on federal credit amount
+
+
+State Credit Calculations
+
+Remove all state R&D credit calculation logic
+Remove state allocation questions
+Remove multi-state expense splitting
+Remove state-specific qualification rules
+
+
+State-Related UI Elements
+
+Remove state selection/dropdown fields
+Remove "What states do you operate in?" questions
+Remove state credit amount displays in results
+Remove state credit mentions in calculation summaries
+
+
+State Credit Options in Purchase Flow
+
+Remove options to add state credits to purchase
+Remove state credit upsell messaging
+Remove state credit from bundle options
+Remove state credit benefit explanations
+
+
+
+Add "Coming Soon" Messaging:
+
+Add a brief "State credits coming soon" message in the results section after federal credit is displayed
+Keep it simple and non-intrusive - just informational
+
+Pricing Display Updates:
+
+Show only single price based on federal R&D credit amount
+Price tiers remain: Under $10K = $500, $10K-50K = $750, $50K-100K = $1,000, Over $100K = $1,500
+Remove any bundle pricing that includes state credits
+
+Keep All Federal Features:
+
+Federal R&D credit calculation remains unchanged
+QRE calculations unchanged
+Four-part test validation remains
+Payroll offset (Form 8974) eligibility check remains
+All federal calculation logic unchanged
+
+Text/Copy Updates Needed:
+
+Change any mention of "Federal & State R&D Credits" to "Federal R&D Credit"
+Update results messaging to reference only federal savings
+Remove state credit benefits from value propositions
+Update any tooltips or help text that mention state credits
+Update purchase messaging to mention federal forms/documentation only
+
+END RESULT: A streamlined calculator that computes federal R&D credits only, displays appropriate pricing based on the federal credit amount, mentions state credits are coming soon, and leads to purchase of federal R&D credit analysis only.

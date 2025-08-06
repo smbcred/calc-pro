@@ -257,9 +257,10 @@
     transition: all var(--duration-normal) var(--easing-natural);
     padding: 16px 20px;
     font-weight: 500;
-    color: var(--foreground);
+    color: hsl(var(--foreground));
     width: 100%;
     font-size: inherit;
+    font-family: inherit;
   }
   
   .neuro-input:focus,
@@ -294,24 +295,38 @@
     background-size: 16px;
     padding-right: 40px;
     cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
   }
 
   select.input-enhanced:focus {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   }
 
+  /* Force remove default select styling globally */
+  select {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+  }
+
   /* Enhanced Placeholder Styling */
   .input-enhanced::placeholder {
-    color: var(--neutral-400);
+    color: hsl(var(--muted-foreground));
     opacity: 1;
     font-weight: 400;
   }
 
   .input-enhanced:focus::placeholder {
-    color: var(--neutral-300);
+    color: hsl(var(--muted-foreground));
+    opacity: 0.7;
+  }
+
+  /* Ensure proper text color */
+  .input-enhanced option {
+    color: hsl(var(--foreground));
+    background: hsl(var(--background));
   }
 
   /* Hover Effects with Gradient Borders */

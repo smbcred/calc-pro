@@ -201,7 +201,7 @@ const CreditCalculator = () => {
               <h3 className="text-2xl font-bold text-blue-800 mb-3">Ready in 10 Minutes</h3>
               <p className="text-base text-blue-700 font-medium">No tax expertise required</p>
               <div className="mt-3 text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block">
-                Simple step-by-step process
+                Three simple steps
               </div>
             </div>
             
@@ -1331,9 +1331,9 @@ const CreditCalculator = () => {
               
               {/* Section Header */}
               <div className="mb-8">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Tell us about your business</h2>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Answer questions about your AI use</h2>
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                  We'll calculate your credit amount and <strong>prepare your documentation package.</strong> You receive completed forms ready for filing - hand to your CPA or file yourself. <strong>Packages from $500.</strong>
+                  <strong>Takes 10 minutes.</strong> We'll calculate your credit amount and prepare your documentation package. You receive completed forms ready for filing - hand to your CPA or file yourself. <strong>Packages from $500.</strong>
                 </p>
               </div>
             </div>
@@ -2982,11 +2982,9 @@ const CreditCalculator = () => {
                       </h4>
                       <div className="space-y-3">
                         {[
-                          { text: "Complete in 1-2 hours", detail: "vs. 25-50+ hours doing it yourself" },
-                          { text: "Delivered in 2-3 weeks", detail: "vs. 2-4 months with traditional firms" },
-                          { text: "No research required", detail: "we handle all IRS complexity" },
-                          { text: "Ready-to-file package", detail: "your CPA can submit immediately" },
-                          { text: "Professional documentation", detail: "comprehensive filing package" }
+                          { text: "Answer questions (10 min)", detail: "vs. 25-50+ hours doing it yourself" },
+                          { text: "Get filing package (instant)", detail: "vs. 2-4 months with traditional firms" },
+                          { text: "Give to CPA or file yourself", detail: "everything is IRS-ready" }
                         ].map((item, index) => (
                           <div key={index} className="flex items-start gap-3 p-3 bg-white/60 rounded-lg border border-green-100">
                             <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -3085,7 +3083,7 @@ const CreditCalculator = () => {
                 <div className="bg-white border-2 border-green-300 rounded-2xl p-8 mb-8 shadow-lg">
                   <div className="text-center mb-6">
                     <h4 className="text-2xl font-bold text-gray-900 mb-2">🚀 Your Path to {formatCurrency(results.totalBenefit)}</h4>
-                    <p className="text-gray-600">Simple 3-step process - most clients complete in under 48 hours</p>
+                    <p className="text-gray-600">Three simple steps - get started today!</p>
                   </div>
                   
                   <div className="relative">
@@ -3097,33 +3095,33 @@ const CreditCalculator = () => {
                         <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg transform group-hover:scale-110 transition-transform">
                           <Zap className="w-8 h-8 text-white" />
                         </div>
-                        <h5 className="font-bold text-gray-900 mb-2 text-lg">Instant Access</h5>
+                        <h5 className="font-bold text-gray-900 mb-2 text-lg">Answer Questions About Your AI Use</h5>
                         <p className="text-sm text-gray-700 leading-relaxed">
-                          Download complete package immediately: pre-filled forms, documentation, filing instructions
+                          Simple questions about your business and AI tools - no technical expertise needed
                         </p>
-                        <div className="mt-2 text-xs text-blue-600 font-medium">✨ Available in 60 seconds</div>
+                        <div className="mt-2 text-xs text-blue-600 font-medium">⏰ Takes 10 minutes</div>
                       </div>
                       
                       <div className="text-center group">
                         <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg transform group-hover:scale-110 transition-transform">
                           <FileText className="w-8 h-8 text-white" />
                         </div>
-                        <h5 className="font-bold text-gray-900 mb-2 text-lg">Ready-to-File Package</h5>
+                        <h5 className="font-bold text-gray-900 mb-2 text-lg">Get Your Complete Filing Package</h5>
                         <p className="text-sm text-gray-700 leading-relaxed">
-                          You receive completed forms ready for filing. Hand to your CPA or file yourself - we're a document preparation service
+                          We prepare your documentation package - you receive completed forms ready for filing
                         </p>
-                        <div className="mt-2 text-xs text-green-600 font-medium">⏰ Takes 2-4 hours max</div>
+                        <div className="mt-2 text-xs text-green-600 font-medium">📋 Instant delivery</div>
                       </div>
                       
                       <div className="text-center group">
                         <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg transform group-hover:scale-110 transition-transform">
                           <DollarSign className="w-8 h-8 text-white" />
                         </div>
-                        <h5 className="font-bold text-gray-900 mb-2 text-lg">Get Your Money</h5>
+                        <h5 className="font-bold text-gray-900 mb-2 text-lg">Give to CPA or File Yourself</h5>
                         <p className="text-sm text-gray-700 leading-relaxed">
-                          IRS direct deposits your refund - recent clients averaged 8.2 weeks
+                          Hand to your CPA or file yourself - everything is IRS-ready for your refund
                         </p>
-                        <div className="mt-2 text-xs text-purple-600 font-medium">💰 {formatCurrency(results.totalBenefit)} coming your way</div>
+                        <div className="mt-2 text-xs text-purple-600 font-medium">✅ Done!</div>
                       </div>
                     </div>
                   </div>

@@ -1476,6 +1476,7 @@ const CreditCalculator = () => {
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
+                    min="0"
                     value={formData.grossReceipts}
                     onChange={(e) => updateFormData('grossReceipts', e.target.value)}
                     className="input-enhanced pl-11 text-xl"
@@ -1682,6 +1683,7 @@ const CreditCalculator = () => {
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
+                    min="0"
                     value={yearlyData[currentYear]?.w2Wages || ''}
                     onChange={(e) => setYearlyData(prev => ({
                       ...prev,
@@ -1737,6 +1739,7 @@ const CreditCalculator = () => {
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
+                    min="0"
                     value={yearlyData[currentYear]?.contractorCosts || ''}
                     onChange={(e) => setYearlyData(prev => ({
                       ...prev,
@@ -1787,6 +1790,7 @@ const CreditCalculator = () => {
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
+                    min="0"
                     value={yearlyData[currentYear]?.cloudCosts || ''}
                     onChange={(e) => setYearlyData(prev => ({
                       ...prev,
@@ -1807,6 +1811,7 @@ const CreditCalculator = () => {
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
+                    min="0"
                     value={yearlyData[currentYear]?.softwareLicenses || ''}
                     onChange={(e) => setYearlyData(prev => ({
                       ...prev,
@@ -1827,6 +1832,7 @@ const CreditCalculator = () => {
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
+                    min="0"
                     value={yearlyData[currentYear]?.supplies || ''}
                     onChange={(e) => setYearlyData(prev => ({
                       ...prev,
@@ -1893,6 +1899,32 @@ const CreditCalculator = () => {
                 </div>
               </div>
               
+              {/* Why CPAs Don't Mention This - Before Email Capture */}
+              <div className="card-elevated border-l-4 border-orange-500 p-8 mb-8 bg-gradient-to-r from-orange-50 to-yellow-50">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-orange-900 mb-4">
+                      "Why didn't my CPA bring this up?"
+                    </h3>
+                    <div className="space-y-3 text-orange-800">
+                      <p className="leading-relaxed">
+                        <strong>Most CPAs focus on basic tax preparation</strong> – they handle your 1040s, business deductions, and quarterly filings. R&D tax credits are a specialized area requiring different expertise.
+                      </p>
+                      <p className="leading-relaxed">
+                        It's like asking your family doctor to perform surgery. They're excellent at what they do, but <strong>R&D credits require specialized knowledge</strong> of IRS Section 41, qualification criteria, and proper documentation.
+                      </p>
+                      <div className="bg-orange-100 rounded-xl p-4 mt-4">
+                        <p className="font-medium text-orange-900 mb-2">The good news:</p>
+                        <p className="text-sm">Once we prepare everything, your CPA can file it easily – we provide all the forms, calculations, and documentation they need. <strong>Result: a check or direct deposit from the U.S. Treasury.</strong></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Email Capture Form */}
               <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-xl">
                 <h3 className="text-2xl font-bold text-center mb-4">Get Your Complete Report</h3>
@@ -1965,31 +1997,7 @@ const CreditCalculator = () => {
               )}
             </h2>
 
-            {/* Why CPAs Don't Mention This */}
-            <div className="card-elevated border-l-4 border-orange-500 p-8 mb-8 bg-gradient-to-r from-orange-50 to-yellow-50">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <AlertTriangle className="w-6 h-6 text-orange-600" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-orange-900 mb-4">
-                    "Why didn't my CPA bring this up?"
-                  </h3>
-                  <div className="space-y-3 text-orange-800">
-                    <p className="leading-relaxed">
-                      <strong>Most CPAs focus on basic tax preparation</strong> – they handle your 1040s, business deductions, and quarterly filings. R&D tax credits are a specialized area requiring different expertise.
-                    </p>
-                    <p className="leading-relaxed">
-                      It's like asking your family doctor to perform surgery. They're excellent at what they do, but <strong>R&D credits require specialized knowledge</strong> of IRS Section 41, qualification criteria, and proper documentation.
-                    </p>
-                    <div className="bg-orange-100 rounded-xl p-4 mt-4">
-                      <p className="font-medium text-orange-900 mb-2">The good news:</p>
-                      <p className="text-sm">Once we prepare everything, your CPA can file it easily – we provide all the forms, calculations, and documentation they need. <strong>Result: a check or direct deposit from the U.S. Treasury.</strong></p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+
 
             <div className="space-y-4">
               <div className="border rounded-xl p-6 bg-gradient-to-br from-blue-50 to-green-50">
@@ -2097,6 +2105,7 @@ const CreditCalculator = () => {
                       <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                       <input
                         type="number"
+                        min="0"
                         value={formData.priorYearAmount}
                         onChange={(e) => updateFormData('priorYearAmount', e.target.value)}
                         className="input-enhanced pl-11"
@@ -2409,7 +2418,7 @@ const CreditCalculator = () => {
                       <div className="text-3xl font-bold mb-2">
                         {formatCurrency(
                           formData.selectedYears && formData.selectedYears.length > 1 
-                            ? (results.federal.creditAmount || 0) + ((results.federal.creditAmount || 0) * 0.8 * ((formData.selectedYears?.length || 1) - 1))
+                            ? (results.federal.creditAmount || 0) * formData.selectedYears.length
                             : results.federal.creditAmount || 0
                         )}
                       </div>
@@ -2423,7 +2432,7 @@ const CreditCalculator = () => {
                       <div className="text-3xl font-bold mb-2">
                         {formatCurrency(
                           formData.selectedYears && formData.selectedYears.length > 1 
-                            ? (results.section174ABenefit || 0) + ((results.section174ABenefit || 0) * 0.8 * ((formData.selectedYears?.length || 1) - 1))
+                            ? (results.section174ABenefit || 0) * formData.selectedYears.length
                             : results.section174ABenefit || 0
                         )}
                       </div>
@@ -2459,15 +2468,12 @@ const CreditCalculator = () => {
                           )}
                         </div>
                         <div className="text-center">
-                          <div className="text-gray-600 text-sm mb-1">Total Multi-Year Benefit <span className="text-xs">(Estimate)</span></div>
+                          <div className="text-gray-600 text-sm mb-1">Total Multi-Year Benefit</div>
                           <div className="text-xl font-bold text-gray-900">
-                            {formatCurrency(
-                              (results.totalBenefit || 0) + // Current year
-                              ((results.totalBenefit || 0) * 0.8 * ((formData.selectedYears?.length || 1) - 1)) // Additional years at 80% estimate
-                            )}
+                            {formatCurrency((results.totalBenefit || 0) * formData.selectedYears.length)}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
-                            Current year + estimated additional years
+                            {formatCurrency(results.totalBenefit)} × {formData.selectedYears.length} years
                           </div>
                         </div>
                       </div>
@@ -2654,22 +2660,34 @@ const CreditCalculator = () => {
                     </div>
                     
                     {/* ROI Display - Enhanced for multi-year */}
-                    <div className="bg-green-50 rounded-xl p-4 mb-4 text-center border border-green-200">
-                      <p className="text-lg font-bold text-green-800 mb-1">
-                        {Math.round(results.totalBenefit / 
+                    {/* PROMINENT ROI DISPLAY */}
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl p-8 mb-8 text-center shadow-2xl">
+                      <div className="mb-4">
+                        <div className="text-6xl font-black mb-2">
+                          {Math.round((
+                            formData.selectedYears && formData.selectedYears.length > 1 
+                              ? ((results.totalBenefit || 0) * formData.selectedYears.length) // Total multi-year benefit
+                              : results.totalBenefit || 0
+                          ) / 
                           (getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1) + 
                            ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
-                        )}x Return on Investment
-                      </p>
-                      <p className="text-sm text-green-700">
+                          )}x
+                        </div>
+                        <div className="text-2xl font-bold text-green-100">Return on Investment</div>
+                      </div>
+                      <div className="text-lg text-green-100">
                         Your ${((getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1) + 
                                  ((formData.stateCredit && formData.selectedState) ? getStateAddonPricing(results.totalCredit) : 0))
-                               ).toLocaleString()} investment → {formatCurrency(results.totalBenefit)} in tax savings
-                      </p>
+                               ).toLocaleString()} investment → {formatCurrency(
+                          formData.selectedYears && formData.selectedYears.length > 1 
+                            ? ((results.totalBenefit || 0) * formData.selectedYears.length) // Accurate multi-year total
+                            : results.totalBenefit || 0
+                        )} in tax savings
+                      </div>
                       {formData.selectedYears && formData.selectedYears.length > 1 && (
-                        <p className="text-xs text-green-600 mt-1">
-                          That's {formatCurrency(results.totalBenefit / formData.selectedYears.length)} per year average!
-                        </p>
+                        <div className="mt-3 text-lg font-semibold text-yellow-200">
+                          📈 Filing {formData.selectedYears.length} years: {formatCurrency((results.totalBenefit || 0) * formData.selectedYears.length / formData.selectedYears.length)} per year average!
+                        </div>
                       )}
                     </div>
 

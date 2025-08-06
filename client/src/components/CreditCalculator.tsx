@@ -2386,45 +2386,77 @@ const CreditCalculator = () => {
               </>
             ) : (
               <>
-                {/* SIMPLIFIED RESULTS - One Big Number */}
-                <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-xl text-center">
-                  <div className="mb-6">
+                {/* HERO VALUE SECTION - Enhanced readability with distinct sections */}
+                <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-xl">
+                  {/* Header Section */}
+                  <div className="text-center mb-6">
                     <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-full px-4 py-2 mb-4">
-                      <span className="text-sm font-semibold">✨ Your Results</span>
+                      <span className="text-sm font-semibold">✨ Your Personalized Results</span>
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-3">
-                      You Could Save {formatCurrency(results.totalBenefit || 0)}
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                      You Could Save {formatCurrency(
+                        formData.selectedYears && formData.selectedYears.length > 1 
+                          ? (results.totalBenefit || 0) + ((results.totalBenefit || 0) * 0.8 * ((formData.selectedYears?.length || 1) - 1))
+                          : results.totalBenefit || 0
+                      )}
                     </h2>
-                    <p className="text-lg text-gray-600 max-w-md mx-auto">
-                      {formData.selectedYears && formData.selectedYears.length > 1 
-                        ? `Filing for ${formData.selectedYears.length} years (${formData.selectedYears.join(', ')})`
-                        : `For ${formData.selectedYears?.[0] || '2024'} tax year`
-                      }
-                    </p>
-                    {formData.selectedYears && formData.selectedYears.length > 1 && (
-                      <p className="text-green-600 font-medium mt-2">Save 20% with multi-year filing!</p>
+                    {formData.selectedYears && formData.selectedYears.length > 0 && (
+                      <div className="text-lg text-blue-600 font-medium mb-2">
+                        {formData.selectedYears.length === 1 
+                          ? `For ${formData.selectedYears[0]} tax year`
+                          : `For ${formData.selectedYears[0]} + ${formData.selectedYears.length - 1} additional year${formData.selectedYears.length > 2 ? 's' : ''}`
+                        }
+                      </div>
+                    )}
+
+                    {/* Multi-Year Savings Badge */}
+                    {formData.selectedYears && formData.selectedYears.length > 1 && results.multiYearDiscount > 0 && (
+                      <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 rounded-full px-4 py-2 mb-4">
+                        <span className="text-sm font-bold">
+                          🎉 You saved {Math.round(results.multiYearDiscount * 100)}% with multi-year filing!
+                        </span>
+                      </div>
                     )}
                   </div>
 
-                  {/* Simple Value Equation */}
-                  <div className="bg-gray-50 rounded-xl p-6 mb-6">
-                    <div className="flex items-center justify-center gap-8 text-center">
-                      <div>
-                        <div className="text-2xl font-bold text-green-600">Costs $500+</div>
-                        <div className="text-sm text-gray-600">Documentation Package</div>
+                  {/* Enhanced Value Breakdown with Distinct Colors */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 text-center">
+                      <div className="text-3xl font-bold mb-2">
+                        {formatCurrency(
+                          formData.selectedYears && formData.selectedYears.length > 1 
+                            ? (results.federal.creditAmount || 0) * formData.selectedYears.length
+                            : results.federal.creditAmount || 0
+                        )}
                       </div>
-                      <div className="text-3xl text-gray-400">→</div>
-                      <div>
-                        <div className="text-2xl font-bold text-blue-600">{formatCurrency(results.totalBenefit || 0)}</div>
-                        <div className="text-sm text-gray-600">Tax Savings</div>
-                      </div>
+                      <div className="text-blue-100 font-medium">Federal Credit</div>
+                      {formData.selectedYears && formData.selectedYears.length > 1 && (
+                        <div className="text-xs text-blue-200 mt-1">{formData.selectedYears.length} years</div>
+                      )}
                     </div>
-                    <div className="text-center mt-4">
-                      <div className="text-3xl font-black text-orange-600">{Math.round((results.totalBenefit || 0) / 750)}:1</div>
-                      <div className="text-sm text-gray-600">Return on Investment</div>
+                    
+                    <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 text-center">
+                      <div className="text-3xl font-bold mb-2">
+                        {formatCurrency(
+                          formData.selectedYears && formData.selectedYears.length > 1 
+                            ? (results.section174ABenefit || 0) * formData.selectedYears.length
+                            : results.section174ABenefit || 0
+                        )}
+                      </div>
+                      <div className="text-green-100 font-medium">Tax Deduction</div>
+                      {formData.selectedYears && formData.selectedYears.length > 1 && (
+                        <div className="text-xs text-green-200 mt-1">Tax deduction</div>
+                      )}
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-6 text-center">
+                      <div className="text-3xl font-bold mb-2">{formatCurrency(results.state || 0)}</div>
+                      <div className="text-purple-100 font-medium">State Credit</div>
+                      {formData.stateCredit && (
+                        <div className="text-xs text-purple-200 mt-1">Current year only</div>
+                      )}
                     </div>
                   </div>
-                </div>
 
                   {/* Average Per Year Estimate - Always show when there are results */}
                   {formData.selectedYears && formData.selectedYears.length > 0 && (
@@ -2464,40 +2496,147 @@ const CreditCalculator = () => {
                   </div>
                 </div>
 
-                {/* SIMPLE NEXT STEP */}
+                {/* PRIMARY CTA SECTION - Single focused action */}
                 <div className="bg-white border-2 border-green-200 rounded-2xl p-6 shadow-lg">
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                      Get Your Filing Package
+                      Ready-to-File Package for Your CPA
                     </h3>
                     <p className="text-gray-600">
-                      We prepare your documentation package - you receive completed forms ready for filing. 
-                      <span className="block mt-2 text-green-600 font-medium">Costs from $500, saves you {formatCurrency(results.totalBenefit || 0)}</span>
+                      Complete IRS documentation your CPA can file immediately - or you can self-file with confidence. 
+                      <span className="block mt-2 text-green-600 font-medium">Result: Tax refund check or direct deposit from the U.S. Treasury</span>
                     </p>
                   </div>
 
-                  {/* SIMPLE PACKAGE OPTION */}
-                  <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-6">
-                    <div className="text-center">
-                      <h4 className="text-xl font-bold text-green-900 mb-2">
-                        Documentation Package
-                      </h4>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-green-600 mb-2">From $500</div>
-                        {formData.selectedYears && formData.selectedYears.length > 1 && (
-                          <div className="text-sm text-green-700 mb-4">Save 20% with multi-year filing</div>
-                        )}
+                  {/* Package Options - Clear Pricing */}
+                  <div className="space-y-4 mb-6">
+                    {/* Federal Package - Most Popular Badge */}
+                    <div className="border-2 border-green-300 rounded-lg p-4 bg-green-50 relative">
+                      <div className="absolute -top-2 left-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                        MOST POPULAR
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <div>
+                          <h4 className="font-bold text-green-900">
+                            {formData.selectedYears && formData.selectedYears.length > 1 
+                              ? `${formData.selectedYears.length}-Year Federal Package`
+                              : 'Federal R&D Credit Package'
+                            }
+                          </h4>
+                          <p className="text-sm text-green-700">
+                            IRS Form 6765 + documentation + filing guide
+                            {formData.selectedYears && formData.selectedYears.length > 1 && (
+                              <span> • {formData.selectedYears.length} years of forms</span>
+                            )}
+                          </p>
+                          
+                          {/* Simplified multi-year package display */}
+                          {formData.selectedYears && formData.selectedYears.length > 1 && (
+                            <div className="mt-3">
+                              <div className="text-sm text-green-700 mb-2">
+                                Per Year Cost: <span className="font-bold">
+                                  ${Math.round(getTieredPricing(results.totalCredit, formData.selectedYears.length) / formData.selectedYears.length).toLocaleString()}
+                                </span>
+                              </div>
+                              
+                              {/* Savings callout */}
+                              <div className="bg-green-100 border border-green-300 rounded-lg p-2 mb-2">
+                                <div className="text-xs font-semibold text-green-800">
+                                  ✓ You Save ${calculateMultiYearSavings(
+                                    getTieredPricing(results.totalCredit, 1), 
+                                    formData.selectedYears.length
+                                  ).toLocaleString()} with multi-year package
+                                </div>
+                                <div className="text-xs text-green-600">
+                                  Individual years would cost ${(getTieredPricing(results.totalCredit, 1) * formData.selectedYears.length).toLocaleString()}
+                                </div>
+                              </div>
+                              
+                              {/* What's included */}
+                              <div className="text-xs text-green-700 space-y-1">
+                                <div className="font-semibold mb-1">What's Included:</div>
+                                {formData.selectedYears.map((year, index) => (
+                                  <div key={year} className="flex items-center gap-1">
+                                    <span className="text-green-600">✓</span>
+                                    <span>{year} Tax Year - {index === 0 ? 'Current filing' : index === formData.selectedYears.length - 1 ? 'Retroactive recovery' : 'Amended return'}</span>
+                                  </div>
+                                ))}
+                                <div className="flex items-center gap-1 mt-1 pt-1 border-t border-green-200">
+                                  <span className="text-green-600">✓</span>
+                                  <span>All forms, narratives, and documentation</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-green-600">✓</span>
+                                  <span>Step-by-step filing instructions</span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-green-700">
+                            Packages from $500
+                          </div>
+                          <div className="text-xs text-green-600 mt-1">
+                            {formData.selectedYears && formData.selectedYears.length > 1 ? (
+                              <>Save 20% on multi-year filings</>
+                            ) : (
+                              <>Or 3 monthly payments available</>
+                            )}
+                          </div>
+                          {formData.selectedYears && formData.selectedYears.length > 1 && (
+                            <div className="text-xs text-green-600 mt-1">
+                              Save ${calculateMultiYearSavings(
+                                getTieredPricing(results.totalCredit, 1), 
+                                formData.selectedYears.length
+                              ).toLocaleString()}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Optional State Add-On */}
-                  {formData.stateCredit && formData.selectedState && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 text-center">
-                      <div className="text-lg font-bold text-blue-900">+ State Credits</div>
-                      <div className="text-sm text-blue-700">Additional fee applies</div>
+                    {/* State Add-On */}
+                    <div className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                      formData.stateCredit ? 'border-blue-300 bg-blue-50' : 'border-gray-200 bg-gray-50'
+                    }`}>
+                      <label className="flex justify-between items-center cursor-pointer">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="checkbox"
+                              checked={formData.stateCredit}
+                              onChange={(e) => updateFormData('stateCredit', e.target.checked)}
+                              className="w-5 h-5 text-blue-600 rounded"
+                            />
+                            <div>
+                              <h4 className="font-bold text-gray-900">Add State Credit Filing</h4>
+                              <p className="text-sm text-gray-600">State forms + additional savings</p>
+                            </div>
+                          </div>
+                          {formData.stateCredit && (
+                            <div className="mt-3 ml-8">
+                              <select
+                                value={formData.selectedState}
+                                onChange={(e) => updateFormData('selectedState', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                              >
+                                <option value="">Choose your state</option>
+                                {statesWithCredit.map(state => (
+                                  <option key={state.code} value={state.code}>
+                                    {state.name} - {(state.rate * 100).toFixed(1)}% credit
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right ml-4">
+                          <div className="text-xl font-bold text-blue-700">+${getStateAddonPricing(results.totalCredit)}</div>
+                        </div>
+                      </label>
                     </div>
-                  )}
+                  </div>
 
 
 

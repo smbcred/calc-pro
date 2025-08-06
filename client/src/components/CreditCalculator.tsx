@@ -450,7 +450,7 @@ const CreditCalculator = () => {
         </div>
         
         <p className="text-gray-700 mb-4">
-          Most businesses using AI qualify for significant credits. Check all that apply:
+          Most businesses using AI qualify for significant credits - even if you're small or part-time. Check all that apply:
         </p>
         
         <div className="grid grid-cols-1 gap-3">
@@ -663,36 +663,43 @@ const CreditCalculator = () => {
   const RiskMitigation = () => (
     <div className="bg-gray-50 rounded-lg p-4 mt-4">
       <h4 className="text-sm font-medium text-gray-900 mb-3">
-        Common Concerns Addressed:
+        Real SMB Concerns Addressed:
       </h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div className="flex gap-2">
           <span className="text-lg">📊</span>
           <div className="text-xs text-gray-600">
-            <strong className="text-gray-900">We're too small</strong>
-            <p>Credits start at just $10K in ChatGPT and automation expenses</p>
+            <strong className="text-gray-900">"My business is too small for this"</strong>
+            <p>No minimum business size required - even part-time businesses qualify</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <span className="text-lg">🔍</span>
+          <span className="text-lg">⏰</span>
           <div className="text-xs text-gray-600">
-            <strong className="text-gray-900">What about audits?</strong>
-            <p>Less than 1% audit rate with proper documentation</p>
+            <strong className="text-gray-900">"I don't have time to learn tax code"</strong>
+            <p>We handle all the tax code complexity - you just answer simple questions</p>
           </div>
         </div>
         <div className="flex gap-2">
           <span className="text-lg">💼</span>
           <div className="text-xs text-gray-600">
-            <strong className="text-gray-900">We just use ChatGPT</strong>
-            <p>Prompt engineering and testing absolutely qualify!</p>
+            <strong className="text-gray-900">"I just use ChatGPT, not building rockets"</strong>
+            <p>Even 10 hours/month of ChatGPT work qualifies for significant credits!</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <span className="text-lg">📝</span>
+          <span className="text-lg">👨‍💼</span>
           <div className="text-xs text-gray-600">
-            <strong className="text-gray-900">Documentation is hard</strong>
-            <p>We provide templates that take 15 minutes to complete</p>
+            <strong className="text-gray-900">"My CPA never mentioned this"</strong>
+            <p>Most CPAs focus on basic taxes - R&D credits require specialized knowledge</p>
           </div>
+        </div>
+      </div>
+      
+      {/* Additional Reassurance */}
+      <div className="bg-blue-50 rounded-lg p-3 mt-3 border border-blue-200">
+        <div className="text-xs text-blue-800">
+          <strong>✅ Reality check:</strong> Freelancers, consultants, and small business owners working just 10-15 hours/month with AI tools are claiming $15K-$50K+ in credits. No minimum revenue requirements.
         </div>
       </div>
     </div>
@@ -1292,7 +1299,7 @@ const CreditCalculator = () => {
                     Get <span className="text-yellow-300">$25K+</span> Back from the IRS
                   </h1>
                   <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-                    Small businesses using ChatGPT, automation, and AI tools can claim <strong className="text-white">substantial R&D tax credits</strong>. Get everything ready to <strong className="text-yellow-200">hand directly to your CPA</strong> for a <strong className="text-yellow-200">beautiful IRS refund check</strong> 
+                    Small businesses and freelancers using ChatGPT, automation, and AI tools can claim <strong className="text-white">substantial R&D tax credits</strong>. Even part-time AI work qualifies. Get everything ready to <strong className="text-yellow-200">hand directly to your CPA</strong> for a <strong className="text-yellow-200">beautiful IRS refund check</strong> 
                   </p>
                   
                   {/* Social Proof Badges */}
@@ -1558,7 +1565,7 @@ const CreditCalculator = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
                 <div className="bg-blue-50 rounded-xl p-4">
                   <div className="text-2xl font-bold text-blue-600">90%</div>
-                  <div className="text-sm text-blue-700">of ChatGPT & AI tool costs qualify</div>
+                  <div className="text-sm text-blue-700">of ChatGPT costs qualify (no minimum hours)</div>
                 </div>
                 <div className="bg-green-50 rounded-xl p-4">
                   <div className="text-2xl font-bold text-green-600">65%</div>
@@ -1847,7 +1854,7 @@ const CreditCalculator = () => {
 
             <div className="bg-blue-50 p-4 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>💡 Pro tip:</strong> Include ALL experimentation time — testing ChatGPT prompts, trying different automation tools, and failed attempts all count as R&D!
+                <strong>💡 Pro tip:</strong> Include ALL experimentation time — even 10 hours/month testing ChatGPT prompts and trying different automation tools counts as qualifying R&D activity!
               </p>
             </div>
 
@@ -1938,7 +1945,7 @@ const CreditCalculator = () => {
                 {/* Social Proof */}
                 <div className="mt-8 pt-6 border-t border-gray-200">
                   <div className="text-center">
-                    <p className="text-sm text-gray-600 mb-4">Trusted by 3,847+ businesses</p>
+                    <p className="text-sm text-gray-600 mb-4">Trusted by 3,847+ small businesses & freelancers</p>
                     <div className="flex justify-center items-center gap-8 text-sm text-gray-600">
                       <div className="flex items-center gap-2">
                         <CheckCircle className="w-4 h-4 text-green-600" />
@@ -1961,7 +1968,7 @@ const CreditCalculator = () => {
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-orange-900 mb-4">
-                      "Why didn't my CPA bring this up?"
+                      "My CPA never mentioned this - am I missing out?"
                     </h3>
                     <div className="space-y-3 text-orange-800">
                       <p className="leading-relaxed">
@@ -1971,7 +1978,7 @@ const CreditCalculator = () => {
                         Think of it like specialized medical care. Your general practitioner handles most health needs, but specialists focus on specific areas. <strong>R&D credits require deep knowledge</strong> of IRS Section 41, qualification criteria, and proper documentation.
                       </p>
                       <div className="bg-orange-100 rounded-xl p-4 mt-4">
-                        <p className="font-medium text-orange-900 mb-2">The collaborative approach:</p>
+                        <p className="font-medium text-orange-900 mb-2">The good news:</p>
                         <p className="text-sm">We handle the specialized R&D credit work, then provide your CPA with complete documentation for seamless filing. <strong>Result: A tax refund check or direct deposit from the U.S. Treasury.</strong></p>
                       </div>
                     </div>
@@ -2272,7 +2279,7 @@ const CreditCalculator = () => {
                       {formatCurrency(Math.floor(results.totalBenefit * 0.8))} - {formatCurrency(Math.ceil(results.totalBenefit * 1.2))}
                     </p>
                     <p className="text-lg text-blue-100 max-w-md mx-auto leading-relaxed">
-                      Based on businesses like yours successfully claiming the R&D tax credit
+                      Based on small businesses and freelancers like yours successfully claiming the R&D tax credit
                     </p>
                   </div>
                 </div>

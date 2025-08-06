@@ -1612,6 +1612,40 @@ const CreditCalculator = () => {
               </div>
             </div>
 
+            {/* Previous R&D Credit Experience */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+              <h3 className="text-lg font-bold text-blue-900 mb-4">Previous R&D Credit Experience</h3>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.priorYearCredit}
+                  onChange={(e) => updateFormData('priorYearCredit', e.target.checked)}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                />
+                <span className="ml-3 font-medium text-blue-900">I've successfully claimed R&D credits before</span>
+              </label>
+              
+              {formData.priorYearCredit && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-blue-700 mb-2">
+                    Prior Year Credit Amount
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formData.priorYearAmount}
+                      onChange={(e) => updateFormData('priorYearAmount', e.target.value)}
+                      className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400"
+                      placeholder="10,000"
+                    />
+                  </div>
+                  <p className="text-sm text-blue-600 mt-2">This helps us optimize your current year strategy</p>
+                </div>
+              )}
+            </div>
+
             {/* Enhanced Expense Form */}
             <div className="card-elevated p-8 space-y-8">
               <div className="space-y-4">
@@ -1805,10 +1839,13 @@ const CreditCalculator = () => {
               <div className="flex gap-4">
                 <SaveProgressButton />
                 <button
-                  onClick={() => setCurrentStep(3)}
+                  onClick={() => {
+                    performCalculation();
+                    setCurrentStep(4);
+                  }}
                   className="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 flex items-center"
                 >
-                  Continue
+                  Calculate My Credits
                   <ChevronRight className="ml-2 w-5 h-5" />
                 </button>
               </div>
@@ -1998,102 +2035,10 @@ const CreditCalculator = () => {
           );
         }
         
-        // If email captured, show state selection options
-        return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-6">
-              Boost your savings even more
-              {formData.selectedYears.length === 1 && (
-                <span className="text-blue-600"> for {formData.selectedYears[0]}</span>
-              )}
-              {formData.selectedYears.length > 1 && (
-                <span className="block text-lg text-blue-600 font-medium mt-1">
-                  Filing for {formData.selectedYears.length} years: {formData.selectedYears.join(', ')}
-                </span>
-              )}
-            </h2>
-
-
-
-            {/* Federal-Only with Coming Soon for State Credits */}
-            <div className="space-y-6">
-              <div className="border rounded-xl p-6 bg-gradient-to-br from-blue-50 to-green-50">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Federal R&D Tax Credit</h3>
-                <div className="flex items-center gap-3 mb-3">
-                  <CheckCircle className="w-6 h-6 text-green-600" />
-                  <span className="text-lg font-semibold text-green-800">Eligible for federal credits</span>
-                </div>
-                <p className="text-gray-700">You qualify for federal R&D tax credits based on your AI activities and business expenses.</p>
-              </div>
-
-              <div className="border rounded-xl p-6 bg-gradient-to-br from-gray-50 to-gray-100 opacity-75">
-                <h3 className="text-xl font-bold text-gray-700 mb-4 flex items-center gap-2">
-                  <Clock className="w-6 h-6" />
-                  State R&D Tax Credits
-                </h3>
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <p className="text-yellow-800 font-medium">Coming Soon!</p>
-                  <p className="text-sm text-yellow-700 mt-1">
-                    State credit support will be available in our next update. For now, we focus on maximizing your federal credits.
-                  </p>
-                </div>
-              </div>
-
-              <div className="border rounded-lg p-4">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.priorYearCredit}
-                    onChange={(e) => updateFormData('priorYearCredit', e.target.checked)}
-                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                  />
-                  <span className="ml-3 font-medium">I've successfully claimed R&D credits before</span>
-                </label>
-                
-                {formData.priorYearCredit && (
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Prior Year Credit Amount
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
-                      <input
-                        type="number"
-                        min="0"
-                        value={formData.priorYearAmount}
-                        onChange={(e) => updateFormData('priorYearAmount', e.target.value)}
-                        className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400"
-                        placeholder="10,000"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <button
-                onClick={() => setCurrentStep(2)}
-                className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 flex items-center justify-center"
-              >
-                <ChevronLeft className="mr-2 w-5 h-5" />
-                Back
-              </button>
-              <button
-                onClick={() => {
-                  performCalculation();
-                  setCurrentStep(4);
-                }}
-                className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 flex items-center justify-center"
-              >
-                <Calculator className="mr-2 w-5 h-5" />
-                See My Savings
-              </button>
-            </div>
-
-
-          </div>
-        );
+        // Auto-advance to calculation since we removed the intermediate step  
+        performCalculation();
+        setCurrentStep(4);
+        return null;
 
       case 4:
         if (!results) return null;
@@ -2231,6 +2176,17 @@ const CreditCalculator = () => {
                         </div>
                         <h4 className="text-xl font-bold text-green-800 mb-2">Success! Report Sent</h4>
                         <p className="text-green-700 mb-1">Check your email at {email}</p>
+                        
+                        {/* State Credits Coming Soon - Moved from Step 3 */}
+                        <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl max-w-md mx-auto">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Clock className="w-5 h-5 text-yellow-600" />
+                            <h5 className="font-bold text-yellow-800">State R&D Tax Credits</h5>
+                          </div>
+                          <p className="text-yellow-700 text-sm">
+                            <strong>Coming Soon!</strong> State credit support will be available in our next update. For now, we focus on maximizing your federal credits.
+                          </p>
+                        </div>
                         <p className="text-sm text-gray-600">Your personalized report is on its way (check spam folder if needed)</p>
                       </div>
                     )}

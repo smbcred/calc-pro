@@ -200,34 +200,40 @@ const CreditCalculator = () => {
         {/* Primary Value Props with Perfect Centering */}
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 px-4">
-            <div className="bg-gradient-to-br from-green-50 via-white to-green-100 border border-green-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group">
-              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                <span className="text-3xl font-bold text-white">$</span>
+            <div className="bg-gradient-to-br from-green-50 via-white to-green-100 border border-green-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group min-h-[280px] flex flex-col justify-between">
+              <div>
+                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <span className="text-3xl font-bold text-white">$</span>
+                </div>
+                <h3 className="text-2xl font-bold text-green-800 mb-3">Average $25K+ Saved</h3>
+                <p className="text-base text-green-700 font-medium">Perfect for small businesses</p>
               </div>
-              <h3 className="text-2xl font-bold text-green-800 mb-3">Average $25K+ Saved</h3>
-              <p className="text-base text-green-700 font-medium">Perfect for small businesses</p>
               <div className="mt-3 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full inline-block">
                 Real cash back to your business
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 border border-blue-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                <FileText className="w-8 h-8 text-white" />
+            <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 border border-blue-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group min-h-[280px] flex flex-col justify-between">
+              <div>
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <FileText className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-blue-800 mb-3">Complete Documentation</h3>
+                <p className="text-base text-blue-700 font-medium">IRS-ready forms and instructions</p>
               </div>
-              <h3 className="text-2xl font-bold text-blue-800 mb-3">Complete Documentation Package</h3>
-              <p className="text-base text-blue-700 font-medium">IRS-ready forms and instructions</p>
               <div className="mt-3 text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block">
                 Hand to your CPA
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-purple-50 via-white to-purple-100 border border-purple-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group">
-              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                <Zap className="w-8 h-8 text-white" />
+            <div className="bg-gradient-to-br from-purple-50 via-white to-purple-100 border border-purple-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group min-h-[280px] flex flex-col justify-between">
+              <div>
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <Zap className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-purple-800 mb-3">Multi-Year Filing Support</h3>
+                <p className="text-base text-purple-700 font-medium">Claim credits for 2022-2024</p>
               </div>
-              <h3 className="text-2xl font-bold text-purple-800 mb-3">Multi-Year Filing Support</h3>
-              <p className="text-base text-purple-700 font-medium">Claim credits for 2022-2024</p>
               <div className="mt-3 text-sm text-purple-600 bg-purple-50 px-3 py-1 rounded-full inline-block">
                 Up to 4 years of credits
               </div>

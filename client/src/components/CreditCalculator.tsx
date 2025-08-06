@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, Info, DollarSign, Users, Package, AlertCircle, ChevronRight, ChevronLeft, Building, Shield, Lock, CheckCircle, Clock, TrendingUp, FileText, Share2, Zap, Calendar, AlertTriangle, Quote } from 'lucide-react';
+import { Calculator, Info, Users, Package, AlertCircle, ChevronRight, ChevronLeft, Building, Shield, Lock, CheckCircle, Clock, TrendingUp, FileText, Share2, Zap, Calendar, AlertTriangle, Quote } from 'lucide-react';
 
 const CreditCalculator = () => {
   // State for calculator inputs
@@ -185,7 +185,7 @@ const CreditCalculator = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 px-4">
             <div className="bg-gradient-to-br from-green-50 via-white to-green-100 border border-green-200 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-all group">
               <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                <DollarSign className="w-8 h-8 text-white" />
+                <span className="text-3xl font-bold text-white">$</span>
               </div>
               <h3 className="text-2xl font-bold text-green-800 mb-3">Average $25K+ Saved</h3>
               <p className="text-base text-green-700 font-medium">Perfect for small businesses</p>
@@ -1306,8 +1306,8 @@ const CreditCalculator = () => {
                     </div>
                     <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4">
                       <div className="flex items-center justify-center gap-3 mb-2">
-                        <DollarSign className="w-6 h-6 text-green-200" />
-                        <span className="text-3xl font-bold">$47M+</span>
+                        <span className="text-2xl font-bold text-green-200">$</span>
+                        <span className="text-3xl font-bold">47M+</span>
                       </div>
                       <p className="text-blue-100 text-sm">Tax Credits Recovered</p>
                     </div>
@@ -2096,12 +2096,12 @@ const CreditCalculator = () => {
                       Prior Year Credit Amount
                     </label>
                     <div className="relative">
-                      <DollarSign className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+                      <span className="absolute left-3 top-2.5 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                       <input
                         type="number"
                         value={formData.priorYearAmount}
                         onChange={(e) => updateFormData('priorYearAmount', e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                         placeholder="10,000"
                       />
                     </div>

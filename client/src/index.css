@@ -287,13 +287,13 @@
     transform: translateY(-0.5px);
   }
 
-  /* Enhanced Select Styling */
+  /* Enhanced Select Styling - More Aggressive Override */
   select.input-enhanced {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 12px center;
-    background-repeat: no-repeat;
-    background-size: 16px;
-    padding-right: 40px;
+    background-image: none !important;
+    background-position: right 12px center !important;
+    background-repeat: no-repeat !important;
+    background-size: 16px !important;
+    padding-right: 40px !important;
     cursor: pointer;
     appearance: none !important;
     -webkit-appearance: none !important;
@@ -301,14 +301,21 @@
   }
 
   select.input-enhanced:focus {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-image: none !important;
   }
 
-  /* Force remove default select styling globally */
-  select {
+  /* Force remove all background images from selects and override any other styling */
+  select,
+  select.input-enhanced,
+  select:not(.input-enhanced) {
     appearance: none !important;
     -webkit-appearance: none !important;
     -moz-appearance: none !important;
+  }
+
+  /* Remove any potential Tailwind or other framework select arrows */
+  select:not(.input-enhanced) {
+    background-image: none !important;
   }
 
   /* Enhanced Placeholder Styling */
@@ -430,6 +437,38 @@
       0 0 0 5px rgba(16, 185, 129, 0.05),
       0 4px 12px rgba(0, 0, 0, 0.1);
   }
+}
+
+/* Additional Select Reset - Very Aggressive */
+*[role="combobox"], 
+*[role="listbox"],
+select[class*="select"],
+select[class*="Select"] {
+  background-image: none !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+}
+
+/* Tailwind Select Override */
+.form-select,
+.tw-form-select {
+  background-image: none !important;
+}
+
+/* Ultra-specific override for our exact select element */
+select.input-enhanced.text-xl {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 12px center !important;
+  background-repeat: no-repeat !important;
+  background-size: 16px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+}
+
+select.input-enhanced.text-xl:focus {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
 }
 
 /* Advanced Animation Keyframes */

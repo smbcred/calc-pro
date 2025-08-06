@@ -209,7 +209,7 @@ const CreditCalculator = () => {
               <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <Zap className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-purple-800 mb-3">Built for AI Users</h3>
+              <h3 className="text-2xl font-bold text-purple-800 mb-3">Perfect for Small Businesses Using ChatGPT</h3>
               <p className="text-base text-purple-700 font-medium">ChatGPT, automations, & more</p>
               <div className="mt-3 text-sm text-purple-600 bg-purple-50 px-3 py-1 rounded-full inline-block">
                 93% of AI users qualify
@@ -262,7 +262,7 @@ const CreditCalculator = () => {
       </div>
       
       <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent leading-tight">
-        Turn Your AI Tools Into Cash Refunds
+        Get Money Back for Using AI in Your Business
       </h1>
       
       <p className="text-gray-700 text-xl md:text-2xl mb-8 max-w-3xl mx-auto font-medium leading-relaxed">
@@ -2857,7 +2857,7 @@ const CreditCalculator = () => {
                         {/* Button Animation */}
                         <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-blue-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                         <div className="relative z-10 flex items-center justify-center gap-3">
-                          <span>🚀 Claim My {formatCurrency(results.totalBenefit)} Tax Credit</span>
+                          <span>🚀 Get My Filing Package</span>
                           <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                         </div>
                         <div className="text-sm font-medium mt-1 opacity-90">Instant access • Ready in 2-3 weeks</div>

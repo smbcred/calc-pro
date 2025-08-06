@@ -104,6 +104,11 @@
     hsl(0, 84%, 96%) 0%, 
     hsl(0, 70%, 94%) 100%);
   
+  /* ========================================
+     UNIFIED DESIGN TOKENS
+     Consistent values across all components
+     ======================================== */
+  
   /* Animation Variables */
   --duration-fast: 150ms;
   --duration-normal: 250ms;
@@ -113,6 +118,25 @@
   --easing-natural: cubic-bezier(0.4, 0.0, 0.2, 1);
   --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   --easing-sharp: cubic-bezier(0.4, 0.0, 0.6, 1);
+  
+  /* Border Radius Scale */
+  --radius-xs: 0.25rem;    /* 4px - small badges, chips */
+  --radius-sm: 0.5rem;     /* 8px - buttons, inputs */
+  --radius-md: 0.75rem;    /* 12px - cards, modals */
+  --radius-lg: 1rem;       /* 16px - large cards */
+  --radius-xl: 1.5rem;     /* 24px - featured elements */
+  --radius-2xl: 2rem;      /* 32px - hero elements */
+  --radius-full: 9999px;   /* Full rounded - pills, badges */
+  
+  /* Spacing Scale (8px base) */
+  --spacing-xs: 0.5rem;    /* 8px */
+  --spacing-sm: 0.75rem;   /* 12px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.25rem;   /* 20px */
+  --spacing-xl: 1.5rem;    /* 24px */
+  --spacing-2xl: 2rem;     /* 32px */
+  --spacing-3xl: 2.5rem;   /* 40px */
+  --spacing-4xl: 3rem;     /* 48px */
   
   /* Advanced Textures */
   --noise-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
@@ -206,7 +230,7 @@
      Consistent focus, hover, and transitions
      ======================================== */
   
-  /* Global Transition Base */
+  /* Global Transition Base - Unified Duration */
   * {
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
     transition-timing-function: var(--easing-natural);
@@ -278,45 +302,40 @@
     background: var(--gradient-secondary-soft);
   }
 
-  /* Enhanced Card System - 5 Elevation Levels with Unified Shadows */
+  /* Enhanced Card System - Unified Radius and Colors */
   .card-flat {
     background-color: var(--card);
-    border: 1px solid var(--neutral-200);
-    border-radius: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-none);
-    transition: all var(--duration-normal) var(--easing-natural);
   }
   
   .card-low {
     background-color: var(--card);
-    border: 1px solid var(--neutral-200);
-    border-radius: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-xs);
-    transition: all var(--duration-normal) var(--easing-natural);
   }
   
   .card-medium {
     background-color: var(--card);
-    border: 1px solid var(--neutral-200);
-    border-radius: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
-    transition: all var(--duration-normal) var(--easing-natural);
   }
   
   .card-high {
     background-color: var(--card);
-    border: 1px solid var(--neutral-200);
-    border-radius: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
-    transition: all var(--duration-normal) var(--easing-natural);
   }
   
   .card-highest {
     background-color: var(--card);
-    border: 1px solid var(--neutral-200);
-    border-radius: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
-    transition: all var(--duration-normal) var(--easing-natural);
   }
   
   /* Interactive Card Enhancements */
@@ -348,17 +367,17 @@
       inset 0 2px 8px 0 rgba(255, 255, 255, 0.4);
   }
 
-  /* Enhanced Input System with Unified Shadow System */
+  /* Enhanced Input System with Unified Tokens */
   .neuro-input,
   .input-enhanced {
     @apply input-interactive;
     background: rgba(255, 255, 255, 0.95);
-    border: 1px solid var(--neutral-200);
+    border: 1px solid var(--border);
     box-shadow: var(--shadow-xs);
-    border-radius: 16px;
-    padding: 16px 20px;
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-md) var(--spacing-lg);
     font-weight: 500;
-    color: hsl(var(--foreground));
+    color: var(--foreground);
     width: 100%;
     font-size: inherit;
     font-family: inherit;
@@ -380,7 +399,7 @@
     background: rgba(255, 255, 255, 1);
     border-color: var(--neutral-300);
     box-shadow: var(--shadow-sm);
-    transform: translateY(-0.5px);
+    transform: translateY(-1px);
   }
 
   /* Enhanced Select Styling - More Aggressive Override */
@@ -432,11 +451,13 @@
     background: hsl(var(--background));
   }
 
-  /* Hover Effects with Gradient Borders */
+  /* Hover Effects with Gradient Borders - Unified Tokens */
   .card-premium {
     background-color: var(--card);
-    border: 1px solid var(--neutral-200);
-    @apply rounded-2xl transition-all duration-300 relative overflow-hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2xl);
+    position: relative;
+    overflow: hidden;
   }
   
   .card-premium::before {
@@ -458,7 +479,7 @@
   
   .card-premium:hover {
     transform: translateY(-2px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-xl);
   }
 
   /* Text Variants */
@@ -572,9 +593,11 @@ select.input-enhanced.text-xl:focus {
    Primary patterns for consistent styling
    ======================================== */
 
-/* Button System */
+/* Button System - Unified Spacing and Radius */
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-semibold text-xl interactive;
+  @apply inline-flex items-center justify-center gap-3 font-semibold text-xl interactive;
+  padding: var(--spacing-md) var(--spacing-2xl);
+  border-radius: var(--radius-xl);
   background: var(--gradient-primary);
   color: white;
   border: none;
@@ -631,7 +654,9 @@ select.input-enhanced.text-xl:focus {
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium text-lg border-2 interactive;
+  @apply inline-flex items-center justify-center gap-2 font-medium text-lg border-2 interactive;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.95);
   border-color: var(--neutral-300);
   color: var(--neutral-700);
@@ -660,9 +685,10 @@ select.input-enhanced.text-xl:focus {
   box-shadow: var(--shadow-xs);
 }
 
-/* Card System */
+/* Card System - Unified Radius */
 .card-results {
-  @apply rounded-2xl border card-interactive;
+  @apply border card-interactive;
+  border-radius: var(--radius-2xl);
   background: var(--card);
   border-color: var(--border);
   box-shadow: var(--shadow-lg);
@@ -694,18 +720,18 @@ select.input-enhanced.text-xl:focus {
     var(--shadow-xl);
 }
 
-/* Form Field System */
+/* Form Field System - Unified Spacing and Radius */
 .form-field {
-  @apply w-full rounded-xl border focus:outline-none input-interactive;
+  @apply w-full border focus:outline-none input-interactive;
+  border-radius: var(--radius-xl);
   background: rgba(255, 255, 255, 0.95);
   border-color: var(--neutral-200);
   color: var(--foreground);
-  padding: 16px 20px;
+  padding: var(--spacing-md) var(--spacing-lg);
   font-weight: 500;
   font-size: inherit;
   font-family: inherit;
   box-shadow: var(--shadow-xs);
-  transition: all var(--duration-normal) var(--easing-natural);
 }
 
 .form-field:hover:not(:focus) {
@@ -751,9 +777,11 @@ select.form-field:focus {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
 }
 
-/* Status Badge System */
+/* Status Badge System - Unified Spacing */
 .status-badge {
-  @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold border interactive;
+  @apply inline-flex items-center gap-2 text-sm font-semibold border interactive;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-full);
   background: var(--background);
   border-color: var(--border);
   color: var(--foreground);
@@ -900,11 +928,10 @@ select.form-field:focus {
   transition: transform var(--duration-fast) var(--easing-sharp);
 }
 
-/* Card Interactive States */
+/* Card Interactive States - Unified Radius */
 .card-interactive {
   @apply interactive;
-  border-radius: 1rem;
-  transition: all var(--duration-normal) var(--easing-natural);
+  border-radius: var(--radius-lg);
 }
 
 .card-interactive:hover {
@@ -918,12 +945,11 @@ select.form-field:focus {
     0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Link Interactive States */
+/* Link Interactive States - Unified Radius */
 .link-interactive {
   @apply interactive;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
-  transition: all var(--duration-fast) var(--easing-natural);
 }
 
 .link-interactive:hover {
@@ -932,14 +958,13 @@ select.form-field:focus {
 }
 
 .link-interactive:focus-visible {
-  border-radius: 4px;
-  padding: 2px 4px;
-  margin: -2px -4px;
+  border-radius: var(--radius-xs);
+  padding: var(--spacing-xs);
+  margin: calc(-1 * var(--spacing-xs));
 }
 
 /* Input Interactive Enhancement */
 .input-interactive {
-  transition: all var(--duration-normal) var(--easing-natural);
   position: relative;
 }
 
@@ -1065,11 +1090,13 @@ select.form-field:focus {
   @apply card-medium shadow-hover;
 }
 
-/* Trust and Credibility Elements - Enhanced Interactive States */
+/* Trust and Credibility Elements - Unified Tokens */
 .trust-badge {
-  @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium interactive;
+  @apply inline-flex items-center gap-2 text-sm font-medium interactive;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-full);
   background: var(--background);
-  border: 1px solid var(--neutral-300);
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-xs);
   cursor: default;
 }
@@ -1100,7 +1127,9 @@ select.form-field:focus {
 }
 
 .security-indicator {
-  @apply inline-flex items-center gap-2 px-4 py-2 rounded-full interactive;
+  @apply inline-flex items-center gap-2 interactive;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-full);
   background: var(--gradient-success);
   color: hsl(142, 72%, 29%);
   border: 1px solid hsl(142, 60%, 85%);

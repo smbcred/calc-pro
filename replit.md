@@ -22,6 +22,8 @@ Preferred communication style: Simple, everyday language.
 - **Consolidated Gradient System**: Three primary gradient patterns - `gradient-primary` for CTAs/headers, `gradient-secondary` for subtle backgrounds, and status-specific gradients for indicators
 - **Unified Interactive States**: Comprehensive system with consistent focus states (3px blue ring + elevation), universal hover effects (translateY + shadow), and smooth transitions across all interactive elements
 - **Enhanced Shadow System**: 6-level depth scale (shadow-xs to shadow-2xl) with interactive states for consistent visual hierarchy and depth perception
+- **Standardized Design Tokens**: Unified border radius scale (--radius-xs to --radius-2xl), consistent spacing system (--spacing-xs to --spacing-4xl based on 8px grid), and universal transition duration (--duration-normal) across all components
+- **Color Consistency**: All interactive elements use CSS variables for colors, ensuring consistent theming and easy maintenance across light/dark modes
 - **Shadcn/UI Components**: Comprehensive set of accessible, customizable UI components built on Radix UI primitives with enhanced animations and unified interactive behavior
 - **Motion-Enabled Tailwind CSS**: Extended utility-first CSS framework with comprehensive animation system, easing functions, and interaction states
 - **Component Architecture**: Modular, reusable components with sophisticated hover states, loading animations, and micro-interactions following unified interactive patterns

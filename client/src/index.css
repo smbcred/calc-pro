@@ -426,7 +426,8 @@
     z-index: 1;
   }
   
-  /* Ensure regular buttons work correctly */
+  /* Ensure regular buttons work correctly - DISABLED temporarily to fix conflicts */
+  /*
   button:not(.btn-primary) {
     position: relative;
   }
@@ -435,6 +436,7 @@
     position: relative;
     z-index: 1;
   }
+  */
   
   .btn-primary::before {
     content: '';

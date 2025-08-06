@@ -1786,7 +1786,7 @@ const CreditCalculator = () => {
                   <InfoTooltip text="OpenAI API, AWS, Google Cloud, or any cloud services for your AI work" />
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     value={yearlyData[currentYear]?.cloudCosts || ''}
@@ -1794,7 +1794,7 @@ const CreditCalculator = () => {
                       ...prev,
                       [currentYear]: { ...prev[currentYear], cloudCosts: e.target.value }
                     }))}
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="input-enhanced pl-11"
                     placeholder="5,000"
                   />
                 </div>
@@ -1806,7 +1806,7 @@ const CreditCalculator = () => {
                   <InfoTooltip text="ChatGPT Plus, Claude Pro, Zapier, development tools, or any software for building" />
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     value={yearlyData[currentYear]?.softwareLicenses || ''}
@@ -1814,7 +1814,7 @@ const CreditCalculator = () => {
                       ...prev,
                       [currentYear]: { ...prev[currentYear], softwareLicenses: e.target.value }
                     }))}
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="input-enhanced pl-11"
                     placeholder="2,000"
                   />
                 </div>
@@ -1826,7 +1826,7 @@ const CreditCalculator = () => {
                   <InfoTooltip text="Hardware, testing tools, or any other supplies for your tech work" />
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     value={yearlyData[currentYear]?.supplies || ''}
@@ -1834,7 +1834,7 @@ const CreditCalculator = () => {
                       ...prev,
                       [currentYear]: { ...prev[currentYear], supplies: e.target.value }
                     }))}
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="input-enhanced pl-11"
                     placeholder="3,000"
                   />
                 </div>

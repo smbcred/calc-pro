@@ -1,0 +1,72 @@
+Styling Issues to Fix:
+1. Visual Hierarchy Problems
+
+Hero section too cramped - needs more breathing room between elements
+Font sizes inconsistent - "$500,000" claim should be much larger
+Trust indicators competing - they're all the same visual weight
+
+2. Color & Contrast Issues
+
+Blue banner at top - too similar to primary CTA buttons, creates confusion
+Green is overwhelming - too many green elements competing for attention
+Input fields too subtle - gray on white is hard to see, needs stronger borders
+
+3. Mobile Responsiveness
+
+Progress indicators cut off - "Step 3 of 4" needs better mobile layout
+State coverage stats cramped - numbers overlapping on smaller screens
+Bottom buttons too close - "BACK" and "SEE MY SAVINGS" need more spacing
+
+4. Component Styling Fixes Needed
+Trust Bar:
+
+Add subtle background (gray-50)
+Increase icon sizes
+Add dividers between items
+Make "2,847+ Successfully Filed" pop more
+
+Value Props:
+
+Use cards instead of plain text
+Add subtle shadows
+Increase emoji size
+Better spacing on mobile
+
+Input Fields:
+
+Stronger border (gray-300 instead of gray-200)
+Larger text (text-base instead of text-sm)
+Better focus states (ring-2 ring-blue-500)
+Info icons need better alignment
+
+Progress Steps:
+
+Make active step more prominent
+Add connecting lines between steps
+Better mobile collapse (show just numbers)
+
+CTAs:
+
+Primary button needs more padding (py-4 px-8)
+Add subtle shadow for depth
+Hover state should be more dramatic
+"CONTINUE" button too generic - needs arrow →
+
+5. Specific Quick Wins
+
+Add container max-width - Content is too wide on desktop
+Increase vertical spacing - Everything feels squished (use space-y-8)
+Fix percentage slider - Thumb is too small, track needs better contrast
+Qualified wages display - Make the calculated amount more prominent
+Remove ALL CAPS - Use sentence case for better readability
+Add subtle backgrounds - White on white is too flat
+Icon consistency - Mix of styles (some filled, some outline)
+Loading states - Need skeletons or spinners during calculation
+
+6. Polish Details
+
+Round more corners (rounded-lg everywhere)
+Add subtle animations (scale on hover, smooth transitions)
+Fix alignment issues (some text not vertically centered)
+Consistent padding (some sections have px-4, others px-6)
+Better error states for form validation

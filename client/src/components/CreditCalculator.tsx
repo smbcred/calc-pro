@@ -2428,11 +2428,22 @@ const CreditCalculator = () => {
                   
                   {/* Total & CTA */}
                   <div className="border-t pt-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-xl font-bold text-gray-900">Package Price:</span>
-                      <span className="text-3xl font-bold text-green-600">
-                        From $500
-                      </span>
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-4">
+                      <div className="text-center">
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">Your Price</h3>
+                        <div className="text-3xl font-bold text-blue-600 mb-2">
+                          {(() => {
+                            const creditAmount = results.federal?.creditAmount || 0;
+                            if (creditAmount < 10000) return '$500';
+                            if (creditAmount <= 50000) return '$750';
+                            if (creditAmount <= 100000) return '$1,000';
+                            return '$1,500';
+                          })()}
+                        </div>
+                        <p className="text-gray-600 text-sm">
+                          Based on your credit amount of {formatCurrency(results.federal?.creditAmount || 0)}
+                        </p>
+                      </div>
                     </div>
                     
                     {/* ROI Display - Enhanced for multi-year */}
@@ -2478,7 +2489,18 @@ const CreditCalculator = () => {
                         )}
                       </div>
                       
-                      <MultiYearSelector />
+                      {/* Year selection moved to checkout page */}
+                      <div className="text-center">
+                        <p className="text-gray-600 mb-4">Complete your filing for {formData.selectedYears?.[0] || '2025'}</p>
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                          <h4 className="font-bold text-yellow-800 mb-2">💡 Additional Years Available</h4>
+                          <ul className="text-sm text-yellow-700 space-y-1">
+                            <li>• Claim credits for up to 3 previous years at checkout</li>
+                            <li>• Additional years just $297 each</li>
+                            <li>• Most businesses qualify for 2+ years of credits</li>
+                          </ul>
+                        </div>
+                      </div>
                     </div>
                     
                     {/* CONVERSION-OPTIMIZED PRIMARY CTA SECTION */}
@@ -2556,10 +2578,10 @@ const CreditCalculator = () => {
                         {/* Button Animation */}
                         <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-blue-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                         <div className="relative z-10 flex items-center justify-center gap-3">
-                          <span>🚀 Get My Filing Package</span>
+                          <span>🚀 Proceed to Checkout</span>
                           <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                         </div>
-                        <div className="text-sm font-medium mt-1 opacity-90">Complete documentation package • Professional forms ready for filing</div>
+                        <div className="text-sm font-medium mt-1 opacity-90">Select years & complete your documentation package</div>
                       </button>
 
                       {/* Secondary CTA for Hesitant Users */}

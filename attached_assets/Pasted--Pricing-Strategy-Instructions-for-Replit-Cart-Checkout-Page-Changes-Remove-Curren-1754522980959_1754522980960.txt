@@ -1,0 +1,83 @@
+## **Pricing Strategy Instructions for Replit**
+
+### **Cart/Checkout Page Changes**
+
+**Remove Current Package Structure:**
+- Remove "Essential Package" ($397)
+- Remove "Professional Package" ($797)  
+- Remove "Enterprise Package" ($1,597)
+- Remove package comparison features
+- Remove "Best for credits up to $X" messaging
+
+**Implement Our Actual Pricing Model:**
+
+### **New Cart Page Structure**
+
+**1. Display Calculated Base Price**
+```
+Your Federal R&D Tax Credit Analysis
+
+Calculated Credit: $33,700
+Your Price: $750
+(Price based on your credit amount of $33,700)
+```
+
+**2. Add Year Selection Section**
+Move the year selection from Step 4 to cart:
+```
+📅 Select Tax Years to File
+
+☑ 2025 (Current Year): Included
+□ 2024 (Lookback): +$297
+□ 2023 (Lookback): +$297
+□ 2022 (Lookback): +$297
+
+Why add previous years?
+• Most businesses using ChatGPT and AI tools qualify for 2+ years
+• Same documentation effort covers all years
+• Credits expire after 3 years - don't miss out
+• Multi-year discount already applied
+```
+
+**3. Dynamic Pricing Display**
+```
+Pricing Summary:
+Base (2025): $750
+Additional Years: $[calculated based on selections]
+━━━━━━━━━━━━━━━━━━━━━━━
+Total: $[calculated total]
+```
+
+### **Step 4 (Results Page) Changes**
+
+**Add messaging about additional years (but don't show year selection):**
+- "You can claim credits for up to 3 previous years"
+- "Additional years available at checkout for just $297 each"
+- "Most businesses have been using AI/automation for 2+ years"
+
+**Keep it simple:**
+- Show calculated credit amount
+- Show base price
+- "Proceed to Checkout" button
+
+### **Pricing Logic to Implement**
+
+**Base Price Calculation:**
+- If credit < $10,000 → $500
+- If credit $10,000-$50,000 → $750
+- If credit $50,000-$100,000 → $1,000
+- If credit > $100,000 → $1,500
+
+**Additional Years:**
+- Always $297 per year
+- Maximum 3 additional years (2024, 2023, 2022)
+
+### **Remove These Elements**
+- Package tiers/comparisons
+- "Save 20%" annual toggle
+- Monthly pricing options
+- "Most Popular" badges
+- "Recommended" tags
+- Fixed price packages
+
+This creates a personalized pricing experience based on their actual calculated credit rather than forcing them into predefined packages.

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'wouter';
 import { Calculator, Info, Users, Package, AlertCircle, ChevronRight, ChevronLeft, Building, Shield, Lock, CheckCircle, Clock, TrendingUp, FileText, Share2, Zap, Calendar, AlertTriangle, Quote, Check, Trophy, DollarSign, Target, ArrowRight } from 'lucide-react';
 
 const CreditCalculator = () => {
@@ -711,7 +712,7 @@ const CreditCalculator = () => {
   // Helper function to add/remove years from selection
   const toggleYear = (year: number) => {
     const yearStr = year.toString();
-    const currentSelected = formData.selectedYears;
+    const currentSelected = formData.selectedYears || [];
     
     if (currentSelected.includes(yearStr)) {
       // Remove year
@@ -813,7 +814,7 @@ const CreditCalculator = () => {
   // Multi-Year Selection Component
   const MultiYearSelector = () => {
     const availableYears = getAvailableYears();
-    const selectedCount = formData.selectedYears.length;
+    const selectedCount = formData.selectedYears?.length || 0;
     const discount = getMultiYearDiscount(selectedCount);
     
     return (
@@ -825,7 +826,7 @@ const CreditCalculator = () => {
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
           {availableYears.map(year => {
-            const isSelected = formData.selectedYears.includes(year.toString());
+            const isSelected = formData.selectedYears?.includes(year.toString()) || false;
             const isCurrent = year === new Date().getFullYear();
             
             return (
@@ -1471,7 +1472,7 @@ const CreditCalculator = () => {
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {getAvailableYears().map(year => {
-                    const isSelected = formData.selectedYears.includes(year.toString());
+                    const isSelected = formData.selectedYears?.includes(year.toString()) || false;
                     const isCurrent = year === new Date().getFullYear();
                     
                     return (
@@ -3630,9 +3631,23 @@ const CreditCalculator = () => {
                     <div className="text-yellow-100">Ready for filing in under 48 hours</div>
                   </div>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="text-lg font-bold">🚨 Only {Math.floor(Math.random() * 50) + 150} packages left this month</div>
                   <div className="text-sm opacity-90">Join 3,847+ successful business owners who claimed their credits</div>
+                  
+                  {/* Checkout Navigation Button */}
+                  <Link href="/checkout">
+                    <button className="w-full bg-white text-red-600 font-black text-xl py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105 border-2 border-white">
+                      <div className="flex items-center justify-center gap-3">
+                        <Package className="w-6 h-6" />
+                        Get My Documentation Package Now
+                        <ArrowRight className="w-6 h-6" />
+                      </div>
+                      <div className="text-sm font-normal text-red-500 mt-1">
+                        Choose your package & complete your filing
+                      </div>
+                    </button>
+                  </Link>
                 </div>
               </div>
 
@@ -3669,6 +3684,7 @@ const CreditCalculator = () => {
                 setFormData({
                   companyName: '',
                   taxYear: '2024',
+                  selectedYears: [],
                   startupYear: '',
                   grossReceipts: '',
                   industry: '',

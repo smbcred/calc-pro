@@ -1332,32 +1332,6 @@ const CreditCalculator = () => {
             </div>
             
             <QualificationQuickCheck />
-
-            {/* Why CPAs Don't Mention This */}
-            <div className="card-elevated border-l-4 border-orange-500 p-8 mb-8 bg-gradient-to-r from-orange-50 to-yellow-50">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <AlertTriangle className="w-6 h-6 text-orange-600" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-orange-900 mb-4">
-                    "Why didn't my CPA bring this up?"
-                  </h3>
-                  <div className="space-y-3 text-orange-800">
-                    <p className="leading-relaxed">
-                      <strong>Most CPAs focus on basic tax preparation</strong> – they handle your 1040s, business deductions, and quarterly filings. R&D tax credits are a specialized area requiring different expertise.
-                    </p>
-                    <p className="leading-relaxed">
-                      It's like asking your family doctor to perform surgery. They're excellent at what they do, but <strong>R&D credits require specialized knowledge</strong> of IRS Section 41, qualification criteria, and proper documentation.
-                    </p>
-                    <div className="bg-orange-100 rounded-xl p-4 mt-4">
-                      <p className="font-medium text-orange-900 mb-2">The good news:</p>
-                      <p className="text-sm">Once we prepare everything, your CPA can file it easily – we provide all the forms, calculations, and documentation they need. <strong>Result: a beautiful check or direct deposit from the U.S. Treasury.</strong></p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             
             <div className="card-elevated p-8 md:p-10 space-y-8">
               <div className="space-y-4">
@@ -1992,6 +1966,32 @@ const CreditCalculator = () => {
                 </span>
               )}
             </h2>
+
+            {/* Why CPAs Don't Mention This */}
+            <div className="card-elevated border-l-4 border-orange-500 p-8 mb-8 bg-gradient-to-r from-orange-50 to-yellow-50">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-6 h-6 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-orange-900 mb-4">
+                    "Why didn't my CPA bring this up?"
+                  </h3>
+                  <div className="space-y-3 text-orange-800">
+                    <p className="leading-relaxed">
+                      <strong>Most CPAs focus on basic tax preparation</strong> – they handle your 1040s, business deductions, and quarterly filings. R&D tax credits are a specialized area requiring different expertise.
+                    </p>
+                    <p className="leading-relaxed">
+                      It's like asking your family doctor to perform surgery. They're excellent at what they do, but <strong>R&D credits require specialized knowledge</strong> of IRS Section 41, qualification criteria, and proper documentation.
+                    </p>
+                    <div className="bg-orange-100 rounded-xl p-4 mt-4">
+                      <p className="font-medium text-orange-900 mb-2">The good news:</p>
+                      <p className="text-sm">Once we prepare everything, your CPA can file it easily – we provide all the forms, calculations, and documentation they need. <strong>Result: a check or direct deposit from the U.S. Treasury.</strong></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div className="space-y-4">
               <div className="border rounded-xl p-6 bg-gradient-to-br from-blue-50 to-green-50">

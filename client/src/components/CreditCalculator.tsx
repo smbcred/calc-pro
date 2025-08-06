@@ -541,13 +541,29 @@ const CreditCalculator = () => {
     return null;
   };
   
-  // Get tiered pricing based on credit amount
-  const getTieredPricing = (totalCredit: any) => {
+  // Get tiered pricing based on credit amount and number of years
+  const getTieredPricing = (totalCredit: any, numYears: number = 1) => {
     const credit = safeParseFloat(totalCredit, 0);
-    if (credit < 10000) return 500;
-    if (credit < 50000) return 750;
-    if (credit < 100000) return 1000;
-    return 1500;
+    
+    // Determine base price tier
+    let basePrice;
+    if (credit < 10000) basePrice = 500;
+    else if (credit < 50000) basePrice = 750;
+    else if (credit < 100000) basePrice = 1000;
+    else basePrice = 1500;
+    
+    // Apply multi-year pricing model
+    if (numYears === 1) {
+      return basePrice; // 100% of base price
+    } else if (numYears === 2) {
+      return Math.round(basePrice * 1.70); // 170% of base price (15% off second year)
+    } else if (numYears === 3) {
+      return Math.round(basePrice * 2.40); // 240% of base price (20% off years 2-3)
+    } else if (numYears >= 4) {
+      return Math.round(basePrice * 3.00); // 300% of base price (25% off years 2-4)
+    }
+    
+    return basePrice;
   };
 
   // Get tiered state add-on pricing with exact pricing structure
@@ -559,12 +575,19 @@ const CreditCalculator = () => {
     return 450; // 30% for $1500 tier
   };
 
-  // Multi-year discount calculation
+  // Multi-year discount calculation - shows the effective discount percentage
   const getMultiYearDiscount = (numYears: number) => {
-    if (numYears >= 4) return 0.25; // 25% discount for 4 years
-    if (numYears >= 3) return 0.20; // 20% discount for 3 years
-    if (numYears >= 2) return 0.15; // 15% discount for 2 years
+    if (numYears >= 4) return 0.25; // 25% discount on years 2-4
+    if (numYears >= 3) return 0.20; // 20% discount on years 2-3
+    if (numYears >= 2) return 0.15; // 15% discount on second year
     return 0; // No discount for single year
+  };
+
+  // Calculate actual savings vs individual year pricing
+  const calculateMultiYearSavings = (basePrice: number, numYears: number) => {
+    const individualYearTotal = basePrice * numYears;
+    const multiYearPrice = getTieredPricing(basePrice, numYears);
+    return individualYearTotal - multiYearPrice;
   };
 
   // Available tax years (current year + 3 previous years)
@@ -2073,13 +2096,15 @@ const CreditCalculator = () => {
                           </div>
                           {formData.selectedYears && formData.selectedYears.length > 1 && (
                             <div className="text-sm text-green-600 line-through">
-                              ${(getTieredPricing(results.totalCredit) * formData.selectedYears.length).toLocaleString()}
+                              ${(getTieredPricing(results.totalCredit, 1) * formData.selectedYears.length).toLocaleString()}
                             </div>
                           )}
                           {formData.selectedYears && formData.selectedYears.length > 1 && (
                             <div className="text-xs text-green-600 mt-1">
-                              Save ${((getTieredPricing(results.totalCredit) * formData.selectedYears.length) - 
-                                getTieredPricing(results.totalCredit, formData.selectedYears.length)).toLocaleString()}
+                              Save ${calculateMultiYearSavings(
+                                getTieredPricing(results.totalCredit, 1), 
+                                formData.selectedYears.length
+                              ).toLocaleString()}
                             </div>
                           )}
                         </div>
@@ -2215,9 +2240,10 @@ const CreditCalculator = () => {
                                 {Math.round(getMultiYearDiscount(formData.selectedYears?.length || 1) * 100)}% Multi-Year Discount Applied
                               </div>
                               <div className="text-sm text-gray-600">
-                                You're saving ${((getTieredPricing(results.totalCredit) * (formData.selectedYears?.length || 1)) - 
-                                  getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1)).toLocaleString()} 
-                                vs individual year pricing
+                                You're saving ${calculateMultiYearSavings(
+                                  getTieredPricing(results.totalCredit, 1), 
+                                  formData.selectedYears?.length || 1
+                                ).toLocaleString()} vs individual year pricing
                               </div>
                             </>
                           )}

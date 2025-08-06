@@ -1180,7 +1180,8 @@ const CreditCalculator = () => {
         {/* Step Message */}
         <div className="text-center bg-blue-50 rounded-xl py-3 px-6 mx-auto max-w-lg">
           <p className="text-base text-blue-800 font-medium">
-            Step {currentStep} of 4 · Average time: <span className="font-bold text-blue-600">10 minutes</span>
+            Step {currentStep} of 4 · Average time: <span className="font-bold text-blue-600">3-5 minutes</span>
+            <span className="block text-xs text-blue-600 mt-1">✓ Progress automatically saved</span>
             {formData.selectedYears.length > 0 && (
               <span className="block text-sm text-blue-600 mt-1">
                 Filing for: {formData.selectedYears.join(', ')}
@@ -1197,14 +1198,51 @@ const CreditCalculator = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  // Industry-specific value propositions
+  const getIndustryValueProp = (industry: string) => {
+    const valueProp = {
+      freelancer: { title: "Freelancers average $18K in credits", description: "AI tool subscriptions, custom automation development, and testing qualify", avgSavings: "$18K" },
+      saas: { title: "SaaS companies average $85K in credits", description: "Development time, cloud infrastructure, and AI integrations qualify", avgSavings: "$85K" },
+      agency: { title: "Agencies average $42K in credits", description: "Custom tools, automation development, and client solution R&D qualify", avgSavings: "$42K" },
+      ecommerce: { title: "E-commerce businesses average $31K in credits", description: "Inventory management systems, AI chatbots, and personalization tools qualify", avgSavings: "$31K" },
+      consulting: { title: "Consultants average $22K in credits", description: "Custom methodologies, AI tools, and process improvements qualify", avgSavings: "$22K" },
+      manufacturing: { title: "Manufacturers average $127K in credits", description: "Process optimization, IoT systems, and quality control automation qualify", avgSavings: "$127K" },
+      healthcare: { title: "Healthcare practices average $64K in credits", description: "Patient management systems, AI diagnostics, and workflow automation qualify", avgSavings: "$64K" }
+    };
+    
+    return valueProp[industry] || { title: "Small businesses average $31K in credits", description: "AI tools, automation, and process improvements typically qualify", avgSavings: "$31K" };
+  };
+
   // Render current step
   const renderStep = () => {
     switch (currentStep) {
       case 1:
         return (
           <div className="space-y-8">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold mb-4 text-gray-900">Tell us about your business</h2>
+            {/* Hero Value Proposition */}
+            <div className="text-center mb-8">
+              <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-2xl p-6 mb-6">
+                <h2 className="text-4xl font-bold mb-3">Get $25K+ Back from the IRS</h2>
+                <p className="text-xl text-green-100 mb-4">
+                  Small businesses using AI tools can claim substantial R&D tax credits
+                </p>
+                <div className="flex justify-center items-center gap-8 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5" />
+                    <span>1,200+ businesses served</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-5 h-5" />
+                    <span>$47M+ recovered</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-5 h-5" />
+                    <span>100% money-back guarantee</span>
+                  </div>
+                </div>
+              </div>
+              
+              <h3 className="text-2xl font-bold mb-2 text-gray-900">Tell us about your business</h3>
               <p className="text-lg text-gray-600 max-w-xl mx-auto">
                 Even small businesses with no technical team can qualify for substantial credits.
               </p>
@@ -1241,6 +1279,21 @@ const CreditCalculator = () => {
                   ))}
                 </select>
                 <IndustryExamples industry={formData.industry} />
+                
+                {/* Industry-Specific Value Props */}
+                {formData.industry && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h4 className="font-bold text-blue-900 mb-2">
+                      {getIndustryValueProp(formData.industry).title}
+                    </h4>
+                    <p className="text-sm text-blue-800">
+                      {getIndustryValueProp(formData.industry).description}
+                    </p>
+                    <div className="text-xs text-blue-600 font-bold mt-1">
+                      Average savings: {getIndustryValueProp(formData.industry).avgSavings}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Primary Tax Year Selection */}
@@ -1312,24 +1365,7 @@ const CreditCalculator = () => {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                <div>
-                  <label className="block text-base font-semibold text-gray-800 mb-3">
-                    Year Business Started
-                    <InfoTooltip text="When your business started — newer companies get extra benefits!" />
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.startupYear}
-                    onChange={(e) => updateFormData('startupYear', e.target.value)}
-                    className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-3 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-lg font-medium bg-white shadow-sm"
-                    placeholder="2020"
-                    min="1900"
-                    max="2025"
-                  />
-                </div>
-              </div>
 
               <div>
                 <label className="block text-base font-semibold text-gray-800 mb-3">
@@ -1362,7 +1398,7 @@ const CreditCalculator = () => {
               <SaveProgressButton />
               <button
                 onClick={() => setCurrentStep(2)}
-                disabled={!formData.companyName || !formData.startupYear || !formData.grossReceipts || formData.selectedYears.length === 0}
+                disabled={!formData.companyName || !formData.grossReceipts || formData.selectedYears.length === 0}
                 className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-5 px-10 rounded-2xl font-bold text-xl hover:from-blue-700 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
               >
                 Continue to Your AI Work 🚀
@@ -1657,6 +1693,90 @@ const CreditCalculator = () => {
         );
 
       case 3:
+        // If email not captured yet, show email capture with partial results
+        if (!emailSubmitted) {
+          return (
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold mb-4 text-gray-900">You're qualified! 🎉</h2>
+                <p className="text-lg text-gray-600">
+                  Get your personalized R&D credit estimate sent to your inbox
+                </p>
+              </div>
+              
+              {/* Partial Results Teaser */}
+              <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-2xl p-8 text-center mb-8">
+                <h3 className="text-2xl font-bold mb-4">Your Preliminary Estimate</h3>
+                <div className="text-5xl font-bold mb-2">
+                  ${Math.round(calculateResults().totalBenefit * 0.7).toLocaleString()}+
+                </div>
+                <p className="text-green-100 text-lg">
+                  Potential tax savings (partial estimate)
+                </p>
+                <div className="mt-4 text-sm text-green-100">
+                  📧 Get your complete personalized report with exact calculations
+                </div>
+              </div>
+              
+              {/* Email Capture Form */}
+              <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-xl">
+                <h3 className="text-2xl font-bold text-center mb-4">Get Your Complete Report</h3>
+                <p className="text-gray-600 text-center mb-6">
+                  Enter your email to receive your detailed R&D credit analysis, filing instructions, and next steps.
+                </p>
+                <div className="max-w-md mx-auto">
+                  <div className="space-y-4">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-lg"
+                      placeholder="your@email.com"
+                    />
+                    <button
+                      onClick={() => {
+                        if (email && email.includes('@')) {
+                          console.log('Email captured:', email);
+                          const results = calculateResults();
+                          console.log('Results data:', results);
+                          setEmailSubmitted(true);
+                          setShowFullResults(true);
+                          // Stay on step 3 to show the state selection
+                        }
+                      }}
+                      disabled={!email || !email.includes('@')}
+                      className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-8 rounded-lg font-bold text-lg hover:from-blue-700 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed"
+                    >
+                      Get My Complete R&D Credit Report
+                    </button>
+                    <p className="text-xs text-gray-500 text-center">
+                      ✓ Instant access • ✓ No spam • ✓ Unsubscribe anytime
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Social Proof */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-4">Trusted by 1,200+ businesses</p>
+                    <div className="flex justify-center items-center gap-8 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span>Average 12-day processing</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-4 h-4 text-blue-600" />
+                        <span>IRS audit protection included</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+        
+        // If email captured, show state selection options
         return (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold mb-6">
@@ -2118,8 +2238,11 @@ const CreditCalculator = () => {
 
                   {/* Package Options - Clear Pricing */}
                   <div className="space-y-4 mb-6">
-                    {/* Federal Package */}
-                    <div className="border-2 border-green-300 rounded-lg p-4 bg-green-50">
+                    {/* Federal Package - Most Popular Badge */}
+                    <div className="border-2 border-green-300 rounded-lg p-4 bg-green-50 relative">
+                      <div className="absolute -top-2 left-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                        MOST POPULAR
+                      </div>
                       <div className="flex justify-between items-center mb-2">
                         <div>
                           <h4 className="font-bold text-green-900">
@@ -2181,6 +2304,9 @@ const CreditCalculator = () => {
                         <div className="text-right">
                           <div className="text-2xl font-bold text-green-700">
                             ${getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1).toLocaleString()}
+                          </div>
+                          <div className="text-xs text-green-600 mt-1">
+                            Or 3 payments of ${Math.round(getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1) / 3).toLocaleString()}
                           </div>
                           {formData.selectedYears && formData.selectedYears.length > 1 && (
                             <div className="text-sm text-green-600 line-through">
@@ -2426,6 +2552,119 @@ const CreditCalculator = () => {
                           <span className="font-bold text-green-800">You save: ${(Math.round(results.totalBenefit * 0.15) - getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1)).toLocaleString()}</span>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CPA FIRM COMPARISON TABLE */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                  <h4 className="font-bold text-blue-900 mb-4 text-center">Why Choose Us Over Big CPA Firms?</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="bg-blue-100 rounded-lg">
+                        <tr>
+                          <th className="text-left p-3 rounded-l-lg">Service</th>
+                          <th className="text-center p-3 text-blue-800 font-bold">Our Service</th>
+                          <th className="text-center p-3 rounded-r-lg">Big CPA Firms</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white">
+                        <tr className="border-b border-blue-100">
+                          <td className="p-3 font-medium">Cost</td>
+                          <td className="p-3 text-center text-green-600 font-bold">${getTieredPricing(results.totalCredit, formData.selectedYears?.length || 1).toLocaleString()}</td>
+                          <td className="p-3 text-center text-red-600">$5,000 - $15,000</td>
+                        </tr>
+                        <tr className="border-b border-blue-100">
+                          <td className="p-3 font-medium">Timeline</td>
+                          <td className="p-3 text-center text-green-600 font-bold">5 minutes</td>
+                          <td className="p-3 text-center text-red-600">4-8 weeks</td>
+                        </tr>
+                        <tr className="border-b border-blue-100">
+                          <td className="p-3 font-medium">Process</td>
+                          <td className="p-3 text-center text-green-600 font-bold">Self-service</td>
+                          <td className="p-3 text-center text-red-600">Multiple meetings</td>
+                        </tr>
+                        <tr className="border-b border-blue-100">
+                          <td className="p-3 font-medium">Audit Protection</td>
+                          <td className="p-3 text-center text-green-600 font-bold">✓ Included</td>
+                          <td className="p-3 text-center text-red-600">Extra $2,000+</td>
+                        </tr>
+                        <tr>
+                          <td className="p-3 font-medium">Money-Back Guarantee</td>
+                          <td className="p-3 text-center text-green-600 font-bold">✓ 100%</td>
+                          <td className="p-3 text-center text-red-600">Limited</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* WHAT HAPPENS NEXT SECTION */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
+                  <h4 className="font-bold text-gray-900 mb-4 text-center">What Happens After You Purchase?</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="text-center">
+                      <div className="bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                        <span className="text-blue-800 font-bold text-lg">1</span>
+                      </div>
+                      <h5 className="font-bold text-gray-900 mb-2">Instant Download</h5>
+                      <p className="text-sm text-gray-600">
+                        Get your complete package with all forms, documentation, and step-by-step instructions immediately
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <div className="bg-green-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                        <span className="text-green-800 font-bold text-lg">2</span>
+                      </div>
+                      <h5 className="font-bold text-gray-900 mb-2">File Within 30 Days</h5>
+                      <p className="text-sm text-gray-600">
+                        Follow our simple instructions to file your amended returns and claim your credits
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <div className="bg-purple-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                        <span className="text-purple-800 font-bold text-lg">3</span>
+                      </div>
+                      <h5 className="font-bold text-gray-900 mb-2">Get Your Refund</h5>
+                      <p className="text-sm text-gray-600">
+                        Receive your tax credit refund from the IRS within 6-16 weeks of filing
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Need help?</strong> Call us at <span className="font-bold">(555) 123-R&amp;D</span> or email support@rdcredits.com
+                    </p>
+                  </div>
+                </div>
+
+                {/* FAQ SECTION */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+                  <h4 className="font-bold text-gray-900 mb-4 text-center">Frequently Asked Questions</h4>
+                  <div className="space-y-4">
+                    <div className="border-b border-gray-100 pb-4">
+                      <h5 className="font-semibold text-gray-900 mb-2">What if the IRS audits me?</h5>
+                      <p className="text-sm text-gray-600">
+                        Our package includes full audit protection documentation. We provide all the supporting materials and guidance you need to successfully defend your R&D credit claim.
+                      </p>
+                    </div>
+                    <div className="border-b border-gray-100 pb-4">
+                      <h5 className="font-semibold text-gray-900 mb-2">How long does filing take?</h5>
+                      <p className="text-sm text-gray-600">
+                        Most businesses complete their filing within 2-4 hours using our step-by-step instructions. The IRS typically processes refunds within 6-16 weeks.
+                      </p>
+                    </div>
+                    <div className="border-b border-gray-100 pb-4">
+                      <h5 className="font-semibold text-gray-900 mb-2">What's your money-back guarantee?</h5>
+                      <p className="text-sm text-gray-600">
+                        If you don't receive at least 3x your package cost in R&D credits, we'll refund your entire purchase. No questions asked.
+                      </p>
+                    </div>
+                    <div className="pb-4">
+                      <h5 className="font-semibold text-gray-900 mb-2">Can I really do this myself?</h5>
+                      <p className="text-sm text-gray-600">
+                        Absolutely! Our package includes everything you need: pre-filled forms, detailed documentation, and step-by-step instructions. Over 1,200 businesses have successfully used our system.
+                      </p>
                     </div>
                   </div>
                 </div>

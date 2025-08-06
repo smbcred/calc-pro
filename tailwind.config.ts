@@ -166,6 +166,11 @@ export default {
         "number-pulse": "numberPulse 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
         "float": "float 6s ease-in-out infinite",
         "float-delayed": "float 6s ease-in-out infinite 2s",
+        "security-pulse": "securityPulse 3s ease-in-out infinite",
+        "security-glow": "securityGlow 3s ease-in-out infinite",
+        "ssl-rotate": "sslRotate 4s linear infinite",
+        "verification-pulse": "verificationPulse 2s ease-in-out infinite",
+        "connection-pulse": "connectionPulse 2s ease-in-out infinite",
       },
       transitionDuration: {
         'fast': '150ms',

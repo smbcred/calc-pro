@@ -1405,4 +1405,336 @@
     opacity: 0.05;
     border-radius: inherit;
   }
+  
+  /* Trust & Security Indicators */
+  .security-lock {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    color: var(--success);
+    animation: securityPulse 3s ease-in-out infinite;
+  }
+  
+  .security-lock::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    background: radial-gradient(circle, var(--success) 0%, transparent 70%);
+    opacity: 0;
+    border-radius: 50%;
+    animation: securityGlow 3s ease-in-out infinite;
+  }
+  
+  @keyframes securityPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  @keyframes securityGlow {
+    0%, 100% { opacity: 0; transform: scale(1); }
+    50% { opacity: 0.2; transform: scale(1.2); }
+  }
+  
+  /* Security Badges */
+  .security-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: linear-gradient(135deg, hsl(142, 72%, 96%) 0%, hsl(142, 60%, 94%) 100%);
+    border: 1px solid hsl(142, 72%, 85%);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--success);
+    transition: all var(--duration-normal) var(--easing-natural);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .security-badge::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, hsl(142, 72%, 90%) 0%, hsl(142, 60%, 88%) 100%);
+    opacity: 0;
+    transition: opacity var(--duration-normal) var(--easing-natural);
+  }
+  
+  .security-badge:hover::before {
+    opacity: 1;
+  }
+  
+  .security-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+  }
+  
+  /* SSL Certificate Indicator */
+  .ssl-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--success);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--easing-natural);
+  }
+  
+  .ssl-indicator:hover {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.5);
+    transform: scale(1.02);
+  }
+  
+  .ssl-indicator .ssl-icon {
+    width: 12px;
+    height: 12px;
+    animation: sslRotate 4s linear infinite;
+  }
+  
+  @keyframes sslRotate {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    75% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Trust Seals */
+  .trust-seal {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--card);
+    border: 1px solid var(--neutral-200);
+    border-radius: 12px;
+    transition: all var(--duration-normal) var(--easing-natural);
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .trust-seal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--blue-primary), var(--blue-green-1));
+    opacity: 0;
+    transition: opacity var(--duration-normal) var(--easing-natural);
+  }
+  
+  .trust-seal:hover::before {
+    opacity: 0.05;
+  }
+  
+  .trust-seal:hover {
+    transform: translateY(-2px);
+    border-color: var(--blue-primary);
+    box-shadow: 
+      0 8px 25px -8px rgba(59, 130, 246, 0.3),
+      0 0 0 1px rgba(59, 130, 246, 0.1);
+  }
+  
+  .trust-seal-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: var(--spacing-xs);
+    color: var(--blue-primary);
+    transition: all var(--duration-normal) var(--easing-bounce);
+  }
+  
+  .trust-seal:hover .trust-seal-icon {
+    transform: scale(1.1) rotate(5deg);
+    color: var(--blue-secondary);
+  }
+  
+  .trust-seal-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 2px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .trust-seal-subtitle {
+    font-size: 10px;
+    color: var(--neutral-500);
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Security Footer Bar */
+  .security-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: linear-gradient(135deg, var(--neutral-100) 0%, hsl(210, 25%, 97%) 100%);
+    border-top: 1px solid var(--neutral-200);
+    border-radius: 12px 12px 0 0;
+    margin-top: var(--spacing-xl);
+  }
+  
+  .security-feature {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 13px;
+    color: var(--neutral-600);
+    font-weight: 500;
+  }
+  
+  .security-feature-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--success);
+    flex-shrink: 0;
+  }
+  
+  /* Verification Checkmark Animation */
+  .verification-check {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--success);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    animation: verificationPulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes verificationPulse {
+    0%, 100% { 
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+    }
+    70% { 
+      transform: scale(1.05);
+      box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+    }
+  }
+  
+  /* Bank-Level Security Indicator */
+  .bank-security {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: linear-gradient(135deg, hsl(214, 100%, 96%) 0%, hsl(203, 89%, 94%) 100%);
+    border: 1px solid hsl(214, 100%, 85%);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--blue-primary);
+    position: relative;
+    overflow: hidden;
+    cursor: help;
+  }
+  
+  .bank-security::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.6s ease-in-out;
+  }
+  
+  .bank-security:hover::before {
+    left: 100%;
+  }
+  
+  .bank-security:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+  
+  /* Encrypted Connection Indicator */
+  .encrypted-connection {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 11px;
+    color: var(--neutral-500);
+    font-weight: 500;
+  }
+  
+  .encrypted-connection::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--success);
+    border-radius: 50%;
+    animation: connectionPulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes connectionPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  /* Compliance Badges */
+  .compliance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+  }
+  
+  .compliance-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--card);
+    border: 1px solid var(--neutral-200);
+    border-radius: 8px;
+    text-align: center;
+    transition: all var(--duration-normal) var(--easing-natural);
+    cursor: pointer;
+  }
+  
+  .compliance-badge:hover {
+    transform: translateY(-1px);
+    border-color: var(--blue-primary);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+  }
+  
+  .compliance-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: var(--spacing-xs);
+    color: var(--blue-primary);
+  }
+  
+  .compliance-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 2px;
+  }
+  
+  .compliance-description {
+    font-size: 10px;
+    color: var(--neutral-500);
+    line-height: 1.3;
+  }
 }

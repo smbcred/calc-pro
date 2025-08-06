@@ -1519,7 +1519,7 @@ const CreditCalculator = () => {
               <button
                 onClick={() => setCurrentStep(2)}
                 disabled={!formData.companyName || !formData.grossReceipts || formData.selectedYears.length === 0}
-                className="btn-primary w-full sm:w-auto text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="bg-blue-600 text-white py-4 px-8 rounded-xl font-semibold text-xl shadow-lg hover:bg-blue-700 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
               >
                 <span className="flex items-center gap-3">
                   Continue to Your AI Work

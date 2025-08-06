@@ -1475,12 +1475,12 @@ const CreditCalculator = () => {
                   <InfoTooltip text="We need this to calculate your maximum credit and special benefits. Your data is encrypted and never shared." />
                 </label>
                 <div className="relative">
-                  <span className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     value={formData.grossReceipts}
                     onChange={(e) => updateFormData('grossReceipts', e.target.value)}
-                    className="input-enhanced pl-12 text-xl"
+                    className="input-enhanced pl-10 text-xl"
                     placeholder="1,000,000"
                   />
                 </div>
@@ -1681,7 +1681,7 @@ const CreditCalculator = () => {
                   <InfoTooltip text="Total wages for employees who work on AI projects, automation, or tech improvements (we'll calculate the R&D portion next)" />
                 </label>
                 <div className="relative">
-                  <span className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     value={yearlyData[currentYear]?.w2Wages || ''}
@@ -1689,7 +1689,7 @@ const CreditCalculator = () => {
                       ...prev,
                       [currentYear]: { ...prev[currentYear], w2Wages: e.target.value }
                     }))}
-                    className="input-enhanced pl-12 text-xl"
+                    className="input-enhanced pl-10 text-xl"
                     placeholder="50,000"
                   />
                 </div>
@@ -1736,7 +1736,7 @@ const CreditCalculator = () => {
                   <InfoTooltip text="Total paid to developers, AI consultants, automation experts, or anyone helping build your tech" />
                 </label>
                 <div className="relative">
-                  <span className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
                   <input
                     type="number"
                     value={yearlyData[currentYear]?.contractorCosts || ''}
@@ -1744,7 +1744,7 @@ const CreditCalculator = () => {
                       ...prev,
                       [currentYear]: { ...prev[currentYear], contractorCosts: e.target.value }
                     }))}
-                    className="input-enhanced pl-12 text-xl"
+                    className="input-enhanced pl-10 text-xl"
                     placeholder="20,000"
                   />
                 </div>

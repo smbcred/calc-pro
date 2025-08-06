@@ -1708,7 +1708,7 @@ const CreditCalculator = () => {
               <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-2xl p-8 text-center mb-8">
                 <h3 className="text-2xl font-bold mb-4">Your Preliminary Estimate</h3>
                 <div className="text-5xl font-bold mb-2">
-                  ${Math.round(calculateResults().totalBenefit * 0.7).toLocaleString()}+
+                  ${Math.round((results?.totalBenefit || 50000) * 0.7).toLocaleString()}+
                 </div>
                 <p className="text-green-100 text-lg">
                   Potential tax savings (partial estimate)
@@ -1737,8 +1737,7 @@ const CreditCalculator = () => {
                       onClick={() => {
                         if (email && email.includes('@')) {
                           console.log('Email captured:', email);
-                          const results = calculateResults();
-                          console.log('Results data:', results);
+                          performCalculation();
                           setEmailSubmitted(true);
                           setShowFullResults(true);
                           // Stay on step 3 to show the state selection

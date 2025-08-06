@@ -2541,7 +2541,7 @@ const CreditCalculator = () => {
                   {showDetails && (
                     <div className="mt-4 space-y-4">
                       <div>
-                        <h4 className="font-medium mb-2">Your Qualified R&D Expenses</h4>
+                        <h4 className="font-medium mb-2">Your Qualified R&D Expenses (Tax Year {formData.selectedYears[0]})</h4>
                         <div className="space-y-1 text-sm">
                           <div className="flex justify-between">
                             <span>Employee Time ({Math.round((results.qres.wagePercent || 0) * 100)}%)</span>
@@ -2571,7 +2571,7 @@ const CreditCalculator = () => {
                       </div>
                       
                       <div>
-                        <h4 className="font-medium mb-2">Federal R&D Credit Calculation</h4>
+                        <h4 className="font-medium mb-2">Federal R&D Credit Calculation (Tax Year {formData.selectedYears[0]})</h4>
                         <div className="space-y-1 text-sm">
                           <div className="flex justify-between">
                             <span>QRE × {((results.federal.rate || 0) * 100).toFixed(1)}% credit rate</span>
@@ -2588,7 +2588,7 @@ const CreditCalculator = () => {
                       
                       {results.state > 0 && (
                         <div>
-                          <h4 className="font-medium mb-2">State Credit</h4>
+                          <h4 className="font-medium mb-2">State Credit (Tax Year {formData.selectedYears[0]})</h4>
                           <div className="space-y-1 text-sm">
                             <div className="flex justify-between">
                               <span>{statesWithCredit.find(s => s.code === formData.selectedState)?.name} ({((statesWithCredit.find(s => s.code === formData.selectedState)?.rate || 0) * 100).toFixed(1)}%)</span>
@@ -2599,7 +2599,7 @@ const CreditCalculator = () => {
                       )}
                       
                       <div>
-                        <h4 className="font-medium mb-2">Section 174A Immediate Deduction</h4>
+                        <h4 className="font-medium mb-2">Section 174A Immediate Deduction (Tax Year {formData.selectedYears[0]})</h4>
                         <div className="space-y-1 text-sm">
                           <div className="flex justify-between">
                             <span>R&D expenses × 21% tax rate</span>

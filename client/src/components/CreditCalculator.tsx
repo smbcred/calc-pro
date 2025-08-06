@@ -1475,12 +1475,12 @@ const CreditCalculator = () => {
                   </span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-semibold pointer-events-none z-10">$</span>
                   <input
                     type="number"
                     value={formData.grossReceipts}
                     onChange={(e) => updateFormData('grossReceipts', e.target.value)}
-                    className="input-enhanced pl-11 text-xl"
+                    className="w-full px-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400 pl-12 text-xl"
                     placeholder="1,000,000"
                   />
                 </div>

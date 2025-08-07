@@ -4,7 +4,7 @@ import {
   DollarSign, Users, UserCheck, Package, Cloud, 
   ChevronLeft, Plus, Trash2, Calculator, Save, 
   Loader, CheckCircle, AlertTriangle, Info, Lightbulb,
-  Zap, Target, TrendingUp
+  Zap, Target, TrendingUp, Shield, Eye
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -41,6 +41,16 @@ interface CloudSoftwareEntry {
   monthlyCost: number;
   rdPercentage: number;
   annualRdAmount: number;
+}
+
+interface RiskItem {
+  id: string;
+  type: 'high' | 'medium' | 'low';
+  category: string;
+  title: string;
+  description: string;
+  suggestion: string;
+  affectedItems?: string[];
 }
 
 interface ExpenseCollectionFormProps {
@@ -263,6 +273,165 @@ const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = ({
   
   const recommendations = getExpenseRecommendations();
   const industryRecs = getIndustryRecommendations();
+  
+  // Risk Assessment Functions
+  const assessRisks = (): RiskItem[] => {
+    const risks: RiskItem[] = [];
+    
+    // Assess wage risks
+    const highRDPercentageWages = wages.filter(w => w.rdPercentage > 80);
+    if (highRDPercentageWages.length > 0) {
+      risks.push({
+        id: 'high-rd-wages',
+        type: 'medium',
+        category: 'Wages',
+        title: 'High R&D Percentages Detected',
+        description: `${highRDPercentageWages.length} employee(s) have R&D percentages above 80%`,
+        suggestion: 'IRS typically expects most employees to have mixed duties. Consider if these percentages are accurate and document specific R&D activities.',
+        affectedItems: highRDPercentageWages.map(w => w.employeeName || 'Unnamed Employee')
+      });
+    }
+    
+    // Check for very generic employee names
+    const genericNames = wages.filter(w => 
+      !w.employeeName || 
+      w.employeeName.toLowerCase().includes('employee') ||
+      w.employeeName.toLowerCase().includes('test') ||
+      w.employeeName.length < 3
+    );
+    if (genericNames.length > 0) {
+      risks.push({
+        id: 'generic-names',
+        type: 'low',
+        category: 'Wages',
+        title: 'Incomplete Employee Names',
+        description: `${genericNames.length} employee(s) have generic or missing names`,
+        suggestion: 'Use actual employee names for better documentation. The IRS may request employee details during an audit.',
+        affectedItems: genericNames.map(w => w.employeeName || 'Unnamed')
+      });
+    }
+    
+    // Assess contractor risks
+    const missingDescriptions = contractors.filter(c => !c.description || c.description.length < 10);
+    if (missingDescriptions.length > 0) {
+      risks.push({
+        id: 'contractor-descriptions',
+        type: 'medium',
+        category: 'Contractors',
+        title: 'Missing Contractor Descriptions',
+        description: `${missingDescriptions.length} contractor(s) lack detailed work descriptions`,
+        suggestion: 'Provide specific descriptions of R&D work performed. This helps justify the credit during IRS review.',
+        affectedItems: missingDescriptions.map(c => c.contractorName || 'Unnamed Contractor')
+      });
+    }
+    
+    // Check contractor vs wage ratio
+    if (totals.contractors > totals.wages && totals.wages > 0) {
+      risks.push({
+        id: 'contractor-ratio',
+        type: 'high',
+        category: 'Expense Ratios',
+        title: 'High Contractor-to-Wage Ratio',
+        description: 'Contractor expenses exceed internal wage expenses',
+        suggestion: 'This is unusual for most companies. Ensure contractor relationships qualify as arms-length transactions and document the business reasons.',
+        affectedItems: ['Overall expense structure']
+      });
+    }
+    
+    // Assess supply risks
+    const allSupplies100Percent = supplies.length > 0 && supplies.every(s => s.rdPercentage >= 100);
+    if (allSupplies100Percent) {
+      risks.push({
+        id: 'supplies-100-percent',
+        type: 'medium',
+        category: 'Supplies',
+        title: 'All Supplies at 100% R&D Usage',
+        description: 'All supply items are marked as 100% R&D usage',
+        suggestion: 'Most supplies have mixed usage. Consider if some items are used for non-R&D purposes and adjust percentages accordingly.',
+        affectedItems: supplies.map(s => s.supplyType || 'Unnamed Supply')
+      });
+    }
+    
+    // Check for vague supply types
+    const vagueSupplies = supplies.filter(s => 
+      !s.supplyType || 
+      s.supplyType.toLowerCase().includes('misc') ||
+      s.supplyType.toLowerCase().includes('other') ||
+      s.supplyType.length < 5
+    );
+    if (vagueSupplies.length > 0) {
+      risks.push({
+        id: 'vague-supplies',
+        type: 'low',
+        category: 'Supplies',
+        title: 'Vague Supply Descriptions',
+        description: `${vagueSupplies.length} supply item(s) have unclear descriptions`,
+        suggestion: 'Be specific about supply types (e.g., "Computer hardware for development" vs "Misc equipment")',
+        affectedItems: vagueSupplies.map(s => s.supplyType || 'Unnamed')
+      });
+    }
+    
+    // Assess cloud/software risks
+    const allCloud100Percent = cloudSoftware.length > 0 && cloudSoftware.every(c => c.rdPercentage >= 100);
+    if (allCloud100Percent) {
+      risks.push({
+        id: 'cloud-100-percent',
+        type: 'medium',
+        category: 'Cloud/Software',
+        title: 'All Services at 100% R&D Usage',
+        description: 'All cloud/software services marked as 100% R&D usage',
+        suggestion: 'Most business software has mixed usage for R&D and general business operations. Review and adjust percentages.',
+        affectedItems: cloudSoftware.map(c => c.serviceName || 'Unnamed Service')
+      });
+    }
+    
+    // Check for extremely high cloud costs relative to wages
+    if (totals.cloudSoftware > totals.wages * 0.5 && totals.wages > 10000) {
+      risks.push({
+        id: 'high-cloud-costs',
+        type: 'medium',
+        category: 'Expense Ratios',
+        title: 'High Cloud Costs Relative to Wages',
+        description: 'Cloud/software costs are unusually high compared to wages',
+        suggestion: 'This ratio is uncommon. Verify that all cloud expenses are properly categorized and R&D percentages are accurate.',
+        affectedItems: ['Cloud/Software expenses']
+      });
+    }
+    
+    // Check for missing major categories
+    if (totals.grandTotal > 50000) {
+      if (totals.wages === 0) {
+        risks.push({
+          id: 'no-wages',
+          type: 'high',
+          category: 'Missing Categories',
+          title: 'No Employee Wages Recorded',
+          description: 'No wage expenses recorded for substantial R&D credit claim',
+          suggestion: 'Most R&D credits include employee wages. If you have employees doing R&D work, include their wages.',
+          affectedItems: ['Wages section']
+        });
+      }
+      
+      if (totals.supplies === 0 && totals.cloudSoftware === 0) {
+        risks.push({
+          id: 'no-supporting-costs',
+          type: 'medium',
+          category: 'Missing Categories',
+          title: 'No Supporting Costs',
+          description: 'No supplies or technology costs recorded',
+          suggestion: 'Most R&D activities involve some supplies or technology costs. Consider if any qualify.',
+          affectedItems: ['Supplies and Cloud/Software sections']
+        });
+      }
+    }
+    
+    return risks.sort((a, b) => {
+      const priority = { 'high': 3, 'medium': 2, 'low': 1 };
+      return priority[b.type] - priority[a.type];
+    });
+  };
+  
+  const risks = assessRisks();
   
   const toggleRecommendations = (section: string) => {
     setShowRecommendations(prev => ({
@@ -519,6 +688,99 @@ const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = ({
                 )}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Risk Assessment */}
+        {risks.length > 0 && (
+          <div className="mt-4 space-y-2">
+            <div className="flex items-center gap-2 mb-3">
+              <Shield className="w-5 h-5 text-orange-600" />
+              <h4 className="font-semibold text-gray-900">Risk Assessment</h4>
+              <div className="flex items-center gap-2 ml-2">
+                <span className="text-xs text-gray-600">{risks.length} item(s) flagged</span>
+                <button
+                  onClick={() => toggleRecommendations('risk-assessment')}
+                  className="text-xs text-orange-600 hover:text-orange-700 underline"
+                >
+                  {showRecommendations['risk-assessment'] ? 'Hide' : 'Show'} details
+                </button>
+              </div>
+            </div>
+            
+            {showRecommendations['risk-assessment'] && (
+              <div className="space-y-3">
+                {risks.slice(0, 5).map((risk) => {
+                  const getRiskColorClasses = (riskType: string) => {
+                    switch (riskType) {
+                      case 'high':
+                        return {
+                          bg: 'bg-red-50 border-red-200',
+                          icon: 'text-red-600',
+                          text: 'text-red-800',
+                          subtext: 'text-red-700'
+                        };
+                      case 'medium':
+                        return {
+                          bg: 'bg-orange-50 border-orange-200',
+                          icon: 'text-orange-600',
+                          text: 'text-orange-800',
+                          subtext: 'text-orange-700'
+                        };
+                      default:
+                        return {
+                          bg: 'bg-yellow-50 border-yellow-200',
+                          icon: 'text-yellow-600',
+                          text: 'text-yellow-800',
+                          subtext: 'text-yellow-700'
+                        };
+                    }
+                  };
+                  
+                  const colorClasses = getRiskColorClasses(risk.type);
+                  
+                  return (
+                    <div key={risk.id} className={`${colorClasses.bg} border rounded-lg p-3`}>
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className={`w-4 h-4 ${colorClasses.icon} mt-0.5 flex-shrink-0`} />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h5 className={`text-sm font-medium ${colorClasses.text}`}>
+                              {risk.title}
+                            </h5>
+                            <span className={`text-xs px-2 py-0.5 rounded-full bg-white ${colorClasses.text} font-medium uppercase tracking-wide`}>
+                              {risk.type}
+                            </span>
+                          </div>
+                          <p className={`text-xs ${colorClasses.subtext} mb-1`}>
+                            {risk.description}
+                          </p>
+                          <p className={`text-xs ${colorClasses.subtext} font-medium`}>
+                            💡 {risk.suggestion}
+                          </p>
+                          {risk.affectedItems && risk.affectedItems.length > 0 && (
+                            <div className="mt-2">
+                              <span className={`text-xs ${colorClasses.subtext} font-medium`}>
+                                Affected: {risk.affectedItems.slice(0, 3).join(', ')}
+                                {risk.affectedItems.length > 3 && ` (+${risk.affectedItems.length - 3} more)`}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                
+                {risks.length > 5 && (
+                  <div className="text-center">
+                    <span className="text-xs text-gray-500">
+                      ... and {risks.length - 5} more risk item(s)
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

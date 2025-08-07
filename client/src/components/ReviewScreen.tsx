@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, FileText, DollarSign, Users, MapPin, Calculator,
-  Edit, CheckCircle, AlertCircle, Loader, Download, FileCheck,
-  ChevronLeft, Star, TrendingUp, Package, Cloud, UserCheck
+  Edit, CheckCircle, AlertTriangle, Loader, Download, FileCheck,
+  ChevronLeft, Star, TrendingUp, Package, Cloud, UserCheck, Shield
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+interface RiskItem {
+  id: string;
+  type: 'high' | 'medium' | 'low';
+  category: string;
+  title: string;
+  description: string;
+  suggestion: string;
+  affectedItems?: string[];
+}
 
 interface ReviewData {
   companyInfo: {
@@ -208,6 +218,118 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({ customerEmail, onBack, onEd
     }, 15 * 60 * 1000);
   };
 
+  // Risk Assessment Functions
+  const assessReviewRisks = (): RiskItem[] => {
+    if (!reviewData || !reviewData.expenses) return [];
+    
+    const risks: RiskItem[] = [];
+    const { expenses } = reviewData;
+    const totals = expenses.totals;
+    
+    // High-level risk assessment for review
+    const highRDPercentageWages = expenses.wages.filter(w => w.rdPercentage > 80);
+    if (highRDPercentageWages.length > 0) {
+      risks.push({
+        id: 'review-high-rd-wages',
+        type: 'medium',
+        category: 'Wages',
+        title: `${highRDPercentageWages.length} Employee(s) with >80% R&D Time`,
+        description: 'High R&D percentages may trigger IRS scrutiny',
+        suggestion: 'Ensure detailed documentation of R&D activities and time tracking records',
+        affectedItems: highRDPercentageWages.map(w => w.employeeName)
+      });
+    }
+    
+    // Missing documentation risks
+    const incompleteContractors = expenses.contractors.filter(c => !c.description || c.description.length < 20);
+    if (incompleteContractors.length > 0) {
+      risks.push({
+        id: 'review-incomplete-contractors',
+        type: 'high',
+        category: 'Documentation',
+        title: 'Incomplete Contractor Documentation',
+        description: `${incompleteContractors.length} contractor(s) lack detailed descriptions`,
+        suggestion: 'Add comprehensive work descriptions before finalizing documents',
+        affectedItems: incompleteContractors.map(c => c.contractorName)
+      });
+    }
+    
+    // Unusual expense ratios
+    if (totals.contractors > totals.wages && totals.wages > 0) {
+      risks.push({
+        id: 'review-contractor-ratio',
+        type: 'high',
+        category: 'Expense Structure',
+        title: 'Contractor Expenses Exceed Wages',
+        description: 'This structure may require additional IRS justification',
+        suggestion: 'Prepare documentation explaining business necessity for heavy contractor usage',
+        affectedItems: ['Overall expense structure']
+      });
+    }
+    
+    // Missing R&D activities description
+    if (!reviewData.rdActivities?.rdActivities || reviewData.rdActivities.rdActivities.length < 50) {
+      risks.push({
+        id: 'review-insufficient-rd-description',
+        type: 'high',
+        category: 'Documentation',
+        title: 'Insufficient R&D Activity Description',
+        description: 'R&D activities description is too brief or missing',
+        suggestion: 'Provide detailed descriptions of research activities, technical challenges, and innovations',
+        affectedItems: ['R&D Activities section']
+      });
+    }
+    
+    // Very small or very large credit amounts
+    if (totals.grandTotal < 5000) {
+      risks.push({
+        id: 'review-small-credit',
+        type: 'low',
+        category: 'Credit Amount',
+        title: 'Small R&D Credit Amount',
+        description: 'Credit amount is relatively small for filing costs',
+        suggestion: 'Consider if additional qualifying expenses were missed',
+        affectedItems: ['Overall credit calculation']
+      });
+    } else if (totals.grandTotal > 1000000) {
+      risks.push({
+        id: 'review-large-credit',
+        type: 'medium',
+        category: 'Credit Amount',
+        title: 'Large R&D Credit Amount',
+        description: 'Large credits have higher audit probability',
+        suggestion: 'Ensure exceptional documentation and consider professional review',
+        affectedItems: ['Overall credit calculation']
+      });
+    }
+    
+    // All supplies/cloud at 100%
+    const allSupplies100 = expenses.supplies.length > 0 && expenses.supplies.every(s => s.rdPercentage >= 100);
+    const allCloud100 = expenses.cloudSoftware.length > 0 && expenses.cloudSoftware.every(c => c.rdPercentage >= 100);
+    
+    if (allSupplies100 || allCloud100) {
+      risks.push({
+        id: 'review-100-percent-usage',
+        type: 'medium',
+        category: 'Usage Percentages',
+        title: 'All Items at 100% R&D Usage',
+        description: 'Items marked as 100% R&D usage may appear unrealistic',
+        suggestion: 'Review and adjust percentages to reflect actual mixed-use patterns',
+        affectedItems: [
+          ...(allSupplies100 ? ['All supplies'] : []),
+          ...(allCloud100 ? ['All cloud/software'] : [])
+        ]
+      });
+    }
+    
+    return risks.sort((a, b) => {
+      const priority = { 'high': 3, 'medium': 2, 'low': 1 };
+      return priority[b.type] - priority[a.type];
+    });
+  };
+
+  const reviewRisks = assessReviewRisks();
+
   if (isLoading) {
     return (
       <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
@@ -286,6 +408,91 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({ customerEmail, onBack, onEd
             </div>
           </div>
         </div>
+        
+        {/* Risk Assessment Summary */}
+        {reviewRisks.length > 0 && (
+          <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-4 mt-4">
+            <div className="flex items-start gap-2">
+              <Shield className="w-5 h-5 text-orange-600 mt-0.5" />
+              <div className="flex-1">
+                <h4 className="font-semibold text-gray-900 mb-2">Pre-Filing Risk Assessment</h4>
+                <p className="text-sm text-gray-700 mb-3">
+                  We've identified {reviewRisks.length} potential risk{reviewRisks.length > 1 ? 's' : ''} that may warrant attention before document generation.
+                </p>
+                
+                <div className="grid gap-2">
+                  {reviewRisks.slice(0, 3).map((risk) => {
+                    const getRiskIcon = (type: string) => {
+                      switch (type) {
+                        case 'high': return '🔴';
+                        case 'medium': return '🟡';
+                        default: return '🟢';
+                      }
+                    };
+                    
+                    return (
+                      <div key={risk.id} className="bg-white rounded-lg p-3 border">
+                        <div className="flex items-start gap-2">
+                          <span className="text-lg">{getRiskIcon(risk.type)}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h5 className="text-sm font-medium text-gray-900">
+                                {risk.title}
+                              </h5>
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium uppercase tracking-wide ${
+                                risk.type === 'high' 
+                                  ? 'bg-red-100 text-red-700' 
+                                  : risk.type === 'medium'
+                                  ? 'bg-orange-100 text-orange-700'
+                                  : 'bg-yellow-100 text-yellow-700'
+                              }`}>
+                                {risk.type}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-600 mb-1">
+                              {risk.description}
+                            </p>
+                            <p className="text-xs text-gray-700 font-medium">
+                              💡 {risk.suggestion}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  
+                  {reviewRisks.length > 3 && (
+                    <div className="text-center">
+                      <span className="text-xs text-gray-600">
+                        ... and {reviewRisks.length - 3} more risk item(s)
+                      </span>
+                    </div>
+                  )}
+                </div>
+                
+                {reviewRisks.some(r => r.type === 'high') && (
+                  <div className="mt-3 p-2 bg-red-100 border border-red-200 rounded-lg">
+                    <p className="text-xs text-red-800 font-medium">
+                      ⚠️ High-priority risks detected. Consider addressing these before generating final documents.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {reviewRisks.length === 0 && (
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 mt-4">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              <div>
+                <h4 className="font-semibold text-green-900">Low Risk Assessment</h4>
+                <p className="text-sm text-green-700">No significant risks detected in your R&D credit application.</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Review Content */}

@@ -4,11 +4,18 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
-// For Stripe webhooks, we need raw body to verify signatures
+// Apply JSON parsing to all routes EXCEPT the Stripe webhook
+app.use((req, res, next) => {
+  if (req.path === '/api/stripeWebhook') {
+    next(); // Skip JSON parsing for webhook
+  } else {
+    express.json()(req, res, next); // Apply JSON parsing to other routes
+  }
+});
+
+// Raw body parsing specifically for Stripe webhook
 app.use('/api/stripeWebhook', express.raw({ type: 'application/json' }));
 
-// For all other endpoints, use JSON parsing
-app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {

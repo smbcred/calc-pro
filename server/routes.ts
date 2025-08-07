@@ -366,6 +366,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe Webhook handler
   app.post('/api/stripeWebhook', async (req, res) => {
     try {
+      console.log('=== WEBHOOK DEBUG INFO ===');
+      console.log('Body type:', typeof req.body);
+      console.log('Body constructor:', req.body?.constructor?.name);
+      console.log('Body is Buffer:', Buffer.isBuffer(req.body));
+      console.log('Body length:', req.body?.length || 'N/A');
+      console.log('Headers:', req.headers);
+      
       const sig = req.headers['stripe-signature'];
       const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -377,9 +384,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let event: Stripe.Event;
 
       try {
-        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+        // Try to handle the body properly
+        let bodyToVerify = req.body;
+        
+        // If body is already parsed as object, we need to stringify it
+        // This shouldn't happen with proper raw middleware, but let's handle it
+        if (typeof req.body === 'object' && !Buffer.isBuffer(req.body)) {
+          console.log('Body was parsed as object, attempting to stringify...');
+          bodyToVerify = JSON.stringify(req.body);
+        }
+        
+        console.log('Attempting webhook verification with body type:', typeof bodyToVerify);
+        event = stripe.webhooks.constructEvent(bodyToVerify, sig, endpointSecret);
+        console.log('Webhook verification successful!');
       } catch (err: any) {
         console.error('Webhook signature verification failed:', err.message);
+        console.error('Error type:', err.constructor.name);
         return res.status(400).send(`Webhook Error: ${err.message}`);
       }
 

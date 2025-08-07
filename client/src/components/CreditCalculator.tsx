@@ -1524,12 +1524,11 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                 <SaveProgressButton />
                 <button
                   onClick={() => {
-                    performCalculation();
-                    setCurrentStep(4);
+                    setCurrentStep(3);
                   }}
                   className="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 flex items-center"
                 >
-                  See My Credit Amount →
+                  Get My Credit Estimate →
                   <ChevronRight className="ml-2 w-5 h-5" />
                 </button>
                 <p className="text-sm text-gray-500 text-center mt-3">Calculation based on IRS Section 41 methodology</p>

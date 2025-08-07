@@ -7,6 +7,8 @@ import {
   HelpCircle, ExternalLink, ArrowRight, Clock, AlertCircle
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useToast } from '@/hooks/use-toast';
+import CompanyInfoForm from '@/components/CompanyInfoForm';
 
 interface CustomerInfo {
   email: string;
@@ -32,6 +34,7 @@ const Dashboard: React.FC = () => {
   const [activeSection, setActiveSection] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   // Check authentication and load customer info
   useEffect(() => {
@@ -162,8 +165,8 @@ const Dashboard: React.FC = () => {
 
   // Smart checklist data
   const getChecklistItems = () => {
-    const hasSubmission = customerInfo?.hasSubmissions && customerInfo.submissions?.length > 0;
-    const submission = hasSubmission ? customerInfo.submissions[0] : {};
+    const hasSubmission = customerInfo?.hasSubmissions && customerInfo.submissions && customerInfo.submissions.length > 0;
+    const submission = hasSubmission ? customerInfo.submissions![0] : {};
     
     return [
       {
@@ -849,7 +852,21 @@ const Dashboard: React.FC = () => {
             </div>
           )}
 
-          {activeSection !== 'overview' && (
+          {activeSection === 'company' && (
+            <CompanyInfoForm 
+              customerEmail={customerInfo?.email || ''}
+              onComplete={() => {
+                toast({
+                  title: 'Success!',
+                  description: 'Company information saved successfully',
+                });
+                setActiveSection('overview');
+              }}
+              onBack={() => setActiveSection('overview')}
+            />
+          )}
+
+          {activeSection !== 'overview' && activeSection !== 'company' && (
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-green-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">

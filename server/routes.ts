@@ -607,6 +607,228 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Company Information endpoints
+  app.post('/api/company/info', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
+      }
+
+      // Get company info from Airtable
+      const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+        headers: {
+          'Authorization': `Bearer ${airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch company info');
+      }
+
+      const data = await response.json();
+      const companyInfo = data.records.length > 0 ? {
+        companyName: data.records[0].fields['Company Name'],
+        ein: data.records[0].fields['EIN'],
+        entityType: data.records[0].fields['Entity Type'],
+        yearFounded: data.records[0].fields['Year Founded'],
+        annualRevenue: data.records[0].fields['Annual Revenue'],
+        employeeCount: data.records[0].fields['Employee Count'],
+        rdEmployeeCount: data.records[0].fields['R&D Employee Count'],
+        primaryState: data.records[0].fields['Primary State'],
+        rdStates: data.records[0].fields['R&D States'] || [],
+        hasMultipleStates: data.records[0].fields['Has Multiple States'] || false,
+      } : null;
+
+      res.json({ companyInfo });
+    } catch (error) {
+      console.error('Company info error:', error);
+      res.status(500).json({ error: 'Failed to load company info' });
+    }
+  });
+
+  app.post('/api/company/save-progress', async (req, res) => {
+    try {
+      const { email, formData } = req.body;
+      
+      if (!email || !formData) {
+        return res.status(400).json({ error: 'Email and form data are required' });
+      }
+
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
+      }
+
+      // Check if record exists
+      const checkResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+        headers: {
+          'Authorization': `Bearer ${airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const checkData = await checkResponse.json();
+      const existingRecord = checkData.records.length > 0 ? checkData.records[0] : null;
+
+      const companyData = {
+        'Email': email,
+        'Company Name': formData.companyName || '',
+        'EIN': formData.ein || '',
+        'Entity Type': formData.entityType || '',
+        'Year Founded': formData.yearFounded ? parseInt(formData.yearFounded) : null,
+        'Annual Revenue': formData.annualRevenue || '',
+        'Employee Count': formData.employeeCount || '',
+        'R&D Employee Count': formData.rdEmployeeCount ? parseInt(formData.rdEmployeeCount) : null,
+        'Primary State': formData.primaryState || '',
+        'R&D States': formData.rdStates || [],
+        'Has Multiple States': formData.hasMultipleStates || false,
+        'Last Updated': new Date().toISOString(),
+      };
+
+      if (existingRecord) {
+        // Update existing record
+        const updateResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Companies/${existingRecord.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${airtableToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ fields: companyData }),
+        });
+
+        if (!updateResponse.ok) {
+          throw new Error('Failed to update company info');
+        }
+      } else {
+        // Create new record
+        const createResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Companies`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${airtableToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ fields: companyData }),
+        });
+
+        if (!createResponse.ok) {
+          throw new Error('Failed to create company info');
+        }
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Save progress error:', error);
+      res.status(500).json({ error: 'Failed to save progress' });
+    }
+  });
+
+  app.post('/api/company/submit', async (req, res) => {
+    try {
+      const { email, formData } = req.body;
+      
+      if (!email || !formData) {
+        return res.status(400).json({ error: 'Email and form data are required' });
+      }
+
+      // Verify customer exists
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
+      }
+
+      const customerCheck = await fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+        headers: {
+          'Authorization': `Bearer ${airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!customerCheck.ok) {
+        throw new Error('Failed to verify customer');
+      }
+
+      const customerData = await customerCheck.json();
+      if (customerData.records.length === 0) {
+        return res.status(403).json({ error: 'Access denied - customer not found' });
+      }
+
+      // Save complete company information
+      const companyData = {
+        'Email': email,
+        'Company Name': formData.companyName,
+        'EIN': formData.ein,
+        'Entity Type': formData.entityType,
+        'Year Founded': parseInt(formData.yearFounded),
+        'Annual Revenue': formData.annualRevenue,
+        'Employee Count': formData.employeeCount,
+        'R&D Employee Count': formData.rdEmployeeCount ? parseInt(formData.rdEmployeeCount) : null,
+        'Primary State': formData.primaryState,
+        'R&D States': formData.rdStates,
+        'Has Multiple States': formData.hasMultipleStates,
+        'Status': 'Complete',
+        'Completed At': new Date().toISOString(),
+      };
+
+      // Check if record exists and update or create
+      const checkResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+        headers: {
+          'Authorization': `Bearer ${airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const checkData = await checkResponse.json();
+      const existingRecord = checkData.records.length > 0 ? checkData.records[0] : null;
+
+      if (existingRecord) {
+        const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies/${existingRecord.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${airtableToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ fields: companyData }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update company info');
+        }
+      } else {
+        const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${airtableToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ fields: companyData }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to create company info');
+        }
+      }
+
+      res.json({ success: true, message: 'Company information saved successfully' });
+    } catch (error) {
+      console.error('Company submission error:', error);
+      res.status(500).json({ error: 'Failed to submit company information' });
+    }
+  });
+
   // Development-only endpoint to create test customer for login testing
   if (process.env.NODE_ENV !== 'production') {
     app.post('/api/dev/create-test-customer', async (req, res) => {

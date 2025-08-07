@@ -1868,11 +1868,11 @@ const CreditCalculator = () => {
               {/* Partial Results Teaser */}
               <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-2xl p-8 text-center mb-8">
                 <h3 className="text-2xl font-bold mb-4">Your Preliminary Estimate</h3>
-                <div className="text-5xl font-bold mb-2">
-                  ${Math.round((results?.totalBenefit || 50000) * 0.7).toLocaleString()}+
+                <div className="text-4xl font-bold mb-2">
+                  $10,000 - $150,000+
                 </div>
                 <p className="text-green-100 text-lg">
-                  Potential tax savings (partial estimate)
+                  Your potential tax credits
                 </p>
                 <div className="mt-4 text-sm text-green-100">
                   📧 Get your complete personalized report with exact calculations
@@ -2542,15 +2542,19 @@ const CreditCalculator = () => {
                         </div>
                       </div>
 
-                      {/* Enhanced ROI Callout */}
-                      <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-6 mb-6 border-2 border-yellow-400">
+                      {/* Updated Urgency Messaging */}
+                      <div className="bg-gradient-to-r from-red-100 to-orange-100 rounded-2xl p-6 mb-6 border-2 border-red-400">
                         <div className="text-center">
-                          <div className="text-4xl font-black text-orange-800 mb-2">
-                            {Math.round((results.totalBenefit / 750))}:1
+                          <div className="text-2xl font-black text-red-800 mb-2">
+                            ⏰ TIME IS RUNNING OUT
                           </div>
-                          <div className="text-lg font-bold text-orange-700 mb-2">Return on Investment</div>
-                          <div className="text-sm text-orange-600">
-                            Starting from $500 → {formatCurrency(results.totalBenefit)} in potential tax savings
+                          <div className="text-lg font-bold text-red-700 mb-4">July 2026 deadline for previous years - Don't lose thousands in credits!</div>
+                          <div className="bg-white rounded-lg p-4 border border-gray-300">
+                            <div className="text-gray-700">
+                              <div className="font-bold text-lg mb-2">Your Potential Tax Credits:</div>
+                              <div className="text-2xl font-bold text-blue-600">$10,000 - $150,000+</div>
+                              <div className="text-sm text-gray-500 mt-1">Based on your business profile</div>
+                            </div>
                           </div>
                         </div>
                       </div>

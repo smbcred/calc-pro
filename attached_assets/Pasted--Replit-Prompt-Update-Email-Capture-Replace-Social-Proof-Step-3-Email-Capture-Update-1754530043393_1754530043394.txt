@@ -1,0 +1,90 @@
+## **Replit Prompt: Update Email Capture & Replace Social Proof**
+
+### **Step 3 Email Capture Updates**
+
+**1. Change headline and description:**
+
+Replace current text with:
+```
+See Your R&D Tax Credit Opportunity
+
+Enter your email to receive a personalized report showing:
+• Your estimated federal R&D tax credit
+• Credit vs. deduction breakdown
+• Potential savings for multiple years
+• Next steps to claim your credit
+```
+
+**2. Update button text:**
+Change "Get My Personalized Report" to:
+```
+Calculate My Tax Credit →
+```
+
+**3. Update expectation-setting text:**
+Replace current description with:
+```
+You'll receive a detailed breakdown of your potential tax savings. 
+This free report shows what you could claim - documentation 
+packages are available for purchase after calculation.
+```
+
+### **Urgency Messaging Updates**
+
+**Replace the specific dollar amount ($51,975) with:**
+```
+⏰ TIME IS RUNNING OUT
+
+July 2026 deadline for previous years - Don't lose thousands in credits!
+```
+
+**Update the summary box to show:**
+```
+Your Potential Tax Credits:
+$10,000 - $150,000+
+Based on your business profile
+```
+
+### **Replace All Social Proof Throughout Tool**
+
+**Remove these types of claims:**
+- "Join 3,847+ successful business owners"
+- "Only 182 packages left this month"
+- "$X million in credits delivered"
+- "X businesses served"
+
+**Replace with industry statistics:**
+- "6.5% of R&D expenses become tax credits"
+- "70% of eligible businesses miss this credit"
+- "$18.4 billion in R&D credits claimed annually (IRS)"
+- "Average SMB credit: $45,000 per year"
+- "ChatGPT launched Nov 2022 - 3 years of credits available"
+
+### **Additional Copy Updates**
+
+**Bottom of email capture - Update benefits:**
+```
+✓ Free Credit Estimate      ✓ No Payment Required      ✓ Unsubscribe Anytime
+   See your opportunity        Calculate first              No spam
+```
+
+**Remove scarcity tactics:**
+- Package limits
+- Monthly quotas  
+- Countdown timers (except July 2026 deadline)
+
+### **Global Replacements**
+
+Throughout the entire calculator, replace:
+- Customer counts → Industry statistics
+- Credits delivered → Average credit sizes
+- Success stories → Publicly available IRS data
+- Scarcity messaging → Deadline urgency only
+
+**Example stat sources to reference:**
+- IRS SOI Tax Stats
+- TCJA impact studies
+- R&D credit utilization reports
+- AI adoption statistics
+
+This creates trust through verifiable data rather than unverifiable claims while setting clear expectations about what users receive at each step.

@@ -62,8 +62,8 @@ async function sendIntakeFormEmail(email: string, token: string) {
     throw new Error('SendGrid not configured');
   }
 
-  const baseUrl = process.env.NODE_ENV === 'production' 
-    ? 'https://your-app.replit.app' 
+  const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+    ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
     : 'http://localhost:5000';
 
   const intakeUrl = `${baseUrl}/intake?token=${token}`;

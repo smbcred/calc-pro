@@ -1191,22 +1191,44 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                   <Zap className="w-8 h-8 text-white" />
                 </div>
                 <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
-                  Calculate Your {formData.selectedYears.length === 1 ? formData.selectedYears[0] : currentYear} R&D Tax Credit
+                  Calculate Your {currentYear} R&D Tax Credit
                 </h2>
                 <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                  Enter your expenses below to see your estimated federal tax credit
+                  Enter expenses from January - December {currentYear} to see your estimated federal tax credit
                   {formData.selectedYears.length > 1 && (
                     <span className="block text-blue-600 font-medium mt-2">
                       Currently entering data for {currentYear}
                     </span>
                   )}
                 </p>
+                
+                {/* Year-specific contextual messaging */}
+                <div className="mt-4">
+                  {currentYear === '2024' && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 max-w-md mx-auto">
+                      <p className="text-sm text-green-700 font-medium">Current year calculation</p>
+                      <p className="text-xs text-green-600">Year-to-date expenses through {new Date().toLocaleDateString('en-US', { month: 'long' })}</p>
+                    </div>
+                  )}
+                  {currentYear === '2023' && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 max-w-md mx-auto">
+                      <p className="text-sm text-blue-700 font-medium">Prior year credit (amendment possible)</p>
+                      <p className="text-xs text-blue-600">Calculating historical credit for {currentYear} - ensure you have records</p>
+                    </div>
+                  )}
+                  {currentYear === '2022' && (
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 max-w-md mx-auto">
+                      <p className="text-sm text-orange-700 font-medium">Final year eligible - July 2026 deadline</p>
+                      <p className="text-xs text-orange-600">Calculating historical credit for {currentYear} - ensure you have records</p>
+                    </div>
+                  )}
+                </div>
               </div>
               
               {/* Running Total Display */}
               <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-4 max-w-md mx-auto">
                 <div className="text-center">
-                  <div className="text-sm text-gray-600 mb-1">Qualifying expenses so far</div>
+                  <div className="text-sm text-gray-600 mb-1">{currentYear} qualifying expenses so far</div>
                   <div className="text-2xl font-bold text-green-600">
                     {formatCurrency(
                       (safeParseFloat(yearlyData[currentYear]?.w2Wages) || 0) +
@@ -1214,7 +1236,10 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                       (safeParseFloat(yearlyData[currentYear]?.supplies) || 0)
                     )}
                   </div>
-                  <div className="text-xs text-gray-500">Estimated credit: ~{formatCurrency(((safeParseFloat(yearlyData[currentYear]?.w2Wages) || 0) + (safeParseFloat(yearlyData[currentYear]?.contractorExpenses) || 0) + (safeParseFloat(yearlyData[currentYear]?.supplies) || 0)) * 0.20)}</div>
+                  <div className="text-xs text-gray-500">
+                    Estimated {currentYear} credit: ~{formatCurrency(((safeParseFloat(yearlyData[currentYear]?.w2Wages) || 0) + (safeParseFloat(yearlyData[currentYear]?.contractorExpenses) || 0) + (safeParseFloat(yearlyData[currentYear]?.supplies) || 0)) * 0.20)}
+                    {currentYear !== '2024' && <span className="ml-2 text-orange-500">(Amendment required)</span>}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1276,7 +1301,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                 Entering data for: <strong>{currentYear}</strong>
               </h3>
               <p className="text-sm text-blue-800">
-                Include all expenses and activities from {currentYear} related to AI, automation, and technology improvements.
+                Include all {currentYear} expenses and activities related to AI, automation, and technology improvements.
               </p>
             </div>
 
@@ -1304,14 +1329,14 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                     placeholder="0"
                   />
                 </div>
-                <p className="text-sm text-gray-500">Salaries for anyone working on AI, automation, or tech improvements</p>
+                <p className="text-sm text-gray-500">Include all {currentYear} salaries for anyone working on AI, automation, or tech improvements</p>
                 <p className="text-xs text-blue-600 mt-1">💡 <a href="#" className="underline">Not sure? Use our estimator</a></p>
                 
                 {yearlyData[currentYear]?.w2Wages && (
                   <div className="mt-6 status-info rounded-2xl p-6">
                     <label className="block text-base font-semibold text-blue-900 mb-4">
                       What % of their time is spent on R&D activities?
-                      <span className="font-normal text-blue-700 ml-2">(Most businesses: 20-60%)</span>
+                      <span className="font-normal text-blue-700 ml-2">(In {currentYear}: Most businesses 20-60%)</span>
                     </label>
                     <div className="flex items-center gap-4 mb-4">
                       <input
@@ -1357,13 +1382,13 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                     placeholder="0"
                   />
                 </div>
-                <p className="text-sm text-gray-500">Developers, AI consultants, automation specialists, etc.</p>
+                <p className="text-sm text-gray-500">Include all {currentYear} contractor costs: developers, AI consultants, automation specialists, etc.</p>
                 
                 {yearlyData[currentYear]?.contractorCosts && (
                   <div className="mt-3 p-3 bg-gray-50 rounded-lg">
                     <label className="block text-xs font-medium text-gray-700 mb-2">
                       What % of contractor work was R&D?
-                      <span className="font-normal text-gray-500 ml-1">(Typical: 40-80%)</span>
+                      <span className="font-normal text-gray-500 ml-1">(Typical {currentYear}: 40-80%)</span>
                     </label>
                     <div className="flex items-center gap-3">
                       <input

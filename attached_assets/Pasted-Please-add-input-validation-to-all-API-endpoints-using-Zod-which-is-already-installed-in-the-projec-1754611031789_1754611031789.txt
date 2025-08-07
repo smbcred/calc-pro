@@ -1,0 +1,64 @@
+Please add input validation to all API endpoints using Zod (which is already installed in the project).
+
+Create a new file: server/validations/index.ts with validation schemas for all API endpoints:
+
+typescriptimport { z } from 'zod';
+
+// Email validation schema
+export const emailSchema = z.object({
+  email: z.string().email('Invalid email address')
+});
+
+// Company info validation schema
+export const companyInfoSchema = z.object({
+  email: z.string().email(),
+  formData: z.object({
+    companyName: z.string().min(1, 'Company name is required'),
+    ein: z.string().regex(/^\d{2}-\d{7}$/, 'EIN must be in format XX-XXXXXXX'),
+    entityType: z.enum(['c-corp', 's-corp', 'llc', 'partnership', 'other']),
+    yearFounded: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
+    annualRevenue: z.string(),
+    employeeCount: z.string(),
+    rdEmployeeCount: z.string(),
+    primaryState: z.string().length(2, 'State must be 2 characters'),
+    rdStates: z.array(z.string()).optional(),
+    hasMultipleStates: z.boolean().optional()
+  })
+});
+
+// Add similar schemas for expenses, intake, and other endpoints
+
+Create a validation middleware in server/middleware/validate.ts:
+
+typescriptimport { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
+
+export const validate = (schema: z.ZodSchema) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await schema.parseAsync(req.body);
+      next();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: error.errors.map(err => ({
+            field: err.path.join('.'),
+            message: err.message
+          }))
+        });
+      }
+      next(error);
+    }
+  };
+};
+
+Apply the validation middleware to each route. For example, in the auth routes:
+
+app.post('/api/login', validate(emailSchema), async (req, res) => { ... })
+app.post('/api/company/save-progress', validate(companyInfoSchema), async (req, res) => { ... })
+
+
+Update the frontend to handle validation errors properly by showing the specific field errors to users.
+
+Make sure all endpoints have proper validation and the error messages are user-friendly.

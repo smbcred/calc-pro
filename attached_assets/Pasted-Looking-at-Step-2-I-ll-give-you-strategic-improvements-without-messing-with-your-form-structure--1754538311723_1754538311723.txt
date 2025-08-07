@@ -1,0 +1,101 @@
+Looking at Step 2, I'll give you strategic improvements without messing with your form structure:
+
+## **Step 2 Content & Flow Optimization**
+
+### **1. REMOVE THE 4-STEP FLOW DIAGRAM**
+Just like Step 1, replace with:
+- Simple text: "Step 2 of 4 • Enter Your Expenses • 3 minutes"
+- Or slim progress bar showing 50% complete
+
+### **2. REFRAME THE HEADER SECTION**
+
+**Current:** "Your AI & Technology Expenses for 2024"
+**Better:** "Calculate Your 2024 R&D Tax Credit"
+
+The statistics (90%, 65%, 100%) are good but need context:
+- Add labels: "of ChatGPT costs qualify" / "of contractor costs qualify" / "of automation costs qualify"
+- Or move these to helper text near relevant fields
+
+### **3. IMPROVE "WHAT COUNTS" SECTION**
+
+This educational content is valuable but poorly placed. Options:
+1. Move to collapsible "Learn More" sections by each input
+2. Convert to tooltips (?) next to each field
+3. Move entire section below the form inputs
+
+Current placement interrupts the flow from header to inputs.
+
+### **4. SIMPLIFY FIELD LABELS & HELPERS**
+
+**Employee Wages Section:**
+- Current: "Total Employee Wages"
+- Better: "Employee Costs (Including Yourself)"
+- Helper text: "Salaries for anyone working on AI, automation, or tech improvements"
+- Add: "Not sure? Use our estimator" link
+
+**Contractor Section:**
+- Current: "Total Contractor/Freelancer Costs"  
+- Better: "Contractor & Consultant Costs"
+- Helper text: "Developers, AI consultants, automation specialists, etc."
+
+### **5. ENHANCE THE INPUT FIELDS**
+
+For dollar amount fields:
+- Add automatic formatting ($XX,XXX)
+- Include placeholder text: "$0" or "Enter amount"
+- Show running total in corner: "Qualifying expenses so far: $XX,XXX"
+
+For the supplies fields:
+- Add common examples as placeholder text
+- "e.g., $200/mo for ChatGPT Plus"
+
+### **6. FIX THE "PREVIOUS R&D CREDIT" PLACEMENT**
+
+This checkbox seems random. Either:
+- Move to Step 1 as a qualifier
+- Move to end of Step 2
+- Remove entirely (not needed for calculation)
+
+### **7. ADD SMART HELPERS**
+
+Next to each input section, add small links:
+- "Typical amounts for your industry"
+- "What qualifies?"
+- "Include partial amounts"
+
+### **8. IMPROVE THE CTA**
+
+Current: "Calculate My Credits →"
+Better: "See My Credit Amount →"
+
+Add below: "Calculation based on IRS Section 41 methodology"
+
+### **9. ADD PROGRESS INDICATORS**
+
+As users fill fields, show:
+- Green checkmarks when sections complete
+- Running qualification: "Qualifying expenses: $XX,XXX"
+- Estimated credit preview: "Estimated credit: ~$X,XXX"
+
+### **10. TRUST WITHOUT OVERWHELMING**
+
+Remove duplicate disclaimers. Keep one simple line:
+"Your financial data is encrypted and never stored"
+
+### **QUICK WINS:**
+
+1. **Move educational content below form or into tooltips**
+2. **Add $ formatting to all currency fields**
+3. **Show running total of qualifying expenses**
+4. **Clearer labels: "Employee Costs (Including Yourself)"**
+5. **Remove or relocate "Previous R&D Credit" checkbox**
+6. **Add industry benchmarks: "Typical for your industry: $XX,XXX"**
+
+### **PSYCHOLOGICAL OPTIMIZATION:**
+
+- Make entering expenses feel like "finding money" not "doing taxes"
+- Use encouraging language: "Great! These expenses qualify"
+- Show credit growing in real-time if possible
+- Industry comparisons: "Similar businesses claim $XX,XXX"
+
+The form structure is solid - it just needs clearer labeling, better helper text, and the educational content moved out of the primary flow. The goal is to make expense entry feel quick and rewarding, not like a tax form.

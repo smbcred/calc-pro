@@ -1191,13 +1191,10 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                   <Zap className="w-8 h-8 text-white" />
                 </div>
                 <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
-                  Your AI & Technology Expenses
-                  {formData.selectedYears.length === 1 && (
-                    <span className="text-blue-600"> for {formData.selectedYears[0]}</span>
-                  )}
+                  Calculate Your {formData.selectedYears.length === 1 ? formData.selectedYears[0] : currentYear} R&D Tax Credit
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                  Include all time and money spent on ChatGPT, automation tools, custom workflows, and business improvements
+                <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                  Enter your expenses below to see your estimated federal tax credit
                   {formData.selectedYears.length > 1 && (
                     <span className="block text-blue-600 font-medium mt-2">
                       Currently entering data for {currentYear}
@@ -1206,19 +1203,18 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                 </p>
               </div>
               
-              {/* Qualification Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
-                <div className="bg-blue-50 rounded-xl p-4">
-                  <div className="text-2xl font-bold text-blue-600">90%</div>
-                  <div className="text-sm text-blue-700">of ChatGPT costs qualify (no minimum hours)</div>
-                </div>
-                <div className="bg-green-50 rounded-xl p-4">
-                  <div className="text-2xl font-bold text-green-600">65%</div>
-                  <div className="text-sm text-green-700">of contractor costs qualify</div>
-                </div>
-                <div className="bg-purple-50 rounded-xl p-4">
-                  <div className="text-2xl font-bold text-purple-600">100%</div>
-                  <div className="text-sm text-purple-700">of cloud/API costs qualify</div>
+              {/* Running Total Display */}
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-4 max-w-md mx-auto">
+                <div className="text-center">
+                  <div className="text-sm text-gray-600 mb-1">Qualifying expenses so far</div>
+                  <div className="text-2xl font-bold text-green-600">
+                    {formatCurrency(
+                      (safeParseFloat(yearlyData[currentYear]?.w2Wages) || 0) +
+                      (safeParseFloat(yearlyData[currentYear]?.contractorExpenses) || 0) +
+                      (safeParseFloat(yearlyData[currentYear]?.supplies) || 0)
+                    )}
+                  </div>
+                  <div className="text-xs text-gray-500">Estimated credit: ~{formatCurrency(((safeParseFloat(yearlyData[currentYear]?.w2Wages) || 0) + (safeParseFloat(yearlyData[currentYear]?.contractorExpenses) || 0) + (safeParseFloat(yearlyData[currentYear]?.supplies) || 0)) * 0.20)}</div>
                 </div>
               </div>
             </div>
@@ -1284,86 +1280,15 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
               </p>
             </div>
 
-            <div className="status-success rounded-2xl p-6 mb-8">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <CheckCircle className="w-6 h-6 text-green-600" />
-                </div>
-                <div>
-                  <h4 className="text-xl font-bold text-green-900 mb-4">What counts as R&D for small businesses?</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-green-800">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      <span>Building custom GPTs or chatbots</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      <span>Developing and testing AI prompts</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      <span>Creating automations (Zapier, Make)</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      <span>Experimenting with AI processes</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      <span>Using ChatGPT to improve business processes</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      <span>Testing new software solutions</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Previous R&D Credit Experience */}
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
-              <h3 className="text-lg font-bold text-blue-900 mb-4">Previous R&D Credit Experience</h3>
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.priorYearCredit}
-                  onChange={(e) => updateFormData('priorYearCredit', e.target.checked)}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                />
-                <span className="ml-3 font-medium text-blue-900">I've successfully claimed R&D credits before</span>
-              </label>
-              
-              {formData.priorYearCredit && (
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-blue-700 mb-2">
-                    Prior Year Credit Amount
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
-                    <input
-                      type="number"
-                      min="0"
-                      value={formData.priorYearAmount}
-                      onChange={(e) => updateFormData('priorYearAmount', e.target.value)}
-                      className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400"
-                      placeholder="10,000"
-                    />
-                  </div>
-                  <p className="text-sm text-blue-600 mt-2">This helps us optimize your current year strategy</p>
-                </div>
-              )}
-            </div>
+
+
 
             {/* Enhanced Expense Form */}
             <div className="card-elevated p-8 space-y-8">
               <div className="space-y-4">
                 <label className="block text-lg font-semibold text-gray-900 mb-3">
-                  <span className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-blue-600" />
-                    Total Employee Wages
-                  </span>
-                  <InfoTooltip text="Total wages for employees who work on AI projects, automation, or tech improvements (we'll calculate the R&D portion next)" />
+                  Employee Costs (Including Yourself)
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
@@ -1376,10 +1301,11 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                       [currentYear]: { ...prev[currentYear], w2Wages: e.target.value }
                     }))}
                     className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400 text-xl"
-                    placeholder="50,000"
+                    placeholder="0"
                   />
                 </div>
-                <p className="text-sm text-gray-500">Include salaries for anyone working on AI, automation, or tech improvements</p>
+                <p className="text-sm text-gray-500">Salaries for anyone working on AI, automation, or tech improvements</p>
+                <p className="text-xs text-blue-600 mt-1">💡 <a href="#" className="underline">Not sure? Use our estimator</a></p>
                 
                 {yearlyData[currentYear]?.w2Wages && (
                   <div className="mt-6 status-info rounded-2xl p-6">
@@ -1415,11 +1341,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
 
               <div className="space-y-4">
                 <label className="block text-lg font-semibold text-gray-900 mb-3">
-                  <span className="flex items-center gap-2">
-                    <Package className="w-5 h-5 text-green-600" />
-                    Total Contractor/Freelancer Costs
-                  </span>
-                  <InfoTooltip text="Total paid to developers, AI consultants, automation experts, or anyone helping build your tech" />
+                  Contractor & Consultant Costs
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
@@ -1432,10 +1354,10 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                       [currentYear]: { ...prev[currentYear], contractorCosts: e.target.value }
                     }))}
                     className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400 text-xl"
-                    placeholder="20,000"
+                    placeholder="0"
                   />
                 </div>
-                <p className="text-sm text-gray-500">Include payments to developers, AI consultants, automation specialists, etc.</p>
+                <p className="text-sm text-gray-500">Developers, AI consultants, automation specialists, etc.</p>
                 
                 {yearlyData[currentYear]?.contractorCosts && (
                   <div className="mt-3 p-3 bg-gray-50 rounded-lg">
@@ -1483,7 +1405,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                       [currentYear]: { ...prev[currentYear], cloudCosts: e.target.value }
                     }))}
                     className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400"
-                    placeholder="5,000"
+                    placeholder="e.g., $200/mo for ChatGPT Plus"
                   />
                 </div>
               </div>
@@ -1504,7 +1426,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                       [currentYear]: { ...prev[currentYear], softwareLicenses: e.target.value }
                     }))}
                     className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400"
-                    placeholder="2,000"
+                    placeholder="e.g., $20/mo for ChatGPT Plus"
                   />
                 </div>
               </div>
@@ -1554,9 +1476,10 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                   }}
                   className="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 flex items-center"
                 >
-                  Calculate My Credits
+                  See My Credit Amount →
                   <ChevronRight className="ml-2 w-5 h-5" />
                 </button>
+                <p className="text-sm text-gray-500 text-center mt-3">Calculation based on IRS Section 41 methodology</p>
               </div>
             </div>
           </div>

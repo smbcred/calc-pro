@@ -72,15 +72,13 @@ async function addToAirtableSubmissions(data: {
   return result.id;
 }
 
+// Helper functions for new 6-table schema
 async function addToAirtableCustomers(data: {
   email: string;
   name?: string;
-  purchaseDate: string;
+  accessToken: string;
   planType: string;
   stripeCustomerId?: string;
-  totalPaid: number;
-  selectedYears: string;
-  accessToken: string;
 }) {
   const airtableToken = process.env.AIRTABLE_API_KEY;
   const baseId = process.env.AIRTABLE_BASE_ID;
@@ -98,14 +96,12 @@ async function addToAirtableCustomers(data: {
     },
     body: JSON.stringify({
       fields: {
-        "Email": data.email,
-        "Name": data.name || '',
-        "Purchase Date": data.purchaseDate,
-        "Plan Type": data.planType,
-        "Stripe Customer ID": data.stripeCustomerId || '',
-        "Total Paid": data.totalPaid,
-        "Selected Years": data.selectedYears ? data.selectedYears.split(',') : [],
-        "Access Token": data.accessToken,
+        "email": data.email,
+        "name": data.name || '',
+        "access_token": data.accessToken,
+        "plan_type": data.planType,
+        "stripe_customer_id": data.stripeCustomerId || '',
+        "created_at": new Date().toISOString(),
       },
     }),
   });
@@ -116,7 +112,174 @@ async function addToAirtableCustomers(data: {
     throw new Error(`Failed to add to Airtable: ${error}`);
   }
 
+  const result = await response.json();
+  return result.id; // Return customer record ID
+}
+
+async function addToAirtableCompanies(data: {
+  customerId: string;
+  companyName: string;
+  ein: string;
+  entityType: string;
+  revenue: string;
+  employeeCount: string;
+}) {
+  const airtableToken = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
+
+  if (!airtableToken || !baseId) {
+    throw new Error('Airtable credentials not configured');
+  }
+
+  const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${airtableToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      fields: {
+        "customer_id": [data.customerId],
+        "company_name": data.companyName,
+        "ein": data.ein,
+        "entity_type": data.entityType,
+        "revenue": data.revenue,
+        "employee_count": data.employeeCount,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to add company: ${error}`);
+  }
+
+  const result = await response.json();
+  return result.id;
+}
+
+async function addToAirtableWages(data: {
+  companyId: string;
+  employeeName: string;
+  salary: number;
+  rdPercentage: number;
+  qualifiedAmount: number;
+}) {
+  const airtableToken = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
+
+  if (!airtableToken || !baseId) {
+    throw new Error('Airtable credentials not configured');
+  }
+
+  const response = await fetch(`https://api.airtable.com/v0/${baseId}/Wages`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${airtableToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      fields: {
+        "company_id": [data.companyId],
+        "employee_name": data.employeeName,
+        "salary": data.salary,
+        "rd_percentage": data.rdPercentage,
+        "qualified_amount": data.qualifiedAmount,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to add wage: ${error}`);
+  }
+
   return response.json();
+}
+
+async function addToAirtableExpenses(data: {
+  companyId: string;
+  expenseType: string;
+  amount: number;
+  rdPercentage: number;
+  qualifiedAmount: number;
+}) {
+  const airtableToken = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
+
+  if (!airtableToken || !baseId) {
+    throw new Error('Airtable credentials not configured');
+  }
+
+  const response = await fetch(`https://api.airtable.com/v0/${baseId}/Expenses`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${airtableToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      fields: {
+        "company_id": [data.companyId],
+        "expense_type": data.expenseType,
+        "amount": data.amount,
+        "rd_percentage": data.rdPercentage,
+        "qualified_amount": data.qualifiedAmount,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to add expense: ${error}`);
+  }
+
+  return response.json();
+}
+
+async function getCustomerByEmail(email: string) {
+  const airtableToken = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
+
+  if (!airtableToken || !baseId) {
+    throw new Error('Airtable credentials not configured');
+  }
+
+  const response = await fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({email})=LOWER('${email}')`, {
+    headers: {
+      'Authorization': `Bearer ${airtableToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch customer');
+  }
+
+  const data = await response.json();
+  return data.records.length > 0 ? data.records[0] : null;
+}
+
+async function getCompanyByCustomerId(customerId: string) {
+  const airtableToken = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
+
+  if (!airtableToken || !baseId) {
+    throw new Error('Airtable credentials not configured');
+  }
+
+  const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula={customer_id}='${customerId}'`, {
+    headers: {
+      'Authorization': `Bearer ${airtableToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch company');
+  }
+
+  const data = await response.json();
+  return data.records.length > 0 ? data.records[0] : null;
 }
 
 async function sendWelcomeEmail(email: string, name?: string) {
@@ -199,39 +362,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email is required' });
       }
 
-      // Check Airtable Customers table directly
-      const airtableToken = process.env.AIRTABLE_API_KEY;
-      const baseId = process.env.AIRTABLE_BASE_ID;
-
-      if (!airtableToken || !baseId) {
-        return res.status(500).json({ error: 'Airtable not configured' });
-      }
-
-      const response = await fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-        headers: {
-          'Authorization': `Bearer ${airtableToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to check Airtable');
-      }
-
-      const data = await response.json();
+      // Check customer in new schema
+      const customer = await getCustomerByEmail(email);
       
-      if (data.records.length === 0) {
+      if (!customer) {
         return res.status(404).json({ error: 'Customer not found. Please complete payment first.', hasAccess: false });
       }
 
-      const customer = data.records[0].fields;
-      
       res.json({ 
-        hasAccess: true, // If record exists in Customers table, they have access
+        hasAccess: true,
         customer: {
-          email: customer.Email,
-          totalPaid: customer['Total Paid'],
-          selectedYears: customer['Selected Years']
+          email: customer.fields.email,
+          planType: customer.fields.plan_type,
+          createdAt: customer.fields.created_at
         }
       });
     } catch (error) {
@@ -256,50 +399,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ error: 'Airtable not configured' });
       }
 
-      // Check customer exists
-      const customerResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-        headers: {
-          'Authorization': `Bearer ${airtableToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!customerResponse.ok) {
-        throw new Error('Failed to check customer in Airtable');
-      }
-
-      const customerData = await customerResponse.json();
+      // Check customer exists with new schema
+      const customer = await getCustomerByEmail(email);
       
-      if (customerData.records.length === 0) {
+      if (!customer) {
         return res.status(403).json({ error: 'Access denied - customer not found' });
       }
 
-      const customer = customerData.records[0].fields;
-
-      // Check for existing submissions
-      const submissionsResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Submissions?filterByFormula=LOWER({Customer Email})=LOWER('${email}')`, {
-        headers: {
-          'Authorization': `Bearer ${airtableToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      let submissions = [];
-      if (submissionsResponse.ok) {
-        const submissionsData = await submissionsResponse.json();
-        submissions = submissionsData.records.map((record: any) => ({
-          id: record.id,
-          submissionDate: record.fields['Submission Date'],
-          entityName: record.fields['Entity Name']
-        }));
-      }
+      // Check for existing company
+      const company = await getCompanyByCustomerId(customer.id);
       
       res.json({ 
-        email: customer.Email,
-        totalPaid: customer['Total Paid'],
-        selectedYears: customer['Selected Years'],
-        hasSubmissions: submissions.length > 0,
-        submissions: submissions
+        email: customer.fields.email,
+        planType: customer.fields.plan_type,
+        hasCompany: !!company,
+        company: company ? {
+          id: company.id,
+          companyName: company.fields.company_name,
+          ein: company.fields.ein,
+          entityType: company.fields.entity_type
+        } : null
       });
     } catch (error) {
       console.error('Customer info error:', error);
@@ -420,16 +539,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(400).send('No email found in session');
         }
 
-        // Add to Airtable Customers table with all required fields
+        // Add to Airtable Customers table with new schema
         await addToAirtableCustomers({
           email,
           name: customerName,
-          purchaseDate,
+          accessToken,
           planType,
           stripeCustomerId: session.customer as string,
-          totalPaid,
-          selectedYears,
-          accessToken
         });
 
         // Test basic SendGrid functionality first
@@ -607,7 +723,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Company Information endpoints
+  // Company Information endpoints with new schema
   app.post('/api/company/info', async (req, res) => {
     try {
       const { email } = req.body;
@@ -616,38 +732,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email is required' });
       }
 
-      const airtableToken = process.env.AIRTABLE_API_KEY;
-      const baseId = process.env.AIRTABLE_BASE_ID;
-
-      if (!airtableToken || !baseId) {
-        return res.status(500).json({ error: 'Airtable not configured' });
+      // Get customer first
+      const customer = await getCustomerByEmail(email);
+      if (!customer) {
+        return res.status(403).json({ error: 'Customer not found' });
       }
 
-      // Get company info from Airtable
-      const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-        headers: {
-          'Authorization': `Bearer ${airtableToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch company info');
+      // Get company info with new schema
+      const company = await getCompanyByCustomerId(customer.id);
+      if (!company) {
+        return res.json({ companyInfo: null });
       }
 
-      const data = await response.json();
-      const companyInfo = data.records.length > 0 ? {
-        companyName: data.records[0].fields['Company Name'],
-        ein: data.records[0].fields['EIN'],
-        entityType: data.records[0].fields['Entity Type'],
-        yearFounded: data.records[0].fields['Year Founded'],
-        annualRevenue: data.records[0].fields['Annual Revenue'],
-        employeeCount: data.records[0].fields['Employee Count'],
-        rdEmployeeCount: data.records[0].fields['R&D Employee Count'],
-        primaryState: data.records[0].fields['Primary State'],
-        rdStates: data.records[0].fields['R&D States'] || [],
-        hasMultipleStates: data.records[0].fields['Has Multiple States'] || false,
-      } : null;
+      const companyInfo = {
+        companyName: company.fields.company_name,
+        ein: company.fields.ein,
+        entityType: company.fields.entity_type,
+        revenue: company.fields.revenue,
+        employeeCount: company.fields.employee_count,
+      };
 
       res.json({ companyInfo });
     } catch (error) {
@@ -664,6 +767,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email and form data are required' });
       }
 
+      // Get customer first
+      const customer = await getCustomerByEmail(email);
+      if (!customer) {
+        return res.status(403).json({ error: 'Customer not found' });
+      }
+
+      // Check if company exists
+      const existingCompany = await getCompanyByCustomerId(customer.id);
+
+      const companyData = {
+        customer_id: [customer.id],
+        company_name: formData.companyName || '',
+        ein: formData.ein || '',
+        entity_type: formData.entityType || '',
+        revenue: formData.annualRevenue || '',
+        employee_count: formData.employeeCount || '',
+      };
+
       const airtableToken = process.env.AIRTABLE_API_KEY;
       const baseId = process.env.AIRTABLE_BASE_ID;
 
@@ -671,35 +792,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ error: 'Airtable not configured' });
       }
 
-      // Check if record exists
-      const checkResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-        headers: {
-          'Authorization': `Bearer ${airtableToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const checkData = await checkResponse.json();
-      const existingRecord = checkData.records.length > 0 ? checkData.records[0] : null;
-
-      const companyData = {
-        'Email': email,
-        'Company Name': formData.companyName || '',
-        'EIN': formData.ein || '',
-        'Entity Type': formData.entityType || '',
-        'Year Founded': formData.yearFounded ? parseInt(formData.yearFounded) : null,
-        'Annual Revenue': formData.annualRevenue || '',
-        'Employee Count': formData.employeeCount || '',
-        'R&D Employee Count': formData.rdEmployeeCount ? parseInt(formData.rdEmployeeCount) : null,
-        'Primary State': formData.primaryState || '',
-        'R&D States': formData.rdStates || [],
-        'Has Multiple States': formData.hasMultipleStates || false,
-        'Last Updated': new Date().toISOString(),
-      };
-
-      if (existingRecord) {
-        // Update existing record
-        const updateResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Companies/${existingRecord.id}`, {
+      if (existingCompany) {
+        // Update existing company
+        const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies/${existingCompany.id}`, {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${airtableToken}`,
@@ -708,12 +803,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           body: JSON.stringify({ fields: companyData }),
         });
 
-        if (!updateResponse.ok) {
+        if (!response.ok) {
           throw new Error('Failed to update company info');
         }
       } else {
-        // Create new record
-        const createResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Companies`, {
+        // Create new company
+        const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${airtableToken}`,
@@ -722,7 +817,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           body: JSON.stringify({ fields: companyData }),
         });
 
-        if (!createResponse.ok) {
+        if (!response.ok) {
           throw new Error('Failed to create company info');
         }
       }
@@ -742,94 +837,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email and form data are required' });
       }
 
-      // Verify customer exists
-      const airtableToken = process.env.AIRTABLE_API_KEY;
-      const baseId = process.env.AIRTABLE_BASE_ID;
-
-      if (!airtableToken || !baseId) {
-        return res.status(500).json({ error: 'Airtable not configured' });
+      // Get customer first
+      const customer = await getCustomerByEmail(email);
+      if (!customer) {
+        return res.status(403).json({ error: 'Customer not found' });
       }
 
-      const customerCheck = await fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-        headers: {
-          'Authorization': `Bearer ${airtableToken}`,
-          'Content-Type': 'application/json',
-        },
+      // Create or update company using helper function
+      const companyId = await addToAirtableCompanies({
+        customerId: customer.id,
+        companyName: formData.companyName,
+        ein: formData.ein,
+        entityType: formData.entityType,
+        revenue: formData.annualRevenue,
+        employeeCount: formData.employeeCount,
       });
 
-      if (!customerCheck.ok) {
-        throw new Error('Failed to verify customer');
-      }
-
-      const customerData = await customerCheck.json();
-      if (customerData.records.length === 0) {
-        return res.status(403).json({ error: 'Access denied - customer not found' });
-      }
-
-      // Save complete company information
-      const companyData = {
-        'Email': email,
-        'Company Name': formData.companyName,
-        'EIN': formData.ein,
-        'Entity Type': formData.entityType,
-        'Year Founded': parseInt(formData.yearFounded),
-        'Annual Revenue': formData.annualRevenue,
-        'Employee Count': formData.employeeCount,
-        'R&D Employee Count': formData.rdEmployeeCount ? parseInt(formData.rdEmployeeCount) : null,
-        'Primary State': formData.primaryState,
-        'R&D States': formData.rdStates,
-        'Has Multiple States': formData.hasMultipleStates,
-        'Status': 'Complete',
-        'Completed At': new Date().toISOString(),
-      };
-
-      // Check if record exists and update or create
-      const checkResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-        headers: {
-          'Authorization': `Bearer ${airtableToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const checkData = await checkResponse.json();
-      const existingRecord = checkData.records.length > 0 ? checkData.records[0] : null;
-
-      if (existingRecord) {
-        const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies/${existingRecord.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Authorization': `Bearer ${airtableToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ fields: companyData }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to update company info');
-        }
-      } else {
-        const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${airtableToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ fields: companyData }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to create company info');
-        }
-      }
-
-      res.json({ success: true, message: 'Company information saved successfully' });
+      res.json({ success: true, message: 'Company information saved successfully', companyId });
     } catch (error) {
       console.error('Company submission error:', error);
       res.status(500).json({ error: 'Failed to submit company information' });
     }
   });
 
-  // Expense Collection endpoints
+  // Expense Collection endpoints with new 6-table schema
   app.post('/api/expenses/load', async (req, res) => {
     try {
       const { email } = req.body;
@@ -838,6 +869,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email is required' });
       }
 
+      // Get customer and company
+      const customer = await getCustomerByEmail(email);
+      if (!customer) {
+        return res.status(403).json({ error: 'Customer not found' });
+      }
+
+      const company = await getCompanyByCustomerId(customer.id);
+      if (!company) {
+        return res.json({ wages: [], contractors: [], supplies: [], cloudSoftware: [] });
+      }
+
       const airtableToken = process.env.AIRTABLE_API_KEY;
       const baseId = process.env.AIRTABLE_BASE_ID;
 
@@ -845,62 +887,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ error: 'Airtable not configured' });
       }
 
-      // Load expenses from different tables
-      const [wagesRes, contractorsRes, suppliesRes, cloudSoftwareRes] = await Promise.all([
-        fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+      // Load wages and expenses from new schema
+      const [wagesRes, expensesRes] = await Promise.all([
+        fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula={company_id}='${company.id}'`, {
           headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' }
         }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Contractors?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' }
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Supplies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' }
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/CloudSoftware?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+        fetch(`https://api.airtable.com/v0/${baseId}/Expenses?filterByFormula={company_id}='${company.id}'`, {
           headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' }
         })
       ]);
 
-      const [wagesData, contractorsData, suppliesData, cloudSoftwareData] = await Promise.all([
+      const [wagesData, expensesData] = await Promise.all([
         wagesRes.json(),
-        contractorsRes.json(),
-        suppliesRes.json(),
-        cloudSoftwareRes.json()
+        expensesRes.json()
       ]);
 
-      // Transform Airtable data to frontend format
-      const wages = wagesData.records?.map(record => ({
+      // Transform wages data
+      const wages = wagesData.records?.map((record: any) => ({
         id: record.id,
-        employeeName: record.fields['Employee Name'] || '',
-        role: record.fields['Role'] || '',
-        annualSalary: record.fields['Annual Salary'] || 0,
-        rdPercentage: record.fields['R&D Percentage'] || 0,
-        rdAmount: record.fields['R&D Amount'] || 0,
+        employeeName: record.fields.employee_name || '',
+        role: '', // Not in new schema, will need to be handled differently
+        annualSalary: record.fields.salary || 0,
+        rdPercentage: record.fields.rd_percentage || 0,
+        rdAmount: record.fields.qualified_amount || 0,
       })) || [];
 
-      const contractors = contractorsData.records?.map(record => ({
+      // Transform expenses data by type
+      const expenses = expensesData.records || [];
+      const contractors = expenses.filter((record: any) => record.fields.expense_type === 'contractor').map((record: any) => ({
         id: record.id,
-        contractorName: record.fields['Contractor Name'] || '',
-        amount: record.fields['Amount'] || 0,
-        description: record.fields['Description'] || '',
-        qualifiedAmount: record.fields['Qualified Amount'] || 0,
-      })) || [];
+        contractorName: record.fields.expense_type || '',
+        amount: record.fields.amount || 0,
+        description: '', // Not in new schema
+        qualifiedAmount: record.fields.qualified_amount || 0,
+      }));
 
-      const supplies = suppliesData.records?.map(record => ({
+      const supplies = expenses.filter((record: any) => record.fields.expense_type === 'supplies').map((record: any) => ({
         id: record.id,
-        supplyType: record.fields['Supply Type'] || '',
-        amount: record.fields['Amount'] || 0,
-        rdPercentage: record.fields['R&D Percentage'] || 0,
-        rdAmount: record.fields['R&D Amount'] || 0,
-      })) || [];
+        supplyType: record.fields.expense_type || '',
+        amount: record.fields.amount || 0,
+        rdPercentage: record.fields.rd_percentage || 0,
+        rdAmount: record.fields.qualified_amount || 0,
+      }));
 
-      const cloudSoftware = cloudSoftwareData.records?.map(record => ({
+      const cloudSoftware = expenses.filter((record: any) => record.fields.expense_type === 'cloud').map((record: any) => ({
         id: record.id,
-        serviceName: record.fields['Service Name'] || '',
-        monthlyCost: record.fields['Monthly Cost'] || 0,
-        rdPercentage: record.fields['R&D Percentage'] || 0,
-        annualRdAmount: record.fields['Annual R&D Amount'] || 0,
-      })) || [];
+        serviceName: record.fields.expense_type || '',
+        monthlyCost: (record.fields.amount || 0) / 12, // Approximate monthly from annual
+        rdPercentage: record.fields.rd_percentage || 0,
+        annualRdAmount: record.fields.qualified_amount || 0,
+      }));
 
       res.json({ wages, contractors, supplies, cloudSoftware });
     } catch (error) {
@@ -924,133 +960,151 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ error: 'Airtable not configured' });
       }
 
+      // Get customer and company first
+      const customer = await getCustomerByEmail(email);
+      if (!customer) {
+        return res.status(403).json({ error: 'Customer not found' });
+      }
+
+      const company = await getCompanyByCustomerId(customer.id);
+      if (!company) {
+        return res.status(400).json({ error: 'Company not found. Please complete company info first.' });
+      }
+
       // Save each expense type to its respective table
       const savePromises = [];
 
-      // Save wages
+      // Save wages to Wages table
       if (expenses.wages?.length > 0) {
         for (const wage of expenses.wages) {
-          const wageData = {
-            'Email': email,
-            'Employee Name': wage.employeeName,
-            'Role': wage.role,
-            'Annual Salary': wage.annualSalary,
-            'R&D Percentage': wage.rdPercentage,
-            'R&D Amount': wage.rdAmount,
-            'Last Updated': new Date().toISOString(),
-          };
-
-          // Check if record exists (by ID if it's an Airtable ID, otherwise create new)
           if (wage.id && wage.id.startsWith('rec')) {
-            savePromises.push(
-              fetch(`https://api.airtable.com/v0/${baseId}/Wages/${wage.id}`, {
-                method: 'PATCH',
-                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fields: wageData }),
-              })
-            );
+            // Update existing wage
+            const response = await fetch(`https://api.airtable.com/v0/${baseId}/Wages/${wage.id}`, {
+              method: 'PATCH',
+              headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                fields: {
+                  company_id: [company.id],
+                  employee_name: wage.employeeName,
+                  salary: wage.annualSalary,
+                  rd_percentage: wage.rdPercentage,
+                  qualified_amount: wage.rdAmount,
+                }
+              }),
+            });
+            savePromises.push(response);
           } else {
+            // Create new wage
             savePromises.push(
-              fetch(`https://api.airtable.com/v0/${baseId}/Wages`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fields: wageData }),
+              addToAirtableWages({
+                companyId: company.id,
+                employeeName: wage.employeeName,
+                salary: wage.annualSalary,
+                rdPercentage: wage.rdPercentage,
+                qualifiedAmount: wage.rdAmount,
               })
             );
           }
         }
       }
 
-      // Save contractors
+      // Save contractors to Expenses table with expense_type='contractor'
       if (expenses.contractors?.length > 0) {
         for (const contractor of expenses.contractors) {
-          const contractorData = {
-            'Email': email,
-            'Contractor Name': contractor.contractorName,
-            'Amount': contractor.amount,
-            'Description': contractor.description,
-            'Qualified Amount': contractor.qualifiedAmount,
-            'Last Updated': new Date().toISOString(),
-          };
-
           if (contractor.id && contractor.id.startsWith('rec')) {
-            savePromises.push(
-              fetch(`https://api.airtable.com/v0/${baseId}/Contractors/${contractor.id}`, {
-                method: 'PATCH',
-                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fields: contractorData }),
-              })
-            );
+            // Update existing contractor expense
+            const response = await fetch(`https://api.airtable.com/v0/${baseId}/Expenses/${contractor.id}`, {
+              method: 'PATCH',
+              headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                fields: {
+                  company_id: [company.id],
+                  expense_type: 'contractor',
+                  amount: contractor.amount,
+                  rd_percentage: 100, // Contractors are typically 100% (but qualified at 65%)
+                  qualified_amount: contractor.qualifiedAmount,
+                }
+              }),
+            });
+            savePromises.push(response);
           } else {
+            // Create new contractor expense
             savePromises.push(
-              fetch(`https://api.airtable.com/v0/${baseId}/Contractors`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fields: contractorData }),
+              addToAirtableExpenses({
+                companyId: company.id,
+                expenseType: 'contractor',
+                amount: contractor.amount,
+                rdPercentage: 100,
+                qualifiedAmount: contractor.qualifiedAmount,
               })
             );
           }
         }
       }
 
-      // Save supplies
+      // Save supplies to Expenses table with expense_type='supplies'
       if (expenses.supplies?.length > 0) {
         for (const supply of expenses.supplies) {
-          const supplyData = {
-            'Email': email,
-            'Supply Type': supply.supplyType,
-            'Amount': supply.amount,
-            'R&D Percentage': supply.rdPercentage,
-            'R&D Amount': supply.rdAmount,
-            'Last Updated': new Date().toISOString(),
-          };
-
           if (supply.id && supply.id.startsWith('rec')) {
-            savePromises.push(
-              fetch(`https://api.airtable.com/v0/${baseId}/Supplies/${supply.id}`, {
-                method: 'PATCH',
-                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fields: supplyData }),
-              })
-            );
+            // Update existing supply expense
+            const response = await fetch(`https://api.airtable.com/v0/${baseId}/Expenses/${supply.id}`, {
+              method: 'PATCH',
+              headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                fields: {
+                  company_id: [company.id],
+                  expense_type: 'supplies',
+                  amount: supply.amount,
+                  rd_percentage: supply.rdPercentage,
+                  qualified_amount: supply.rdAmount,
+                }
+              }),
+            });
+            savePromises.push(response);
           } else {
+            // Create new supply expense
             savePromises.push(
-              fetch(`https://api.airtable.com/v0/${baseId}/Supplies`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fields: supplyData }),
+              addToAirtableExpenses({
+                companyId: company.id,
+                expenseType: 'supplies',
+                amount: supply.amount,
+                rdPercentage: supply.rdPercentage,
+                qualifiedAmount: supply.rdAmount,
               })
             );
           }
         }
       }
 
-      // Save cloud/software
+      // Save cloud/software to Expenses table with expense_type='cloud'
       if (expenses.cloudSoftware?.length > 0) {
         for (const cloud of expenses.cloudSoftware) {
-          const cloudData = {
-            'Email': email,
-            'Service Name': cloud.serviceName,
-            'Monthly Cost': cloud.monthlyCost,
-            'R&D Percentage': cloud.rdPercentage,
-            'Annual R&D Amount': cloud.annualRdAmount,
-            'Last Updated': new Date().toISOString(),
-          };
-
+          const annualAmount = cloud.monthlyCost * 12;
           if (cloud.id && cloud.id.startsWith('rec')) {
-            savePromises.push(
-              fetch(`https://api.airtable.com/v0/${baseId}/CloudSoftware/${cloud.id}`, {
-                method: 'PATCH',
-                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fields: cloudData }),
-              })
-            );
+            // Update existing cloud expense
+            const response = await fetch(`https://api.airtable.com/v0/${baseId}/Expenses/${cloud.id}`, {
+              method: 'PATCH',
+              headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                fields: {
+                  company_id: [company.id],
+                  expense_type: 'cloud',
+                  amount: annualAmount,
+                  rd_percentage: cloud.rdPercentage,
+                  qualified_amount: cloud.annualRdAmount,
+                }
+              }),
+            });
+            savePromises.push(response);
           } else {
+            // Create new cloud expense
             savePromises.push(
-              fetch(`https://api.airtable.com/v0/${baseId}/CloudSoftware`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fields: cloudData }),
+              addToAirtableExpenses({
+                companyId: company.id,
+                expenseType: 'cloud',
+                amount: annualAmount,
+                rdPercentage: cloud.rdPercentage,
+                qualifiedAmount: cloud.annualRdAmount,
               })
             );
           }
@@ -1151,38 +1205,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ error: 'Airtable not configured' });
       }
 
-      // Fetch all expense data from Airtable tables
-      const [wagesResponse, contractorsResponse, suppliesResponse, cloudResponse] = await Promise.all([
-        fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+      // Get customer and company first
+      const customer = await getCustomerByEmail(email);
+      if (!customer) {
+        return res.status(403).json({ error: 'Customer not found' });
+      }
+
+      const company = await getCompanyByCustomerId(customer.id);
+      if (!company) {
+        return res.json({ error: 'Company not found. Please complete company info first.' });
+      }
+
+      // Fetch expense data from new 6-table schema
+      const [wagesResponse, expensesResponse] = await Promise.all([
+        fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula={company_id}='${company.id}'`, {
           headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
         }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Contractors?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Supplies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/CloudSoftware?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+        fetch(`https://api.airtable.com/v0/${baseId}/Expenses?filterByFormula={company_id}='${company.id}'`, {
           headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
         })
       ]);
 
-      const [wagesData, contractorsData, suppliesData, cloudData] = await Promise.all([
+      const [wagesData, expensesData] = await Promise.all([
         wagesResponse.ok ? wagesResponse.json() : { records: [] },
-        contractorsResponse.ok ? contractorsResponse.json() : { records: [] },
-        suppliesResponse.ok ? suppliesResponse.json() : { records: [] },
-        cloudResponse.ok ? cloudResponse.json() : { records: [] }
+        expensesResponse.ok ? expensesResponse.json() : { records: [] }
       ]);
+
+      // Separate expenses by type
+      const allExpenses = expensesData.records || [];
+      const contractorsData = { records: allExpenses.filter((record: any) => record.fields.expense_type === 'contractor') };
+      const suppliesData = { records: allExpenses.filter((record: any) => record.fields.expense_type === 'supplies') };
+      const cloudData = { records: allExpenses.filter((record: any) => record.fields.expense_type === 'cloud') };
 
       // Calculate qualified wages
       const wageEntries = wagesData.records.map((record: any) => {
-        const annualSalary = parseFloat(record.fields['Annual Salary']) || 0;
-        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 0;
-        const qualifiedAmount = (annualSalary * rdPercentage) / 100;
+        const annualSalary = parseFloat(record.fields.salary) || 0;
+        const rdPercentage = parseFloat(record.fields.rd_percentage) || 0;
+        const qualifiedAmount = parseFloat(record.fields.qualified_amount) || 0;
         
         return {
-          employeeName: record.fields['Employee Name'] || 'Unknown',
-          role: record.fields['Role'] || 'Not specified',
+          employeeName: record.fields.employee_name || 'Unknown',
+          role: record.fields.role || 'Not specified',
           annualSalary,
           rdPercentage,
           qualifiedAmount
@@ -1190,28 +1253,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       const wagesTotal = wageEntries.reduce((sum: number, entry: any) => sum + entry.qualifiedAmount, 0);
 
-      // Calculate qualified contractor expenses (65% of total)
+      // Calculate qualified contractor expenses
       const contractorEntries = contractorsData.records.map((record: any) => {
-        const amount = parseFloat(record.fields['Amount']) || 0;
-        const qualifiedAmount = amount * 0.65;
+        const amount = parseFloat(record.fields.amount) || 0;
+        const qualifiedAmount = parseFloat(record.fields.qualified_amount) || 0;
         
         return {
-          contractorName: record.fields['Contractor Name'] || 'Unknown',
+          contractorName: record.fields.contractor_name || 'Unknown',
           amount,
           qualifiedAmount,
-          description: record.fields['Description'] || 'No description'
+          description: record.fields.description || 'No description'
         };
       });
       const contractorsTotal = contractorEntries.reduce((sum: number, entry: any) => sum + entry.qualifiedAmount, 0);
 
       // Calculate qualified supply expenses
       const supplyEntries = suppliesData.records.map((record: any) => {
-        const amount = parseFloat(record.fields['Amount']) || 0;
-        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 100;
-        const qualifiedAmount = (amount * rdPercentage) / 100;
+        const amount = parseFloat(record.fields.amount) || 0;
+        const rdPercentage = parseFloat(record.fields.rd_percentage) || 100;
+        const qualifiedAmount = parseFloat(record.fields.qualified_amount) || 0;
         
         return {
-          supplyType: record.fields['Supply Type'] || 'Unknown',
+          supplyType: record.fields.supply_type || 'Unknown',
           amount,
           rdPercentage,
           qualifiedAmount
@@ -1221,14 +1284,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Calculate qualified cloud/software expenses
       const cloudEntries = cloudData.records.map((record: any) => {
-        const monthlyCost = parseFloat(record.fields['Monthly Cost']) || 0;
-        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 100;
-        const annualCost = monthlyCost * 12;
-        const qualifiedAmount = (annualCost * rdPercentage) / 100;
+        const amount = parseFloat(record.fields.amount) || 0;
+        const rdPercentage = parseFloat(record.fields.rd_percentage) || 100;
+        const qualifiedAmount = parseFloat(record.fields.qualified_amount) || 0;
         
         return {
-          serviceName: record.fields['Service Name'] || 'Unknown',
-          annualCost,
+          serviceName: record.fields.service_name || 'Unknown',
+          annualCost: amount,
           rdPercentage,
           qualifiedAmount
         };
@@ -1322,10 +1384,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Get company information for state credits and payroll tax offset eligibility
-      const companyResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-        headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-      });
-
+      const customer = await getCustomerByEmail(email);
       let companyInfo = {
         primaryState: '',
         rdStates: [] as string[],
@@ -1333,15 +1392,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         annualRevenue: ''
       };
 
-      if (companyResponse.ok) {
-        const companyData = await companyResponse.json();
-        if (companyData.records.length > 0) {
-          const company = companyData.records[0].fields;
+      if (customer) {
+        const company = await getCompanyByCustomerId(customer.id);
+        if (company) {
           companyInfo = {
-            primaryState: company['Primary State'] || '',
-            rdStates: company['R&D States'] || [],
-            employeeCount: company['Employee Count'] || '',
-            annualRevenue: company['Annual Revenue'] || ''
+            primaryState: company.fields.primary_state || '',
+            rdStates: company.fields.rd_states || [],
+            employeeCount: company.fields.employee_count || '',
+            annualRevenue: company.fields.revenue || ''
           };
         }
       }
@@ -1476,89 +1534,97 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ error: 'Airtable not configured' });
       }
 
-      // Fetch all data in parallel
-      const [companyResponse, submissionsResponse, wagesResponse, contractorsResponse, suppliesResponse, cloudResponse] = await Promise.all([
-        fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+      // Get customer and company first
+      const customer = await getCustomerByEmail(email);
+      if (!customer) {
+        return res.status(403).json({ error: 'Customer not found' });
+      }
+
+      const company = await getCompanyByCustomerId(customer.id);
+      if (!company) {
+        return res.json({ 
+          companyInfo: null,
+          rdActivities: null,
+          expenses: null,
+          completionStatus: { companyInfo: 0, rdActivities: 0, expenses: 0, canGenerate: false }
+        });
+      }
+
+      // Fetch expense data from new 6-table schema
+      const [wagesResponse, expensesResponse] = await Promise.all([
+        fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula={company_id}='${company.id}'`, {
           headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
         }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Submissions?filterByFormula=LOWER({Customer Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Contractors?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Supplies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/CloudSoftware?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+        fetch(`https://api.airtable.com/v0/${baseId}/Expenses?filterByFormula={company_id}='${company.id}'`, {
           headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
         })
       ]);
 
-      // Parse all responses
-      const [companyData, submissionsData, wagesData, contractorsData, suppliesData, cloudData] = await Promise.all([
-        companyResponse.ok ? companyResponse.json() : { records: [] },
-        submissionsResponse.ok ? submissionsResponse.json() : { records: [] },
+      // Parse responses
+      const [wagesData, expensesData] = await Promise.all([
         wagesResponse.ok ? wagesResponse.json() : { records: [] },
-        contractorsResponse.ok ? contractorsResponse.json() : { records: [] },
-        suppliesResponse.ok ? suppliesResponse.json() : { records: [] },
-        cloudResponse.ok ? cloudResponse.json() : { records: [] }
+        expensesResponse.ok ? expensesResponse.json() : { records: [] }
       ]);
 
-      // Process company information
-      const companyInfo = companyData.records.length > 0 ? {
-        companyName: companyData.records[0].fields['Company Name'] || '',
-        ein: companyData.records[0].fields['EIN'] || '',
-        entityType: companyData.records[0].fields['Entity Type'] || '',
-        yearFounded: companyData.records[0].fields['Year Founded']?.toString() || '',
-        annualRevenue: companyData.records[0].fields['Annual Revenue'] || '',
-        employeeCount: companyData.records[0].fields['Employee Count'] || '',
-        rdEmployeeCount: companyData.records[0].fields['R&D Employee Count']?.toString() || '',
-        primaryState: companyData.records[0].fields['Primary State'] || '',
-        rdStates: companyData.records[0].fields['R&D States'] || [],
-        hasMultipleStates: companyData.records[0].fields['Has Multiple States'] || false,
-      } : null;
+      // Separate expenses by type
+      const allExpenses = expensesData.records || [];
+      const contractorsData = { records: allExpenses.filter((record: any) => record.fields.expense_type === 'contractor') };
+      const suppliesData = { records: allExpenses.filter((record: any) => record.fields.expense_type === 'supplies') };
+      const cloudData = { records: allExpenses.filter((record: any) => record.fields.expense_type === 'cloud') };
 
-      // Process R&D activities from submissions
-      const rdActivities = submissionsData.records.length > 0 ? {
-        businessDescription: submissionsData.records[0].fields['Business Description'] || '',
-        rdActivities: submissionsData.records[0].fields['R&D Activities'] || '',
-      } : null;
+      // Process company information using new schema
+      const companyInfo = {
+        companyName: company.fields.company_name || '',
+        ein: company.fields.ein || '',
+        entityType: company.fields.entity_type || '',
+        yearFounded: company.fields.year_founded?.toString() || '',
+        annualRevenue: company.fields.revenue || '',
+        employeeCount: company.fields.employee_count || '',
+        rdEmployeeCount: company.fields.rd_employee_count?.toString() || '',
+        primaryState: company.fields.primary_state || '',
+        rdStates: company.fields.rd_states || [],
+        hasMultipleStates: company.fields.has_multiple_states || false,
+      };
 
-      // Process expenses
+      // Process R&D activities - for now using placeholder data
+      // TODO: Implement R&D activities collection in new schema if needed
+      const rdActivities = {
+        businessDescription: company.fields.business_description || '',
+        rdActivities: company.fields.rd_activities || '',
+      };
+
+      // Process expenses using new schema field names
       const wages = wagesData.records.map((record: any) => ({
-        employeeName: record.fields['Employee Name'] || 'Unknown',
-        role: record.fields['Role'] || 'Not specified',
-        annualSalary: parseFloat(record.fields['Annual Salary']) || 0,
-        rdPercentage: parseFloat(record.fields['R&D Percentage']) || 0,
-        rdAmount: (parseFloat(record.fields['Annual Salary']) || 0) * (parseFloat(record.fields['R&D Percentage']) || 0) / 100
+        employeeName: record.fields.employee_name || 'Unknown',
+        role: record.fields.role || 'Not specified',
+        annualSalary: parseFloat(record.fields.salary) || 0,
+        rdPercentage: parseFloat(record.fields.rd_percentage) || 0,
+        rdAmount: parseFloat(record.fields.qualified_amount) || 0
       }));
 
       const contractors = contractorsData.records.map((record: any) => ({
-        contractorName: record.fields['Contractor Name'] || 'Unknown',
-        amount: parseFloat(record.fields['Amount']) || 0,
-        qualifiedAmount: (parseFloat(record.fields['Amount']) || 0) * 0.65,
-        description: record.fields['Description'] || 'No description'
+        contractorName: record.fields.contractor_name || 'Unknown',
+        amount: parseFloat(record.fields.amount) || 0,
+        qualifiedAmount: parseFloat(record.fields.qualified_amount) || 0,
+        description: record.fields.description || 'No description'
       }));
 
       const supplies = suppliesData.records.map((record: any) => ({
-        supplyType: record.fields['Supply Type'] || 'Unknown',
-        amount: parseFloat(record.fields['Amount']) || 0,
-        rdPercentage: parseFloat(record.fields['R&D Percentage']) || 100,
-        rdAmount: (parseFloat(record.fields['Amount']) || 0) * (parseFloat(record.fields['R&D Percentage']) || 100) / 100
+        supplyType: record.fields.supply_type || 'Unknown',
+        amount: parseFloat(record.fields.amount) || 0,
+        rdPercentage: parseFloat(record.fields.rd_percentage) || 100,
+        rdAmount: parseFloat(record.fields.qualified_amount) || 0
       }));
 
       const cloudSoftware = cloudData.records.map((record: any) => {
-        const monthlyCost = parseFloat(record.fields['Monthly Cost']) || 0;
-        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 100;
+        const amount = parseFloat(record.fields.amount) || 0;
+        const rdPercentage = parseFloat(record.fields.rd_percentage) || 100;
+        const qualifiedAmount = parseFloat(record.fields.qualified_amount) || 0;
         return {
-          serviceName: record.fields['Service Name'] || 'Unknown',
-          annualCost: monthlyCost * 12,
+          serviceName: record.fields.service_name || 'Unknown',
+          annualCost: amount,
           rdPercentage,
-          qualifiedAmount: (monthlyCost * 12 * rdPercentage) / 100
+          qualifiedAmount
         };
       });
 
@@ -1647,79 +1713,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`Document generation requested for ${email}`);
 
-      // Fetch all user data from Airtable to send to Make.com
-      const [customerResponse, companyResponse, submissionsResponse, wagesResponse, contractorsResponse, suppliesResponse, cloudResponse] = await Promise.all([
-        fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+      // Get customer and company first
+      const customer = await getCustomerByEmail(email);
+      if (!customer) {
+        return res.status(403).json({ error: 'Customer not found' });
+      }
+
+      const company = await getCompanyByCustomerId(customer.id);
+      if (!company) {
+        return res.status(400).json({ error: 'Company not found. Please complete company info first.' });
+      }
+
+      // Fetch expense data from new 6-table schema
+      const [wagesResponse, expensesResponse] = await Promise.all([
+        fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula={company_id}='${company.id}'`, {
           headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
         }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Submissions?filterByFormula=LOWER({Customer Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Contractors?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/Supplies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
-          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
-        }),
-        fetch(`https://api.airtable.com/v0/${baseId}/CloudSoftware?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+        fetch(`https://api.airtable.com/v0/${baseId}/Expenses?filterByFormula={company_id}='${company.id}'`, {
           headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
         })
       ]);
 
-      const [customerData, companyData, submissionsData, wagesData, contractorsData, suppliesData, cloudData] = await Promise.all([
-        customerResponse.ok ? customerResponse.json() : { records: [] },
-        companyResponse.ok ? companyResponse.json() : { records: [] },
-        submissionsResponse.ok ? submissionsResponse.json() : { records: [] },
+      const [wagesData, expensesData] = await Promise.all([
         wagesResponse.ok ? wagesResponse.json() : { records: [] },
-        contractorsResponse.ok ? contractorsResponse.json() : { records: [] },
-        suppliesResponse.ok ? suppliesResponse.json() : { records: [] },
-        cloudResponse.ok ? cloudResponse.json() : { records: [] }
+        expensesResponse.ok ? expensesResponse.json() : { records: [] }
       ]);
 
-      // Prepare comprehensive data package for Make.com
-      const customerInfo = customerData.records.length > 0 ? customerData.records[0].fields : {};
-      const companyInfo = companyData.records.length > 0 ? companyData.records[0].fields : {};
-      const submissionInfo = submissionsData.records.length > 0 ? submissionsData.records[0].fields : {};
+      // Separate expenses by type
+      const allExpenses = expensesData.records || [];
+      const contractorsData = { records: allExpenses.filter((record: any) => record.fields.expense_type === 'contractor') };
+      const suppliesData = { records: allExpenses.filter((record: any) => record.fields.expense_type === 'supplies') };
+      const cloudData = { records: allExpenses.filter((record: any) => record.fields.expense_type === 'cloud') };
 
-      // Calculate QRE totals for Make.com
+      // Prepare comprehensive data package for Make.com
+      const customerInfo = customer.fields;
+      const companyInfo = company.fields;
+      const submissionInfo = {}; // TODO: Handle R&D activities from new schema
+
+      // Calculate QRE totals for Make.com using new schema field names
       const wages = wagesData.records.map((record: any) => {
-        const annualSalary = parseFloat(record.fields['Annual Salary']) || 0;
-        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 0;
+        const qualifiedAmount = parseFloat(record.fields.qualified_amount) || 0;
         return {
           ...record.fields,
-          qualifiedAmount: (annualSalary * rdPercentage) / 100
+          qualifiedAmount
         };
       });
 
       const contractors = contractorsData.records.map((record: any) => {
-        const amount = parseFloat(record.fields['Amount']) || 0;
+        const qualifiedAmount = parseFloat(record.fields.qualified_amount) || 0;
         return {
           ...record.fields,
-          qualifiedAmount: amount * 0.65
+          qualifiedAmount
         };
       });
 
       const supplies = suppliesData.records.map((record: any) => {
-        const amount = parseFloat(record.fields['Amount']) || 0;
-        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 100;
+        const qualifiedAmount = parseFloat(record.fields.qualified_amount) || 0;
         return {
           ...record.fields,
-          qualifiedAmount: (amount * rdPercentage) / 100
+          qualifiedAmount
         };
       });
 
       const cloudSoftware = cloudData.records.map((record: any) => {
-        const monthlyCost = parseFloat(record.fields['Monthly Cost']) || 0;
-        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 100;
+        const qualifiedAmount = parseFloat(record.fields.qualified_amount) || 0;
         return {
           ...record.fields,
-          qualifiedAmount: (monthlyCost * 12 * rdPercentage) / 100
+          qualifiedAmount
         };
       });
 
@@ -1736,26 +1796,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         timestamp: new Date().toISOString(),
         customerEmail: email,
         customerInfo: {
-          name: customerInfo['Name'] || '',
-          email: customerInfo['Email'] || email,
-          planType: customerInfo['Plan Type'] || '',
-          totalPaid: customerInfo['Total Paid'] || 0,
-          selectedYears: customerInfo['Selected Years'] || []
+          name: customerInfo.name || '',
+          email: customerInfo.email || email,
+          planType: customerInfo.plan_type || '',
+          accessToken: customerInfo.access_token || '',
+          stripeCustomerId: customerInfo.stripe_customer_id || ''
         },
         companyInfo: {
-          companyName: companyInfo['Company Name'] || '',
-          ein: companyInfo['EIN'] || '',
-          entityType: companyInfo['Entity Type'] || '',
-          yearFounded: companyInfo['Year Founded'] || '',
-          annualRevenue: companyInfo['Annual Revenue'] || '',
-          employeeCount: companyInfo['Employee Count'] || '',
-          rdEmployeeCount: companyInfo['R&D Employee Count'] || '',
-          primaryState: companyInfo['Primary State'] || '',
-          rdStates: companyInfo['R&D States'] || []
+          companyName: companyInfo.company_name || '',
+          ein: companyInfo.ein || '',
+          entityType: companyInfo.entity_type || '',
+          revenue: companyInfo.revenue || '',
+          employeeCount: companyInfo.employee_count || ''
         },
         rdActivities: {
-          businessDescription: submissionInfo['Business Description'] || '',
-          rdActivities: submissionInfo['R&D Activities'] || ''
+          businessDescription: companyInfo.business_description || '',
+          rdActivities: companyInfo.rd_activities || ''
         },
         expenses: {
           wages: wages,

@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Calculator, Info, Users, Package, AlertCircle, ChevronRight, ChevronLeft, Building, Shield, Lock, CheckCircle, Clock, TrendingUp, FileText, Share2, Zap, Calendar, AlertTriangle, Quote, Check, Trophy, DollarSign, Target, ArrowRight } from 'lucide-react';
 
-const CreditCalculator = () => {
+interface CreditCalculatorProps {
+  onResultsReady?: (results: any) => void;
+}
+
+const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) => {
   // State for calculator inputs
   const [formData, setFormData] = useState({
     // Basic info

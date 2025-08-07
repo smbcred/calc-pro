@@ -38,7 +38,7 @@ async function addToAirtableCustomers(data: {
       fields: {
         "Email": data.email,
         "Total Paid": data.total_paid,
-        "Selected Years": [data.selected_years],
+        "Selected Years": data.selected_years.split(','),
         "UUID Token": data.uuid_token,
         "Timestamp": data.timestamp,
       },

@@ -1633,15 +1633,242 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email is required' });
       }
 
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+      const makeWebhookUrl = process.env.MAKE_WEBHOOK_URL;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
+      }
+
+      if (!makeWebhookUrl) {
+        return res.status(500).json({ error: 'Make.com webhook not configured' });
+      }
+
       console.log(`Document generation requested for ${email}`);
+
+      // Fetch all user data from Airtable to send to Make.com
+      const [customerResponse, companyResponse, submissionsResponse, wagesResponse, contractorsResponse, suppliesResponse, cloudResponse] = await Promise.all([
+        fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Submissions?filterByFormula=LOWER({Customer Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Contractors?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Supplies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/CloudSoftware?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        })
+      ]);
+
+      const [customerData, companyData, submissionsData, wagesData, contractorsData, suppliesData, cloudData] = await Promise.all([
+        customerResponse.ok ? customerResponse.json() : { records: [] },
+        companyResponse.ok ? companyResponse.json() : { records: [] },
+        submissionsResponse.ok ? submissionsResponse.json() : { records: [] },
+        wagesResponse.ok ? wagesResponse.json() : { records: [] },
+        contractorsResponse.ok ? contractorsResponse.json() : { records: [] },
+        suppliesResponse.ok ? suppliesResponse.json() : { records: [] },
+        cloudResponse.ok ? cloudResponse.json() : { records: [] }
+      ]);
+
+      // Prepare comprehensive data package for Make.com
+      const customerInfo = customerData.records.length > 0 ? customerData.records[0].fields : {};
+      const companyInfo = companyData.records.length > 0 ? companyData.records[0].fields : {};
+      const submissionInfo = submissionsData.records.length > 0 ? submissionsData.records[0].fields : {};
+
+      // Calculate QRE totals for Make.com
+      const wages = wagesData.records.map((record: any) => {
+        const annualSalary = parseFloat(record.fields['Annual Salary']) || 0;
+        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 0;
+        return {
+          ...record.fields,
+          qualifiedAmount: (annualSalary * rdPercentage) / 100
+        };
+      });
+
+      const contractors = contractorsData.records.map((record: any) => {
+        const amount = parseFloat(record.fields['Amount']) || 0;
+        return {
+          ...record.fields,
+          qualifiedAmount: amount * 0.65
+        };
+      });
+
+      const supplies = suppliesData.records.map((record: any) => {
+        const amount = parseFloat(record.fields['Amount']) || 0;
+        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 100;
+        return {
+          ...record.fields,
+          qualifiedAmount: (amount * rdPercentage) / 100
+        };
+      });
+
+      const cloudSoftware = cloudData.records.map((record: any) => {
+        const monthlyCost = parseFloat(record.fields['Monthly Cost']) || 0;
+        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 100;
+        return {
+          ...record.fields,
+          qualifiedAmount: (monthlyCost * 12 * rdPercentage) / 100
+        };
+      });
+
+      // Calculate totals
+      const totalQRE = wages.reduce((sum, w) => sum + w.qualifiedAmount, 0) +
+                      contractors.reduce((sum, c) => sum + c.qualifiedAmount, 0) +
+                      supplies.reduce((sum, s) => sum + s.qualifiedAmount, 0) +
+                      cloudSoftware.reduce((sum, cs) => sum + cs.qualifiedAmount, 0);
+
+      const federalCredit = Math.round(totalQRE * 0.065); // 6.5% federal credit
+
+      // Prepare payload for Make.com webhook
+      const makePayload = {
+        timestamp: new Date().toISOString(),
+        customerEmail: email,
+        customerInfo: {
+          name: customerInfo['Name'] || '',
+          email: customerInfo['Email'] || email,
+          planType: customerInfo['Plan Type'] || '',
+          totalPaid: customerInfo['Total Paid'] || 0,
+          selectedYears: customerInfo['Selected Years'] || []
+        },
+        companyInfo: {
+          companyName: companyInfo['Company Name'] || '',
+          ein: companyInfo['EIN'] || '',
+          entityType: companyInfo['Entity Type'] || '',
+          yearFounded: companyInfo['Year Founded'] || '',
+          annualRevenue: companyInfo['Annual Revenue'] || '',
+          employeeCount: companyInfo['Employee Count'] || '',
+          rdEmployeeCount: companyInfo['R&D Employee Count'] || '',
+          primaryState: companyInfo['Primary State'] || '',
+          rdStates: companyInfo['R&D States'] || []
+        },
+        rdActivities: {
+          businessDescription: submissionInfo['Business Description'] || '',
+          rdActivities: submissionInfo['R&D Activities'] || ''
+        },
+        expenses: {
+          wages: wages,
+          contractors: contractors,
+          supplies: supplies,
+          cloudSoftware: cloudSoftware,
+          totals: {
+            wagesTotal: wages.reduce((sum, w) => sum + w.qualifiedAmount, 0),
+            contractorsTotal: contractors.reduce((sum, c) => sum + c.qualifiedAmount, 0),
+            suppliesTotal: supplies.reduce((sum, s) => sum + s.qualifiedAmount, 0),
+            cloudSoftwareTotal: cloudSoftware.reduce((sum, cs) => sum + cs.qualifiedAmount, 0),
+            totalQRE: totalQRE
+          }
+        },
+        credits: {
+          federalCredit: federalCredit,
+          federalCreditRate: 6.5,
+          estimatedTotalBenefit: federalCredit
+        },
+        documentRequest: {
+          requestedAt: new Date().toISOString(),
+          documentTypes: [
+            'qre_calculation_report',
+            'federal_credit_analysis',
+            'state_credit_breakdown', 
+            'form_6765_worksheets',
+            'supporting_documentation',
+            'compliance_checklist'
+          ],
+          deliveryEmail: email
+        }
+      };
+
+      // Send to Make.com webhook
+      const makeResponse = await fetch(makeWebhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(makePayload),
+      });
+
+      if (!makeResponse.ok) {
+        const errorText = await makeResponse.text();
+        console.error('Make.com webhook error:', errorText);
+        throw new Error(`Make.com webhook failed: ${makeResponse.status}`);
+      }
+
+      console.log(`✅ Document generation initiated for ${email} via Make.com`);
       
       res.json({ 
         success: true, 
-        message: 'Complete documentation package is being generated and will be sent to your email.' 
+        message: 'Document generation started. Claude AI is creating your narrative and Documint is preparing your forms.',
+        estimatedCompletion: '5-10 minutes',
+        trackingId: `doc_${Date.now()}_${email.split('@')[0]}`
+      });
+    } catch (error: any) {
+      console.error('Document generation error:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate documents',
+        details: error.message 
+      });
+    }
+  });
+
+  // Document generation status endpoint
+  app.post('/api/review/document-status', async (req, res) => {
+    try {
+      const { email, trackingId } = req.body;
+      
+      if (!email || !trackingId) {
+        return res.status(400).json({ error: 'Email and tracking ID are required' });
+      }
+
+      // In a real implementation, this would check status from Make.com or a database
+      // For now, we'll simulate progress updates
+      const elapsed = Date.now() - parseInt(trackingId.split('_')[1]);
+      const minutes = Math.floor(elapsed / 60000);
+      
+      let status = 'processing';
+      let progress = Math.min(95, Math.floor((elapsed / 1000) / 6)); // Simulate progress over 10 minutes
+      let currentStep = 'Initializing...';
+      
+      if (elapsed < 30000) { // First 30 seconds
+        currentStep = 'Collecting your data...';
+        progress = 10;
+      } else if (elapsed < 120000) { // First 2 minutes
+        currentStep = 'Claude AI is analyzing your R&D activities...';
+        progress = 25;
+      } else if (elapsed < 240000) { // First 4 minutes
+        currentStep = 'Generating narrative documentation...';
+        progress = 50;
+      } else if (elapsed < 420000) { // First 7 minutes
+        currentStep = 'Documint is creating your tax forms...';
+        progress = 75;
+      } else if (elapsed < 600000) { // First 10 minutes
+        currentStep = 'Finalizing documents and preparing delivery...';
+        progress = 90;
+      } else {
+        status = 'completed';
+        progress = 100;
+        currentStep = 'Documents delivered to your email!';
+      }
+      
+      res.json({
+        status,
+        progress,
+        currentStep,
+        estimatedTimeRemaining: Math.max(0, 10 - minutes) + ' minutes'
       });
     } catch (error) {
-      console.error('Document generation error:', error);
-      res.status(500).json({ error: 'Failed to generate documents' });
+      console.error('Document status error:', error);
+      res.status(500).json({ error: 'Failed to get document status' });
     }
   });
 

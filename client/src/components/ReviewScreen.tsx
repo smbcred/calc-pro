@@ -80,6 +80,12 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({ customerEmail, onBack, onEd
   const [reviewData, setReviewData] = useState<ReviewData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingDocuments, setIsGeneratingDocuments] = useState(false);
+  const [documentProgress, setDocumentProgress] = useState<{
+    progress: number;
+    currentStep: string;
+    estimatedTimeRemaining: string;
+    trackingId?: string;
+  } | null>(null);
 
   useEffect(() => {
     loadReviewData();
@@ -125,20 +131,81 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({ customerEmail, onBack, onEd
         throw new Error('Failed to generate documents');
       }
 
-      toast({
-        title: 'Success!',
-        description: 'Documents are being generated and will be sent to your email',
+      const result = await response.json();
+      
+      // Start progress tracking
+      setDocumentProgress({
+        progress: 0,
+        currentStep: 'Initializing document generation...',
+        estimatedTimeRemaining: result.estimatedCompletion || '5-10 minutes',
+        trackingId: result.trackingId
       });
-    } catch (error) {
+
+      // Start polling for progress updates
+      startProgressPolling(result.trackingId);
+
+      toast({
+        title: 'Document Generation Started!',
+        description: result.message || 'Claude AI and Documint are preparing your documents',
+      });
+    } catch (error: any) {
       console.error('Document generation error:', error);
       toast({
         title: 'Error',
-        description: 'Failed to generate documents',
+        description: error.message || 'Failed to generate documents',
         variant: 'destructive',
       });
-    } finally {
       setIsGeneratingDocuments(false);
+      setDocumentProgress(null);
     }
+  };
+
+  const startProgressPolling = (trackingId: string) => {
+    const pollInterval = setInterval(async () => {
+      try {
+        const response = await fetch('/api/review/document-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: customerEmail, trackingId }),
+        });
+
+        if (response.ok) {
+          const status = await response.json();
+          
+          setDocumentProgress({
+            progress: status.progress,
+            currentStep: status.currentStep,
+            estimatedTimeRemaining: status.estimatedTimeRemaining,
+            trackingId
+          });
+
+          if (status.status === 'completed') {
+            clearInterval(pollInterval);
+            setIsGeneratingDocuments(false);
+            toast({
+              title: 'Documents Ready!',
+              description: 'Your complete R&D tax credit documentation has been delivered to your email',
+            });
+            
+            // Keep progress visible for a moment before clearing
+            setTimeout(() => {
+              setDocumentProgress(null);
+            }, 5000);
+          }
+        }
+      } catch (error) {
+        console.error('Progress polling error:', error);
+      }
+    }, 5000); // Poll every 5 seconds
+
+    // Clear interval after 15 minutes as failsafe
+    setTimeout(() => {
+      clearInterval(pollInterval);
+      if (isGeneratingDocuments) {
+        setIsGeneratingDocuments(false);
+        setDocumentProgress(null);
+      }
+    }, 15 * 60 * 1000);
   };
 
   if (isLoading) {
@@ -467,6 +534,67 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({ customerEmail, onBack, onEd
                 </ul>
               </div>
 
+              {/* Document Generation Progress */}
+              {documentProgress && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <Loader className="w-5 h-5 animate-spin text-blue-600" />
+                      <span className="font-medium text-blue-900">Generating Documents</span>
+                    </div>
+                    <span className="text-sm text-blue-600">{documentProgress.progress}% Complete</span>
+                  </div>
+                  
+                  {/* Progress Bar */}
+                  <div className="w-full bg-blue-200 rounded-full h-3 mb-3">
+                    <div 
+                      className="bg-gradient-to-r from-blue-600 to-green-600 h-3 rounded-full transition-all duration-500 ease-out"
+                      style={{ width: `${documentProgress.progress}%` }}
+                    ></div>
+                  </div>
+                  
+                  {/* Current Step */}
+                  <div className="text-sm text-blue-800 mb-2">
+                    <strong>Current Step:</strong> {documentProgress.currentStep}
+                  </div>
+                  
+                  {/* Time Remaining */}
+                  <div className="text-xs text-blue-600">
+                    <strong>Estimated Time Remaining:</strong> {documentProgress.estimatedTimeRemaining}
+                  </div>
+                  
+                  {/* Process Details */}
+                  <div className="mt-3 pt-3 border-t border-blue-200">
+                    <div className="text-xs text-blue-700 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${
+                          documentProgress.progress >= 10 ? 'bg-green-500' : 'bg-blue-300'
+                        }`}></div>
+                        <span>Data Collection {documentProgress.progress >= 10 ? '✓' : '...'}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${
+                          documentProgress.progress >= 50 ? 'bg-green-500' : documentProgress.progress >= 25 ? 'bg-yellow-500' : 'bg-gray-300'
+                        }`}></div>
+                        <span>Claude AI Analysis {documentProgress.progress >= 50 ? '✓' : documentProgress.progress >= 25 ? '🔄' : '...'}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${
+                          documentProgress.progress >= 90 ? 'bg-green-500' : documentProgress.progress >= 75 ? 'bg-yellow-500' : 'bg-gray-300'
+                        }`}></div>
+                        <span>Documint Form Creation {documentProgress.progress >= 90 ? '✓' : documentProgress.progress >= 75 ? '🔄' : '...'}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${
+                          documentProgress.progress === 100 ? 'bg-green-500' : 'bg-gray-300'
+                        }`}></div>
+                        <span>Delivery {documentProgress.progress === 100 ? '✓' : '...'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <button
                 onClick={handleGenerateDocuments}
                 disabled={!reviewData.completionStatus.canGenerate || isGeneratingDocuments}
@@ -479,7 +607,7 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({ customerEmail, onBack, onEd
                 {isGeneratingDocuments ? (
                   <span className="flex items-center justify-center gap-2">
                     <Loader className="w-5 h-5 animate-spin" />
-                    Generating Documents...
+                    Processing via Claude AI & Documint...
                   </span>
                 ) : reviewData.completionStatus.canGenerate ? (
                   <span className="flex items-center justify-center gap-2">

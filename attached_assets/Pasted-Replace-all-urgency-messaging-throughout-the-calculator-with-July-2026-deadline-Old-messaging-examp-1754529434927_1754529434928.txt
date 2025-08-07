@@ -1,0 +1,60 @@
+Replace all urgency messaging throughout the calculator with July 2026 deadline:
+Old messaging examples to replace:
+
+"Credits expire after 3 years"
+"2022 credits expire soon"
+"Limited time"
+"Don't miss out"
+
+New messaging to use:
+
+"Claim previous years before July 2026 deadline"
+"July 2026 deadline to amend 2022-2024 returns"
+"Limited time: July 2026 amendment deadline"
+
+Step 4 Results Page Updates
+1. Add explanation for Credit vs Deduction boxes:
+Below the three colored boxes showing Federal Credit, Tax Deduction, and Total Benefits, add:
+What's the difference?
+- Federal Credit: Direct dollar-for-dollar reduction in taxes owed
+- Tax Deduction: Reduces taxable income (saves ~30% of amount)
+- Total Benefits: Combined value of both credit and deduction
+2. Update multi-year messaging:
+Change any existing messaging to:
+💡 Claim Previous Years Too
+You have until July 2026 to amend returns for 2022-2024.
+Add previous years at checkout for just $297 each.
+Checkout/Cart Page Updates
+1. Add deadline callout box:
+⏰ July 2026 Amendment Deadline
+You can claim R&D credits for previous years by amending your returns.
+After July 2026, you'll lose the ability to claim 2022 credits forever.
+Don't leave money on the table.
+2. Update year selection section messaging:
+Replace existing benefits text with:
+Why add previous years?
+- July 2026 deadline to amend 2022-2024 returns
+- Most businesses using AI qualify for multiple years
+- Same documentation covers all years
+- Just $297 per additional year
+Global Messaging Updates
+Throughout the calculator, use these consistent messages:
+
+"July 2026 deadline for previous years"
+"Amend 2022-2024 returns before July 2026"
+"Time-sensitive: July 2026 amendment deadline"
+
+Remove or replace:
+
+Generic "expires soon" language
+"3-year expiration" references without context
+Overly complex deadline explanations
+
+Keep It Simple
+
+Don't explain amendment process details
+Don't discuss why July 2026 specifically
+Focus on the deadline and the opportunity
+Use "July 2026" consistently (not "07/31/26" or other formats)
+
+This creates clear, consistent deadline messaging that drives urgency without overwhelming users with tax complexity.

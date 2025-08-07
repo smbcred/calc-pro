@@ -584,8 +584,8 @@ const CreditCalculator = () => {
         <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-3 mb-4 flex items-start gap-2">
           <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
           <div className="text-sm text-yellow-900">
-            <strong>Amendment Opportunity:</strong> You can still amend your {lastYear} return — but time is running out. 
-            Recent tax law changes give you a one-time opportunity to claim retroactive deductions.
+            <strong>Amendment Opportunity:</strong> Claim previous years before July 2026 deadline. 
+            You can amend 2022-2024 returns to claim R&D credits.
           </div>
         </div>
       );
@@ -794,7 +794,7 @@ const CreditCalculator = () => {
             <ul className="text-sm text-yellow-700 space-y-1">
               <li>• Get 15-25% multi-year discount</li>
               <li>• Maximize total recovery amount</li>
-              <li>• Take advantage of new tax law deadline</li>
+              <li>• Claim before July 2026 amendment deadline</li>
             </ul>
           </div>
         )}
@@ -1963,7 +1963,7 @@ const CreditCalculator = () => {
                       <div>
                         <h5 className="font-bold text-gray-900 mb-2">"What if I already filed my taxes?"</h5>
                         <p className="text-sm text-gray-700">
-                          <strong className="text-green-600">You can amend returns for 3 years.</strong> We help you file amendments to claim missed credits from previous years.
+                          <strong className="text-green-600">July 2026 deadline for previous years.</strong> We help you file amendments to claim missed credits from 2022-2024.
                         </p>
                       </div>
                     </div>
@@ -1977,7 +1977,7 @@ const CreditCalculator = () => {
                       <div>
                         <h5 className="font-bold text-gray-900 mb-2">"Can I claim past years I missed?"</h5>
                         <p className="text-sm text-gray-700">
-                          <strong className="text-green-600">Yes! Go back 3 years.</strong> Many clients recover $50K+ in missed credits from previous years of AI and automation work.
+                          <strong className="text-green-600">Yes! Amend 2022-2024 returns before July 2026.</strong> Many clients recover $50K+ in missed credits from previous years of AI and automation work.
                         </p>
                       </div>
                     </div>
@@ -2265,6 +2265,25 @@ const CreditCalculator = () => {
                     </div>
                   </div>
 
+                  {/* Explanation of Credit vs Deduction */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-6">
+                    <h4 className="text-lg font-bold text-gray-900 mb-4 text-center">What's the difference?</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div className="text-center">
+                        <div className="font-bold text-blue-600 mb-2">Federal Credit</div>
+                        <div className="text-gray-700">Direct dollar-for-dollar reduction in taxes owed</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-bold text-green-600 mb-2">Tax Deduction</div>
+                        <div className="text-gray-700">Reduces taxable income (saves ~30% of amount)</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-bold text-purple-600 mb-2">Total Benefits</div>
+                        <div className="text-gray-700">Combined value of both credit and deduction</div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Average Per Year Estimate - Always show when there are results */}
                   {formData.selectedYears && formData.selectedYears.length > 0 && (
                     <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-6">
@@ -2493,10 +2512,10 @@ const CreditCalculator = () => {
                       <div className="text-center">
                         <p className="text-gray-600 mb-4">Complete your filing for {formData.selectedYears?.[0] || '2025'}</p>
                         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                          <h4 className="font-bold text-yellow-800 mb-2">💡 Additional Years Available</h4>
+                          <h4 className="font-bold text-yellow-800 mb-2">💡 Claim Previous Years Too</h4>
                           <ul className="text-sm text-yellow-700 space-y-1">
-                            <li>• Claim credits for up to 3 previous years at checkout</li>
-                            <li>• Additional years just $297 each</li>
+                            <li>• You have until July 2026 to amend returns for 2022-2024</li>
+                            <li>• Add previous years at checkout for just $297 each</li>
                             <li>• Most businesses qualify for 2+ years of credits</li>
                           </ul>
                         </div>
@@ -2509,7 +2528,7 @@ const CreditCalculator = () => {
                       <div className="mb-4 text-center">
                         <div className="inline-flex items-center gap-2 bg-red-100 border border-red-300 rounded-full px-4 py-2 text-red-800">
                           <Clock className="w-4 h-4" />
-                          <span className="font-bold text-sm">⚡ Limited Time: File by Dec 31st or lose these credits forever</span>
+                          <span className="font-bold text-sm">⚡ Limited time: July 2026 amendment deadline</span>
                         </div>
                       </div>
 
@@ -2924,7 +2943,7 @@ const CreditCalculator = () => {
                   <div className="mt-8 bg-gradient-to-r from-red-100 to-orange-100 rounded-xl p-4 text-center border border-red-300">
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <Clock className="w-5 h-5 text-red-600" />
-                      <span className="font-bold text-red-800">Don't wait - credits expire Dec 31st!</span>
+                      <span className="font-bold text-red-800">Time-sensitive: July 2026 amendment deadline</span>
                     </div>
                     <div className="text-sm text-red-700">Every day you delay is money left on the table</div>
                   </div>
@@ -3278,7 +3297,7 @@ const CreditCalculator = () => {
               <div className="bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 rounded-2xl p-8 text-white text-center shadow-2xl">
                 <div className="mb-4">
                   <div className="text-3xl font-black mb-2">⏰ TIME IS RUNNING OUT</div>
-                  <div className="text-xl font-bold mb-4">Credits expire December 31st - Don't lose {formatCurrency(results.totalBenefit)}!</div>
+                  <div className="text-xl font-bold mb-4">July 2026 deadline for previous years - Don't lose {formatCurrency(results.totalBenefit)}!</div>
                   <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
                     <div className="text-yellow-200 text-sm font-medium mb-2">Your Tax Credit Summary:</div>
                     <div className="text-4xl font-black text-white mb-2">{formatCurrency(results.totalBenefit)}</div>

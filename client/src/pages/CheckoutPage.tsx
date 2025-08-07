@@ -117,6 +117,18 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
           </div>
         </div>
 
+        {/* July 2026 Deadline Callout */}
+        <div className="bg-orange-50 border-2 border-orange-200 rounded-2xl p-6 mb-8">
+          <div className="text-center">
+            <h3 className="text-xl font-bold text-orange-800 mb-2">⏰ July 2026 Amendment Deadline</h3>
+            <p className="text-orange-700 mb-3">
+              You can claim R&D credits for previous years by amending your returns.
+              After July 2026, you'll lose the ability to claim 2022 credits forever.
+            </p>
+            <p className="text-orange-800 font-semibold">Don't leave money on the table.</p>
+          </div>
+        </div>
+
         {/* Year Selection Section */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-8 mb-8">
           <div className="text-center mb-6">
@@ -168,10 +180,10 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
           <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
             <h4 className="font-bold text-yellow-800 mb-2">Why add previous years?</h4>
             <ul className="text-sm text-yellow-700 space-y-1">
-              <li>• Most businesses using ChatGPT and AI tools qualify for 2+ years</li>
-              <li>• Same documentation effort covers all years</li>
-              <li>• Credits expire after 3 years - don't miss out</li>
-              <li>• Multi-year discount already applied</li>
+              <li>• July 2026 deadline to amend 2022-2024 returns</li>
+              <li>• Most businesses using AI qualify for multiple years</li>
+              <li>• Same documentation covers all years</li>
+              <li>• Just $297 per additional year</li>
             </ul>
           </div>
         </div>

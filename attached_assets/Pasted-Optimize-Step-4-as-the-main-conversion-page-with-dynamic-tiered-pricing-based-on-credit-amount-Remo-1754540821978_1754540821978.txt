@@ -1,0 +1,126 @@
+Optimize Step 4 as the main conversion page with dynamic tiered pricing based on credit amount. Remove all guarantees and audit defense language.
+
+=== PRICING STRUCTURE (DYNAMIC) ===
+Base price changes based on their calculated credit:
+- Under $10K: $500
+- $10K-$50K: $750  
+- $50K-$100K: $1,000
+- Over $100K: $1,500
+Additional years: Always $297 each
+
+=== SECTION 1: THE BIG REVEAL ===
+"Your [YEAR] R&D Tax Credit Calculation"
+(Pull year from Step 1 selection)
+
+$37,538
+Your Federal Tax Credit
+
+"Based on your qualifying AI and automation expenses"
+[See calculation breakdown]
+
+=== SECTION 2: THE OFFER ===
+"Your Complete R&D Tax Credit Filing Package"
+
+What's Included:
+✓ IRS Form 6765 - Complete and ready to file
+✓ Supporting documentation package
+✓ Detailed expense breakdown
+✓ CPA coordination letter
+✓ Step-by-step filing instructions
+✓ Technical narratives for your activities
+
+Your Investment: $[DYNAMIC PRICE]
+(In this example: $750 because credit is $37,538)
+
+[Generate My Filing Package →]
+
+=== SECTION 3: DIY COMPARISON ===
+Keep existing comparison - it's excellent
+No changes needed here
+
+=== SECTION 4: MULTI-YEAR OPPORTUNITY ===
+"Claim Additional Years"
+
+Based on your [YEAR] activities, you likely qualify for:
+☑ [YEAR]: $37,538 (included - $750)
+☐ [YEAR-1]: ~$34,000 (add for $297)
+☐ [YEAR-2]: ~$31,000 (add for $297)
+━━━━━━━━━━━━━━━━━━━━━━━
+Potential Total: ~$102,000
+
+"July 2026 deadline for amending 2022-2024 returns"
+
+[Continue with [YEAR] Only - $750]
+[Add All Available Years - $1,344]
+
+=== SECTION 5: WHAT YOU GET ===
+"Professional Documentation Package Includes:"
+
+IRS Forms:
+- Form 6765 with all schedules
+- State forms (if applicable)
+- Amendment forms for prior years
+
+Supporting Documents:
+- Technical narrative explaining R&D activities
+- Expense qualification worksheets
+- Time allocation documentation
+- Four-part test compliance memo
+
+CPA Resources:
+- Cover letter for your tax preparer
+- R&D credit explanation sheet
+- Filing instructions
+
+"Download complete package within 24-48 hours"
+
+=== SECTION 6: SUCCESS METRICS ===
+"Join 500+ Businesses Who've Claimed Their Credits"
+
+$45K - Average credit claimed
+48hrs - Document turnaround
+$23M - Total credits processed
+
+=== SECTION 7: FINAL CTA ===
+"Ready to Claim Your $37,538 Credit?"
+
+[Generate Filing Package - $750]
+
+"✓ Secure checkout ✓ Download in 24-48 hours"
+
+Questions? support@smbtaxcredits.com
+
+=== PRICING DISPLAY LOGIC ===
+Always show their specific price based on their credit:
+- Never show price ranges
+- Never show "starting at" pricing
+- Display exact amount: "Your Investment: $[PRICE]"
+
+Example for different credit amounts:
+- $8,000 credit → "$500 investment"
+- $37,538 credit → "$750 investment"
+- $75,000 credit → "$1,000 investment"
+- $125,000 credit → "$1,500 investment"
+
+=== WHAT TO REMOVE ===
+- Any mention of guarantees
+- Audit defense language
+- Money-back promises
+- Fake phone numbers
+- Generic price ranges
+- "No hidden fees" (implies distrust)
+
+=== TRUST BUILDING WITHOUT GUARANTEES ===
+Instead of guarantees, use:
+- "IRS-compliant methodology"
+- "Based on Section 41 regulations"
+- "Professional documentation"
+- "500+ successful filings"
+- Actual success metrics
+
+=== DYNAMIC ELEMENTS ===
+These should all pull from user's data:
+- [YEAR] from Step 1 selection
+- Credit amount from calculation
+- Price based on credit tier
+- Available years based on current year

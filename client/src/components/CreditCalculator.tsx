@@ -2125,45 +2125,83 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
             </div>
           </div>
           
-          {/* Enhanced Footer with Better Spacing */}
-          <div className="text-center mt-12 space-y-6">
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl px-8 py-5 inline-flex flex-wrap items-center justify-center gap-8 text-sm text-gray-600 border border-white/50 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <Shield className="w-4 h-4 text-green-600" />
+          {/* Enhanced Footer - Same as Landing Page */}
+          <footer className="bg-gray-900 text-white py-16 mt-12 rounded-3xl">
+            <div className="max-w-6xl mx-auto px-4">
+              <div className="text-center mb-12">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-green-600 rounded-xl flex items-center justify-center">
+                    <Calculator className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-2xl font-bold">SMBTaxCredits.com</span>
                 </div>
-                <span className="font-medium">SSL Secured</span>
+                <p className="text-gray-400 max-w-2xl mx-auto">
+                  The trusted platform for small and medium businesses to claim R&D tax credits. 
+                  We've helped 500+ businesses recover millions in credits they didn't know they were owed.
+                </p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Lock className="w-4 h-4 text-blue-600" />
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div>
+                  <h4 className="font-semibold mb-4">Services</h4>
+                  <ul className="space-y-2 text-gray-400">
+                    <li><a href="/calculator" className="hover:text-white">R&D Credit Calculator</a></li>
+                    <li><a href="#" className="hover:text-white">Document Preparation</a></li>
+                    <li><a href="#" className="hover:text-white">Multi-Year Claims</a></li>
+                    <li><a href="#" className="hover:text-white">Amendment Services</a></li>
+                  </ul>
                 </div>
-                <span className="font-medium">GDPR Compliant</span>
+                
+                <div>
+                  <h4 className="font-semibold mb-4">Resources</h4>
+                  <ul className="space-y-2 text-gray-400">
+                    <li><a href="#" className="hover:text-white">AI Qualification Guide</a></li>
+                    <li><a href="#" className="hover:text-white">IRS Requirements</a></li>
+                    <li><a href="#" className="hover:text-white">Case Studies</a></li>
+                    <li><a href="#" className="hover:text-white">FAQ</a></li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold mb-4">Support</h4>
+                  <ul className="space-y-2 text-gray-400">
+                    <li><a href="#" className="hover:text-white">Live Chat</a></li>
+                    <li><a href="#" className="hover:text-white">Contact Us</a></li>
+                    <li><a href="#" className="hover:text-white">Schedule Consultation</a></li>
+                    <li><a href="#" className="hover:text-white">Technical Support</a></li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold mb-4">Company</h4>
+                  <ul className="space-y-2 text-gray-400">
+                    <li><a href="#" className="hover:text-white">About Us</a></li>
+                    <li><a href="#" className="hover:text-white">Privacy Policy</a></li>
+                    <li><a href="#" className="hover:text-white">Terms of Service</a></li>
+                    <li><a href="#" className="hover:text-white">Security</a></li>
+                  </ul>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                  <CheckCircle className="w-4 h-4 text-purple-600" />
+
+              <div className="border-t border-gray-800 pt-8">
+                <div className="flex flex-col md:flex-row items-center justify-between">
+                  <div className="text-gray-400 text-sm mb-4 md:mb-0">
+                    © 2024 SMBTaxCredits.com. All rights reserved. We help businesses claim legitimate R&D tax credits.
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-gray-400">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-green-500" />
+                      <span>Secure & Compliant</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-blue-500" />
+                      <span>IRS Approved Methods</span>
+                    </div>
+                  </div>
                 </div>
-                <span className="font-medium">IRS Approved</span>
               </div>
             </div>
-            
-            <div className="text-sm text-gray-500">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <div className="w-5 h-5 bg-gradient-to-r from-blue-600 to-green-600 rounded flex items-center justify-center">
-                  <Calculator className="w-3 h-3 text-white" />
-                </div>
-                <span className="font-bold text-blue-600">SMBTaxCredits.com</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Terms</a>
-                <span>·</span>
-                <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Privacy</a>
-                <span>·</span>
-                <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Contact</a>
-              </div>
-            </div>
-          </div>
+          </footer>
         </div>
       </div>
     </div>

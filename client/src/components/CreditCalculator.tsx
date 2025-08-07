@@ -788,7 +788,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
       const yearInt = parseInt(year);
       const yearQRE = qres.yearlyQREs[year]?.total || 0;
 
-      const creditRate = 0.14;
+      const creditRate = 0.20; // 20% federal R&D tax credit rate
       const baseAmount = 0;
       const creditable = Math.max(0, yearQRE - baseAmount);
       let federalCredit = creditable * creditRate;
@@ -1230,14 +1230,42 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                 <div className="text-center">
                   <div className="text-sm text-gray-600 mb-1">{currentYear} qualifying expenses so far</div>
                   <div className="text-2xl font-bold text-green-600">
-                    {formatCurrency(
-                      (safeParseFloat(yearlyData[currentYear]?.w2Wages) || 0) +
-                      (safeParseFloat(yearlyData[currentYear]?.contractorExpenses) || 0) +
-                      (safeParseFloat(yearlyData[currentYear]?.supplies) || 0)
-                    )}
+                    {(() => {
+                      const data = yearlyData[currentYear] || {};
+                      const wages = safeParseFloat(data.w2Wages, 0);
+                      const contractors = safeParseFloat(data.contractorCosts, 0);
+                      const cloud = safeParseFloat(data.cloudCosts, 0);
+                      const software = safeParseFloat(data.softwareLicenses, 0);
+                      const supplies = safeParseFloat(data.supplies, 0);
+                      
+                      const wagePercent = safeParsePercent(data.w2Percentage, 30);
+                      const contractorPercent = safeParsePercent(data.contractorPercentage, 50);
+                      
+                      const qualifiedWages = wages * wagePercent;
+                      const qualifiedContractors = contractors * contractorPercent * 0.65;
+                      const totalQRE = qualifiedWages + qualifiedContractors + cloud + software + supplies;
+                      
+                      return formatCurrency(totalQRE);
+                    })()}
                   </div>
                   <div className="text-xs text-gray-500">
-                    Estimated {currentYear} credit: ~{formatCurrency(((safeParseFloat(yearlyData[currentYear]?.w2Wages) || 0) + (safeParseFloat(yearlyData[currentYear]?.contractorExpenses) || 0) + (safeParseFloat(yearlyData[currentYear]?.supplies) || 0)) * 0.20)}
+                    Estimated {currentYear} credit: ~{(() => {
+                      const data = yearlyData[currentYear] || {};
+                      const wages = safeParseFloat(data.w2Wages, 0);
+                      const contractors = safeParseFloat(data.contractorCosts, 0);
+                      const cloud = safeParseFloat(data.cloudCosts, 0);
+                      const software = safeParseFloat(data.softwareLicenses, 0);
+                      const supplies = safeParseFloat(data.supplies, 0);
+                      
+                      const wagePercent = safeParsePercent(data.w2Percentage, 30);
+                      const contractorPercent = safeParsePercent(data.contractorPercentage, 50);
+                      
+                      const qualifiedWages = wages * wagePercent;
+                      const qualifiedContractors = contractors * contractorPercent * 0.65;
+                      const totalQRE = qualifiedWages + qualifiedContractors + cloud + software + supplies;
+                      
+                      return formatCurrency(totalQRE * 0.20); // 20% federal R&D credit rate
+                    })()}
                     {currentYear !== '2024' && <span className="ml-2 text-orange-500">(Amendment required)</span>}
                   </div>
                 </div>
@@ -1408,7 +1436,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                       </div>
                     </div>
                     <p className="text-xs text-gray-600 mt-2">
-                      = {formatCurrency(safeParseFloat(yearlyData[currentYear]?.contractorCosts) * safeParsePercent(yearlyData[currentYear]?.contractorPercentage, 50) * 0.65)} qualified (65% of allocated costs per IRS rules)
+                      = {formatCurrency(safeParseFloat(yearlyData[currentYear]?.contractorCosts) * safeParsePercent(yearlyData[currentYear]?.contractorPercentage, 50) * 0.65)} qualified (65% of allocated costs per IRS Section 41)
                     </p>
                   </div>
                 )}

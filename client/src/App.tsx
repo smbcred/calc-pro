@@ -4,6 +4,8 @@ import CreditCalculator from './components/CreditCalculator';
 import CheckoutPage from './pages/CheckoutPage';
 import SuccessPage from './pages/SuccessPage';
 import IntakePage from './pages/IntakePage';
+import LoginPage from './pages/LoginPage';
+import GatedIntakePortal from './pages/GatedIntakePortal';
 import { useState } from 'react';
 
 function App() {
@@ -26,6 +28,12 @@ function App() {
         </Route>
         <Route path="/intake">
           <IntakePage />
+        </Route>
+        <Route path="/login">
+          <LoginPage />
+        </Route>
+        <Route path="/intake-portal">
+          <GatedIntakePortal />
         </Route>
         <Route>
           {/* 404 fallback */}

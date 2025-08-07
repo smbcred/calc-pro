@@ -3,10 +3,34 @@ import { pgTable, text, varchar, integer, timestamp, jsonb } from "drizzle-orm/p
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Authentication users table
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+});
+
+// Customer tracking for paid users
+export const customers = pgTable("customers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull().unique(),
+  hasAccess: integer("has_access").default(0), // 1 if paid, 0 if not
+  stripeSessionId: text("stripe_session_id"), // Track payment session
+  totalPaid: integer("total_paid").default(0),
+  selectedYears: jsonb("selected_years"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Intake submissions tracking
+export const intakeSubmissions = pgTable("intake_submissions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  customerId: varchar("customer_id").references(() => customers.id).notNull(),
+  formData: jsonb("form_data").notNull(),
+  submissionStatus: text("submission_status").default("submitted"), // submitted, reviewed, completed
+  airtableRecordId: text("airtable_record_id"), // Track Airtable record
+  submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const calculations = pgTable("calculations", {
@@ -21,17 +45,38 @@ export const calculations = pgTable("calculations", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Schema exports for users
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
 });
 
+// Schema exports for customers
+export const insertCustomerSchema = createInsertSchema(customers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Schema exports for intake submissions
+export const insertIntakeSubmissionSchema = createInsertSchema(intakeSubmissions).omit({
+  id: true,
+  submittedAt: true,
+  updatedAt: true,
+});
+
+// Schema exports for calculations
 export const insertCalculationSchema = createInsertSchema(calculations).omit({
   id: true,
   createdAt: true,
 });
 
+// Type exports
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type InsertCustomer = z.infer<typeof insertCustomerSchema>;
+export type Customer = typeof customers.$inferSelect;
+export type InsertIntakeSubmission = z.infer<typeof insertIntakeSubmissionSchema>;
+export type IntakeSubmission = typeof intakeSubmissions.$inferSelect;
 export type InsertCalculation = z.infer<typeof insertCalculationSchema>;
 export type SelectCalculation = typeof calculations.$inferSelect;

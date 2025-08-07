@@ -13,6 +13,65 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 } as any);
 
 // Airtable helper functions
+async function addToAirtableSubmissions(data: {
+  customerEmail: string;
+  entityName: string;
+  entityType: string;
+  taxId: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  businessDescription: string;
+  rdActivities: string;
+  totalWages: number;
+  contractorCosts: number;
+  supplyCosts: number;
+  otherExpenses: number;
+}) {
+  const airtableToken = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
+
+  if (!airtableToken || !baseId) {
+    console.error('Missing Airtable credentials');
+    throw new Error('Airtable credentials not configured');
+  }
+
+  const response = await fetch(`https://api.airtable.com/v0/${baseId}/Submissions`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${airtableToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      fields: {
+        "Customer Email": data.customerEmail,
+        "Entity Name": data.entityName,
+        "Entity Type": data.entityType,
+        "Tax ID": data.taxId,
+        "Contact Name": data.contactName,
+        "Contact Email": data.contactEmail,
+        "Contact Phone": data.contactPhone,
+        "Business Description": data.businessDescription,
+        "R&D Activities": data.rdActivities,
+        "Total Wages": data.totalWages,
+        "Contractor Costs": data.contractorCosts,
+        "Supply Costs": data.supplyCosts,
+        "Other Expenses": data.otherExpenses,
+        "Submission Date": new Date().toISOString().split('T')[0],
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    console.error('Airtable submission error:', error);
+    throw new Error('Failed to submit to Airtable');
+  }
+
+  const result = await response.json();
+  return result.id;
+}
+
 async function addToAirtableCustomers(data: {
   email: string;
   total_paid: number;
@@ -134,6 +193,116 @@ async function sendIntakeFormEmail(email: string, token: string) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Auth verification endpoint
+  app.post('/api/auth/verify', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      const customer = await storage.getCustomerByEmail(email);
+      
+      if (!customer) {
+        return res.status(404).json({ error: 'Customer not found', hasAccess: false });
+      }
+
+      res.json({ 
+        hasAccess: customer.hasAccess === 1,
+        customer: {
+          email: customer.email,
+          totalPaid: customer.totalPaid,
+          selectedYears: customer.selectedYears
+        }
+      });
+    } catch (error) {
+      console.error('Auth verification error:', error);
+      res.status(500).json({ error: 'Authentication verification failed' });
+    }
+  });
+
+  // Customer info endpoint
+  app.post('/api/customer/info', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      const customer = await storage.getCustomerByEmail(email);
+      
+      if (!customer || customer.hasAccess !== 1) {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+
+      // Get existing submissions
+      const submissions = await storage.getIntakeSubmissionsByCustomer(customer.id);
+      
+      res.json({ 
+        email: customer.email,
+        totalPaid: customer.totalPaid,
+        selectedYears: customer.selectedYears,
+        hasSubmissions: submissions.length > 0,
+        submissions: submissions.map(sub => ({
+          id: sub.id,
+          submissionStatus: sub.submissionStatus,
+          submittedAt: sub.submittedAt
+        }))
+      });
+    } catch (error) {
+      console.error('Customer info error:', error);
+      res.status(500).json({ error: 'Failed to load customer info' });
+    }
+  });
+
+  // Intake form submission endpoint
+  app.post('/api/intake/submit', async (req, res) => {
+    try {
+      const { email, formData } = req.body;
+      
+      if (!email || !formData) {
+        return res.status(400).json({ error: 'Email and form data are required' });
+      }
+
+      const customer = await storage.getCustomerByEmail(email);
+      
+      if (!customer || customer.hasAccess !== 1) {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+
+      // Submit to Airtable
+      const airtableRecordId = await addToAirtableSubmissions({
+        customerEmail: email,
+        entityName: formData.entityName,
+        entityType: formData.entityType,
+        taxId: formData.taxId,
+        contactName: formData.contactName,
+        contactEmail: formData.contactEmail,
+        contactPhone: formData.contactPhone,
+        businessDescription: formData.businessDescription,
+        rdActivities: formData.rdActivities,
+        totalWages: parseInt(formData.totalWages) || 0,
+        contractorCosts: parseInt(formData.contractorCosts) || 0,
+        supplyCosts: parseInt(formData.supplyCosts) || 0,
+        otherExpenses: parseInt(formData.otherExpenses) || 0,
+      });
+
+      // Store in database
+      const submission = await storage.createIntakeSubmission({
+        customerId: customer.id,
+        formData: formData,
+        airtableRecordId: airtableRecordId,
+      });
+
+      res.json({ success: true, submissionId: submission.id });
+    } catch (error) {
+      console.error('Intake submission error:', error);
+      res.status(500).json({ error: 'Failed to submit intake form' });
+    }
+  });
   // Stripe Webhook handler
   app.post('/api/stripeWebhook', async (req, res) => {
     try {
@@ -172,7 +341,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(400).send('No email found in session');
         }
 
-        // Add to Airtable Customers table
+        // Create or update customer in database
+        let customer = await storage.getCustomerByEmail(email);
+        
+        if (customer) {
+          // Update existing customer
+          customer = await storage.updateCustomerAccess(
+            email, 
+            true, // hasAccess = true
+            session.id,
+            totalPaid,
+            selectedYears.split(',').filter(y => y.trim())
+          );
+        } else {
+          // Create new customer
+          customer = await storage.createCustomer({
+            email: email,
+            hasAccess: 1,
+            stripeSessionId: session.id,
+            totalPaid: totalPaid,
+            selectedYears: selectedYears.split(',').filter(y => y.trim()),
+          });
+        }
+
+        // Add to Airtable Customers table (for backward compatibility)
         await addToAirtableCustomers({
           email,
           total_paid: totalPaid,
@@ -184,7 +376,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Send intake form email
         await sendIntakeFormEmail(email, uuid_token);
 
-        console.log(`Successfully processed payment for ${email}, token: ${uuid_token}`);
+        console.log(`Successfully processed payment for ${email}, customer ID: ${customer.id}, token: ${uuid_token}`);
       }
 
       res.json({ received: true });

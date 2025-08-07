@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'wouter';
-import { Calculator, Info, Users, Package, AlertCircle, ChevronRight, ChevronLeft, Building, Shield, Lock, CheckCircle, Clock, TrendingUp, FileText, Share2, Zap, Calendar, AlertTriangle, Quote, Check, Trophy, DollarSign, Target, ArrowRight } from 'lucide-react';
+import { Calculator, Info, Users, Package, AlertCircle, ChevronRight, ChevronLeft, Building, Shield, Lock, CheckCircle, Clock, TrendingUp, FileText, Share2, Zap, Calendar, AlertTriangle, Quote, Check, Trophy, DollarSign, Target, ArrowRight, Award } from 'lucide-react';
 
 interface CreditCalculatorProps {
   onResultsReady?: (results: any) => void;
@@ -15,14 +15,35 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
     grossReceipts: '',
     industry: '',
     selectedYears: ['2024'], // Array of selected tax years
+    taxYear: '2024',
     
     // Additional factors
     priorYearCredit: false,
-    priorYearAmount: ''
+    priorYearAmount: '',
+    
+    // Step 1 qualification activities
+    selectedActivities: [] as string[],
+    
+    // Expense data - kept for compatibility
+    w2Wages: '',
+    contractorCosts: '',
+    cloudCosts: '',
+    softwareLicenses: '',
+    supplies: '',
+    w2Percentage: '30',
+    contractorPercentage: '50'
   });
 
   // Multi-year data for each selected year
-  const [yearlyData, setYearlyData] = useState({
+  const [yearlyData, setYearlyData] = useState<Record<string, {
+    w2Wages: string;
+    contractorCosts: string;
+    cloudCosts: string;
+    softwareLicenses: string;
+    supplies: string;
+    w2Percentage: string;
+    contractorPercentage: string;
+  }>>({
     '2024': {
       w2Wages: '',
       contractorCosts: '',
@@ -1109,17 +1130,21 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
 
   // Industry-specific value propositions
   const getIndustryValueProp = (industry: string) => {
-    const valueProp = {
+    const valueProp: Record<string, { title: string; description: string; avgSavings: string }> = {
       freelancer: { title: "Freelancers average $18K in credits", description: "ChatGPT subscriptions, workflow automation, and client delivery improvements qualify", avgSavings: "$18K" },
       saas: { title: "SaaS companies average $85K in credits", description: "Development time, cloud infrastructure, and AI integrations qualify", avgSavings: "$85K" },
       agency: { title: "Agencies average $42K in credits", description: "Custom tools, automation development, and client solution R&D qualify", avgSavings: "$42K" },
       ecommerce: { title: "E-commerce businesses average $31K in credits", description: "Inventory management systems, AI chatbots, and personalization tools qualify", avgSavings: "$31K" },
       consulting: { title: "Consultants average $22K in credits", description: "ChatGPT for research, custom analysis tools, and client methodology development qualify", avgSavings: "$22K" },
       manufacturing: { title: "Manufacturers average $127K in credits", description: "Process optimization, IoT systems, and quality control automation qualify", avgSavings: "$127K" },
-      healthcare: { title: "Healthcare practices average $64K in credits", description: "Patient management systems, AI diagnostics, and workflow automation qualify", avgSavings: "$64K" }
+      healthcare: { title: "Healthcare practices average $64K in credits", description: "Patient management systems, AI diagnostics, and workflow automation qualify", avgSavings: "$64K" },
+      technology: { title: "Tech companies average $95K in credits", description: "Software development, AI tools, and technical research qualify", avgSavings: "$95K" },
+      marketing: { title: "Marketing agencies average $38K in credits", description: "Content automation, AI tools, and campaign optimization qualify", avgSavings: "$38K" },
+      financial: { title: "Financial services average $72K in credits", description: "Process automation, AI analysis tools, and compliance systems qualify", avgSavings: "$72K" },
+      other: { title: "Small businesses average $31K in credits", description: "ChatGPT, automation tools, and business process improvements typically qualify", avgSavings: "$31K" }
     };
     
-    return valueProp[industry] || { title: "Small businesses average $31K in credits", description: "ChatGPT, automation tools, and business process improvements typically qualify", avgSavings: "$31K" };
+    return valueProp[industry] || valueProp.other;
   };
 
   // Render current step

@@ -132,15 +132,19 @@ const LandingPage: React.FC = () => {
 
             {/* Hero CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-              <Link href="#calculator">
-                <button className="btn-primary bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-8 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-                  <span className="flex items-center gap-3">
-                    <Calculator className="w-6 h-6" />
-                    Calculate My Tax Credit
-                    <ArrowRight className="w-6 h-6" />
-                  </span>
-                </button>
-              </Link>
+              <button 
+                onClick={() => {
+                  const calculatorSection = document.getElementById('calculator');
+                  calculatorSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="btn-primary bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-8 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              >
+                <span className="flex items-center gap-3">
+                  <Calculator className="w-6 h-6" />
+                  Calculate My Tax Credit
+                  <ArrowRight className="w-6 h-6" />
+                </span>
+              </button>
               
               <button 
                 onClick={() => setShowDemo(true)}
@@ -187,9 +191,15 @@ const LandingPage: React.FC = () => {
                   <TrendingUp className="w-8 h-8 text-green-600 mx-auto mb-2" />
                   <div className="text-sm text-green-700">Real money, real fast</div>
                 </div>
-                <Link href="#calculator" className="text-blue-600 font-medium hover:text-blue-700">
+                <button 
+                  onClick={() => {
+                    const calculatorSection = document.getElementById('calculator');
+                    calculatorSection?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="text-blue-600 font-medium hover:text-blue-700"
+                >
                   See calculation breakdown →
-                </Link>
+                </button>
               </div>
             </div>
 
@@ -476,11 +486,15 @@ const LandingPage: React.FC = () => {
             </div>
             <span className="ml-2">4.9/5 from 500+ businesses</span>
           </div>
-          <Link href="#calculator">
-            <button className="bg-white text-blue-600 py-4 px-8 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-              Start Free Calculation →
-            </button>
-          </Link>
+          <button 
+            onClick={() => {
+              const calculatorSection = document.getElementById('calculator');
+              calculatorSection?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="bg-white text-blue-600 py-4 px-8 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+          >
+            Start Free Calculation →
+          </button>
         </div>
       </div>
 

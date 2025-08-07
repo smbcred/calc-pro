@@ -1,0 +1,98 @@
+=== HEADER OPTIMIZATION ===
+Current: "Your Federal R&D Tax Credit Analysis"
+Better: "Complete Your R&D Tax Credit Order"
+Or: "Finalize Your Filing Package"
+
+Add progress indicator: "Final Step • Secure Checkout"
+
+=== HERO NUMBERS REFINEMENT ===
+Love the big numbers display! Consider:
+- Add labels under numbers: "Your Credit" | "Your Investment"
+- Or make relationship clearer: "Get $28,500 for just $750"
+- Add ROI badge: "37x return on investment"
+
+=== DEADLINE MESSAGING ===
+Current warning is good but could be stronger:
+"⏰ July 2026 Amendment Deadline
+You have until July 2026 to claim 2022-2024 credits. After that, these credits expire forever. Most businesses miss out on $75,000+ by waiting too long."
+
+=== YEAR SELECTION ENHANCEMENT ===
+The checkboxes are good but add:
+- Show estimated credit for each year (not just price)
+- "2024 (Lookback): ~$26,000 credit for +$297"
+- "2023 (Lookback): ~$24,000 credit for +$297"
+- Running total: "Total Credits: $78,500 for $1,344"
+
+=== PRICING SUMMARY IMPROVEMENT ===
+Add value comparison:
+Base (2025): $750 → Gets you $28,500
+Additional Years (2): $594 → Gets you $50,000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Total Investment: $1,344 → Total Credits: $78,500
+
+=== WHAT'S INCLUDED - MAKE IT SCANNABLE ===
+Current checkmarks are good but group better:
+
+"Your Professional Filing Package Includes:"
+
+IRS Forms & Compliance:
+✓ Form 6765 (completed)
+✓ All required schedules
+✓ State forms where applicable
+
+Supporting Documentation:
+✓ Technical narratives
+✓ Expense worksheets
+✓ Time allocation records
+
+Professional Resources:
+✓ CPA explanation letter
+✓ Filing instructions
+✓ Email support
+
+=== URGENCY WITHOUT DESPERATION ===
+Add above CTA:
+"Documents ready within 24-48 hours of payment"
+"Join 523 businesses who've successfully claimed"
+
+=== CTA OPTIMIZATION ===
+Current: "Continue to Payment - $1,344"
+Better: "Complete My Order - $1,344"
+Or: "Get My Filing Package - $1,344"
+
+Below button add:
+"💳 All major cards • 🔒 256-bit encryption"
+
+=== TRUST ELEMENTS ===
+Near bottom add:
+"Questions before ordering? support@smbtaxcredits.com"
+"Average response time: 2 hours during business days"
+
+=== REMOVE/AVOID ===
+- Don't add guarantees
+- Don't mention refunds
+- Keep it simple - don't over-explain
+
+=== PSYCHOLOGICAL OPTIMIZATIONS ===
+
+1. **Reinforce Value**
+   Show "You're getting $X in credits for $Y investment"
+
+2. **Create Commitment**
+   They've come this far - remind them of the work they've done
+
+3. **Reduce Friction**
+   Keep form minimal - just payment details
+
+4. **Smart Upsell**
+   The year selection is perfect - maybe add:
+   "💡 Most clients add all years to maximize credits"
+
+5. **Clear Next Steps**
+   "After payment: Receive documents within 48 hours"
+
+=== MOBILE CONSIDERATIONS ===
+- Sticky total at bottom showing selected amount
+- Large touch targets for year selection
+- Collapsible "What's included" section
+- One-thumb reachable CTA button

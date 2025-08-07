@@ -153,17 +153,16 @@ const GatedIntakePortal: React.FC = () => {
             Thank you for providing your business information. We'll begin preparing your R&D tax credit documentation and contact you within 48 hours.
           </p>
           <div className="space-y-3">
+            <Link href="/dashboard">
+              <button className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all transform hover:scale-105">
+                Go to Dashboard
+              </button>
+            </Link>
             <Link href="/">
-              <button className="w-full bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+              <button className="w-full text-gray-600 hover:text-gray-700 py-2 px-6 rounded-lg border border-gray-300 hover:border-gray-400 transition-colors">
                 Return to Home
               </button>
             </Link>
-            <button 
-              onClick={handleLogout}
-              className="w-full text-gray-600 hover:text-gray-700 py-2 px-6 rounded-lg border border-gray-300 hover:border-gray-400 transition-colors"
-            >
-              Logout
-            </button>
           </div>
         </div>
       </div>

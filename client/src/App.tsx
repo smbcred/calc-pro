@@ -3,6 +3,7 @@ import LandingPage from './pages/LandingPage';
 import CreditCalculator from './components/CreditCalculator';
 import CheckoutPage from './pages/CheckoutPage';
 import SuccessPage from './pages/SuccessPage';
+import IntakePage from './pages/IntakePage';
 import { useState } from 'react';
 
 function App() {
@@ -22,6 +23,9 @@ function App() {
         </Route>
         <Route path="/success">
           <SuccessPage />
+        </Route>
+        <Route path="/intake">
+          <IntakePage />
         </Route>
         <Route>
           {/* 404 fallback */}

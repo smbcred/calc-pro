@@ -1543,37 +1543,84 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
         if (!emailSubmitted) {
           return (
             <div className="space-y-6">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold mb-4 text-gray-900">You're qualified! 🎉</h2>
-                <p className="text-lg text-gray-600">
-                  Get your personalized R&D credit estimate sent to your inbox
-                </p>
+              {/* Value Prop Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+                  <h3 className="font-bold text-green-900 mb-2">Your {currentYear} Estimate</h3>
+                  <div className="text-2xl font-bold text-green-600">
+                    {(() => {
+                      const data = yearlyData[currentYear] || {};
+                      const wages = safeParseFloat(data.w2Wages, 0);
+                      const contractors = safeParseFloat(data.contractorCosts, 0);
+                      const cloud = safeParseFloat(data.cloudCosts, 0);
+                      const software = safeParseFloat(data.softwareLicenses, 0);
+                      const supplies = safeParseFloat(data.supplies, 0);
+                      
+                      const wagePercent = safeParsePercent(data.w2Percentage, 30);
+                      const contractorPercent = safeParsePercent(data.contractorPercentage, 50);
+                      
+                      const qualifiedWages = wages * wagePercent;
+                      const qualifiedContractors = contractors * contractorPercent * 0.65;
+                      const totalQRE = qualifiedWages + qualifiedContractors + cloud + software + supplies;
+                      
+                      const lowEnd = Math.round(totalQRE * 0.18);
+                      const highEnd = Math.round(totalQRE * 0.22);
+                      
+                      return `${formatCurrency(lowEnd)} - ${formatCurrency(highEnd)}`;
+                    })()}
+                  </div>
+                </div>
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
+                  <h3 className="font-bold text-blue-900 mb-2">Free Credit Analysis</h3>
+                  <div className="text-lg font-semibold text-blue-600">No Payment Required</div>
+                </div>
+                <div className="bg-purple-50 border border-purple-200 rounded-xl p-6 text-center">
+                  <h3 className="font-bold text-purple-900 mb-2">Based on Your Data</h3>
+                  <div className="text-lg font-semibold text-purple-600">Actual Business Expenses</div>
+                </div>
               </div>
-              
-              {/* Partial Results Teaser */}
-              <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-2xl p-8 text-center mb-8">
-                <h3 className="text-2xl font-bold mb-4">Your Preliminary Estimate</h3>
-                <div className="text-4xl font-bold mb-2">
-                  $10,000 - $150,000+
-                </div>
-                <p className="text-green-100 text-lg">
-                  Your potential tax credits
+
+              {/* Range Section */}
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold mb-4 text-gray-900">Your {currentYear} R&D Tax Credit Estimate</h2>
+                <p className="text-lg text-gray-600">
+                  Get your exact calculation and see how to claim it
                 </p>
-                <div className="mt-4 text-sm text-green-100">
-                  📧 Get your complete personalized report with exact calculations
-                </div>
               </div>
               
               {/* Email Capture Form */}
               <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-xl">
-                <h3 className="text-2xl font-bold text-center mb-4">See Your R&D Tax Credit Opportunity</h3>
+                <h3 className="text-2xl font-bold text-center mb-4">Get Your Free {currentYear} R&D Credit Report</h3>
                 <p className="text-gray-600 text-center mb-6">
-                  Enter your email to receive a personalized report showing:<br/>
-                  • Your estimated federal R&D tax credit<br/>
-                  • Credit vs. deduction breakdown<br/>
-                  • Potential savings for multiple years<br/>
-                  • Next steps to claim your credit
+                  See your exact credit amount with detailed breakdown
                 </p>
+                
+                <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                  <p className="text-blue-900 font-medium text-center mb-3">What your FREE report includes:</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span>Exact {currentYear} credit calculation</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span>Qualifying expense breakdown</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span>How the credit works for your business</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span>Next steps to claim your credit</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span>Future year savings potential</span>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="max-w-md mx-auto">
                   <div className="space-y-4">
                     <input
@@ -1581,7 +1628,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-lg"
-                      placeholder="your@email.com"
+                      placeholder="Enter email for instant report"
                     />
                     <button
                       onClick={() => {
@@ -1590,40 +1637,39 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                           performCalculation();
                           setEmailSubmitted(true);
                           setShowFullResults(true);
-                          // Stay on step 3 to show the state selection
+                          setCurrentStep(4);
                         }
                       }}
                       disabled={!email || !email.includes('@')}
                       className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-8 rounded-lg font-bold text-lg hover:from-blue-700 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed"
                     >
-                      Calculate My Tax Credit →
+                      Get My Free Report →
                     </button>
-                    <p className="text-xs text-gray-500 text-center">
-                      You'll receive a detailed breakdown of your potential tax savings. 
-                      This free report shows what you could claim - documentation 
-                      packages are available for purchase after calculation.
-                    </p>
-                    <div className="text-center mt-4 text-xs text-gray-500">
-                      ✓ Free Credit Estimate      ✓ No Payment Required      ✓ Unsubscribe Anytime<br/>
-                      &nbsp;&nbsp;&nbsp;See your opportunity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Calculate first&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No spam
+                    
+                    {/* Trust Elements */}
+                    <div className="text-center text-xs text-gray-500 space-y-1">
+                      <p>✓ Free report, no payment required</p>
+                      <p>✓ Based on your actual business data</p>
+                      <p>✓ Takes 30 seconds</p>
                     </div>
                   </div>
                 </div>
                 
-                {/* Key Benefits */}
+                {/* Opportunity Messaging */}
                 <div className="mt-8 pt-6 border-t border-gray-200">
                   <div className="text-center">
-                    <p className="text-sm text-gray-600 mb-4">Don't miss out on legitimate tax savings</p>
-                    <div className="flex justify-center items-center gap-8 text-sm text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-600" />
-                        <span>Federal credits up to $150K+</span>
+                    <p className="text-sm text-gray-600 mb-4">Based on your {currentYear} activities, you could claim similar credits for:</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto text-sm">
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                        <p className="font-medium text-orange-700">Previous years (2022-2023)</p>
+                        <p className="text-xs text-orange-600">If you did similar AI work</p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Shield className="w-4 h-4 text-blue-600" />
-                        <span>Complete IRS documentation</span>
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <p className="font-medium text-green-700">Future years</p>
+                        <p className="text-xs text-green-600">As you continue using AI</p>
                       </div>
                     </div>
+                    <p className="text-xs text-gray-500 mt-4">Most businesses claim 2-3 years of credits</p>
                   </div>
                 </div>
               </div>

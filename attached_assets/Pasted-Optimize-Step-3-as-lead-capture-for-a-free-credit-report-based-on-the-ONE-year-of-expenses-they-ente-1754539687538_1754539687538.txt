@@ -1,0 +1,71 @@
+Optimize Step 3 as lead capture for a free credit report based on the ONE year of expenses they entered. Pricing for forms is $500-$1500 (tiered by credit size), with additional years at $297 each.
+
+=== CORRECT CONTEXT ===
+- They entered expenses for ONE year only
+- Free report shows that single year calculation
+- Paid service: $500-$1500 for forms (based on credit amount)
+- Additional years: $297 each (they'd need to enter more data)
+
+=== STEP 3 IMPROVEMENTS ===
+
+VALUE PROP CARDS - Focus on their selected year:
+- Card 1: "Your [YEAR] Estimate: $13K-$20K"
+- Card 2: "Free Credit Analysis"
+- Card 3: "Based on Your Actual Expenses"
+
+RANGE SECTION:
+- Headline: "Your [YEAR] R&D Tax Credit Estimate"
+- Show the range based on their inputs
+- Below: "Get your exact calculation and see how to claim it"
+
+EMAIL CAPTURE:
+- Headline: "Get Your Free [YEAR] R&D Credit Report"
+- Subheading: "See your exact credit amount with detailed breakdown"
+
+What your FREE report includes:
+✓ Exact [YEAR] credit calculation
+✓ Qualifying expense breakdown
+✓ How the credit works for your business
+✓ Next steps to claim your credit
+✓ Future year savings potential
+
+Email field placeholder: "Enter email for instant report"
+Button: "Get My Free Report →"
+
+OPPORTUNITY MESSAGING:
+Instead of multi-year analysis, show future potential:
+"Based on your [YEAR] activities, you could claim similar credits for:"
+- Previous years (2022-2023) - if applicable
+- Future years as you continue using AI
+
+"Most businesses claim 2-3 years of credits"
+
+REMOVE:
+- Multi-year analysis promises (they only gave one year of data)
+- Specific pricing mentions (save for Step 4)
+- IRS forms references
+
+SET UP THE UPSELL:
+After email capture: 
+"Next: See your exact [YEAR] credit and learn about claiming previous years"
+
+TRUST ELEMENTS:
+- "Free report, no payment required"
+- "Based on your actual business data"
+- "Takes 30 seconds"
+
+PSYCHOLOGICAL FLOW:
+- Step 3: "Here's your [YEAR] estimate range"
+- Step 4: "Here's your exact amount + you could also claim [other years]"
+
+This leads perfectly into Step 4 where you:
+1. Show exact amount for entered year
+2. Upsell previous years ($297 each)
+3. Sell the form package ($500-$1500 based on total)
+
+=== KEY FIXES ===
+- Single year focus (the year they entered)
+- No false multi-year promises
+- Future/past year potential (not analysis)
+- Correct pricing tiers referenced
+- Clear free vs paid distinction

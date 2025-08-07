@@ -132,7 +132,7 @@ const LandingPage: React.FC = () => {
 
             {/* Hero CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-              <Link href="/calculator">
+              <Link href="#calculator">
                 <button className="btn-primary bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-8 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
                   <span className="flex items-center gap-3">
                     <Calculator className="w-6 h-6" />
@@ -187,7 +187,7 @@ const LandingPage: React.FC = () => {
                   <TrendingUp className="w-8 h-8 text-green-600 mx-auto mb-2" />
                   <div className="text-sm text-green-700">Real money, real fast</div>
                 </div>
-                <Link href="/calculator" className="text-blue-600 font-medium hover:text-blue-700">
+                <Link href="#calculator" className="text-blue-600 font-medium hover:text-blue-700">
                   See calculation breakdown →
                 </Link>
               </div>

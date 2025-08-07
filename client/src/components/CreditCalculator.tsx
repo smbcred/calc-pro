@@ -425,18 +425,35 @@ const CreditCalculator = () => {
         <span>SMBTaxCredits.com</span>
       </div>
 
-      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent leading-tight">
-        Get Money Back for Using AI in Your Business
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-gray-900 leading-tight">
+        Calculate Your R&D Tax Credit in Minutes
       </h1>
 
-      <p className="text-gray-700 text-xl md:text-2xl mb-8 max-w-3xl mx-auto font-medium leading-relaxed">
-        Claim up to{" "}
-        <span className="font-bold text-green-600 bg-green-50 px-2 py-1 rounded">
-          $500,000
-        </span>{" "}
-        in R&D tax credits for using ChatGPT, automation tools, and AI in your
-        business
+      <p className="text-xl md:text-2xl text-gray-600 mb-6 leading-relaxed max-w-3xl mx-auto">
+        Most businesses using AI and automation qualify for $10,000-$150,000 in federal tax credits
       </p>
+
+      {/* Security Badges */}
+      <div className="flex flex-wrap justify-center items-center gap-6 mb-8 text-gray-600">
+        <div className="flex items-center gap-2">
+          <span>🔒</span>
+          <span className="font-medium">SSL Secured</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span>🏛️</span>
+          <span className="font-medium">IRS Compliant</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span>🔐</span>
+          <span className="font-medium">No Data Stored</span>
+        </div>
+      </div>
+
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-8 max-w-xl mx-auto">
+        <div className="text-center text-blue-800">
+          <p className="font-semibold">90% of businesses using AI qualify</p>
+        </div>
+      </div>
     </div>
   );
 

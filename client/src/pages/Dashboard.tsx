@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useToast } from '@/hooks/use-toast';
 import CompanyInfoForm from '@/components/CompanyInfoForm';
 import ExpenseCollectionForm from '@/components/ExpenseCollectionForm';
+import QRECalculator from '@/components/QRECalculator';
 
 interface CustomerInfo {
   email: string;
@@ -77,29 +78,46 @@ const Dashboard: React.FC = () => {
     setLocation('/');
   };
 
-  const getMenuItems = (): MenuItemType[] => [
-    { id: 'overview', label: 'Overview', icon: BarChart3 },
-    { 
-      id: 'company', 
-      label: 'Company Info', 
-      icon: Building2, 
-      badge: progressData.companyInfo === 100 ? 'Complete' : progressData.companyInfo > 0 ? `${progressData.companyInfo}%` : undefined
-    },
-    { 
-      id: 'rd-activities', 
-      label: 'R&D Activities', 
-      icon: FileText, 
-      badge: progressData.rdActivities === 100 ? 'Complete' : progressData.rdActivities > 0 ? `${progressData.rdActivities}%` : undefined
-    },
-    { 
-      id: 'expenses', 
-      label: 'Expenses', 
-      icon: DollarSign,
-      badge: progressData.expenses > 0 ? `${progressData.expenses}%` : undefined
-    },
-    { id: 'documents', label: 'Documents', icon: FolderOpen },
-    { id: 'settings', label: 'Settings', icon: Settings },
-  ];
+  const getMenuItems = (): MenuItemType[] => {
+    const items = [
+      { id: 'overview', label: 'Overview', icon: BarChart3 },
+      { 
+        id: 'company', 
+        label: 'Company Info', 
+        icon: Building2, 
+        badge: progressData.companyInfo === 100 ? 'Complete' : progressData.companyInfo > 0 ? `${progressData.companyInfo}%` : undefined
+      },
+      { 
+        id: 'rd-activities', 
+        label: 'R&D Activities', 
+        icon: FileText, 
+        badge: progressData.rdActivities === 100 ? 'Complete' : progressData.rdActivities > 0 ? `${progressData.rdActivities}%` : undefined
+      },
+      { 
+        id: 'expenses', 
+        label: 'Expenses', 
+        icon: DollarSign,
+        badge: progressData.expenses > 0 ? `${progressData.expenses}%` : undefined
+      },
+    ];
+
+    // Add QRE Results section if basic requirements are met
+    if (progressData.canGenerate) {
+      items.push({
+        id: 'qre-results',
+        label: 'QRE Results',
+        icon: Calculator,
+        badge: 'Ready'
+      });
+    }
+
+    items.push(
+      { id: 'documents', label: 'Documents', icon: FolderOpen },
+      { id: 'settings', label: 'Settings', icon: Settings }
+    );
+
+    return items;
+  };
 
   const menuItems = getMenuItems();
 
@@ -881,7 +899,14 @@ const Dashboard: React.FC = () => {
             />
           )}
 
-          {activeSection !== 'overview' && activeSection !== 'company' && activeSection !== 'expenses' && (
+          {activeSection === 'qre-results' && (
+            <QRECalculator 
+              customerEmail={customerInfo?.email || ''}
+              onBack={() => setActiveSection('overview')}
+            />
+          )}
+
+          {activeSection !== 'overview' && activeSection !== 'company' && activeSection !== 'expenses' && activeSection !== 'qre-results' && (
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-green-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">

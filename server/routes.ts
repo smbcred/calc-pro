@@ -1135,6 +1135,159 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // QRE Calculation endpoints
+  app.post('/api/qre/calculate', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
+      }
+
+      // Fetch all expense data from Airtable tables
+      const [wagesResponse, contractorsResponse, suppliesResponse, cloudResponse] = await Promise.all([
+        fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Contractors?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Supplies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/CloudSoftware?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        })
+      ]);
+
+      const [wagesData, contractorsData, suppliesData, cloudData] = await Promise.all([
+        wagesResponse.ok ? wagesResponse.json() : { records: [] },
+        contractorsResponse.ok ? contractorsResponse.json() : { records: [] },
+        suppliesResponse.ok ? suppliesResponse.json() : { records: [] },
+        cloudResponse.ok ? cloudResponse.json() : { records: [] }
+      ]);
+
+      // Calculate qualified wages
+      const wageEntries = wagesData.records.map((record: any) => {
+        const annualSalary = parseFloat(record.fields['Annual Salary']) || 0;
+        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 0;
+        const qualifiedAmount = (annualSalary * rdPercentage) / 100;
+        
+        return {
+          employeeName: record.fields['Employee Name'] || 'Unknown',
+          role: record.fields['Role'] || 'Not specified',
+          annualSalary,
+          rdPercentage,
+          qualifiedAmount
+        };
+      });
+      const wagesTotal = wageEntries.reduce((sum: number, entry: any) => sum + entry.qualifiedAmount, 0);
+
+      // Calculate qualified contractor expenses (65% of total)
+      const contractorEntries = contractorsData.records.map((record: any) => {
+        const amount = parseFloat(record.fields['Amount']) || 0;
+        const qualifiedAmount = amount * 0.65;
+        
+        return {
+          contractorName: record.fields['Contractor Name'] || 'Unknown',
+          amount,
+          qualifiedAmount,
+          description: record.fields['Description'] || 'No description'
+        };
+      });
+      const contractorsTotal = contractorEntries.reduce((sum: number, entry: any) => sum + entry.qualifiedAmount, 0);
+
+      // Calculate qualified supply expenses
+      const supplyEntries = suppliesData.records.map((record: any) => {
+        const amount = parseFloat(record.fields['Amount']) || 0;
+        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 100;
+        const qualifiedAmount = (amount * rdPercentage) / 100;
+        
+        return {
+          supplyType: record.fields['Supply Type'] || 'Unknown',
+          amount,
+          rdPercentage,
+          qualifiedAmount
+        };
+      });
+      const suppliesTotal = supplyEntries.reduce((sum: number, entry: any) => sum + entry.qualifiedAmount, 0);
+
+      // Calculate qualified cloud/software expenses
+      const cloudEntries = cloudData.records.map((record: any) => {
+        const monthlyCost = parseFloat(record.fields['Monthly Cost']) || 0;
+        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 100;
+        const annualCost = monthlyCost * 12;
+        const qualifiedAmount = (annualCost * rdPercentage) / 100;
+        
+        return {
+          serviceName: record.fields['Service Name'] || 'Unknown',
+          annualCost,
+          rdPercentage,
+          qualifiedAmount
+        };
+      });
+      const cloudTotal = cloudEntries.reduce((sum: number, entry: any) => sum + entry.qualifiedAmount, 0);
+
+      // Calculate totals
+      const grandTotal = wagesTotal + contractorsTotal + suppliesTotal + cloudTotal;
+      const taxCreditEstimate = Math.round(grandTotal * 0.2); // 20% federal R&D tax credit
+
+      const qreData = {
+        wages: {
+          entries: wageEntries,
+          total: Math.round(wagesTotal)
+        },
+        contractors: {
+          entries: contractorEntries,
+          total: Math.round(contractorsTotal)
+        },
+        supplies: {
+          entries: supplyEntries,
+          total: Math.round(suppliesTotal)
+        },
+        cloudSoftware: {
+          entries: cloudEntries,
+          total: Math.round(cloudTotal)
+        },
+        grandTotal: Math.round(grandTotal),
+        taxCreditEstimate
+      };
+
+      res.json(qreData);
+    } catch (error) {
+      console.error('QRE calculation error:', error);
+      res.status(500).json({ error: 'Failed to calculate QRE' });
+    }
+  });
+
+  app.post('/api/qre/generate-report', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      // For now, we'll just return success - in production this would generate and email a PDF report
+      console.log(`QRE report requested for ${email}`);
+      
+      res.json({ 
+        success: true, 
+        message: 'QRE report generation initiated. You will receive an email when ready.' 
+      });
+    } catch (error) {
+      console.error('QRE report generation error:', error);
+      res.status(500).json({ error: 'Failed to generate QRE report' });
+    }
+  });
+
   // Development-only endpoint to create test customer for login testing
   if (process.env.NODE_ENV !== 'production') {
     app.post('/api/dev/create-test-customer', async (req, res) => {

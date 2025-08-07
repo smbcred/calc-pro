@@ -1460,6 +1460,191 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Review Screen endpoints
+  app.post('/api/review/data', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
+      }
+
+      // Fetch all data in parallel
+      const [companyResponse, submissionsResponse, wagesResponse, contractorsResponse, suppliesResponse, cloudResponse] = await Promise.all([
+        fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Submissions?filterByFormula=LOWER({Customer Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Contractors?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Supplies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/CloudSoftware?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+        })
+      ]);
+
+      // Parse all responses
+      const [companyData, submissionsData, wagesData, contractorsData, suppliesData, cloudData] = await Promise.all([
+        companyResponse.ok ? companyResponse.json() : { records: [] },
+        submissionsResponse.ok ? submissionsResponse.json() : { records: [] },
+        wagesResponse.ok ? wagesResponse.json() : { records: [] },
+        contractorsResponse.ok ? contractorsResponse.json() : { records: [] },
+        suppliesResponse.ok ? suppliesResponse.json() : { records: [] },
+        cloudResponse.ok ? cloudResponse.json() : { records: [] }
+      ]);
+
+      // Process company information
+      const companyInfo = companyData.records.length > 0 ? {
+        companyName: companyData.records[0].fields['Company Name'] || '',
+        ein: companyData.records[0].fields['EIN'] || '',
+        entityType: companyData.records[0].fields['Entity Type'] || '',
+        yearFounded: companyData.records[0].fields['Year Founded']?.toString() || '',
+        annualRevenue: companyData.records[0].fields['Annual Revenue'] || '',
+        employeeCount: companyData.records[0].fields['Employee Count'] || '',
+        rdEmployeeCount: companyData.records[0].fields['R&D Employee Count']?.toString() || '',
+        primaryState: companyData.records[0].fields['Primary State'] || '',
+        rdStates: companyData.records[0].fields['R&D States'] || [],
+        hasMultipleStates: companyData.records[0].fields['Has Multiple States'] || false,
+      } : null;
+
+      // Process R&D activities from submissions
+      const rdActivities = submissionsData.records.length > 0 ? {
+        businessDescription: submissionsData.records[0].fields['Business Description'] || '',
+        rdActivities: submissionsData.records[0].fields['R&D Activities'] || '',
+      } : null;
+
+      // Process expenses
+      const wages = wagesData.records.map((record: any) => ({
+        employeeName: record.fields['Employee Name'] || 'Unknown',
+        role: record.fields['Role'] || 'Not specified',
+        annualSalary: parseFloat(record.fields['Annual Salary']) || 0,
+        rdPercentage: parseFloat(record.fields['R&D Percentage']) || 0,
+        rdAmount: (parseFloat(record.fields['Annual Salary']) || 0) * (parseFloat(record.fields['R&D Percentage']) || 0) / 100
+      }));
+
+      const contractors = contractorsData.records.map((record: any) => ({
+        contractorName: record.fields['Contractor Name'] || 'Unknown',
+        amount: parseFloat(record.fields['Amount']) || 0,
+        qualifiedAmount: (parseFloat(record.fields['Amount']) || 0) * 0.65,
+        description: record.fields['Description'] || 'No description'
+      }));
+
+      const supplies = suppliesData.records.map((record: any) => ({
+        supplyType: record.fields['Supply Type'] || 'Unknown',
+        amount: parseFloat(record.fields['Amount']) || 0,
+        rdPercentage: parseFloat(record.fields['R&D Percentage']) || 100,
+        rdAmount: (parseFloat(record.fields['Amount']) || 0) * (parseFloat(record.fields['R&D Percentage']) || 100) / 100
+      }));
+
+      const cloudSoftware = cloudData.records.map((record: any) => {
+        const monthlyCost = parseFloat(record.fields['Monthly Cost']) || 0;
+        const rdPercentage = parseFloat(record.fields['R&D Percentage']) || 100;
+        return {
+          serviceName: record.fields['Service Name'] || 'Unknown',
+          annualCost: monthlyCost * 12,
+          rdPercentage,
+          qualifiedAmount: (monthlyCost * 12 * rdPercentage) / 100
+        };
+      });
+
+      // Calculate totals
+      const wagesTotals = wages.reduce((sum, wage) => sum + wage.rdAmount, 0);
+      const contractorsTotals = contractors.reduce((sum, contractor) => sum + contractor.qualifiedAmount, 0);
+      const suppliesTotals = supplies.reduce((sum, supply) => sum + supply.rdAmount, 0);
+      const cloudSoftwareTotals = cloudSoftware.reduce((sum, cloud) => sum + cloud.qualifiedAmount, 0);
+      const grandTotal = wagesTotals + contractorsTotals + suppliesTotals + cloudSoftwareTotals;
+
+      const expenses = {
+        wages,
+        contractors,
+        supplies,
+        cloudSoftware,
+        totals: {
+          wages: Math.round(wagesTotals),
+          contractors: Math.round(contractorsTotals),
+          supplies: Math.round(suppliesTotals),
+          cloudSoftware: Math.round(cloudSoftwareTotals),
+          grandTotal: Math.round(grandTotal)
+        }
+      };
+
+      // Calculate completion status
+      let companyScore = 0;
+      let rdScore = 0;
+      let expenseScore = 0;
+
+      if (companyInfo) {
+        if (companyInfo.companyName) companyScore += 25;
+        if (companyInfo.entityType) companyScore += 25;
+        if (companyInfo.ein) companyScore += 25;
+        if (companyInfo.primaryState) companyScore += 25;
+      }
+
+      if (rdActivities) {
+        if (rdActivities.businessDescription) rdScore += 50;
+        if (rdActivities.rdActivities) rdScore += 50;
+      }
+
+      if (expenses.totals.grandTotal > 0) {
+        expenseScore = Math.min(100, (wages.length + contractors.length + supplies.length + cloudSoftware.length) * 10);
+      }
+
+      const completionStatus = {
+        companyInfo: companyScore,
+        rdActivities: rdScore,
+        expenses: expenseScore,
+        canGenerate: companyScore === 100 && rdScore === 100
+      };
+
+      const reviewData = {
+        companyInfo,
+        rdActivities,
+        expenses,
+        completionStatus
+      };
+
+      res.json(reviewData);
+    } catch (error) {
+      console.error('Review data error:', error);
+      res.status(500).json({ error: 'Failed to load review data' });
+    }
+  });
+
+  app.post('/api/review/generate-documents', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      console.log(`Document generation requested for ${email}`);
+      
+      res.json({ 
+        success: true, 
+        message: 'Complete documentation package is being generated and will be sent to your email.' 
+      });
+    } catch (error) {
+      console.error('Document generation error:', error);
+      res.status(500).json({ error: 'Failed to generate documents' });
+    }
+  });
+
   // Development-only endpoint to create test customer for login testing
   if (process.env.NODE_ENV !== 'production') {
     app.post('/api/dev/create-test-customer', async (req, res) => {

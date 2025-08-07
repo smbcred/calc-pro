@@ -2120,10 +2120,14 @@ const CreditCalculator = () => {
                         <FileText className="w-8 h-8 text-white" />
                       </div>
                       <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                        We Prepare Your Documentation Package
+                        See Your R&D Tax Credit Opportunity
                       </h3>
                       <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                        <strong>You receive completed forms ready for filing.</strong> Hand to your CPA or file yourself - we're a <strong>document preparation service, not tax advisors.</strong> Everything is IRS-ready for your refund.
+                        Enter your email to receive a personalized report showing:<br/>
+                        • Your estimated federal R&D tax credit<br/>
+                        • Credit vs. deduction breakdown<br/>
+                        • Potential savings for multiple years<br/>
+                        • Next steps to claim your credit
                       </p>
                     </div>
 
@@ -2152,10 +2156,16 @@ const CreditCalculator = () => {
                         >
                           <span className="flex items-center justify-center gap-3">
                             <FileText className="w-6 h-6" />
-                            Get My Personalized Report
-                            <ChevronRight className="w-6 h-6" />
+                            Calculate My Tax Credit →
                           </span>
                         </button>
+                        
+                        {/* Updated expectation-setting text */}
+                        <p className="text-xs text-gray-500 text-center mb-4">
+                          You'll receive a detailed breakdown of your potential tax savings. 
+                          This free report shows what you could claim - documentation 
+                          packages are available for purchase after calculation.
+                        </p>
                         
                         {/* Trust Indicators */}
                         <div className="grid grid-cols-3 gap-4 text-center text-sm">
@@ -2163,19 +2173,22 @@ const CreditCalculator = () => {
                             <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                               <Zap className="w-4 h-4 text-green-600" />
                             </div>
-                            <span className="text-gray-600">Instant Access</span>
+                            <span className="text-gray-600">Free Credit Estimate</span>
+                            <span className="text-xs text-gray-500">See your opportunity</span>
                           </div>
                           <div className="flex flex-col items-center gap-2">
                             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                               <Shield className="w-4 h-4 text-blue-600" />
                             </div>
-                            <span className="text-gray-600">No Credit Card</span>
+                            <span className="text-gray-600">No Payment Required</span>
+                            <span className="text-xs text-gray-500">Calculate first</span>
                           </div>
                           <div className="flex flex-col items-center gap-2">
                             <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                               <Lock className="w-4 h-4 text-purple-600" />
                             </div>
                             <span className="text-gray-600">Unsubscribe Anytime</span>
+                            <span className="text-xs text-gray-500">No spam</span>
                           </div>
                         </div>
                       </div>
@@ -3318,11 +3331,11 @@ const CreditCalculator = () => {
               <div className="bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 rounded-2xl p-8 text-white text-center shadow-2xl">
                 <div className="mb-4">
                   <div className="text-3xl font-black mb-2">⏰ TIME IS RUNNING OUT</div>
-                  <div className="text-xl font-bold mb-4">July 2026 deadline for previous years - Don't lose {formatCurrency(results.totalBenefit)}!</div>
+                  <div className="text-xl font-bold mb-4">July 2026 deadline for previous years - Don't lose thousands in credits!</div>
                   <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
-                    <div className="text-yellow-200 text-sm font-medium mb-2">Your Tax Credit Summary:</div>
-                    <div className="text-4xl font-black text-white mb-2">{formatCurrency(results.totalBenefit)}</div>
-                    <div className="text-yellow-100">Ready for filing in under 48 hours</div>
+                    <div className="text-yellow-200 text-sm font-medium mb-2">Your Potential Tax Credits:</div>
+                    <div className="text-4xl font-black text-white mb-2">$10,000 - $150,000+</div>
+                    <div className="text-yellow-100">Based on your business profile</div>
                   </div>
                 </div>
                 <div className="space-y-4">

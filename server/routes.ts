@@ -829,6 +829,312 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Expense Collection endpoints
+  app.post('/api/expenses/load', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
+      }
+
+      // Load expenses from different tables
+      const [wagesRes, contractorsRes, suppliesRes, cloudSoftwareRes] = await Promise.all([
+        fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' }
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Contractors?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' }
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/Supplies?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' }
+        }),
+        fetch(`https://api.airtable.com/v0/${baseId}/CloudSoftware?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+          headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' }
+        })
+      ]);
+
+      const [wagesData, contractorsData, suppliesData, cloudSoftwareData] = await Promise.all([
+        wagesRes.json(),
+        contractorsRes.json(),
+        suppliesRes.json(),
+        cloudSoftwareRes.json()
+      ]);
+
+      // Transform Airtable data to frontend format
+      const wages = wagesData.records?.map(record => ({
+        id: record.id,
+        employeeName: record.fields['Employee Name'] || '',
+        role: record.fields['Role'] || '',
+        annualSalary: record.fields['Annual Salary'] || 0,
+        rdPercentage: record.fields['R&D Percentage'] || 0,
+        rdAmount: record.fields['R&D Amount'] || 0,
+      })) || [];
+
+      const contractors = contractorsData.records?.map(record => ({
+        id: record.id,
+        contractorName: record.fields['Contractor Name'] || '',
+        amount: record.fields['Amount'] || 0,
+        description: record.fields['Description'] || '',
+        qualifiedAmount: record.fields['Qualified Amount'] || 0,
+      })) || [];
+
+      const supplies = suppliesData.records?.map(record => ({
+        id: record.id,
+        supplyType: record.fields['Supply Type'] || '',
+        amount: record.fields['Amount'] || 0,
+        rdPercentage: record.fields['R&D Percentage'] || 0,
+        rdAmount: record.fields['R&D Amount'] || 0,
+      })) || [];
+
+      const cloudSoftware = cloudSoftwareData.records?.map(record => ({
+        id: record.id,
+        serviceName: record.fields['Service Name'] || '',
+        monthlyCost: record.fields['Monthly Cost'] || 0,
+        rdPercentage: record.fields['R&D Percentage'] || 0,
+        annualRdAmount: record.fields['Annual R&D Amount'] || 0,
+      })) || [];
+
+      res.json({ wages, contractors, supplies, cloudSoftware });
+    } catch (error) {
+      console.error('Load expenses error:', error);
+      res.status(500).json({ error: 'Failed to load expenses' });
+    }
+  });
+
+  app.post('/api/expenses/save', async (req, res) => {
+    try {
+      const { email, expenses } = req.body;
+      
+      if (!email || !expenses) {
+        return res.status(400).json({ error: 'Email and expenses are required' });
+      }
+
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
+      }
+
+      // Save each expense type to its respective table
+      const savePromises = [];
+
+      // Save wages
+      if (expenses.wages?.length > 0) {
+        for (const wage of expenses.wages) {
+          const wageData = {
+            'Email': email,
+            'Employee Name': wage.employeeName,
+            'Role': wage.role,
+            'Annual Salary': wage.annualSalary,
+            'R&D Percentage': wage.rdPercentage,
+            'R&D Amount': wage.rdAmount,
+            'Last Updated': new Date().toISOString(),
+          };
+
+          // Check if record exists (by ID if it's an Airtable ID, otherwise create new)
+          if (wage.id && wage.id.startsWith('rec')) {
+            savePromises.push(
+              fetch(`https://api.airtable.com/v0/${baseId}/Wages/${wage.id}`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields: wageData }),
+              })
+            );
+          } else {
+            savePromises.push(
+              fetch(`https://api.airtable.com/v0/${baseId}/Wages`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields: wageData }),
+              })
+            );
+          }
+        }
+      }
+
+      // Save contractors
+      if (expenses.contractors?.length > 0) {
+        for (const contractor of expenses.contractors) {
+          const contractorData = {
+            'Email': email,
+            'Contractor Name': contractor.contractorName,
+            'Amount': contractor.amount,
+            'Description': contractor.description,
+            'Qualified Amount': contractor.qualifiedAmount,
+            'Last Updated': new Date().toISOString(),
+          };
+
+          if (contractor.id && contractor.id.startsWith('rec')) {
+            savePromises.push(
+              fetch(`https://api.airtable.com/v0/${baseId}/Contractors/${contractor.id}`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields: contractorData }),
+              })
+            );
+          } else {
+            savePromises.push(
+              fetch(`https://api.airtable.com/v0/${baseId}/Contractors`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields: contractorData }),
+              })
+            );
+          }
+        }
+      }
+
+      // Save supplies
+      if (expenses.supplies?.length > 0) {
+        for (const supply of expenses.supplies) {
+          const supplyData = {
+            'Email': email,
+            'Supply Type': supply.supplyType,
+            'Amount': supply.amount,
+            'R&D Percentage': supply.rdPercentage,
+            'R&D Amount': supply.rdAmount,
+            'Last Updated': new Date().toISOString(),
+          };
+
+          if (supply.id && supply.id.startsWith('rec')) {
+            savePromises.push(
+              fetch(`https://api.airtable.com/v0/${baseId}/Supplies/${supply.id}`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields: supplyData }),
+              })
+            );
+          } else {
+            savePromises.push(
+              fetch(`https://api.airtable.com/v0/${baseId}/Supplies`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields: supplyData }),
+              })
+            );
+          }
+        }
+      }
+
+      // Save cloud/software
+      if (expenses.cloudSoftware?.length > 0) {
+        for (const cloud of expenses.cloudSoftware) {
+          const cloudData = {
+            'Email': email,
+            'Service Name': cloud.serviceName,
+            'Monthly Cost': cloud.monthlyCost,
+            'R&D Percentage': cloud.rdPercentage,
+            'Annual R&D Amount': cloud.annualRdAmount,
+            'Last Updated': new Date().toISOString(),
+          };
+
+          if (cloud.id && cloud.id.startsWith('rec')) {
+            savePromises.push(
+              fetch(`https://api.airtable.com/v0/${baseId}/CloudSoftware/${cloud.id}`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields: cloudData }),
+              })
+            );
+          } else {
+            savePromises.push(
+              fetch(`https://api.airtable.com/v0/${baseId}/CloudSoftware`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields: cloudData }),
+              })
+            );
+          }
+        }
+      }
+
+      await Promise.all(savePromises);
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Save expenses error:', error);
+      res.status(500).json({ error: 'Failed to save expenses' });
+    }
+  });
+
+  app.post('/api/expenses/submit', async (req, res) => {
+    try {
+      const { email, expenses } = req.body;
+      
+      if (!email || !expenses) {
+        return res.status(400).json({ error: 'Email and expenses are required' });
+      }
+
+      // Verify customer exists
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
+      }
+
+      const customerCheck = await fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+        headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+      });
+
+      if (!customerCheck.ok) {
+        throw new Error('Failed to verify customer');
+      }
+
+      const customerData = await customerCheck.json();
+      if (customerData.records.length === 0) {
+        return res.status(403).json({ error: 'Access denied - customer not found' });
+      }
+
+      // First save all expense data (reuse the save logic)
+      await fetch(`${req.protocol}://${req.get('host')}/api/expenses/save`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, expenses }),
+      });
+
+      // Mark expenses as complete by adding status to each table
+      const statusUpdates = [];
+      
+      // Update status for each expense type
+      ['Wages', 'Contractors', 'Supplies', 'CloudSoftware'].forEach(tableName => {
+        statusUpdates.push(
+          fetch(`https://api.airtable.com/v0/${baseId}/${tableName}?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+            headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+          }).then(res => res.json()).then(data => {
+            return Promise.all(data.records?.map(record => 
+              fetch(`https://api.airtable.com/v0/${baseId}/${tableName}/${record.id}`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${airtableToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                  fields: { 
+                    'Status': 'Complete',
+                    'Completed At': new Date().toISOString()
+                  }
+                }),
+              })
+            ) || [])
+          })
+        );
+      });
+
+      await Promise.all(statusUpdates);
+
+      res.json({ success: true, message: 'Expense information saved successfully' });
+    } catch (error) {
+      console.error('Expense submission error:', error);
+      res.status(500).json({ error: 'Failed to submit expense information' });
+    }
+  });
+
   // Development-only endpoint to create test customer for login testing
   if (process.env.NODE_ENV !== 'production') {
     app.post('/api/dev/create-test-customer', async (req, res) => {

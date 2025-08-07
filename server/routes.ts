@@ -209,6 +209,27 @@ async function sendWelcomeEmail(email: string, name?: string) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // Test email endpoint - for testing SendGrid integration
+  app.post('/api/test-email', async (req, res) => {
+    try {
+      const { email, name } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      await sendWelcomeEmail(email, name);
+      
+      res.json({ success: true, message: `Test email sent to ${email}` });
+    } catch (error) {
+      console.error('Test email error:', error);
+      res.status(500).json({ 
+        error: 'Failed to send test email', 
+        details: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  });
+
   // Auth verification endpoint - checks Airtable directly
   app.post('/api/auth/verify', async (req, res) => {
     try {

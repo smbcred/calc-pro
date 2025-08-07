@@ -6,6 +6,7 @@ import SuccessPage from './pages/SuccessPage';
 import IntakePage from './pages/IntakePage';
 import LoginPage from './pages/LoginPage';
 import GatedIntakePortal from './pages/GatedIntakePortal';
+import EmailTest from './pages/EmailTest';
 import { useState } from 'react';
 
 function App() {
@@ -34,6 +35,9 @@ function App() {
         </Route>
         <Route path="/intake-portal">
           <GatedIntakePortal />
+        </Route>
+        <Route path="/email-test">
+          <EmailTest />
         </Route>
         <Route>
           {/* 404 fallback */}

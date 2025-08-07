@@ -13,6 +13,7 @@ import ExpenseCollectionForm from '@/components/ExpenseCollectionForm';
 import QRECalculator from '@/components/QRECalculator';
 import CreditCalculator from '@/components/CreditCalculator';
 import ReviewScreen from '@/components/ReviewScreen';
+import DocumentsPage from '@/components/DocumentsPage';
 
 interface CustomerInfo {
   email: string;
@@ -945,7 +946,14 @@ const Dashboard: React.FC = () => {
             />
           )}
 
-          {activeSection !== 'overview' && activeSection !== 'company' && activeSection !== 'expenses' && activeSection !== 'qre-results' && activeSection !== 'credit-results' && activeSection !== 'review' && (
+          {activeSection === 'documents' && (
+            <DocumentsPage 
+              customerEmail={customerInfo?.email || ''}
+              onBack={() => setActiveSection('overview')}
+            />
+          )}
+
+          {activeSection !== 'overview' && activeSection !== 'company' && activeSection !== 'expenses' && activeSection !== 'qre-results' && activeSection !== 'credit-results' && activeSection !== 'review' && activeSection !== 'documents' && (
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-green-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">

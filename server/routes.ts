@@ -1872,6 +1872,182 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Document management endpoints
+  app.post('/api/documents/list', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
+      }
+
+      // Check for Documents table in Airtable
+      const response = await fetch(`https://api.airtable.com/v0/${baseId}/Documents?filterByFormula=LOWER({Customer Email})=LOWER('${email}')&sort%5B0%5D%5Bfield%5D=Uploaded%20At&sort%5B0%5D%5Bdirection%5D=desc`, {
+        headers: {
+          'Authorization': `Bearer ${airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch documents from Airtable');
+      }
+
+      const data = await response.json();
+      
+      // Transform Airtable data to frontend format
+      const documents = data.records?.map((record: any) => {
+        const fields = record.fields;
+        return {
+          id: record.id,
+          fileName: fields['File Name'] || '',
+          displayName: getDocumentDisplayName(fields['File Type'] || ''),
+          fileType: fields['File Type'] || '',
+          description: getDocumentDescription(fields['File Type'] || ''),
+          size: fields['File Size'] || 0,
+          uploadedAt: fields['Uploaded At'] || new Date().toISOString(),
+          downloadUrl: fields['Download URL'] || '',
+          downloadCount: fields['Download Count'] || 0,
+          lastDownloaded: fields['Last Downloaded'] || null,
+        };
+      }) || [];
+      
+      res.json({ documents });
+    } catch (error: any) {
+      console.error('Document list error:', error);
+      res.status(500).json({ 
+        error: 'Failed to load documents',
+        details: error.message 
+      });
+    }
+  });
+
+  // Helper functions for document display
+  function getDocumentDisplayName(fileType: string): string {
+    switch (fileType) {
+      case 'form_6765':
+        return 'Form 6765 - Credit for Increasing Research Activities';
+      case 'technical_narrative':
+        return 'Technical Narrative & R&D Documentation';
+      case 'qre_workbook':
+        return 'QRE Calculation Workbook';
+      case 'compliance_memo':
+        return 'Tax Compliance Memo';
+      case 'recordkeeping_checklist':
+        return 'Record-keeping & Documentation Checklist';
+      default:
+        return 'R&D Tax Credit Document';
+    }
+  }
+
+  function getDocumentDescription(fileType: string): string {
+    switch (fileType) {
+      case 'form_6765':
+        return 'Official IRS form for claiming the federal R&D tax credit';
+      case 'technical_narrative':
+        return 'Detailed narrative explaining your qualifying R&D activities and technological challenges';
+      case 'qre_workbook':
+        return 'Excel workbook with detailed QRE calculations and supporting schedules';
+      case 'compliance_memo':
+        return 'Professional memo outlining compliance requirements and filing instructions';
+      case 'recordkeeping_checklist':
+        return 'Comprehensive checklist for maintaining proper R&D credit documentation';
+      default:
+        return 'Supporting documentation for your R&D tax credit claim';
+    }
+  }
+
+  // Track document downloads in Airtable
+  app.post('/api/documents/track-download', async (req, res) => {
+    try {
+      const { email, documentId, fileName, fileType } = req.body;
+      
+      if (!email || !documentId) {
+        return res.status(400).json({ error: 'Email and document ID are required' });
+      }
+
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
+      }
+
+      // First, get the current download count
+      const getResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Documents/${documentId}`, {
+        headers: {
+          'Authorization': `Bearer ${airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!getResponse.ok) {
+        console.warn('Could not get current download count');
+        return res.status(200).json({ success: true }); // Don't fail the download
+      }
+
+      const currentDoc = await getResponse.json();
+      const currentCount = currentDoc.fields['Download Count'] || 0;
+
+      // Update the document with incremented download count and last downloaded timestamp
+      const updateResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Documents/${documentId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fields: {
+            'Download Count': currentCount + 1,
+            'Last Downloaded': new Date().toISOString(),
+          },
+        }),
+      });
+
+      if (!updateResponse.ok) {
+        console.warn('Failed to update download count in Airtable');
+      }
+
+      // Also log the download event in a separate Downloads table if it exists
+      try {
+        await fetch(`https://api.airtable.com/v0/${baseId}/Downloads`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${airtableToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fields: {
+              'Customer Email': email,
+              'Document ID': documentId,
+              'File Name': fileName || '',
+              'File Type': fileType || '',
+              'Downloaded At': new Date().toISOString(),
+              'Download Date': new Date().toISOString().split('T')[0],
+            },
+          }),
+        });
+      } catch (error) {
+        console.warn('Downloads table may not exist, skipping download event logging');
+      }
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('Download tracking error:', error);
+      res.status(500).json({ 
+        error: 'Failed to track download',
+        details: error.message 
+      });
+    }
+  });
+
   // Development-only endpoint to create test customer for login testing
   if (process.env.NODE_ENV !== 'production') {
     app.post('/api/dev/create-test-customer', async (req, res) => {

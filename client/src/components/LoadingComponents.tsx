@@ -1,26 +1,26 @@
-import { HTMLAttributes } from "react";
-import { cn } from "@/lib/utils";
+import { HTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
 
 // Loading Spinner Component
 interface LoadingSpinnerProps extends HTMLAttributes<HTMLDivElement> {
-  size?: "sm" | "md" | "lg" | "xl";
-  color?: "primary" | "secondary";
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  color?: 'primary' | 'secondary';
 }
 
-export function LoadingSpinner({
-  size = "md",
-  color = "primary",
+export function LoadingSpinner({ 
+  size = 'md', 
+  color = 'primary',
   className,
-  ...props
+  ...props 
 }: LoadingSpinnerProps) {
   return (
-    <div
+    <div 
       className={cn(
-        "loading-spinner",
-        size === "sm" && "loading-spinner-sm",
-        size === "lg" && "loading-spinner-lg",
-        size === "xl" && "loading-spinner-xl",
-        className,
+        'loading-spinner',
+        size === 'sm' && 'loading-spinner-sm',
+        size === 'lg' && 'loading-spinner-lg', 
+        size === 'xl' && 'loading-spinner-xl',
+        className
       )}
       {...props}
     />
@@ -28,12 +28,9 @@ export function LoadingSpinner({
 }
 
 // Dot Loading Animation
-export function LoadingDots({
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
+export function LoadingDots({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("loading-dots", className)} {...props}>
+    <div className={cn('loading-dots', className)} {...props}>
       <div></div>
       <div></div>
       <div></div>
@@ -42,45 +39,36 @@ export function LoadingDots({
 }
 
 // Skeleton Loading Components
-export function SkeletonLine({
-  variant = "full",
+export function SkeletonLine({ 
+  variant = 'full',
   className,
-  ...props
+  ...props 
 }: {
-  variant?: "full" | "short" | "medium";
+  variant?: 'full' | 'short' | 'medium';
 } & HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
+    <div 
       className={cn(
-        "skeleton-line",
-        variant === "short" && "skeleton-line-short",
-        variant === "medium" && "skeleton-line-medium",
-        className,
+        'skeleton-line',
+        variant === 'short' && 'skeleton-line-short',
+        variant === 'medium' && 'skeleton-line-medium',
+        className
       )}
       {...props}
     />
   );
 }
 
-export function SkeletonAvatar({
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("skeleton-avatar", className)} {...props} />;
+export function SkeletonAvatar({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('skeleton-avatar', className)} {...props} />;
 }
 
-export function SkeletonCard({
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("skeleton-card", className)} {...props} />;
+export function SkeletonCard({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('skeleton-card', className)} {...props} />;
 }
 
-export function SkeletonButton({
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("skeleton-button", className)} {...props} />;
+export function SkeletonButton({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('skeleton-button', className)} {...props} />;
 }
 
 // Progress Components
@@ -90,36 +78,37 @@ interface ProgressBarProps extends HTMLAttributes<HTMLDivElement> {
   indeterminate?: boolean;
 }
 
-export function ProgressBar({
-  value = 0,
-  max = 100,
+export function ProgressBar({ 
+  value = 0, 
+  max = 100, 
   indeterminate = false,
   className,
-  ...props
+  ...props 
 }: ProgressBarProps) {
   if (indeterminate) {
-    return (
-      <div className={cn("progress-bar-indeterminate", className)} {...props} />
-    );
+    return <div className={cn('progress-bar-indeterminate', className)} {...props} />;
   }
 
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
   return (
-    <div className={cn("progress-bar", className)} {...props}>
-      <div className="progress-bar-fill" style={{ width: `${percentage}%` }} />
+    <div className={cn('progress-bar', className)} {...props}>
+      <div 
+        className="progress-bar-fill"
+        style={{ width: `${percentage}%` }}
+      />
     </div>
   );
 }
 
 // Progress Circle Component
-export function ProgressCircle({
-  value = 0,
+export function ProgressCircle({ 
+  value = 0, 
   max = 100,
   size = 32,
   strokeWidth = 4,
   className,
-  ...props
+  ...props 
 }: {
   value?: number;
   max?: number;
@@ -132,8 +121,8 @@ export function ProgressCircle({
   const offset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div
-      className={cn("progress-circle", className)}
+    <div 
+      className={cn('progress-circle', className)} 
       style={{ width: size, height: size }}
       {...props}
     >
@@ -160,12 +149,9 @@ export function ProgressCircle({
 }
 
 // Loading Card Placeholder
-export function LoadingCard({
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
+export function LoadingCard({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("card-loading", className)} {...props}>
+    <div className={cn('card-loading', className)} {...props}>
       <div className="card-loading-content">
         <div className="card-loading-header" />
         <div className="card-loading-body">
@@ -179,13 +165,13 @@ export function LoadingCard({
 }
 
 // Shimmer Effect Wrapper
-export function ShimmerWrapper({
-  children,
-  className,
-  ...props
+export function ShimmerWrapper({ 
+  children, 
+  className, 
+  ...props 
 }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("shimmer-overlay", className)} {...props}>
+    <div className={cn('shimmer-overlay', className)} {...props}>
       {children}
     </div>
   );
@@ -194,28 +180,28 @@ export function ShimmerWrapper({
 // Loading Button Component
 interface LoadingButtonProps extends HTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
-  variant?: "primary" | "secondary";
+  variant?: 'primary' | 'secondary';
   disabled?: boolean;
 }
 
-export function LoadingButton({
+export function LoadingButton({ 
   loading = false,
-  variant = "primary",
+  variant = 'primary',
   disabled = false,
   className,
   children,
-  ...props
+  ...props 
 }: LoadingButtonProps) {
   const isDisabled = disabled || loading;
 
   return (
     <button
       className={cn(
-        loading && variant === "primary" && "btn-loading",
-        loading && variant === "secondary" && "btn-secondary-loading",
-        !loading && variant === "primary" && "btn-primary",
-        !loading && variant === "secondary" && "btn-secondary",
-        className,
+        loading && variant === 'primary' && 'btn-loading',
+        loading && variant === 'secondary' && 'btn-secondary-loading',
+        !loading && variant === 'primary' && 'btn-primary',
+        !loading && variant === 'secondary' && 'btn-secondary',
+        className
       )}
       disabled={isDisabled}
       {...props}
@@ -226,23 +212,23 @@ export function LoadingButton({
 }
 
 // Table Loading Skeleton
-export function TableLoadingSkeleton({
-  rows = 5,
+export function TableLoadingSkeleton({ 
+  rows = 5, 
   columns = 4,
   className,
-  ...props
+  ...props 
 }: {
   rows?: number;
   columns?: number;
 } & HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("space-y-3", className)} {...props}>
+    <div className={cn('space-y-3', className)} {...props}>
       {Array.from({ length: rows }).map((_, rowIndex) => (
         <div key={rowIndex} className="flex gap-4">
           {Array.from({ length: columns }).map((_, colIndex) => (
-            <SkeletonLine
-              key={colIndex}
-              variant={colIndex === 0 ? "short" : "medium"}
+            <SkeletonLine 
+              key={colIndex} 
+              variant={colIndex === 0 ? 'short' : 'medium'} 
             />
           ))}
         </div>
@@ -252,12 +238,9 @@ export function TableLoadingSkeleton({
 }
 
 // Form Loading Skeleton
-export function FormLoadingSkeleton({
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
+export function FormLoadingSkeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("space-y-4", className)} {...props}>
+    <div className={cn('space-y-4', className)} {...props}>
       <div className="space-y-2">
         <SkeletonLine variant="short" />
         <SkeletonButton />

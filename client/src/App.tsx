@@ -1,6 +1,6 @@
-import { Route, Switch } from "wouter";
-import CreditCalculator from "./components/CreditCalculator";
-import CheckoutPage from "./pages/CheckoutPage";
+import { Route, Switch } from 'wouter';
+import CreditCalculator from './components/CreditCalculator';
+import CheckoutPage from './pages/CheckoutPage';
 
 function App() {
   return (

@@ -13,6 +13,7 @@ interface CheckoutPageProps {
 const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEmail }) => {
   const [selectedYears, setSelectedYears] = useState<string[]>(['2025']);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [checkoutEmail, setCheckoutEmail] = useState('');
 
   // Get calculation results from props
   const results = calculationResults || {
@@ -21,10 +22,12 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
     industry: 'SaaS/Tech'
   };
 
-  // Get email from props, localStorage, or fallback to a default for testing
-  const email = userEmail || 
-                (typeof window !== 'undefined' ? localStorage.getItem('rd_credit_email') : null) || 
-                'devin@goldendigital.co';
+  // Get email from props or localStorage
+  const savedEmail = userEmail || 
+                     (typeof window !== 'undefined' ? localStorage.getItem('rd_credit_email') : null);
+  
+  // Use saved email or checkout email input
+  const email = savedEmail || checkoutEmail;
 
   // Dynamic pricing based on credit amount
   const calculateBasePrice = (creditAmount: number) => {
@@ -68,9 +71,20 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
   };
 
   const handleContinueToPayment = async () => {
+    // Validate email before proceeding
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address to continue');
+      return;
+    }
+
     setIsProcessing(true);
     
     try {
+      // Save email to localStorage if not already saved
+      if (!savedEmail && typeof window !== 'undefined') {
+        localStorage.setItem('rd_credit_email', email);
+      }
+
       // Convert selected years to numbers
       const yearsAsNumbers = selectedYears.map(year => parseInt(year));
       
@@ -442,6 +456,29 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
           </div>
         </div>
 
+        {/* Email Input Section (if no email saved) */}
+        {!savedEmail && (
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 mb-8">
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-bold text-blue-900 mb-2">📧 Enter Your Email to Continue</h3>
+              <p className="text-blue-700">We'll send your R&D credit documents to this email address</p>
+            </div>
+            <div className="max-w-md mx-auto">
+              <input
+                type="email"
+                value={checkoutEmail}
+                onChange={(e) => setCheckoutEmail(e.target.value)}
+                placeholder="your@email.com"
+                className="w-full px-4 py-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                required
+              />
+              <p className="text-sm text-blue-600 mt-2 text-center">
+                Free to provide • No spam • Secure & encrypted
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Enhanced CTA Section */}
         <div className="text-center">
           <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6 mb-6">
@@ -452,13 +489,16 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
               }, 0))} in credits.
             </p>
             <p className="text-gray-600">After payment: Receive documents within 48 hours</p>
+            {savedEmail && (
+              <p className="text-sm text-blue-600 mt-2">Documents will be sent to: {savedEmail}</p>
+            )}
           </div>
 
           <button
             onClick={handleContinueToPayment}
-            disabled={isProcessing}
+            disabled={isProcessing || (!savedEmail && (!checkoutEmail || !checkoutEmail.includes('@')))}
             className={`bg-gradient-to-r from-blue-600 to-green-600 text-white py-6 px-12 rounded-xl font-bold text-2xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 mb-4 ${
-              isProcessing ? 'opacity-50 cursor-not-allowed' : ''
+              isProcessing || (!savedEmail && (!checkoutEmail || !checkoutEmail.includes('@'))) ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
             <span className="flex items-center gap-3">

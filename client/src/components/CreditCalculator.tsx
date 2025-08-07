@@ -1925,18 +1925,18 @@ const CreditCalculator = () => {
                   </div>
                 </div>
                 
-                {/* Social Proof */}
+                {/* Key Benefits */}
                 <div className="mt-8 pt-6 border-t border-gray-200">
                   <div className="text-center">
-                    <p className="text-sm text-gray-600 mb-4">70% of eligible businesses miss this credit (IRS data)</p>
+                    <p className="text-sm text-gray-600 mb-4">Don't miss out on legitimate tax savings</p>
                     <div className="flex justify-center items-center gap-8 text-sm text-gray-600">
                       <div className="flex items-center gap-2">
                         <CheckCircle className="w-4 h-4 text-green-600" />
-                        <span>Average SMB credit: $45,000 per year</span>
+                        <span>Federal credits up to $150K+</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Shield className="w-4 h-4 text-blue-600" />
-                        <span>$18.4 billion in R&D credits claimed annually</span>
+                        <span>Complete IRS documentation</span>
                       </div>
                     </div>
                   </div>
@@ -2339,8 +2339,8 @@ const CreditCalculator = () => {
                   {/* Urgency Banner */}
                   <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg p-4 mb-6">
                     <div className="flex items-center justify-center gap-2 text-sm font-semibold">
-                      <Clock className="w-5 h-5" />
-                      <span>Limited Time: File amended returns by July 2026 for maximum benefit</span>
+                      <FileText className="w-5 h-5" />
+                      <span>Complete R&D credit documentation for maximum benefit</span>
                     </div>
                   </div>
                 </div>
@@ -2547,15 +2547,7 @@ const CreditCalculator = () => {
                     
                     {/* CONVERSION-OPTIMIZED PRIMARY CTA SECTION */}
                     <div className="relative mb-6">
-                      {/* Urgency Timer */}
-                      <div className="mb-4 text-center">
-                        <div className="inline-flex items-center gap-2 bg-red-100 border border-red-300 rounded-full px-4 py-2 text-red-800">
-                          <Clock className="w-4 h-4" />
-                          <span className="font-bold text-sm">⚡ Limited time: July 2026 amendment deadline</span>
-                        </div>
-                      </div>
-
-                      {/* Updated Urgency Messaging */}
+                      {/* Consolidated Urgency Messaging */}
                       <div className="bg-gradient-to-r from-red-100 to-orange-100 rounded-2xl p-6 mb-6 border-2 border-red-400">
                         <div className="text-center">
                           <div className="text-2xl font-black text-red-800 mb-2">
@@ -2966,13 +2958,13 @@ const CreditCalculator = () => {
                     </div>
                   </div>
 
-                  {/* Urgency Footer */}
-                  <div className="mt-8 bg-gradient-to-r from-red-100 to-orange-100 rounded-xl p-4 text-center border border-red-300">
+                  {/* Action Footer */}
+                  <div className="mt-8 bg-gradient-to-r from-blue-100 to-green-100 rounded-xl p-4 text-center border border-blue-300">
                     <div className="flex items-center justify-center gap-2 mb-2">
-                      <Clock className="w-5 h-5 text-red-600" />
-                      <span className="font-bold text-red-800">Time-sensitive: July 2026 amendment deadline</span>
+                      <FileText className="w-5 h-5 text-blue-600" />
+                      <span className="font-bold text-blue-800">Professional documentation ready in 48 hours</span>
                     </div>
-                    <div className="text-sm text-red-700">Every day you delay is money left on the table</div>
+                    <div className="text-sm text-blue-700">Hand to your CPA or file yourself</div>
                   </div>
                   
                   {/* Support CTA */}
@@ -3296,42 +3288,33 @@ const CreditCalculator = () => {
 
             {/* FINAL TESTIMONIAL & URGENCY SECTION */}
             <div className="space-y-6">
-              {/* Industry Statistics */}
+              {/* Success Stories */}
               <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-300 rounded-2xl p-6">
                 <div className="text-center mb-4">
                   <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 rounded-full px-4 py-2 text-sm font-bold">
                     <Trophy className="w-4 h-4" />
-                    💼 INDUSTRY DATA
+                    🎯 SUCCESS METRICS
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-600 mb-2">6.5%</div>
-                    <div className="text-gray-700">of R&D expenses become tax credits</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600 mb-2">$45K</div>
+                    <div className="text-3xl font-bold text-blue-600 mb-2">$45K</div>
                     <div className="text-gray-700">Average SMB credit per year</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-purple-600 mb-2">$18.4B</div>
-                    <div className="text-gray-700">Total R&D credits claimed annually</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-orange-600 mb-2">70%</div>
-                    <div className="text-gray-700">of eligible businesses miss this credit</div>
+                    <div className="text-3xl font-bold text-green-600 mb-2">48hrs</div>
+                    <div className="text-gray-700">Complete documentation package</div>
                   </div>
                 </div>
                 <div className="text-center mt-4">
-                  <div className="text-sm text-gray-600">Source: IRS SOI Tax Stats & R&D Credit Studies</div>
+                  <div className="text-sm text-gray-600">Professional document preparation service</div>
                 </div>
               </div>
 
-              {/* Final Urgency Call-to-Action */}
+              {/* Final Call-to-Action */}
               <div className="bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 rounded-2xl p-8 text-white text-center shadow-2xl">
                 <div className="mb-4">
-                  <div className="text-3xl font-black mb-2">⏰ TIME IS RUNNING OUT</div>
-                  <div className="text-xl font-bold mb-4">July 2026 deadline for previous years - Don't lose thousands in credits!</div>
+                  <div className="text-3xl font-black mb-2">🚀 Ready to Claim Your Credits?</div>
                   <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
                     <div className="text-yellow-200 text-sm font-medium mb-2">Your Potential Tax Credits:</div>
                     <div className="text-4xl font-black text-white mb-2">$10,000 - $150,000+</div>
@@ -3339,8 +3322,8 @@ const CreditCalculator = () => {
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <div className="text-lg font-bold">⏰ July 2026 Amendment Deadline</div>
-                  <div className="text-sm opacity-90">70% of eligible businesses miss this credit (IRS data)</div>
+                  <div className="text-lg font-bold">Get Started Now</div>
+                  <div className="text-sm opacity-90">Complete documentation package in under 48 hours</div>
                   
                   {/* Checkout Navigation Button */}
                   <Link href="/checkout">

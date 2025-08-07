@@ -115,6 +115,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
 
       const { url } = await response.json();
       
+      console.log('Redirecting to Stripe:', url);
+      
       // Redirect to Stripe Checkout
       window.location.href = url;
       

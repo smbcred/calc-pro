@@ -54,14 +54,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       });
 
+      // Create proper base URL with scheme for Replit environment
+      let fullBaseUrl = 'http://localhost:5000'; // fallback
+      
+      if (req.headers.origin) {
+        fullBaseUrl = req.headers.origin;
+      } else if (req.headers.host) {
+        const protocol = req.headers['x-forwarded-proto'] || 'http';
+        fullBaseUrl = `${protocol}://${req.headers.host}`;
+      }
+      
+      // Ensure URL has proper scheme
+      if (!fullBaseUrl.startsWith('http')) {
+        fullBaseUrl = `http://${fullBaseUrl}`;
+      }
+
       // Create Stripe Checkout session
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: lineItems,
         mode: 'payment',
         customer_email: email,
-        success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.origin}/checkout`,
+        success_url: `${fullBaseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${fullBaseUrl}/checkout`,
         metadata: {
           email,
           tierBasePrice: tierBasePrice.toString(),

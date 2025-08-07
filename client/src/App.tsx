@@ -2,6 +2,7 @@ import { Route, Switch } from 'wouter';
 import LandingPage from './pages/LandingPage';
 import CreditCalculator from './components/CreditCalculator';
 import CheckoutPage from './pages/CheckoutPage';
+import SuccessPage from './pages/SuccessPage';
 import { useState } from 'react';
 
 function App() {
@@ -18,6 +19,9 @@ function App() {
         </Route>
         <Route path="/checkout">
           <CheckoutPage calculationResults={calculationResults} />
+        </Route>
+        <Route path="/success">
+          <SuccessPage />
         </Route>
         <Route>
           {/* 404 fallback */}

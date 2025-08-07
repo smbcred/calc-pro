@@ -132,7 +132,7 @@ const LandingPage: React.FC = () => {
 
             {/* Hero CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-              <Link href="#calculator">
+              <Link href="/calculator">
                 <button className="btn-primary bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-8 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
                   <span className="flex items-center gap-3">
                     <Calculator className="w-6 h-6" />

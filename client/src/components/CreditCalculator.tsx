@@ -22,7 +22,15 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
   });
 
   // Multi-year data for each selected year
-  const [yearlyData, setYearlyData] = useState({
+  const [yearlyData, setYearlyData] = useState<Record<string, {
+    w2Wages: string;
+    contractorCosts: string;
+    cloudCosts: string;
+    softwareLicenses: string;
+    supplies: string;
+    w2Percentage: string;
+    contractorPercentage: string;
+  }>>({
     '2024': {
       w2Wages: '',
       contractorCosts: '',
@@ -38,7 +46,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
   const [showMultiYearUpsell, setShowMultiYearUpsell] = useState(false);
 
   // State for qualification checks
-  const [qualificationChecks, setQualificationChecks] = useState({
+  const [qualificationChecks, setQualificationChecks] = useState<Record<string, boolean>>({
     aiTools: false,
     customGPTs: false,
     prompts: false,
@@ -206,9 +214,9 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
     </div>
   );
 
-  // Industry-Specific Examples Component - expanded
+  // Industry-Specific Examples Component - expanded  
   const IndustryExamples = ({ industry }: { industry: string }) => {
-    const examples = {
+    const examples: Record<string, string[]> = {
       freelancer: [
         "Using ChatGPT to write client proposals faster",
         "Building custom workflows to automate repetitive tasks", 
@@ -345,7 +353,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
           Common qualifying activities in your industry:
         </p>
         <ul className="text-xs text-blue-700 space-y-0.5">
-          {examples[industry].slice(0, 4).map(item => (
+          {examples[industry].slice(0, 4).map((item: string) => (
             <li key={item}>• {item}</li>
           ))}
         </ul>

@@ -1127,102 +1127,153 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-8">
-            {/* Streamlined Step Header */}
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">Answer questions about your AI use</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                We'll calculate your credit amount and prepare your documentation package. Complete forms ready for filing - hand to your CPA or file yourself.
-              </p>
+          <div className="max-w-4xl mx-auto space-y-8">
+            {/* Progress Bar */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-600">Step 1 of 4</span>
+                <span className="text-sm text-gray-500">About 2 minutes</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-blue-600 h-2 rounded-full w-1/4 transition-all duration-500"></div>
+              </div>
             </div>
-            
-            <QualificationQuickCheck />
-            
-            <div className="card-elevated p-8 md:p-10 space-y-8">
-              <div className="space-y-4">
-                <label className="block text-lg font-semibold text-gray-900 mb-3">
-                  <span className="flex items-center gap-2">
-                    <Building className="w-5 h-5 text-blue-600" />
-                    What's your business name?
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.companyName}
-                  onChange={(e) => updateFormData('companyName', e.target.value)}
-                  className="input-enhanced text-xl"
-                  placeholder="Your Company, Inc."
-                />
-                <p className="text-sm text-gray-500">This helps us personalize your tax credit package</p>
+
+            {/* Header Section */}
+            <div className="text-center mb-12">
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">Let's Check Your R&D Qualification</h1>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">Tell us about your business technology use</p>
+            </div>
+
+            {/* Qualification Checkboxes */}
+            <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8 mb-8">
+              <div className="text-center mb-6">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <CheckCircle className="w-6 h-6 text-green-600" />
+                  <h3 className="text-2xl font-bold text-gray-900">Which of these apply to your business?</h3>
+                </div>
+                <p className="text-gray-600">Select all that apply - even partial use qualifies</p>
               </div>
 
-              <div className="space-y-4">
-                <label className="block text-lg font-semibold text-gray-900 mb-3">
-                  <span className="flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-green-600" />
-                    What industry are you in?
-                  </span>
-                </label>
-                <select
-                  value={formData.industry}
-                  onChange={(e) => updateFormData('industry', e.target.value)}
-                  className="input-enhanced text-xl"
-                >
-                  <option value="">Choose your industry type</option>
-                  {industries.map(ind => (
-                    <option key={ind.value} value={ind.value}>{ind.label}</option>
-                  ))}
-                </select>
-                <IndustryExamples industry={formData.industry} />
-                
-                {/* Enhanced Industry-Specific Value Props */}
-                {formData.industry && (
-                  <div className="mt-6 status-info rounded-2xl p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                        <TrendingUp className="w-6 h-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <h4 className="text-xl font-bold text-blue-900 mb-3">
-                          {getIndustryValueProp(formData.industry).title}
-                        </h4>
-                        <p className="text-blue-800 mb-3 leading-relaxed">
-                          {getIndustryValueProp(formData.industry).description}
-                        </p>
-                        <div className="inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full">
-                          <span className="text-sm font-bold text-blue-700">
-                            Typical savings: {getIndustryValueProp(formData.industry).avgSavings}
-                          </span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { id: 'chatgpt', label: 'Using ChatGPT or AI tools', tag: 'High Value', tagColor: 'bg-green-100 text-green-800' },
+                  { id: 'automation', label: 'Creating business automations', tag: 'Top Credit', tagColor: 'bg-blue-100 text-blue-800' },
+                  { id: 'software', label: 'Developing custom software/apps', tag: 'Major Credit', tagColor: 'bg-purple-100 text-purple-800' },
+                  { id: 'processes', label: 'Improving business processes', tag: 'Common', tagColor: 'bg-orange-100 text-orange-800' },
+                  { id: 'testing', label: 'Testing new technologies', tag: 'Qualifies', tagColor: 'bg-gray-100 text-gray-800' },
+                  { id: 'research', label: 'Research & experimentation', tag: 'Strong Credit', tagColor: 'bg-emerald-100 text-emerald-800' }
+                ].map((activity) => {
+                  const isSelected = formData.selectedActivities?.includes(activity.id) || false;
+                  return (
+                    <div 
+                      key={activity.id}
+                      className={`border-2 rounded-xl p-6 cursor-pointer transition-all hover:shadow-md ${
+                        isSelected
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300 hover:bg-blue-25'
+                      }`}
+                      onClick={() => {
+                        const currentActivities = formData.selectedActivities || [];
+                        const newActivities = isSelected
+                          ? currentActivities.filter(id => id !== activity.id)
+                          : [...currentActivities, activity.id];
+                        updateFormData('selectedActivities', newActivities);
+                      }}
+                    >
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => {}}
+                          className="w-5 h-5 text-blue-600 rounded"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="font-semibold text-gray-900">{activity.label}</span>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${activity.tagColor}`}>
+                              {activity.tag}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })}
               </div>
 
-              {/* Primary Tax Year Selection */}
-              <div>
-                <label className="block text-base font-semibold text-gray-800 mb-3">
-                  Primary Tax Year to File
-                  <InfoTooltip text="Select the main tax year you want to file for. You can add additional years later for multi-year savings." />
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {getAvailableYears().map(year => {
+              {/* Dynamic Encouragement */}
+              {formData.selectedActivities && formData.selectedActivities.length > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center animate-in slide-in-from-bottom duration-300">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600">💡</span>
+                    </div>
+                    <span className="font-medium text-blue-800">
+                      {formData.selectedActivities.length <= 2 && "Good start! Based on these activities, you likely qualify."}
+                      {formData.selectedActivities.length >= 3 && formData.selectedActivities.length <= 4 && "Excellent! You have significant R&D activities."}
+                      {formData.selectedActivities.length >= 5 && "Outstanding! You have substantial qualifying work."}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Business Information */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-8 space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Company Name */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={formData.companyName}
+                      onChange={(e) => updateFormData('companyName', e.target.value)}
+                      className="w-full px-4 py-4 border border-gray-300 rounded-xl text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Your Company, Inc."
+                    />
+                    <Lock className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  </div>
+                </div>
+
+                {/* Industry */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+                  <select
+                    value={formData.industry}
+                    onChange={(e) => updateFormData('industry', e.target.value)}
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Choose your industry</option>
+                    <option value="technology">💻 Technology & Software</option>
+                    <option value="ecommerce">🛒 E-commerce & Retail</option>
+                    <option value="services">💼 Professional Services</option>
+                    <option value="marketing">📊 Marketing & Creative</option>
+                    <option value="healthcare">🏥 Healthcare & Medical</option>
+                    <option value="manufacturing">🏭 Manufacturing</option>
+                    <option value="financial">💰 Financial Services</option>
+                    <option value="other">🔧 Other</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Tax Year Selector */}
+              <div className="space-y-4">
+                <label className="block text-sm font-medium text-gray-700">Tax Year to Calculate</label>
+                <div className="grid grid-cols-4 gap-3">
+                  {[2025, 2024, 2023, 2022].map(year => {
                     const isSelected = formData.selectedYears?.includes(year.toString()) || false;
-                    const isCurrent = year === new Date().getFullYear();
-                    
                     return (
                       <button
                         key={year}
                         type="button"
                         onClick={() => {
-                          // For Step 1, only allow single year selection
                           setFormData(prev => ({ 
                             ...prev, 
                             selectedYears: [year.toString()],
                             taxYear: year.toString()
                           }));
-                          // Initialize yearly data for this year
                           setYearlyData({
                             [year.toString()]: {
                               w2Wages: '',
@@ -1235,102 +1286,100 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                             }
                           });
                         }}
-                        className={`p-4 rounded-xl border-2 transition-all text-center ${
+                        className={`py-3 px-4 rounded-lg border-2 font-medium transition-all ${
                           isSelected 
-                            ? 'border-blue-500 bg-blue-100 text-blue-800' 
-                            : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
+                            ? 'border-blue-500 bg-blue-600 text-white' 
+                            : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
                         }`}
                       >
-                        <div className="text-xl font-bold">{year}</div>
-                        <div className="text-sm text-gray-600">
-                          {isCurrent ? 'Current Year' : 'Lookback'}
+                        <div className="flex items-center justify-center gap-2">
+                          {year}
+                          {isSelected && <CheckCircle className="w-4 h-4" />}
                         </div>
-                        {isSelected && (
-                          <div className="text-sm font-medium text-blue-600 mt-1">✓ Selected</div>
-                        )}
                       </button>
                     );
                   })}
                 </div>
-                
-                {/* Selected Year Confirmation */}
-                {formData.selectedYears.length > 0 && (
-                  <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <div className="flex items-center gap-2 text-blue-800">
-                      <Calendar className="w-4 h-4" />
-                      <span className="text-sm font-medium">
-                        Filing for tax year {formData.selectedYears[0]}
-                      </span>
-                    </div>
-                    <p className="text-xs text-blue-600 mt-1">
-                      Add additional years in Step 4 for multi-year savings up to 25% off!
-                    </p>
-                  </div>
-                )}
+                <p className="text-sm text-gray-500">Additional years can be added for $297 each</p>
               </div>
 
+              {/* Annual Revenue */}
               <div className="space-y-4">
-                <label className="block text-lg font-semibold text-gray-900 mb-3">
-                  <span className="flex items-center gap-2">
-                    <span className="text-green-600 font-bold">$</span>
-                    What's your annual revenue?
-                    <InfoTooltip text="We need this to calculate your maximum credit and special benefits. Your data is encrypted and never shared." />
-                  </span>
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
-                  <input
-                    type="number"
-                    min="0"
-                    value={formData.grossReceipts}
-                    onChange={(e) => updateFormData('grossReceipts', e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400 text-xl"
-                    placeholder="1,000,000"
-                  />
-                </div>
-                <p className="text-sm text-gray-500">This determines your eligibility for special startup benefits</p>
-                
-                {/* Enhanced Benefits Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                  <div className="status-success rounded-2xl p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <Zap className="w-5 h-5 text-green-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-green-900 mb-1">Under $5M Revenue?</h4>
-                        <p className="text-sm text-green-700">Get immediate cash refunds instead of waiting for tax savings</p>
-                      </div>
+                <label className="block text-sm font-medium text-gray-700">Annual Revenue</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Under $5M Card */}
+                  <div 
+                    className={`border-2 rounded-xl p-6 cursor-pointer transition-all ${
+                      (formData.grossReceipts && parseInt(formData.grossReceipts) < 5000000) 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => updateFormData('grossReceipts', '2500000')}
+                  >
+                    <div className="text-center">
+                      <div className="text-3xl mb-3">🚀</div>
+                      <h4 className="font-bold text-gray-900 mb-2">Under $5M Revenue</h4>
+                      <p className="text-sm text-gray-600">Qualify for cash refunds</p>
                     </div>
                   </div>
-                  <div className="status-info rounded-2xl p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <Building className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-blue-900 mb-1">LLC & S-Corp Benefits</h4>
-                        <p className="text-sm text-blue-700">Claim credits on your personal return with pass-through advantages</p>
-                      </div>
+
+                  {/* LLC & S-Corp Card */}
+                  <div 
+                    className={`border-2 rounded-xl p-6 cursor-pointer transition-all ${
+                      (formData.grossReceipts && parseInt(formData.grossReceipts) >= 5000000) 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => updateFormData('grossReceipts', '7500000')}
+                  >
+                    <div className="text-center">
+                      <div className="text-3xl mb-3">🏢</div>
+                      <h4 className="font-bold text-gray-900 mb-2">LLC & S-Corp Benefits</h4>
+                      <p className="text-sm text-gray-600">Pass-through tax advantages</p>
                     </div>
                   </div>
                 </div>
               </div>
-
             </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center pt-8 border-t border-gray-100">
-              <SaveProgressButton />
+
+            {/* Footer Section */}
+            <div className="text-center space-y-6">
+              {/* Continue Button */}
               <button
                 onClick={() => setCurrentStep(2)}
-                disabled={!formData.companyName || !formData.grossReceipts || formData.selectedYears.length === 0}
-                className="bg-blue-600 text-white py-4 px-8 rounded-xl font-semibold text-xl shadow-lg hover:bg-blue-700 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
+                disabled={!formData.companyName || !formData.industry || !formData.selectedYears?.length || !formData.selectedActivities?.length}
+                className="bg-blue-600 text-white py-4 px-8 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none w-full md:w-auto"
               >
-                <span className="flex items-center gap-3">
-                  Continue to Your AI Work
-                  <ChevronRight className="w-6 h-6" />
+                <span className="flex items-center justify-center gap-3">
+                  Continue to Calculation
+                  <ArrowRight className="w-6 h-6" />
                 </span>
               </button>
+
+              {/* Reassuring Text */}
+              <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
+                <span>Free calculation</span>
+                <span>•</span>
+                <span>No payment required</span>
+                <span>•</span>
+                <span>Takes 2 minutes</span>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="flex items-center justify-center gap-6 text-xs text-gray-400">
+                <div className="flex items-center gap-1">
+                  <Shield className="w-3 h-3" />
+                  <span>SSL Secured</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3" />
+                  <span>GDPR Compliant</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Award className="w-3 h-3" />
+                  <span>IRS Approved</span>
+                </div>
+              </div>
             </div>
           </div>
         );

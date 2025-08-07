@@ -75,6 +75,9 @@ const LandingPage: React.FC = () => {
               <Link href="/calculator" className="text-blue-600 font-medium hover:text-blue-700">
                 Calculator
               </Link>
+              <Link href="/login" className="text-green-600 font-medium hover:text-green-700">
+                Customer Login
+              </Link>
               <div className="text-sm text-gray-600">
                 <span className="font-medium">🔒 Secure</span> • <span className="font-medium">⚡ Fast</span>
               </div>
@@ -632,6 +635,7 @@ const LandingPage: React.FC = () => {
             <div>
               <h4 className="font-semibold mb-4">Support</h4>
               <ul className="space-y-2 text-gray-400">
+                <li><Link href="/login" className="hover:text-white">Customer Login</Link></li>
                 <li><a href="#" className="hover:text-white">Live Chat</a></li>
                 <li><a href="#" className="hover:text-white">Contact Us</a></li>
                 <li><a href="#" className="hover:text-white">Schedule Consultation</a></li>

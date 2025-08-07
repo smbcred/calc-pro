@@ -366,13 +366,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe Webhook handler
   app.post('/api/stripeWebhook', async (req, res) => {
     try {
-      console.log('=== WEBHOOK DEBUG INFO ===');
-      console.log('Body type:', typeof req.body);
-      console.log('Body constructor:', req.body?.constructor?.name);
-      console.log('Body is Buffer:', Buffer.isBuffer(req.body));
-      console.log('Body length:', req.body?.length || 'N/A');
-      console.log('Headers:', req.headers);
-      
       const sig = req.headers['stripe-signature'];
       const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -384,22 +377,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let event: Stripe.Event;
 
       try {
-        // Try to handle the body properly
-        let bodyToVerify = req.body;
-        
-        // If body is already parsed as object, we need to stringify it
-        // This shouldn't happen with proper raw middleware, but let's handle it
-        if (typeof req.body === 'object' && !Buffer.isBuffer(req.body)) {
-          console.log('Body was parsed as object, attempting to stringify...');
-          bodyToVerify = JSON.stringify(req.body);
-        }
-        
-        console.log('Attempting webhook verification with body type:', typeof bodyToVerify);
-        event = stripe.webhooks.constructEvent(bodyToVerify, sig, endpointSecret);
-        console.log('Webhook verification successful!');
+        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
       } catch (err: any) {
         console.error('Webhook signature verification failed:', err.message);
-        console.error('Error type:', err.constructor.name);
         return res.status(400).send(`Webhook Error: ${err.message}`);
       }
 
@@ -626,6 +606,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+
+  // Development-only endpoint to create test customer for login testing
+  if (process.env.NODE_ENV !== 'production') {
+    app.post('/api/dev/create-test-customer', async (req, res) => {
+      try {
+        const { email } = req.body;
+        
+        if (!email) {
+          return res.status(400).json({ error: 'Email is required' });
+        }
+
+        const accessToken = uuidv4();
+        const testCustomerData = {
+          email,
+          name: 'Test Customer',
+          purchaseDate: new Date().toISOString().split('T')[0],
+          planType: 'Growth ($10K-$50K Credit)',
+          stripeCustomerId: 'test_customer_dev',
+          totalPaid: 750,
+          selectedYears: '2025',
+          accessToken
+        };
+
+        // Add to Airtable (this will work even in dev)
+        await addToAirtableCustomers(testCustomerData);
+        
+        console.log(`✅ Created test customer: ${email} with access token: ${accessToken}`);
+        
+        res.json({ 
+          success: true, 
+          message: `Test customer created for ${email}`,
+          accessToken,
+          loginUrl: `/login`
+        });
+      } catch (error: any) {
+        console.error('Failed to create test customer:', error);
+        res.status(500).json({ error: 'Failed to create test customer' });
+      }
+    });
+  }
 
   const httpServer = createServer(app);
 

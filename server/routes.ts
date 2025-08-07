@@ -196,14 +196,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email is required' });
       }
 
-      await sendWelcomeEmail(email, name);
+      // Simple test with minimal SendGrid usage
+      const sendgridApiKey = process.env.SENDGRID_API_KEY;
       
-      res.json({ success: true, message: `Test email sent to ${email}` });
-    } catch (error) {
+      if (!sendgridApiKey) {
+        return res.status(500).json({ error: 'SendGrid API key not found' });
+      }
+
+      console.log('API Key exists:', sendgridApiKey ? 'Yes' : 'No');
+      console.log('API Key starts with:', sendgridApiKey?.substring(0, 10));
+
+      const sgMail = require('@sendgrid/mail');
+      sgMail.setApiKey(sendgridApiKey);
+
+      const msg = {
+        to: email,
+        from: 'info@smbtaxcredits.com', // Your verified sender
+        subject: 'Test Email from SMBTaxCredits',
+        text: 'This is a test email to verify SendGrid integration.',
+        html: '<p>This is a test email to verify SendGrid integration.</p>',
+      };
+
+      console.log('Sending email with message:', JSON.stringify(msg, null, 2));
+
+      await sgMail.send(msg);
+      
+      res.json({ success: true, message: `Test email sent successfully to ${email}` });
+    } catch (error: any) {
       console.error('Test email error:', error);
+      console.error('Error response:', error.response?.body);
       res.status(500).json({ 
         error: 'Failed to send test email', 
-        details: error instanceof Error ? error.message : 'Unknown error' 
+        details: error.message,
+        sendgridError: error.response?.body || 'No detailed error'
       });
     }
   });

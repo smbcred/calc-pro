@@ -127,6 +127,9 @@ async function sendWelcomeEmail(email: string, name?: string) {
     throw new Error('SendGrid not configured');
   }
 
+  const sgMail = require('@sendgrid/mail');
+  sgMail.setApiKey(sendgridApiKey);
+
   const baseUrl = process.env.REPLIT_DEV_DOMAIN 
     ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
     : process.env.REPLIT_DOMAINS?.split(',')[0]
@@ -140,7 +143,7 @@ async function sendWelcomeEmail(email: string, name?: string) {
     <p>Thank you for your payment. Your R&D tax credit filing package has been activated and you now have access to our secure intake portal.</p>
     <p><strong>Next Step:</strong> Complete your intake form to begin the filing process</p>
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${loginUrl}" style="background: linear-gradient(to right, #2563eb, #16a34a); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Access Your Intake Portal</a>
+      <a href="${loginUrl}" style="background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Access Your Intake Portal</a>
     </div>
     <p><strong>How to Access:</strong></p>
     <ol>
@@ -161,49 +164,23 @@ async function sendWelcomeEmail(email: string, name?: string) {
     <p style="color: #6b7280; font-size: 14px;">This email was sent because you completed a payment for R&D tax credit services. If you did not make this purchase, please contact us immediately.</p>
   </div>`;
 
-  const payload = {
-    personalizations: [
-      {
-        to: [
-          {
-            email: email,
-            name: name || ''
-          }
-        ],
-        subject: 'Welcome! Complete Your R&D Credit Filing'
-      }
-    ],
-    from: {
-      email: 'info@smbtaxcredits.com',
-      name: 'SMBTaxCredits.com'
-    },
-    content: [
-      {
-        type: 'text/html',
-        value: htmlContent
-      }
-    ]
+  const msg = {
+    to: email,
+    from: 'info@smbtaxcredits.com',
+    subject: 'Welcome! Complete Your R&D Credit Filing',
+    html: htmlContent,
   };
 
   try {
-    const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${sendgridApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('SendGrid error:', error);
-      throw new Error(`SendGrid API error: ${error}`);
-    }
-
+    console.log('Attempting to send email to:', email);
+    await sgMail.send(msg);
+    console.log('Email sent successfully to:', email);
     return { success: true };
   } catch (error: any) {
-    console.error('SendGrid error:', error);
+    console.error('SendGrid error details:', error);
+    if (error.response) {
+      console.error('SendGrid response body:', error.response.body);
+    }
     throw new Error(`Failed to send email: ${error.message}`);
   }
 }

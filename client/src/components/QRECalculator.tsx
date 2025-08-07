@@ -52,9 +52,10 @@ interface QREData {
 interface QRECalculatorProps {
   customerEmail: string;
   onBack?: () => void;
+  onViewCredits?: (qreAmount: number) => void;
 }
 
-const QRECalculator: React.FC<QRECalculatorProps> = ({ customerEmail, onBack }) => {
+const QRECalculator: React.FC<QRECalculatorProps> = ({ customerEmail, onBack, onViewCredits }) => {
   const { toast } = useToast();
   const [qreData, setQreData] = useState<QREData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -350,34 +351,50 @@ const QRECalculator: React.FC<QRECalculatorProps> = ({ customerEmail, onBack }) 
         </Card>
 
         {/* Action Buttons */}
-        <div className="flex gap-4 pt-6 border-t border-gray-200">
-          <button
-            onClick={generateReport}
-            disabled={isGeneratingReport}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-green-600 text-white px-6 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isGeneratingReport ? (
+        <div className="space-y-4 pt-6 border-t border-gray-200">
+          {/* Primary Action - View Credit Calculation */}
+          {onViewCredits && qreData.grandTotal > 0 && (
+            <button
+              onClick={() => onViewCredits(qreData.grandTotal)}
+              className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+            >
               <span className="flex items-center justify-center gap-2">
-                <Loader className="w-5 h-5 animate-spin" />
-                Generating Report...
+                <Calculator className="w-5 h-5" />
+                Calculate Tax Credits (6.5% + State Credits)
               </span>
-            ) : (
-              <span className="flex items-center justify-center gap-2">
-                <FileText className="w-5 h-5" />
-                Generate QRE Report
-              </span>
-            )}
-          </button>
+            </button>
+          )}
           
-          <button
-            onClick={() => window.print()}
-            className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
-          >
-            <span className="flex items-center gap-2">
-              <Download className="w-5 h-5" />
-              Print/Save
-            </span>
-          </button>
+          {/* Secondary Actions */}
+          <div className="flex gap-4">
+            <button
+              onClick={generateReport}
+              disabled={isGeneratingReport}
+              className="flex-1 bg-gradient-to-r from-blue-600 to-green-600 text-white px-6 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isGeneratingReport ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader className="w-5 h-5 animate-spin" />
+                  Generating Report...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  Generate QRE Report
+                </span>
+              )}
+            </button>
+            
+            <button
+              onClick={() => window.print()}
+              className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <Download className="w-5 h-5" />
+                Print/Save
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Disclaimer */}

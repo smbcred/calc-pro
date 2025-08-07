@@ -187,48 +187,68 @@ async function sendWelcomeEmail(email: string, name?: string) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Test email endpoint - for testing SendGrid integration
-  app.post('/api/test-email', async (req, res) => {
+  // Simple SendGrid test endpoint - completely isolated
+  app.post('/api/simple-email-test', async (req, res) => {
     try {
-      const { email, name } = req.body;
+      const { email } = req.body;
       
       if (!email) {
         return res.status(400).json({ error: 'Email is required' });
       }
 
-      // Simple test with minimal SendGrid usage
       const sendgridApiKey = process.env.SENDGRID_API_KEY;
       
       if (!sendgridApiKey) {
-        return res.status(500).json({ error: 'SendGrid API key not found' });
+        return res.status(500).json({ error: 'SENDGRID_API_KEY not found in environment' });
       }
 
-      console.log('API Key exists:', sendgridApiKey ? 'Yes' : 'No');
-      console.log('API Key starts with:', sendgridApiKey?.substring(0, 10));
+      console.log('=== SendGrid Test Debug Info ===');
+      console.log('API Key exists:', !!sendgridApiKey);
+      console.log('API Key length:', sendgridApiKey.length);
+      console.log('API Key prefix:', sendgridApiKey.substring(0, 15));
+      console.log('Target email:', email);
 
+      // Import and configure SendGrid
       const sgMail = require('@sendgrid/mail');
       sgMail.setApiKey(sendgridApiKey);
 
-      const msg = {
+      const testMessage = {
         to: email,
-        from: 'info@smbtaxcredits.com', // Your verified sender
-        subject: 'Test Email from SMBTaxCredits',
-        text: 'This is a test email to verify SendGrid integration.',
-        html: '<p>This is a test email to verify SendGrid integration.</p>',
+        from: 'info@smbtaxcredits.com',
+        subject: 'SendGrid Test - SMBTaxCredits',
+        text: 'This is a simple test email.',
+        html: '<h1>Test Email</h1><p>This is a simple test email from SMBTaxCredits.com</p>',
       };
 
-      console.log('Sending email with message:', JSON.stringify(msg, null, 2));
+      console.log('Attempting to send email...');
+      console.log('Message object:', JSON.stringify(testMessage, null, 2));
 
-      await sgMail.send(msg);
+      const result = await sgMail.send(testMessage);
       
-      res.json({ success: true, message: `Test email sent successfully to ${email}` });
+      console.log('SendGrid send result:', result);
+      console.log('Email sent successfully!');
+      
+      res.json({ 
+        success: true, 
+        message: `Test email sent successfully to ${email}`,
+        sendgridResponse: result 
+      });
+
     } catch (error: any) {
-      console.error('Test email error:', error);
-      console.error('Error response:', error.response?.body);
+      console.error('=== SendGrid Error Details ===');
+      console.error('Error message:', error.message);
+      console.error('Error code:', error.code);
+      console.error('Error response:', error.response);
+      
+      if (error.response && error.response.body) {
+        console.error('SendGrid response body:', error.response.body);
+      }
+      
       res.status(500).json({ 
-        error: 'Failed to send test email', 
+        error: 'SendGrid test failed', 
         details: error.message,
-        sendgridError: error.response?.body || 'No detailed error'
+        code: error.code,
+        sendgridBody: error.response?.body
       });
     }
   });

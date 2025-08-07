@@ -302,20 +302,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         body: JSON.stringify({
           fields: {
-            "Token": token,
             "Entity Name": formData.entityName,
-            "Entity Type": formData.entityType,
-            "Tax ID": formData.taxId,
-            "Contact Name": formData.contactName,
-            "Contact Email": formData.contactEmail,
-            "Contact Phone": formData.contactPhone,
-            "Business Description": formData.businessDescription,
-            "R&D Activities": formData.rdActivities,
-            "Total Wages": formData.totalWages,
-            "Contractor Costs": formData.contractorCosts,
-            "Supply Costs": formData.supplyCosts,
-            "Other Expenses": formData.otherExpenses,
-            "Submission Date": new Date().toISOString(),
+            "Entity Type": formData.entityType
           },
         }),
       });

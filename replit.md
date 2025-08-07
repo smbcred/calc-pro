@@ -4,9 +4,10 @@ This is a React-based R&D Tax Credit Calculator application that helps businesse
 
 ## Recent Changes (August 2025)
 - **Major Pricing Strategy Overhaul**: Removed package-based structure and implemented dynamic pricing based on calculated credit amounts (< $10K → $500, $10K-$50K → $750, $50K-$100K → $1K, > $100K → $1.5K)
-- **Streamlined Checkout Flow**: Moved year selection from results page to checkout page, simplified Step 4 to show credit amount and base price with "Proceed to Checkout" button
+- **Streamlined Checkout Flow**: Moved year selection from results page to checkout page, simplified Step 4 to show credit amount and base price with "Proceed to Checkout" button  
 - **Updated Urgency Messaging**: Replaced all deadline messaging throughout calculator with consistent July 2026 amendment deadline for previous years (2022-2024)
 - **Enhanced Results Display**: Added explanations for Credit vs Deduction boxes with clear definitions of federal credit, tax deduction, and total benefits
+- **Post-Payment Webhook System**: Complete webhook integration with Stripe checkout.session.completed events, Airtable customer/submission storage, SendGrid email automation, and secure UUID-based intake form access (August 7, 2025)
 
 # User Preferences
 

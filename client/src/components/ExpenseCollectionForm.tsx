@@ -3,7 +3,8 @@ import { useLocation } from 'wouter';
 import { 
   DollarSign, Users, UserCheck, Package, Cloud, 
   ChevronLeft, Plus, Trash2, Calculator, Save, 
-  Loader, CheckCircle, AlertTriangle, Info
+  Loader, CheckCircle, AlertTriangle, Info, Lightbulb,
+  Zap, Target, TrendingUp
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -65,6 +66,7 @@ const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = ({
   const [contractors, setContractors] = useState<ContractorEntry[]>([]);
   const [supplies, setSupplies] = useState<SupplyEntry[]>([]);
   const [cloudSoftware, setCloudSoftware] = useState<CloudSoftwareEntry[]>([]);
+  const [showRecommendations, setShowRecommendations] = useState<{[key: string]: boolean}>({});
 
   // Load existing expense data
   useEffect(() => {
@@ -144,6 +146,130 @@ const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = ({
   };
 
   const totals = calculateTotals();
+
+  // Smart recommendations based on current data
+  const getExpenseRecommendations = () => {
+    const recommendations = [];
+    
+    // Check if wage expenses seem low
+    if (totals.wages < 50000 && wages.length < 3) {
+      recommendations.push({
+        type: 'wages',
+        title: 'Consider Additional Employee Costs',
+        message: 'You may be missing qualifying employee expenses like benefits, payroll taxes, or bonuses for R&D work.',
+        examples: ['Health insurance for R&D employees', 'Employer payroll taxes', 'Performance bonuses', 'Stock options for developers']
+      });
+    }
+    
+    // Contractor recommendations
+    if (contractors.length === 0) {
+      recommendations.push({
+        type: 'contractors',
+        title: 'Missing Contractor Expenses?',
+        message: 'Many businesses use external contractors for R&D work. Consider freelance developers, consultants, or specialized services.',
+        examples: ['Freelance software developers', 'Technical consultants', 'Design agencies', 'Research firms', 'Testing services']
+      });
+    }
+    
+    // Supply recommendations
+    if (supplies.length === 0) {
+      recommendations.push({
+        type: 'supplies',
+        title: 'Common R&D Supplies',
+        message: 'R&D often requires materials and supplies that qualify for the credit.',
+        examples: ['Computer hardware for development', 'Software licenses', 'Testing equipment', 'Prototyping materials', 'Lab supplies']
+      });
+    }
+    
+    // Cloud/software recommendations
+    if (cloudSoftware.length === 0) {
+      recommendations.push({
+        type: 'cloud',
+        title: 'Technology & Cloud Services',
+        message: 'Most modern R&D relies heavily on cloud services and software tools.',
+        examples: ['AWS/Azure/GCP compute costs', 'Development tools (GitHub, Jira)', 'Database services', 'API services', 'Machine learning platforms']
+      });
+    }
+    
+    return recommendations;
+  };
+  
+  const getRoleBasedSuggestions = (role: string) => {
+    const roleLower = role.toLowerCase();
+    
+    if (roleLower.includes('ai') || roleLower.includes('machine learning') || roleLower.includes('ml')) {
+      return {
+        activities: 'AI/ML development activities that qualify: algorithm development, model training, data processing pipelines, neural network architecture research.',
+        expenses: 'Common AI expenses: GPU compute costs, training data, ML platforms (TensorFlow, PyTorch), cloud ML services.'
+      };
+    }
+    
+    if (roleLower.includes('software') || roleLower.includes('developer') || roleLower.includes('engineer')) {
+      return {
+        activities: 'Software R&D activities: new algorithm development, performance optimization, integration challenges, technical architecture improvements.',
+        expenses: 'Development tools, testing frameworks, deployment services, development environments.'
+      };
+    }
+    
+    if (roleLower.includes('data') || roleLower.includes('analyst')) {
+      return {
+        activities: 'Data science R&D: new analytics methods, data processing algorithms, visualization techniques, predictive modeling.',
+        expenses: 'Data processing tools, analytics platforms, database services, visualization software.'
+      };
+    }
+    
+    if (roleLower.includes('product') || roleLower.includes('design')) {
+      return {
+        activities: 'Product R&D: user experience research, design system development, accessibility improvements, performance testing.',
+        expenses: 'Design tools, user testing platforms, prototyping software, research tools.'
+      };
+    }
+    
+    return null;
+  };
+  
+  const getIndustryRecommendations = () => {
+    // This would ideally come from company info, but for now we'll infer from roles
+    const allRoles = wages.map(w => w.role).join(' ').toLowerCase();
+    
+    if (allRoles.includes('ai') || allRoles.includes('machine learning')) {
+      return {
+        title: 'AI/ML Industry Recommendations',
+        commonExpenses: [
+          'GPU compute costs for model training',
+          'Data acquisition and labeling services',
+          'ML platform subscriptions (Databricks, SageMaker)',
+          'Annotation tools and services',
+          'Research paper and dataset access'
+        ]
+      };
+    }
+    
+    if (allRoles.includes('software') || allRoles.includes('developer')) {
+      return {
+        title: 'Software Development Recommendations',
+        commonExpenses: [
+          'Cloud hosting and compute costs',
+          'Development and testing tools',
+          'Third-party APIs and services',
+          'Security and monitoring tools',
+          'Performance testing services'
+        ]
+      };
+    }
+    
+    return null;
+  };
+  
+  const recommendations = getExpenseRecommendations();
+  const industryRecs = getIndustryRecommendations();
+  
+  const toggleRecommendations = (section: string) => {
+    setShowRecommendations(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
 
   // Wage functions
   const addWageEntry = () => {
@@ -370,6 +496,31 @@ const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Industry-Specific Recommendations */}
+        {industryRecs && (
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4 mt-4">
+            <div className="flex items-start gap-2">
+              <TrendingUp className="w-5 h-5 text-purple-600 mt-0.5" />
+              <div className="flex-1">
+                <h4 className="font-medium text-purple-800 mb-2">{industryRecs.title}</h4>
+                <button
+                  onClick={() => toggleRecommendations('industry-examples')}
+                  className="text-sm text-purple-600 hover:text-purple-700 underline mb-2 block"
+                >
+                  {showRecommendations['industry-examples'] ? 'Hide' : 'Show'} industry-specific expense recommendations
+                </button>
+                {showRecommendations['industry-examples'] && (
+                  <ul className="text-xs text-purple-700 space-y-1">
+                    {industryRecs.commonExpenses.map((expense, i) => (
+                      <li key={i}>• {expense}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Expense Forms */}
@@ -407,6 +558,32 @@ const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = ({
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Smart Recommendations for Wages */}
+                {recommendations.filter(r => r.type === 'wages').map((rec, index) => (
+                  <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-start gap-2">
+                      <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-yellow-800 mb-1">{rec.title}</h4>
+                        <p className="text-sm text-yellow-700 mb-2">{rec.message}</p>
+                        <button
+                          onClick={() => toggleRecommendations('wages-examples')}
+                          className="text-xs text-yellow-600 hover:text-yellow-700 underline"
+                        >
+                          {showRecommendations['wages-examples'] ? 'Hide' : 'Show'} examples
+                        </button>
+                        {showRecommendations['wages-examples'] && (
+                          <ul className="mt-2 text-xs text-yellow-600 space-y-1">
+                            {rec.examples.map((example, i) => (
+                              <li key={i}>• {example}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
                 {wages.map((wage) => (
                   <div key={wage.id} className="p-4 border border-gray-200 rounded-lg space-y-3">
                     <div className="flex items-center justify-between">
@@ -444,6 +621,16 @@ const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = ({
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           placeholder="Software Engineer"
                         />
+                        {/* Role-based suggestions */}
+                        {wage.role && getRoleBasedSuggestions(wage.role) && (
+                          <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                            <div className="flex items-center gap-1 mb-1">
+                              <Target className="w-3 h-3 text-blue-600" />
+                              <span className="font-medium text-blue-800">R&D Activity Suggestions:</span>
+                            </div>
+                            <p className="text-blue-700">{getRoleBasedSuggestions(wage.role)?.activities}</p>
+                          </div>
+                        )}
                       </div>
                       
                       <div>
@@ -512,6 +699,32 @@ const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = ({
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Smart Recommendations for Contractors */}
+                {recommendations.filter(r => r.type === 'contractors').map((rec, index) => (
+                  <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-start gap-2">
+                      <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-yellow-800 mb-1">{rec.title}</h4>
+                        <p className="text-sm text-yellow-700 mb-2">{rec.message}</p>
+                        <button
+                          onClick={() => toggleRecommendations('contractors-examples')}
+                          className="text-xs text-yellow-600 hover:text-yellow-700 underline"
+                        >
+                          {showRecommendations['contractors-examples'] ? 'Hide' : 'Show'} examples
+                        </button>
+                        {showRecommendations['contractors-examples'] && (
+                          <ul className="mt-2 text-xs text-yellow-600 space-y-1">
+                            {rec.examples.map((example, i) => (
+                              <li key={i}>• {example}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
                 {contractors.map((contractor) => (
                   <div key={contractor.id} className="p-4 border border-gray-200 rounded-lg space-y-3">
                     <div className="flex items-center justify-between">
@@ -601,6 +814,32 @@ const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = ({
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Smart Recommendations for Supplies */}
+                {recommendations.filter(r => r.type === 'supplies').map((rec, index) => (
+                  <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-start gap-2">
+                      <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-yellow-800 mb-1">{rec.title}</h4>
+                        <p className="text-sm text-yellow-700 mb-2">{rec.message}</p>
+                        <button
+                          onClick={() => toggleRecommendations('supplies-examples')}
+                          className="text-xs text-yellow-600 hover:text-yellow-700 underline"
+                        >
+                          {showRecommendations['supplies-examples'] ? 'Hide' : 'Show'} examples
+                        </button>
+                        {showRecommendations['supplies-examples'] && (
+                          <ul className="mt-2 text-xs text-yellow-600 space-y-1">
+                            {rec.examples.map((example, i) => (
+                              <li key={i}>• {example}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
                 {supplies.map((supply) => (
                   <div key={supply.id} className="p-4 border border-gray-200 rounded-lg space-y-3">
                     <div className="flex items-center justify-between">
@@ -692,6 +931,32 @@ const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = ({
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Smart Recommendations for Cloud/Software */}
+                {recommendations.filter(r => r.type === 'cloud').map((rec, index) => (
+                  <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-start gap-2">
+                      <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-yellow-800 mb-1">{rec.title}</h4>
+                        <p className="text-sm text-yellow-700 mb-2">{rec.message}</p>
+                        <button
+                          onClick={() => toggleRecommendations('cloud-examples')}
+                          className="text-xs text-yellow-600 hover:text-yellow-700 underline"
+                        >
+                          {showRecommendations['cloud-examples'] ? 'Hide' : 'Show'} examples
+                        </button>
+                        {showRecommendations['cloud-examples'] && (
+                          <ul className="mt-2 text-xs text-yellow-600 space-y-1">
+                            {rec.examples.map((example, i) => (
+                              <li key={i}>• {example}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
                 {cloudSoftware.map((cloud) => (
                   <div key={cloud.id} className="p-4 border border-gray-200 rounded-lg space-y-3">
                     <div className="flex items-center justify-between">

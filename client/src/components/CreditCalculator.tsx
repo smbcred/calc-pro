@@ -2349,10 +2349,10 @@ const CreditCalculator = () => {
                 <div className="bg-white border-2 border-green-200 rounded-2xl p-6 shadow-lg">
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                      Ready-to-File Package for Your CPA
+                      Federal R&D Tax Credit Package
                     </h3>
                     <p className="text-gray-600">
-                      Complete IRS documentation your CPA can file immediately - or you can self-file with confidence. 
+                      Professional documentation package ready for your CPA or self-filing. 
                       <span className="block mt-2 text-green-600 font-medium">Result: Tax refund check or direct deposit from the U.S. Treasury</span>
                     </p>
                   </div>
@@ -2368,8 +2368,8 @@ const CreditCalculator = () => {
                         <div>
                           <h4 className="font-bold text-green-900">
                             {formData.selectedYears && formData.selectedYears.length > 1 
-                              ? `${formData.selectedYears.length}-Year Federal Package`
-                              : 'Federal R&D Credit Package'
+                              ? `${formData.selectedYears.length}-Year Filing Package`
+                              : 'Complete Documentation Package'
                             }
                           </h4>
                           <p className="text-sm text-green-700">
@@ -2439,34 +2439,21 @@ const CreditCalculator = () => {
                       </div>
                     </div>
 
-                    {/* Federal-Only Package Notice */}
-                    <div className="border-2 border-green-300 bg-green-50 rounded-lg p-4">
+                    {/* Package Summary */}
+                    <div className="border-2 border-blue-300 bg-blue-50 rounded-lg p-4">
                       <div className="flex items-center gap-3">
-                        <CheckCircle className="w-6 h-6 text-green-600" />
+                        <CheckCircle className="w-6 h-6 text-blue-600" />
                         <div>
-                          <h4 className="font-bold text-gray-900">Federal R&D Tax Credit Package</h4>
-                          <p className="text-sm text-gray-600">Complete IRS-ready documentation for your federal credits</p>
+                          <h4 className="font-bold text-blue-900">What You'll Receive</h4>
+                          <p className="text-sm text-gray-600">✓ Form 6765 • ✓ Technical documentation • ✓ Filing instructions • ✓ 24-48hr delivery</p>
                         </div>
                       </div>
-                      <div className="mt-2 text-xs text-blue-600 bg-blue-100 rounded px-2 py-1 inline-block">
-                        State credits coming soon!
-                      </div>
                     </div>
                   </div>
 
 
 
-                  {/* What's Included - Enhanced for Multi-Year */}
-                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                    <h4 className="font-bold text-gray-900 mb-3 text-center">📦 Complete IRS-Ready Package</h4>
-                    <div className="text-sm text-gray-700 text-center">
-                      ✓ Form 6765 • ✓ Technical documentation • ✓ Filing instructions • ✓ 24-48hr delivery
-                      {formData.selectedYears.length > 1 && (
-                        <span> • ✓ {formData.selectedYears.length} years of forms</span>
-                      )}
 
-                    </div>
-                  </div>
                   
                   {/* Total & CTA */}
                   <div className="border-t pt-4">

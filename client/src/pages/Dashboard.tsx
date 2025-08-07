@@ -3,7 +3,7 @@ import { Link, useLocation } from 'wouter';
 import { 
   Building2, User, FileText, DollarSign, FolderOpen, Settings,
   BarChart3, LogOut, Menu, X, TrendingUp, Calculator,
-  Mail, Phone, Calendar, Star
+  Mail, Phone, Calendar, Star, CheckCircle, Lock, Circle
 } from 'lucide-react';
 
 interface CustomerInfo {
@@ -13,6 +13,8 @@ interface CustomerInfo {
   planType: string;
   purchaseDate: string;
   selectedYears?: string;
+  hasSubmissions?: boolean;
+  submissions?: any[];
 }
 
 interface MenuItemType {
@@ -69,14 +71,31 @@ const Dashboard: React.FC = () => {
     setLocation('/');
   };
 
-  const menuItems: MenuItemType[] = [
+  const getMenuItems = (): MenuItemType[] => [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
-    { id: 'company', label: 'Company Info', icon: Building2, badge: 'Complete' },
-    { id: 'rd-activities', label: 'R&D Activities', icon: FileText, badge: 'Complete' },
-    { id: 'expenses', label: 'Expenses', icon: DollarSign },
+    { 
+      id: 'company', 
+      label: 'Company Info', 
+      icon: Building2, 
+      badge: progressData.companyInfo === 100 ? 'Complete' : progressData.companyInfo > 0 ? `${progressData.companyInfo}%` : undefined
+    },
+    { 
+      id: 'rd-activities', 
+      label: 'R&D Activities', 
+      icon: FileText, 
+      badge: progressData.rdActivities === 100 ? 'Complete' : progressData.rdActivities > 0 ? `${progressData.rdActivities}%` : undefined
+    },
+    { 
+      id: 'expenses', 
+      label: 'Expenses', 
+      icon: DollarSign,
+      badge: progressData.expenses > 0 ? `${progressData.expenses}%` : undefined
+    },
     { id: 'documents', label: 'Documents', icon: FolderOpen },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
+
+  const menuItems = getMenuItems();
 
   // Calculate estimated credit based on plan type
   const getEstimatedCredit = () => {
@@ -90,6 +109,54 @@ const Dashboard: React.FC = () => {
     if (totalPaid >= 500) return 7500;
     return 0;
   };
+
+  // Calculate progress for each section
+  const getProgressData = () => {
+    if (!customerInfo || !customerInfo.hasSubmissions || !customerInfo.submissions?.length) {
+      return {
+        companyInfo: 0,
+        rdActivities: 0,
+        expenses: 0,
+        canGenerate: false
+      };
+    }
+
+    const submission = customerInfo.submissions[0]; // Latest submission
+    let companyScore = 0;
+    let rdScore = 0;
+    let expenseScore = 0;
+
+    // Company Info (4 required fields)
+    if (submission['Entity Name']) companyScore += 25;
+    if (submission['Entity Type']) companyScore += 25;
+    if (submission['Tax ID']) companyScore += 25;
+    if (submission['Contact Name']) companyScore += 25;
+
+    // R&D Activities (2 required fields)
+    if (submission['Business Description']) rdScore += 50;
+    if (submission['R&D Activities']) rdScore += 50;
+
+    // Expenses (4 optional fields - any data counts)
+    const expenseFields = [
+      submission['Total Wages'],
+      submission['Contractor Costs'],
+      submission['Supply Costs'],
+      submission['Other Expenses']
+    ].filter(field => field && field > 0);
+    
+    expenseScore = Math.min(100, expenseFields.length * 25);
+
+    const canGenerate = companyScore === 100 && rdScore === 100;
+
+    return {
+      companyInfo: companyScore,
+      rdActivities: rdScore,
+      expenses: expenseScore,
+      canGenerate
+    };
+  };
+
+  const progressData = getProgressData();
 
   if (loading) {
     return (
@@ -251,6 +318,172 @@ const Dashboard: React.FC = () => {
         <main className="p-6">
           {activeSection === 'overview' && (
             <div className="space-y-6">
+              {/* Progress Tracker - Prominent Display */}
+              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Application Progress</h2>
+                  <p className="text-gray-600">Complete all sections to generate your R&D tax credit documentation</p>
+                </div>
+                
+                <div className="grid md:grid-cols-4 gap-6">
+                  {/* Company Info */}
+                  <div className="relative">
+                    <div className="flex flex-col items-center">
+                      <div className={`w-16 h-16 rounded-full border-4 flex items-center justify-center mb-4 transition-all ${
+                        progressData.companyInfo === 100
+                          ? 'bg-green-500 border-green-500 text-white'
+                          : progressData.companyInfo > 0
+                          ? 'bg-blue-50 border-blue-500 text-blue-600'
+                          : 'bg-gray-100 border-gray-300 text-gray-400'
+                      }`}>
+                        {progressData.companyInfo === 100 ? (
+                          <CheckCircle className="w-8 h-8" />
+                        ) : (
+                          <Building2 className="w-8 h-8" />
+                        )}
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-1">Company Info</h3>
+                      <div className={`text-2xl font-bold mb-2 ${
+                        progressData.companyInfo === 100 ? 'text-green-600' : 'text-blue-600'
+                      }`}>
+                        {progressData.companyInfo}%
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full transition-all duration-300 ${
+                            progressData.companyInfo === 100 ? 'bg-green-500' : 'bg-blue-500'
+                          }`}
+                          style={{ width: `${progressData.companyInfo}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    {/* Connector Line */}
+                    <div className="hidden md:block absolute top-8 left-full w-6 h-0.5 bg-gray-300 transform -translate-y-1/2"></div>
+                  </div>
+
+                  {/* R&D Activities */}
+                  <div className="relative">
+                    <div className="flex flex-col items-center">
+                      <div className={`w-16 h-16 rounded-full border-4 flex items-center justify-center mb-4 transition-all ${
+                        progressData.rdActivities === 100
+                          ? 'bg-green-500 border-green-500 text-white'
+                          : progressData.rdActivities > 0
+                          ? 'bg-blue-50 border-blue-500 text-blue-600'
+                          : 'bg-gray-100 border-gray-300 text-gray-400'
+                      }`}>
+                        {progressData.rdActivities === 100 ? (
+                          <CheckCircle className="w-8 h-8" />
+                        ) : (
+                          <FileText className="w-8 h-8" />
+                        )}
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-1">R&D Activities</h3>
+                      <div className={`text-2xl font-bold mb-2 ${
+                        progressData.rdActivities === 100 ? 'text-green-600' : 'text-blue-600'
+                      }`}>
+                        {progressData.rdActivities}%
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full transition-all duration-300 ${
+                            progressData.rdActivities === 100 ? 'bg-green-500' : 'bg-blue-500'
+                          }`}
+                          style={{ width: `${progressData.rdActivities}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    {/* Connector Line */}
+                    <div className="hidden md:block absolute top-8 left-full w-6 h-0.5 bg-gray-300 transform -translate-y-1/2"></div>
+                  </div>
+
+                  {/* Expenses */}
+                  <div className="relative">
+                    <div className="flex flex-col items-center">
+                      <div className={`w-16 h-16 rounded-full border-4 flex items-center justify-center mb-4 transition-all ${
+                        progressData.expenses === 100
+                          ? 'bg-green-500 border-green-500 text-white'
+                          : progressData.expenses > 0
+                          ? 'bg-blue-50 border-blue-500 text-blue-600'
+                          : 'bg-gray-100 border-gray-300 text-gray-400'
+                      }`}>
+                        {progressData.expenses === 100 ? (
+                          <CheckCircle className="w-8 h-8" />
+                        ) : (
+                          <DollarSign className="w-8 h-8" />
+                        )}
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-1">Expenses</h3>
+                      <div className={`text-2xl font-bold mb-2 ${
+                        progressData.expenses === 100 ? 'text-green-600' : 'text-blue-600'
+                      }`}>
+                        {progressData.expenses}%
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full transition-all duration-300 ${
+                            progressData.expenses === 100 ? 'bg-green-500' : 'bg-blue-500'
+                          }`}
+                          style={{ width: `${progressData.expenses}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    {/* Connector Line */}
+                    <div className="hidden md:block absolute top-8 left-full w-6 h-0.5 bg-gray-300 transform -translate-y-1/2"></div>
+                  </div>
+
+                  {/* Review & Generate */}
+                  <div className="relative">
+                    <div className="flex flex-col items-center">
+                      <div className={`w-16 h-16 rounded-full border-4 flex items-center justify-center mb-4 transition-all ${
+                        progressData.canGenerate
+                          ? 'bg-gradient-to-r from-blue-600 to-green-600 border-transparent text-white'
+                          : 'bg-gray-100 border-gray-300 text-gray-400'
+                      }`}>
+                        {progressData.canGenerate ? (
+                          <Star className="w-8 h-8" />
+                        ) : (
+                          <Lock className="w-8 h-8" />
+                        )}
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-1">Review & Generate</h3>
+                      <div className={`text-sm font-medium mb-2 ${
+                        progressData.canGenerate ? 'text-green-600' : 'text-gray-500'
+                      }`}>
+                        {progressData.canGenerate ? 'Ready!' : 'Locked'}
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full transition-all duration-300 ${
+                            progressData.canGenerate ? 'bg-gradient-to-r from-blue-500 to-green-500' : 'bg-gray-300'
+                          }`}
+                          style={{ width: progressData.canGenerate ? '100%' : '0%' }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Button */}
+                <div className="text-center mt-8">
+                  {progressData.canGenerate ? (
+                    <button className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+                      Generate Documentation
+                    </button>
+                  ) : (
+                    <div>
+                      <Link href="/intake-portal">
+                        <button className="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                          Complete Intake Form
+                        </button>
+                      </Link>
+                      <p className="text-sm text-gray-600 mt-2">
+                        Complete Company Info and R&D Activities to unlock document generation
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Quick Stats */}
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
@@ -290,38 +523,44 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Progress Status */}
+              {/* Current Status Summary */}
               <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Application Progress</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                        <Building2 className="w-4 h-4 text-white" />
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Current Status</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <h4 className="font-medium text-gray-700">Completion Summary</h4>
+                    <div className="text-sm text-gray-600">
+                      <div className="flex justify-between mb-1">
+                        <span>Company Info:</span>
+                        <span className={progressData.companyInfo === 100 ? 'text-green-600 font-medium' : 'text-blue-600'}>
+                          {progressData.companyInfo}% Complete
+                        </span>
                       </div>
-                      <span className="font-medium text-gray-900">Company Information</span>
+                      <div className="flex justify-between mb-1">
+                        <span>R&D Activities:</span>
+                        <span className={progressData.rdActivities === 100 ? 'text-green-600 font-medium' : 'text-blue-600'}>
+                          {progressData.rdActivities}% Complete
+                        </span>
+                      </div>
+                      <div className="flex justify-between mb-1">
+                        <span>Expenses:</span>
+                        <span className={progressData.expenses > 0 ? 'text-green-600 font-medium' : 'text-gray-500'}>
+                          {progressData.expenses}% Complete
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-green-700 text-sm font-medium">Complete</span>
                   </div>
-                  
-                  <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                        <FileText className="w-4 h-4 text-white" />
-                      </div>
-                      <span className="font-medium text-gray-900">R&D Activities</span>
+                  <div className="space-y-3">
+                    <h4 className="font-medium text-gray-700">Overall Progress</h4>
+                    <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                      {Math.round((progressData.companyInfo + progressData.rdActivities + progressData.expenses) / 3)}%
                     </div>
-                    <span className="text-green-700 text-sm font-medium">Complete</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                        <FolderOpen className="w-4 h-4 text-white" />
-                      </div>
-                      <span className="font-medium text-gray-900">Document Collection</span>
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div 
+                        className="h-3 rounded-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-500"
+                        style={{ width: `${Math.round((progressData.companyInfo + progressData.rdActivities + progressData.expenses) / 3)}%` }}
+                      ></div>
                     </div>
-                    <span className="text-blue-700 text-sm font-medium">In Progress</span>
                   </div>
                 </div>
               </div>

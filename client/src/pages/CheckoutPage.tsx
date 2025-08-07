@@ -1,22 +1,32 @@
-import React, { useState } from 'react';
-import { Link } from 'wouter';
-import { 
-  ArrowLeft, Check, CreditCard, Shield, Lock, FileText, 
-  Clock, Users, Zap, ChevronRight, Star, AlertCircle 
-} from 'lucide-react';
+import React, { useState } from "react";
+import { Link } from "wouter";
+import {
+  ArrowLeft,
+  Check,
+  CreditCard,
+  Shield,
+  Lock,
+  FileText,
+  Clock,
+  Users,
+  Zap,
+  ChevronRight,
+  Star,
+  AlertCircle,
+} from "lucide-react";
 
 interface CheckoutPageProps {
   calculationResults?: any;
 }
 
 const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
-  const [selectedYears, setSelectedYears] = useState<string[]>(['2025']);
+  const [selectedYears, setSelectedYears] = useState<string[]>(["2025"]);
 
   // Get calculation results from props
   const results = calculationResults || {
     federal: { creditAmount: 28500 },
     totalBenefit: 33700,
-    industry: 'SaaS/Tech'
+    industry: "SaaS/Tech",
   };
 
   // Dynamic pricing based on credit amount
@@ -30,21 +40,21 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
   const basePrice = calculateBasePrice(results.federal?.creditAmount || 0);
   const additionalYearPrice = 297;
   const additionalYearsCount = selectedYears.length - 1; // Current year is included
-  const totalPrice = basePrice + (additionalYearsCount * additionalYearPrice);
+  const totalPrice = basePrice + additionalYearsCount * additionalYearPrice;
 
   const availableYears = [
-    { year: '2025', label: 'Current Year', included: true },
-    { year: '2024', label: 'Lookback', price: additionalYearPrice },
-    { year: '2023', label: 'Lookback', price: additionalYearPrice },
-    { year: '2022', label: 'Lookback', price: additionalYearPrice }
+    { year: "2025", label: "Current Year", included: true },
+    { year: "2024", label: "Lookback", price: additionalYearPrice },
+    { year: "2023", label: "Lookback", price: additionalYearPrice },
+    { year: "2022", label: "Lookback", price: additionalYearPrice },
   ];
 
   const handleYearToggle = (year: string) => {
-    if (year === '2025') return; // Current year is always included
-    
-    setSelectedYears(prev => {
+    if (year === "2025") return; // Current year is always included
+
+    setSelectedYears((prev) => {
       if (prev.includes(year)) {
-        return prev.filter(y => y !== year);
+        return prev.filter((y) => y !== year);
       } else {
         return [...prev, year];
       }
@@ -52,9 +62,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -62,14 +72,16 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
 
   const handleContinueToPayment = () => {
     // Here we would integrate with Stripe
-    console.log('Continue to Stripe payment:', {
+    console.log("Continue to Stripe payment:", {
       selectedYears,
       totalPrice,
-      basePrice
+      basePrice,
     });
-    
+
     // For now, just show an alert
-    alert(`Stripe integration coming soon! Total: ${formatCurrency(totalPrice)}`);
+    alert(
+      `Stripe integration coming soon! Total: ${formatCurrency(totalPrice)}`,
+    );
   };
 
   return (
@@ -86,7 +98,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
                 </button>
               </Link>
               <div className="h-6 w-px bg-gray-300"></div>
-              <h1 className="text-xl font-bold text-gray-900">Your R&D Tax Credit Documentation</h1>
+              <h1 className="text-xl font-bold text-gray-900">
+                Your R&D Tax Credit Documentation
+              </h1>
             </div>
             <div className="flex items-center gap-2 text-green-700">
               <Shield className="w-5 h-5" />
@@ -100,19 +114,26 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
         {/* Results Summary */}
         <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-2xl p-6 mb-8 border border-green-200">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Federal R&D Tax Credit Analysis</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Your Federal R&D Tax Credit Analysis
+            </h2>
             <div className="flex justify-center items-center gap-8 mb-4">
               <div>
-                <div className="text-3xl font-bold text-green-600">{formatCurrency(results.federal?.creditAmount || 0)}</div>
+                <div className="text-3xl font-bold text-green-600">
+                  {formatCurrency(results.federal?.creditAmount || 0)}
+                </div>
                 <div className="text-sm text-gray-600">Calculated Credit</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-blue-600">{formatCurrency(basePrice)}</div>
+                <div className="text-2xl font-bold text-blue-600">
+                  {formatCurrency(basePrice)}
+                </div>
                 <div className="text-sm text-gray-600">Your Price</div>
               </div>
             </div>
             <p className="text-gray-700">
-              Price based on your credit amount of {formatCurrency(results.federal?.creditAmount || 0)}
+              Price based on your credit amount of{" "}
+              {formatCurrency(results.federal?.creditAmount || 0)}
             </p>
           </div>
         </div>
@@ -120,20 +141,29 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
         {/* July 2026 Deadline Callout */}
         <div className="bg-orange-50 border-2 border-orange-200 rounded-2xl p-6 mb-8">
           <div className="text-center">
-            <h3 className="text-xl font-bold text-orange-800 mb-2">⏰ July 2026 Amendment Deadline</h3>
+            <h3 className="text-xl font-bold text-orange-800 mb-2">
+              ⏰ July 2026 Amendment Deadline
+            </h3>
             <p className="text-orange-700 mb-3">
-              You can claim R&D credits for previous years by amending your returns.
-              After July 2026, you'll lose the ability to claim 2022 credits forever.
+              You can claim R&D credits for previous years by amending your
+              returns. After July 2026, you'll lose the ability to claim 2022
+              credits forever.
             </p>
-            <p className="text-orange-800 font-semibold">Don't leave money on the table.</p>
+            <p className="text-orange-800 font-semibold">
+              Don't leave money on the table.
+            </p>
           </div>
         </div>
 
         {/* Year Selection Section */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-8 mb-8">
           <div className="text-center mb-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">📅 Select Tax Years to File</h3>
-            <p className="text-gray-600">Add previous years to maximize your credit recovery</p>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              📅 Select Tax Years to File
+            </h3>
+            <p className="text-gray-600">
+              Add previous years to maximize your credit recovery
+            </p>
           </div>
 
           <div className="space-y-4">
@@ -142,9 +172,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
                 key={yearOption.year}
                 className={`border rounded-xl p-4 transition-all cursor-pointer ${
                   selectedYears.includes(yearOption.year)
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                } ${yearOption.included ? 'opacity-100' : ''}`}
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                } ${yearOption.included ? "opacity-100" : ""}`}
                 onClick={() => handleYearToggle(yearOption.year)}
               >
                 <div className="flex items-center justify-between">
@@ -159,11 +189,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
                     <div>
                       <div className="font-semibold text-gray-900">
                         {yearOption.year} ({yearOption.label})
-                        {yearOption.included && ': Included'}
+                        {yearOption.included && ": Included"}
                       </div>
-                      {!yearOption.included && selectedYears.includes(yearOption.year) && (
-                        <div className="text-sm text-blue-600">Adding this year to your filing</div>
-                      )}
+                      {!yearOption.included &&
+                        selectedYears.includes(yearOption.year) && (
+                          <div className="text-sm text-blue-600">
+                            Adding this year to your filing
+                          </div>
+                        )}
                     </div>
                   </div>
                   {!yearOption.included && (
@@ -178,7 +211,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
 
           {/* Why Add Previous Years */}
           <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <h4 className="font-bold text-yellow-800 mb-2">Why add previous years?</h4>
+            <h4 className="font-bold text-yellow-800 mb-2">
+              Why add previous years?
+            </h4>
             <ul className="text-sm text-yellow-700 space-y-1">
               <li>• July 2026 deadline to amend 2022-2024 returns</li>
               <li>• Most businesses using AI qualify for multiple years</li>
@@ -190,27 +225,35 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
 
         {/* Pricing Summary */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-8 mb-8">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Pricing Summary</h3>
-          
+          <h3 className="text-xl font-bold text-gray-900 mb-6">
+            Pricing Summary
+          </h3>
+
           <div className="space-y-4">
             <div className="flex justify-between items-center py-3 border-b border-gray-100">
               <span className="font-medium text-gray-900">Base (2025):</span>
-              <span className="font-bold text-gray-900">{formatCurrency(basePrice)}</span>
+              <span className="font-bold text-gray-900">
+                {formatCurrency(basePrice)}
+              </span>
             </div>
-            
+
             {additionalYearsCount > 0 && (
               <div className="flex justify-between items-center py-3 border-b border-gray-100">
                 <span className="font-medium text-gray-900">
                   Additional Years ({additionalYearsCount}):
                 </span>
-                <span className="font-bold text-gray-900">{formatCurrency(additionalYearsCount * additionalYearPrice)}</span>
+                <span className="font-bold text-gray-900">
+                  {formatCurrency(additionalYearsCount * additionalYearPrice)}
+                </span>
               </div>
             )}
-            
+
             <div className="border-t-2 border-gray-300 pt-4">
               <div className="flex justify-between items-center">
                 <span className="text-xl font-bold text-gray-900">Total:</span>
-                <span className="text-2xl font-bold text-blue-600">{formatCurrency(totalPrice)}</span>
+                <span className="text-2xl font-bold text-blue-600">
+                  {formatCurrency(totalPrice)}
+                </span>
               </div>
             </div>
           </div>
@@ -218,38 +261,56 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
 
         {/* What's Included */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-8 mb-8">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">What's Included</h3>
-          
+          <h3 className="text-xl font-bold text-gray-900 mb-6">
+            What's Included
+          </h3>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-start gap-3">
               <Check className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
               <div>
-                <div className="font-medium text-gray-900">Complete R&D tax credit calculation</div>
-                <div className="text-sm text-gray-600">Professional analysis of your qualifying activities</div>
+                <div className="font-medium text-gray-900">
+                  Complete R&D tax credit calculation
+                </div>
+                <div className="text-sm text-gray-600">
+                  Professional analysis of your qualifying activities
+                </div>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-3">
               <Check className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
               <div>
-                <div className="font-medium text-gray-900">IRS Form 6765 (completed)</div>
-                <div className="text-sm text-gray-600">Ready-to-file forms for your CPA</div>
+                <div className="font-medium text-gray-900">
+                  IRS Form 6765 (completed)
+                </div>
+                <div className="text-sm text-gray-600">
+                  Ready-to-file forms for your CPA
+                </div>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-3">
               <Check className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
               <div>
-                <div className="font-medium text-gray-900">Supporting documentation package</div>
-                <div className="text-sm text-gray-600">Complete backup for your filing</div>
+                <div className="font-medium text-gray-900">
+                  Supporting documentation package
+                </div>
+                <div className="text-sm text-gray-600">
+                  Complete backup for your filing
+                </div>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-3">
               <Check className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
               <div>
-                <div className="font-medium text-gray-900">CPA cover letter</div>
-                <div className="text-sm text-gray-600">Professional explanation for your tax advisor</div>
+                <div className="font-medium text-gray-900">
+                  CPA cover letter
+                </div>
+                <div className="text-sm text-gray-600">
+                  Professional explanation for your tax advisor
+                </div>
               </div>
             </div>
           </div>
@@ -267,7 +328,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
               <ChevronRight className="w-6 h-6" />
             </span>
           </button>
-          
+
           <div className="flex items-center justify-center gap-6 mt-6 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-green-600" />

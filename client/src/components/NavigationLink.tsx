@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'wouter';
+import React from "react";
+import { Link } from "wouter";
 
 interface NavigationLinkProps {
   to: string;
@@ -7,12 +7,14 @@ interface NavigationLinkProps {
   className?: string;
 }
 
-const NavigationLink: React.FC<NavigationLinkProps> = ({ to, children, className = '' }) => {
+const NavigationLink: React.FC<NavigationLinkProps> = ({
+  to,
+  children,
+  className = "",
+}) => {
   return (
     <Link href={to}>
-      <a className={className}>
-        {children}
-      </a>
+      <a className={className}>{children}</a>
     </Link>
   );
 };

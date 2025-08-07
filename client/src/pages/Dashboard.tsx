@@ -3,8 +3,10 @@ import { Link, useLocation } from 'wouter';
 import { 
   Building2, User, FileText, DollarSign, FolderOpen, Settings,
   BarChart3, LogOut, Menu, X, TrendingUp, Calculator,
-  Mail, Phone, Calendar, Star, CheckCircle, Lock, Circle
+  Mail, Phone, Calendar, Star, CheckCircle, Lock, Circle,
+  HelpCircle, ExternalLink, ArrowRight, Clock, AlertCircle
 } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface CustomerInfo {
   email: string;
@@ -157,6 +159,107 @@ const Dashboard: React.FC = () => {
   };
 
   const progressData = getProgressData();
+
+  // Smart checklist data
+  const getChecklistItems = () => {
+    const hasSubmission = customerInfo?.hasSubmissions && customerInfo.submissions?.length > 0;
+    const submission = hasSubmission ? customerInfo.submissions[0] : {};
+    
+    return [
+      {
+        id: 'entity-name',
+        title: 'Enter your business entity name',
+        completed: !!submission['Entity Name'],
+        required: true,
+        tooltip: 'Legal name of your business entity as it appears on tax documents',
+        section: 'company',
+        category: 'Company Info'
+      },
+      {
+        id: 'entity-type',
+        title: 'Select your business entity type',
+        completed: !!submission['Entity Type'],
+        required: true,
+        tooltip: 'Choose from C-Corp, S-Corp, LLC, Partnership, or Sole Proprietorship',
+        section: 'company',
+        category: 'Company Info'
+      },
+      {
+        id: 'tax-id',
+        title: 'Provide your Tax ID (EIN/SSN)',
+        completed: !!submission['Tax ID'],
+        required: true,
+        tooltip: 'Your Federal Tax Identification Number (EIN) or Social Security Number',
+        section: 'company',
+        category: 'Company Info'
+      },
+      {
+        id: 'contact-name',
+        title: 'Enter primary contact name',
+        completed: !!submission['Contact Name'],
+        required: true,
+        tooltip: 'Name of the person we should contact regarding this application',
+        section: 'company',
+        category: 'Company Info'
+      },
+      {
+        id: 'business-description',
+        title: 'Describe your business activities',
+        completed: !!submission['Business Description'],
+        required: true,
+        tooltip: 'Brief overview of your business and main activities or products',
+        section: 'rd-activities',
+        category: 'R&D Activities'
+      },
+      {
+        id: 'rd-activities',
+        title: 'Detail your R&D activities',
+        completed: !!submission['R&D Activities'],
+        required: true,
+        tooltip: 'Describe research, development, new products, technological challenges, etc.',
+        section: 'rd-activities',
+        category: 'R&D Activities'
+      },
+      {
+        id: 'wages',
+        title: 'Enter R&D wages and salaries',
+        completed: !!(submission['Total Wages'] && submission['Total Wages'] > 0),
+        required: false,
+        tooltip: 'Total wages paid to employees involved in R&D activities',
+        section: 'expenses',
+        category: 'Expenses'
+      },
+      {
+        id: 'contractor-costs',
+        title: 'Add contractor and consultant costs',
+        completed: !!(submission['Contractor Costs'] && submission['Contractor Costs'] > 0),
+        required: false,
+        tooltip: 'Payments to external contractors for R&D work (65% of amount qualifies)',
+        section: 'expenses',
+        category: 'Expenses'
+      },
+      {
+        id: 'supply-costs',
+        title: 'Include supply and material costs',
+        completed: !!(submission['Supply Costs'] && submission['Supply Costs'] > 0),
+        required: false,
+        tooltip: 'Cost of supplies and materials used directly in R&D activities',
+        section: 'expenses',
+        category: 'Expenses'
+      },
+      {
+        id: 'other-expenses',
+        title: 'Add other qualifying R&D expenses',
+        completed: !!(submission['Other Expenses'] && submission['Other Expenses'] > 0),
+        required: false,
+        tooltip: 'Other expenses directly related to R&D (equipment, software, etc.)',
+        section: 'expenses',
+        category: 'Expenses'
+      }
+    ];
+  };
+
+  const checklistItems = getChecklistItems();
 
   if (loading) {
     return (
@@ -518,6 +621,166 @@ const Dashboard: React.FC = () => {
                     <div>
                       <p className="text-sm text-gray-600">Service Level</p>
                       <p className="text-lg font-bold text-gray-900">Premium</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Smart Checklist */}
+              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Application Checklist</h3>
+                    <p className="text-gray-600">Complete these items to maximize your R&D tax credit</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-gray-900">
+                      {checklistItems.filter(item => item.completed).length}/{checklistItems.length}
+                    </div>
+                    <div className="text-sm text-gray-500">completed</div>
+                  </div>
+                </div>
+
+                <TooltipProvider>
+                  <div className="space-y-1">
+                    {checklistItems.map((item, index) => {
+                      const isCompleted = item.completed;
+                      const isRequired = item.required;
+                      
+                      return (
+                        <div key={item.id} className={`group flex items-center p-4 rounded-xl transition-all hover:bg-gray-50 ${
+                          isCompleted ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200'
+                        }`}>
+                          {/* Checkbox */}
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 transition-all ${
+                            isCompleted 
+                              ? 'bg-green-500 border-green-500' 
+                              : 'border-gray-300 group-hover:border-blue-400'
+                          }`}>
+                            {isCompleted && <CheckCircle className="w-4 h-4 text-white" />}
+                          </div>
+                          
+                          {/* Content */}
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className={`font-medium ${
+                                isCompleted ? 'text-green-800' : 'text-gray-900'
+                              }`}>
+                                {item.title}
+                              </span>
+                              {isRequired && !isCompleted && (
+                                <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full font-medium">
+                                  Required
+                                </span>
+                              )}
+                              {isCompleted && (
+                                <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-medium">
+                                  Complete
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {item.category}
+                            </div>
+                          </div>
+                          
+                          {/* Actions */}
+                          <div className="flex items-center gap-2">
+                            {/* Tooltip */}
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
+                                  <HelpCircle className="w-4 h-4 text-gray-400" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent side="left" className="max-w-sm">
+                                <p>{item.tooltip}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            
+                            {/* Navigation Button */}
+                            {!isCompleted && (
+                              <button
+                                onClick={() => {
+                                  if (item.section === 'company' || item.section === 'rd-activities' || item.section === 'expenses') {
+                                    setLocation('/intake-portal');
+                                  } else {
+                                    setActiveSection(item.section);
+                                  }
+                                }}
+                                className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                              >
+                                <span>Complete</span>
+                                <ArrowRight className="w-3 h-3" />
+                              </button>
+                            )}
+                            
+                            {isCompleted && (
+                              <button
+                                onClick={() => {
+                                  if (item.section === 'company' || item.section === 'rd-activities' || item.section === 'expenses') {
+                                    setLocation('/intake-portal');
+                                  } else {
+                                    setActiveSection(item.section);
+                                  }
+                                }}
+                                className="flex items-center gap-1 px-3 py-1.5 text-gray-600 hover:text-blue-600 text-sm hover:bg-blue-50 rounded-lg transition-colors"
+                              >
+                                <span>Review</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </TooltipProvider>
+
+                {/* Progress Summary */}
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600">
+                        {checklistItems.filter(item => item.completed && item.required).length}
+                      </div>
+                      <div className="text-sm text-gray-600">Required Complete</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600">
+                        {checklistItems.filter(item => item.completed && !item.required).length}
+                      </div>
+                      <div className="text-sm text-gray-600">Optional Complete</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-gray-400">
+                        {checklistItems.filter(item => !item.completed).length}
+                      </div>
+                      <div className="text-sm text-gray-600">Remaining</div>
+                    </div>
+                  </div>
+                  
+                  {/* Smart recommendations */}
+                  <div className="mt-4 p-4 bg-blue-50 rounded-xl">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-blue-900 mb-1">Next Steps</h4>
+                        <p className="text-sm text-blue-700">
+                          {checklistItems.filter(item => item.required && !item.completed).length > 0
+                            ? `Complete ${checklistItems.filter(item => item.required && !item.completed).length} required items to unlock document generation.`
+                            : checklistItems.filter(item => !item.required && !item.completed).length > 0
+                            ? 'Great job on required items! Add expense details to maximize your credit amount.'
+                            : 'Excellent! All items complete. Ready to generate your documentation.'}
+                        </p>
+                        {checklistItems.filter(item => item.required && !item.completed).length === 0 && (
+                          <Link href="/intake-portal">
+                            <button className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium">
+                              Add more expense details →
+                            </button>
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

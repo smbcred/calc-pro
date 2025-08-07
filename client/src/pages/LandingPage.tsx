@@ -61,6 +61,28 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Header Navigation */}
+      <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
+                <Calculator className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-bold text-xl text-gray-900">SMBTaxCredits.com</span>
+            </div>
+            <div className="flex items-center gap-6">
+              <Link href="/calculator" className="text-blue-600 font-medium hover:text-blue-700">
+                Calculator
+              </Link>
+              <div className="text-sm text-gray-600">
+                <span className="font-medium">🔒 Secure</span> • <span className="font-medium">⚡ Fast</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-blue-50 via-white to-green-50 pt-16 pb-24">
         <div className="max-w-6xl mx-auto px-4">
@@ -569,6 +591,84 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-green-600 rounded-xl flex items-center justify-center">
+                <Calculator className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-2xl font-bold">SMBTaxCredits.com</span>
+            </div>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              The trusted platform for small and medium businesses to claim R&D tax credits. 
+              We've helped 500+ businesses recover millions in credits they didn't know they were owed.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+            <div>
+              <h4 className="font-semibold mb-4">Services</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/calculator" className="hover:text-white">R&D Credit Calculator</Link></li>
+                <li><a href="#" className="hover:text-white">Document Preparation</a></li>
+                <li><a href="#" className="hover:text-white">Multi-Year Claims</a></li>
+                <li><a href="#" className="hover:text-white">Amendment Services</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Resources</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white">AI Qualification Guide</a></li>
+                <li><a href="#" className="hover:text-white">IRS Requirements</a></li>
+                <li><a href="#" className="hover:text-white">Case Studies</a></li>
+                <li><a href="#" className="hover:text-white">FAQ</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white">Live Chat</a></li>
+                <li><a href="#" className="hover:text-white">Contact Us</a></li>
+                <li><a href="#" className="hover:text-white">Schedule Consultation</a></li>
+                <li><a href="#" className="hover:text-white">Technical Support</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white">About Us</a></li>
+                <li><a href="#" className="hover:text-white">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-white">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-white">Security</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 pt-8">
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <div className="text-gray-400 text-sm mb-4 md:mb-0">
+                © 2024 SMBTaxCredits.com. All rights reserved. We help businesses claim legitimate R&D tax credits.
+              </div>
+              <div className="flex items-center gap-4 text-sm text-gray-400">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-green-500" />
+                  <span>Secure & Compliant</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-blue-500" />
+                  <span>IRS Approved Methods</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

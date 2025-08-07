@@ -184,9 +184,13 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
   // Enhanced Branding Header with Perfect Centering and Spacing
   const BrandingHeader = () => (
     <div className="text-center mb-12 max-w-4xl mx-auto">
-      <div className="inline-flex items-center gap-3 text-sm text-blue-600 font-semibold mb-6 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
-        <Building className="w-4 h-4" />
-        <span>SMBTaxCredits.com</span>
+      <div className="inline-flex items-center gap-3 text-sm text-blue-600 font-semibold mb-6 bg-blue-50 px-6 py-3 rounded-full border border-blue-100 shadow-sm">
+        <div className="w-6 h-6 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center">
+          <Calculator className="w-4 h-4 text-white" />
+        </div>
+        <span className="font-bold">SMBTaxCredits.com</span>
+        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+        <span className="text-xs text-gray-600">R&D Tax Credit Experts</span>
       </div>
       
       <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent leading-tight">
@@ -3299,16 +3303,22 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
               </div>
             </div>
             
-            <div className="text-sm text-gray-500 space-x-2">
-              <span className="font-semibold text-blue-600">SMBTaxCredits.com</span>
-              <span>·</span>
-              <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Terms</a>
-              <span>·</span>
-              <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Privacy</a>
-              <span>·</span>
-              <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Contact</a>
-              <span>·</span>
-              <span className="text-gray-400">© 2024 All rights reserved</span>
+            <div className="text-sm text-gray-500">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="w-5 h-5 bg-gradient-to-r from-blue-600 to-green-600 rounded flex items-center justify-center">
+                  <Calculator className="w-3 h-3 text-white" />
+                </div>
+                <span className="font-bold text-blue-600">SMBTaxCredits.com</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Terms</a>
+                <span>·</span>
+                <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Privacy</a>
+                <span>·</span>
+                <a href="#" className="hover:text-gray-700 transition-colors hover:underline">Contact</a>
+                <span>·</span>
+                <span className="text-gray-400">© 2024 All rights reserved</span>
+              </div>
             </div>
           </div>
         </div>

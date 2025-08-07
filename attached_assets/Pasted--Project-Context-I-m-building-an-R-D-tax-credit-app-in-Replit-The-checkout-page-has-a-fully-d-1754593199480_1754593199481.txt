@@ -1,0 +1,56 @@
+🎯 Project Context:
+I'm building an R&D tax credit app in Replit. The `/checkout` page has a fully designed UI that shows:
+
+- Estimated credit value (e.g., $28,500)
+- Tier-based base package price (e.g., $750 for Tier 2)
+- Multiple checkboxes to let users select tax years to file (2025, 2024, 2023, etc.)
+- Each year costs $297 — including 2025
+- A single CTA button: “Complete My Order – $750” (this amount must update based on selection)
+
+---
+
+🧩 What I Need You to Build:
+
+1. A backend API route (e.g., `/api/stripeCheckout`) that:
+   - Accepts `POST` JSON:
+     ```ts
+     {
+       email: string,
+       tierBasePrice: number, // e.g. 750
+       yearsSelected: number[] // e.g. [2025, 2024]
+     }
+     ```
+   - Constructs Stripe Checkout `line_items` using:
+     - 1 item: “R&D Credit Filing Package (Tier)” → `$tierBasePrice`
+     - 1 item per selected year (e.g. “Tax Year 2025 Filing”) → `$297 each`
+
+2. The Stripe Checkout session:
+   - Should be created in **Test Mode**
+   - Returns the session URL to redirect the user
+   - No need to handle success/cancel pages yet — just create and redirect
+
+3. On the frontend:
+   - Update the checkout page button so that:
+     - It reads which years were selected (checkboxes)
+     - It calculates total price: `tierBasePrice + $297 * years.length`
+     - Sends a `POST` to `/api/stripeCheckout` with email, base price, and selected years
+     - Redirects user to Stripe Checkout URL
+
+---
+
+💬 Example Frontend Button Logic:
+```ts
+const handleCheckout = async () => {
+  const email = document.querySelector('#email').value;
+  const years = Array.from(document.querySelectorAll('input[name="year"]:checked')).map(y => parseInt(y.value));
+  const basePrice = 750; // This would be dynamic based on credit size
+
+  const res = await fetch('/api/stripeCheckout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, tierBasePrice: basePrice, yearsSelected: years })
+  });
+
+  const data = await res.json();
+  window.location.href = data.url;
+};

@@ -7,10 +7,12 @@ import {
 
 interface CheckoutPageProps {
   calculationResults?: any;
+  userEmail?: string;
 }
 
-const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
+const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEmail }) => {
   const [selectedYears, setSelectedYears] = useState<string[]>(['2025']);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Get calculation results from props
   const results = calculationResults || {
@@ -18,6 +20,11 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
     totalBenefit: 33700,
     industry: 'SaaS/Tech'
   };
+
+  // Get email from props, localStorage, or fallback to a default for testing
+  const email = userEmail || 
+                (typeof window !== 'undefined' ? localStorage.getItem('rd_credit_email') : null) || 
+                'devin@goldendigital.co';
 
   // Dynamic pricing based on credit amount
   const calculateBasePrice = (creditAmount: number) => {
@@ -60,16 +67,48 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
     }).format(amount);
   };
 
-  const handleContinueToPayment = () => {
-    // Here we would integrate with Stripe
-    console.log('Continue to Stripe payment:', {
-      selectedYears,
-      totalPrice,
-      basePrice
-    });
+  const handleContinueToPayment = async () => {
+    setIsProcessing(true);
     
-    // For now, just show an alert
-    alert(`Stripe integration coming soon! Total: ${formatCurrency(totalPrice)}`);
+    try {
+      // Convert selected years to numbers
+      const yearsAsNumbers = selectedYears.map(year => parseInt(year));
+      
+      console.log('Initiating Stripe checkout:', {
+        email,
+        tierBasePrice: basePrice,
+        yearsSelected: yearsAsNumbers,
+        totalExpected: totalPrice
+      });
+
+      // Call our Stripe checkout API
+      const response = await fetch('/api/stripeCheckout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          tierBasePrice: basePrice,
+          yearsSelected: yearsAsNumbers,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      
+      // Redirect to Stripe Checkout
+      window.location.href = url;
+      
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert(`Payment setup failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -417,12 +456,24 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults }) => {
 
           <button
             onClick={handleContinueToPayment}
-            className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-6 px-12 rounded-xl font-bold text-2xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 mb-4"
+            disabled={isProcessing}
+            className={`bg-gradient-to-r from-blue-600 to-green-600 text-white py-6 px-12 rounded-xl font-bold text-2xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 mb-4 ${
+              isProcessing ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
             <span className="flex items-center gap-3">
-              <CreditCard className="w-7 h-7" />
-              Complete My Order - {formatCurrency(totalPrice)}
-              <ChevronRight className="w-7 h-7" />
+              {isProcessing ? (
+                <>
+                  <div className="w-7 h-7 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="w-7 h-7" />
+                  Complete My Order - {formatCurrency(totalPrice)}
+                  <ChevronRight className="w-7 h-7" />
+                </>
+              )}
             </span>
           </button>
           

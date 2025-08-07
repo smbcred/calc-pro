@@ -135,6 +135,54 @@ async function sendWelcomeEmail(email: string, name?: string) {
 
   const loginUrl = `${baseUrl}/login`;
 
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2563eb;">Welcome${name ? `, ${name}` : ''}! Your R&D Credit Package is Ready</h2>
+      
+      <p>Thank you for your payment. Your R&D tax credit filing package has been activated and you now have access to our secure intake portal.</p>
+      
+      <p><strong>Next Step:</strong> Complete your intake form to begin the filing process</p>
+      
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${loginUrl}" 
+           style="background: linear-gradient(to right, #2563eb, #16a34a); 
+                  color: white; 
+                  padding: 15px 30px; 
+                  text-decoration: none; 
+                  border-radius: 8px; 
+                  font-weight: bold;
+                  display: inline-block;">
+          Access Your Intake Portal
+        </a>
+      </div>
+      
+      <p><strong>How to Access:</strong></p>
+      <ol>
+        <li>Click the button above or visit: <a href="${loginUrl}">${loginUrl}</a></li>
+        <li>Enter your email address: <strong>${email}</strong></li>
+        <li>Complete the secure intake form</li>
+      </ol>
+      
+      <p><strong>What to expect:</strong></p>
+      <ul>
+        <li>Entity information and contact details</li>
+        <li>Business description and R&D activities</li>
+        <li>Expense categorization and documentation</li>
+        <li>Timeline: 10-15 minutes to complete</li>
+      </ul>
+      
+      <p><strong>Security:</strong> Access is tied to your email address and purchase confirmation.</p>
+      
+      <p>Questions? Reply to this email or contact info@smbtaxcredits.com</p>
+      
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
+      <p style="color: #6b7280; font-size: 14px;">
+        This email was sent because you completed a payment for R&D tax credit services. 
+        If you did not make this purchase, please contact us immediately.
+      </p>
+    </div>
+  `;
+
   const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
     method: 'POST',
     headers: {
@@ -142,59 +190,22 @@ async function sendWelcomeEmail(email: string, name?: string) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
+      personalizations: [
+        {
+          to: [{ email }],
+          subject: 'Welcome! Complete Your R&D Credit Filing'
+        }
+      ],
       from: {
         email: 'info@smbtaxcredits.com',
         name: 'SMBTaxCredits.com'
       },
-      to: [{ email }],
-      subject: 'Welcome! Complete Your R&D Credit Filing',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #2563eb;">Welcome${name ? `, ${name}` : ''}! Your R&D Credit Package is Ready</h2>
-          
-          <p>Thank you for your payment. Your R&D tax credit filing package has been activated and you now have access to our secure intake portal.</p>
-          
-          <p><strong>Next Step:</strong> Complete your intake form to begin the filing process</p>
-          
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${loginUrl}" 
-               style="background: linear-gradient(to right, #2563eb, #16a34a); 
-                      color: white; 
-                      padding: 15px 30px; 
-                      text-decoration: none; 
-                      border-radius: 8px; 
-                      font-weight: bold;
-                      display: inline-block;">
-              Access Your Intake Portal
-            </a>
-          </div>
-          
-          <p><strong>How to Access:</strong></p>
-          <ol>
-            <li>Click the button above or visit: <a href="${loginUrl}">${loginUrl}</a></li>
-            <li>Enter your email address: <strong>${email}</strong></li>
-            <li>Complete the secure intake form</li>
-          </ol>
-          
-          <p><strong>What to expect:</strong></p>
-          <ul>
-            <li>Entity information and contact details</li>
-            <li>Business description and R&D activities</li>
-            <li>Expense categorization and documentation</li>
-            <li>Timeline: 10-15 minutes to complete</li>
-          </ul>
-          
-          <p><strong>Security:</strong> Access is tied to your email address and purchase confirmation.</p>
-          
-          <p>Questions? Reply to this email or contact info@smbtaxcredits.com</p>
-          
-          <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
-          <p style="color: #6b7280; font-size: 14px;">
-            This email was sent because you completed a payment for R&D tax credit services. 
-            If you did not make this purchase, please contact us immediately.
-          </p>
-        </div>
-      `,
+      content: [
+        {
+          type: 'text/html',
+          value: htmlContent
+        }
+      ]
     }),
   });
 

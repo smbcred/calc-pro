@@ -1,0 +1,90 @@
+COMPLETE HEADER RESTRUCTURE:
+
+MAIN HEADLINE:
+"R&D Tax Credit Calculator for AI & Automation"
+
+SUBHEADLINE:
+"Calculate your federal tax credits for using ChatGPT, automation tools, and AI in your business"
+
+Why this works:
+- "Calculator" = trusted financial tool
+- Specific to AI/automation = clear positioning  
+- Federal tax credits = legitimate government program
+- No "get money" language that sounds scammy
+
+TRUST BAR (refined):
+🏛️ IRS Section 41 Qualified | 🔒 Bank-Level Encryption | ⚡ Results in 2 Minutes
+
+Alternative trust bar:
+✓ 500+ Credits Calculated | 🔒 No Data Stored | 📊 IRS-Compliant Methodology
+
+VALUE PROPOSITION CARDS:
+
+Card 1 - AVERAGE RESULT:
+Icon: Keep calculator or use 📊
+"$28,500"
+"Average Credit"
+"For businesses under $5M revenue"
+
+Card 2 - WHAT YOU GET:
+Icon: 📄 (document)
+"IRS Form 6765"
+"Ready to File"
+"Complete documentation package"
+
+Card 3 - MAXIMIZE VALUE:
+Icon: 📅 (calendar)
+"3-Year Lookback"
+"2022-2024 Eligible"
+"Deadline: July 2026"
+
+VISUAL DESIGN RECOMMENDATIONS:
+
+TYPOGRAPHY:
+- Main headline: Professional navy (#1e293b)
+- No multiple colors in headline
+- Calculator = your brand accent color (teal/green)
+- Clean, trustworthy font (Inter, Helvetica)
+
+HEADER BACKGROUND:
+- Pure white or very light gray (#fafafa)
+- No gradients or patterns
+- Clean borders between sections
+
+PROFESSIONAL TOUCHES:
+- Add subtle "BETA" or "2024 Tax Year" badge
+- Small "How it works" link in top right
+- "Methodology" link for credibility
+
+MOBILE OPTIMIZATION:
+- Stack trust elements vertically
+- Reduce headline to: "AI R&D Tax Credit Calculator"
+- Keep cards but make scrollable horizontally
+
+ALTERNATIVE HEADLINES TO TEST:
+
+Option A (Tool-focused):
+"AI R&D Tax Credit Calculator"
+"Find out how much your business can claim"
+
+Option B (Benefit-focused):
+"Calculate Your R&D Tax Credits"
+"For businesses using AI and automation"
+
+Option C (Authority-focused):
+"Federal R&D Tax Credit Calculator"
+"IRS Section 41 credits for AI innovation"
+
+WHAT TO REMOVE:
+- "$500,000" claim (unrealistic for target market)
+- "Get Money Back" language (too salesy)
+- Multiple colors in headline (unprofessional)
+- "Up to" language (sounds like fine print)
+
+FINAL RECOMMENDED HEADER:
+
+Main: "R&D Tax Credit Calculator"
+Sub: "Calculate federal tax credits for AI and automation expenses"
+Trust bar: "IRS Section 41 Compliant • Secure Calculation • 2-Minute Results"
+
+This positions SMBTaxCredits.com as a professional financial tool rather than a "get rich quick" scheme, building immediate trust and credibility.

@@ -372,13 +372,9 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
             <CheckCircle className="w-5 h-5 text-white" />
           </div>
           <h3 className="text-xl font-bold text-gray-900">
-            Do You Qualify? <span className="text-green-600">(Quick Check)</span>
+            Check all activities your business does:
           </h3>
         </div>
-        
-        <p className="text-gray-700 mb-4">
-          Most businesses using AI qualify for significant credits - even if you're small or part-time. Check all that apply:
-        </p>
         
         <div className="grid grid-cols-1 gap-3">
           {[
@@ -387,7 +383,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
             { key: 'prompts', label: 'We\'ve developed prompt templates or libraries', icon: '📝' },
             { key: 'automation', label: 'We\'ve automated tasks with Zapier, Make, or code', icon: '🔄', popular: true },
             { key: 'testing', label: 'We test and improve our AI prompts or workflows', icon: '🧪' },
-            { key: 'improvement', label: 'We\'ve made our processes 10%+ better with tech', icon: '📈', premium: true }
+            { key: 'improvement', label: 'We\'ve improved processes 10%+ with technology', icon: '📈', premium: true }
           ].map(item => (
             <label key={item.key} className="group flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50/50 cursor-pointer transition-all">
               <input
@@ -982,130 +978,11 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
     </div>
   );
 
-  // World-Class Progress Indicator
+  // Simple Progress Indicator
   const ProgressIndicator = () => {
-    const steps = [
-      { 
-        label: 'Company Info', 
-        description: 'Basic details', 
-        icon: Building,
-        estimated: '1 min'
-      },
-      { 
-        label: 'AI Activities', 
-        description: 'Qualifying work', 
-        icon: Zap,
-        estimated: '2 min'
-      },
-      { 
-        label: 'Get Results', 
-        description: 'Email & calculate', 
-        icon: Calculator,
-        estimated: '1 min'
-      },
-      { 
-        label: 'Your Package', 
-        description: 'Choose & purchase', 
-        icon: Package,
-        estimated: 'Done!'
-      }
-    ];
-
     return (
-      <div className="mb-12 max-w-5xl mx-auto">
-        {/* Professional Progress Bar */}
-        <div className="relative">
-          {/* Background Progress Line */}
-          <div className="absolute top-12 left-0 right-0 h-0.5 bg-gradient-to-r from-gray-200 via-gray-200 to-gray-200 mx-8 md:mx-16"></div>
-          
-          {/* Active Progress Line */}
-          <div 
-            className="absolute top-12 left-0 h-0.5 gradient-primary mx-8 md:mx-16 transition-all duration-700 ease-out"
-            style={{width: `calc(${((currentStep - 1) / 3) * 100}% - 2rem)`}}
-          />
-          
-          {/* Step Indicators */}
-          <div className="grid grid-cols-4 gap-4">
-            {steps.map((stepInfo, index) => {
-              const step = index + 1;
-              const isActive = currentStep === step;
-              const isCompleted = currentStep > step;
-              const IconComponent = stepInfo.icon;
-              
-              return (
-                <div key={step} className="flex flex-col items-center relative">
-                  {/* Step Circle */}
-                  <div className={`
-                    relative w-24 h-24 rounded-2xl flex items-center justify-center border-2 transition-all duration-500 shadow-lg
-                    ${isCompleted 
-                      ? 'gradient-primary border-transparent text-white transform scale-105' 
-                      : isActive 
-                        ? 'bg-white border-blue-500 text-blue-600 transform scale-110 shadow-xl' 
-                        : 'bg-white border-gray-200 text-gray-400'}
-                  `}>
-                    {isCompleted ? (
-                      <CheckCircle className="w-8 h-8" />
-                    ) : (
-                      <IconComponent className="w-8 h-8" />
-                    )}
-                    
-                    {/* Active Pulse Effect */}
-                    {isActive && (
-                      <div className="absolute inset-0 rounded-2xl border-2 border-blue-500 animate-pulse"></div>
-                    )}
-                  </div>
-                  
-                  {/* Step Content */}
-                  <div className="text-center mt-4 max-w-[120px]">
-                    <h4 className={`font-semibold text-sm mb-1 ${
-                      isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-600'
-                    }`}>
-                      {stepInfo.label}
-                    </h4>
-                    <p className="text-xs text-gray-500 mb-2">
-                      {stepInfo.description}
-                    </p>
-                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                      isActive ? 'bg-blue-100 text-blue-700' : 
-                      isCompleted ? 'bg-green-100 text-green-700' : 
-                      'bg-gray-100 text-gray-500'
-                    }`}>
-                      {isCompleted ? 'Complete' : stepInfo.estimated}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        
-        {/* Progress Summary */}
-        <div className="mt-8 text-center">
-          <div className="inline-flex items-center gap-3 bg-white rounded-2xl px-6 py-4 shadow-sm border border-gray-100">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-gray-700">
-                Step {currentStep} of 4
-              </span>
-            </div>
-            <div className="w-px h-4 bg-gray-200"></div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-600">
-                ~{4 - currentStep + 1} min remaining
-              </span>
-            </div>
-            {savedProgress && (
-              <>
-                <div className="w-px h-4 bg-gray-200"></div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span className="text-sm text-green-600">Auto-saved</span>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+      <div className="text-center mb-8">
+        <span className="text-sm font-medium text-gray-600">Step {currentStep} of 4 • 2 minutes to complete</span>
       </div>
     );
   };
@@ -1136,11 +1013,11 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
       case 1:
         return (
           <div className="space-y-8">
-            {/* Streamlined Step Header */}
+            {/* Step Header */}
             <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">Answer questions about your AI use</h2>
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">Let's Check Your R&D Qualification</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                We'll calculate your credit amount and prepare your documentation package. Complete forms ready for filing - hand to your CPA or file yourself.
+                Takes 2 minutes to see if you qualify for $15,000-$75,000 in tax credits
               </p>
             </div>
             
@@ -1149,10 +1026,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
             <div className="card-elevated p-8 md:p-10 space-y-8">
               <div className="space-y-4">
                 <label className="block text-lg font-semibold text-gray-900 mb-3">
-                  <span className="flex items-center gap-2">
-                    <Building className="w-5 h-5 text-blue-600" />
-                    What's your business name?
-                  </span>
+                  Company Name
                 </label>
                 <input
                   type="text"
@@ -1161,15 +1035,12 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                   className="input-enhanced text-xl"
                   placeholder="Your Company, Inc."
                 />
-                <p className="text-sm text-gray-500">This helps us personalize your tax credit package</p>
+                <p className="text-sm text-gray-500">As shown on tax returns</p>
               </div>
 
               <div className="space-y-4">
                 <label className="block text-lg font-semibold text-gray-900 mb-3">
-                  <span className="flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-green-600" />
-                    What industry are you in?
-                  </span>
+                  Industry
                 </label>
                 <select
                   value={formData.industry}
@@ -1181,6 +1052,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                     <option key={ind.value} value={ind.value}>{ind.label}</option>
                   ))}
                 </select>
+                <p className="text-sm text-gray-500 mt-2">Choose closest match</p>
                 <IndustryExamples industry={formData.industry} />
                 
                 {/* Enhanced Industry-Specific Value Props */}
@@ -1279,11 +1151,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
 
               <div className="space-y-4">
                 <label className="block text-lg font-semibold text-gray-900 mb-3">
-                  <span className="flex items-center gap-2">
-                    <span className="text-green-600 font-bold">$</span>
-                    What's your annual revenue?
-                    <InfoTooltip text="We need this to calculate your maximum credit and special benefits. Your data is encrypted and never shared." />
-                  </span>
+                  Annual Revenue
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold pointer-events-none">$</span>
@@ -1296,7 +1164,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
                     placeholder="1,000,000"
                   />
                 </div>
-                <p className="text-sm text-gray-500">This determines your eligibility for special startup benefits</p>
+                <p className="text-sm text-gray-500">Determines your tax benefit type</p>
                 
                 {/* Enhanced Benefits Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
@@ -1327,19 +1195,19 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ onResultsReady }) =
 
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center pt-8 border-t border-gray-100">
-              <SaveProgressButton />
+            <div className="flex justify-center pt-8 border-t border-gray-100">
               <button
                 onClick={() => setCurrentStep(2)}
                 disabled={!formData.companyName || !formData.grossReceipts || formData.selectedYears.length === 0}
                 className="bg-blue-600 text-white py-4 px-8 rounded-xl font-semibold text-xl shadow-lg hover:bg-blue-700 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
               >
                 <span className="flex items-center gap-3">
-                  Continue to Your AI Work
+                  Calculate My Credit →
                   <ChevronRight className="w-6 h-6" />
                 </span>
               </button>
             </div>
+            <p className="text-sm text-gray-500 text-center mt-3">No payment required • See results instantly</p>
           </div>
         );
 

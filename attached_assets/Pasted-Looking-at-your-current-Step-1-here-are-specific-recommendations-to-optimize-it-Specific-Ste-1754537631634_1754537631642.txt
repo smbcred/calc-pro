@@ -1,0 +1,86 @@
+Looking at your current Step 1, here are specific recommendations to optimize it:
+
+## **Specific Step 1 Improvements**
+
+### **1. REMOVE THE FLOW DIAGRAM**
+The 4-step diagram at top is taking up valuable space and adds confusion. Replace with:
+- Simple text: "Step 1 of 4 • 2 minutes to complete"
+- Or a slim progress bar showing 25% complete
+
+### **2. STRENGTHEN THE HEADER**
+Current: "Answer questions about your AI use"
+Better: "Let's Check Your R&D Qualification"
+
+Current subtext: "We'll calculate your credit amount and prepare your documentation package. Complete forms ready for filing - hand to your CPA or file yourself."
+Better: "Takes 2 minutes to see if you qualify for $15,000-$75,000 in tax credits"
+
+### **3. TIGHTEN THE QUALIFICATION SECTION**
+
+**Section header:**
+Current: "Do You Qualify? (Quick Check)"
+Better: "Check all activities your business does:"
+
+**Remove the blue explanation box entirely** - it's educational content that belongs on the landing page
+
+**Improve checkbox copy spacing** - some lines are wrapping awkwardly:
+- "We use ChatGPT, Claude, or other AI tools to improve our work" ✓ (good as is)
+- "We've built custom GPTs or chatbots" ✓ (good as is)
+- "We've developed prompt templates or libraries" ✓ (good as is)
+- "We've automated tasks with Zapier, Make, or code" ✓ (good as is)
+- "We test and improve our AI prompts or workflows" ✓ (good as is)
+- Current: "We've made our processes 10%+ better with tech"
+  Better: "We've improved processes 10%+ with technology"
+
+### **4. CLEAN UP FORM FIELD HEADERS**
+Remove emojis from all field labels:
+- 📋 What's your business name? → "Company Name"
+- 🏭 What industry are you in? → "Industry"
+- 💰 What's your annual revenue? → "Annual Revenue"
+
+### **5. IMPROVE HELPER TEXT**
+Business name: 
+Current: "This helps us personalize your tax credit package"
+Better: "As shown on tax returns"
+
+Industry dropdown:
+Add below: "Choose closest match"
+
+Annual revenue:
+Current: "This determines your eligibility for special startup benefits"
+Better: "Determines your tax benefit type"
+
+### **6. STRENGTHEN THE CTA**
+Current: "Continue to Your AI Work →"
+Better: "Calculate My Credit →"
+
+Add below button: "No payment required • See results instantly"
+
+### **7. REMOVE BOTTOM CLUTTER**
+Remove:
+- "Save Progress" link (confusing this early)
+- Extra spacing before footer
+
+### **8. VISUAL HIERARCHY IMPROVEMENTS**
+- Make the checkbox section stand out more with a light background
+- Ensure the CTA button is the most prominent element
+- Add more spacing between major sections
+- Make selected year button more obvious (darker blue)
+
+### **9. TRUST WITHOUT OVERDOING IT**
+Current: Multiple "SSL Secured, GDPR Compliant, IRS Approved" mentions
+Better: Keep just one instance in the footer
+
+### **10. MOBILE OPTIMIZATION CHECK**
+- Ensure checkboxes are easily tappable (44px minimum height)
+- Stack the revenue cards vertically on mobile
+- Make sure the form doesn't require excessive scrolling
+
+### **QUICK WINS SUMMARY:**
+1. Delete flow diagram
+2. Delete blue educational box
+3. Remove emojis from headers
+4. Change CTA to "Calculate My Credit →"
+5. Simplify helper text
+6. Remove "Save Progress" link
+
+These changes will make the form feel more professional and focused while maintaining the good structure you already have.

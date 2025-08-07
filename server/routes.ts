@@ -74,10 +74,13 @@ async function addToAirtableSubmissions(data: {
 
 async function addToAirtableCustomers(data: {
   email: string;
-  total_paid: number;
-  selected_years: string;
-  uuid_token: string;
-  timestamp: string;
+  name?: string;
+  purchaseDate: string;
+  planType: string;
+  stripeCustomerId?: string;
+  totalPaid: number;
+  selectedYears: string;
+  accessToken: string;
 }) {
   const airtableToken = process.env.AIRTABLE_API_KEY;
   const baseId = process.env.AIRTABLE_BASE_ID;
@@ -96,10 +99,13 @@ async function addToAirtableCustomers(data: {
     body: JSON.stringify({
       fields: {
         "Email": data.email,
-        "Total Paid": data.total_paid,
-        "Selected Years": data.selected_years.split(','),
-        "UUID Token": data.uuid_token,
-        "Timestamp": data.timestamp,
+        "Name": data.name || '',
+        "Purchase Date": data.purchaseDate,
+        "Plan Type": data.planType,
+        "Stripe Customer ID": data.stripeCustomerId || '',
+        "Total Paid": data.totalPaid,
+        "Selected Years": data.selectedYears ? data.selectedYears.split(',') : [],
+        "Access Token": data.accessToken,
       },
     }),
   });
@@ -113,7 +119,7 @@ async function addToAirtableCustomers(data: {
   return response.json();
 }
 
-async function sendIntakeFormEmail(email: string, token: string) {
+async function sendWelcomeEmail(email: string, name?: string) {
   const sendgridApiKey = process.env.SENDGRID_API_KEY;
 
   if (!sendgridApiKey) {
@@ -123,9 +129,11 @@ async function sendIntakeFormEmail(email: string, token: string) {
 
   const baseUrl = process.env.REPLIT_DEV_DOMAIN 
     ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
+    : process.env.REPLIT_DOMAINS?.split(',')[0]
+    ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`
     : 'http://localhost:5000';
 
-  const intakeUrl = `${baseUrl}/intake?token=${token}`;
+  const loginUrl = `${baseUrl}/login`;
 
   const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
     method: 'POST',
@@ -139,17 +147,17 @@ async function sendIntakeFormEmail(email: string, token: string) {
         name: 'R&D Credit Calculator'
       },
       to: [{ email }],
-      subject: 'Complete Your R&D Credit Filing - Secure Access Link',
+      subject: 'Welcome! Complete Your R&D Credit Filing',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #2563eb;">Your R&D Credit Filing Package is Ready!</h2>
+          <h2 style="color: #2563eb;">Welcome${name ? `, ${name}` : ''}! Your R&D Credit Package is Ready</h2>
           
-          <p>Thank you for your payment. To complete your R&D tax credit filing, we need some additional information about your business.</p>
+          <p>Thank you for your payment. Your R&D tax credit filing package has been activated and you now have access to our secure intake portal.</p>
           
-          <p><strong>Next Step:</strong> Complete your secure intake form</p>
+          <p><strong>Next Step:</strong> Complete your intake form to begin the filing process</p>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${intakeUrl}" 
+            <a href="${loginUrl}" 
                style="background: linear-gradient(to right, #2563eb, #16a34a); 
                       color: white; 
                       padding: 15px 30px; 
@@ -157,19 +165,26 @@ async function sendIntakeFormEmail(email: string, token: string) {
                       border-radius: 8px; 
                       font-weight: bold;
                       display: inline-block;">
-              Complete Intake Form
+              Access Your Intake Portal
             </a>
           </div>
           
+          <p><strong>How to Access:</strong></p>
+          <ol>
+            <li>Click the button above or visit: <a href="${loginUrl}">${loginUrl}</a></li>
+            <li>Enter your email address: <strong>${email}</strong></li>
+            <li>Complete the secure intake form</li>
+          </ol>
+          
           <p><strong>What to expect:</strong></p>
           <ul>
-            <li>Entity information and business details</li>
-            <li>R&D expense categorization</li>
-            <li>Documentation requirements</li>
+            <li>Entity information and contact details</li>
+            <li>Business description and R&D activities</li>
+            <li>Expense categorization and documentation</li>
             <li>Timeline: 10-15 minutes to complete</li>
           </ul>
           
-          <p><strong>Security:</strong> This link is unique to your order and expires in 30 days.</p>
+          <p><strong>Security:</strong> Access is tied to your email address and purchase confirmation.</p>
           
           <p>Questions? Reply to this email or contact support@rdcreditcalc.com</p>
           
@@ -291,7 +306,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let submissions = [];
       if (submissionsResponse.ok) {
         const submissionsData = await submissionsResponse.json();
-        submissions = submissionsData.records.map(record => ({
+        submissions = submissionsData.records.map((record: any) => ({
           id: record.id,
           submissionDate: record.fields['Submission Date'],
           entityName: record.fields['Entity Name']
@@ -397,27 +412,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const email = session.customer_email || session.metadata?.email;
         const totalPaid = session.amount_total ? session.amount_total / 100 : 0; // Convert from cents
         const selectedYears = session.metadata?.yearsSelected || '';
-        const uuid_token = uuidv4();
-        const timestamp = new Date().toISOString();
+        const tierBasePrice = parseFloat(session.metadata?.tierBasePrice || '0');
+        const accessToken = uuidv4();
+        const purchaseDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+        
+        // Extract customer name if available
+        let customerName = '';
+        if (session.customer_details?.name) {
+          customerName = session.customer_details.name;
+        }
+        
+        // Determine plan type based on price
+        let planType = 'Custom';
+        if (tierBasePrice >= 1500) {
+          planType = 'Premium ($100K+ Credit)';
+        } else if (tierBasePrice >= 1000) {
+          planType = 'Pro ($50K-$100K Credit)';
+        } else if (tierBasePrice >= 750) {
+          planType = 'Growth ($10K-$50K Credit)';
+        } else if (tierBasePrice >= 500) {
+          planType = 'Starter (Under $10K Credit)';
+        }
 
         if (!email) {
           console.error('No email found in session');
           return res.status(400).send('No email found in session');
         }
 
-        // Add to Airtable Customers table (primary data store)
+        // Add to Airtable Customers table with all required fields
         await addToAirtableCustomers({
           email,
-          total_paid: totalPaid,
-          selected_years: selectedYears,
-          uuid_token,
-          timestamp
+          name: customerName,
+          purchaseDate,
+          planType,
+          stripeCustomerId: session.customer as string,
+          totalPaid,
+          selectedYears,
+          accessToken
         });
 
-        // Send intake form email
-        await sendIntakeFormEmail(email, uuid_token);
+        // Send welcome email with magic login link
+        await sendWelcomeEmail(email, customerName);
 
-        console.log(`Successfully processed payment for ${email}, customer ID: ${customer.id}, token: ${uuid_token}`);
+        console.log(`Successfully processed payment for ${email}, plan: ${planType}, token: ${accessToken}`);
       }
 
       res.json({ received: true });

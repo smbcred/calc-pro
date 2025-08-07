@@ -194,7 +194,7 @@ async function sendIntakeFormEmail(email: string, token: string) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Auth verification endpoint
+  // Auth verification endpoint - checks Airtable directly
   app.post('/api/auth/verify', async (req, res) => {
     try {
       const { email } = req.body;
@@ -203,18 +203,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email is required' });
       }
 
-      const customer = await storage.getCustomerByEmail(email);
-      
-      if (!customer) {
-        return res.status(404).json({ error: 'Customer not found', hasAccess: false });
+      // Check Airtable Customers table directly
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
       }
 
+      const response = await fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+        headers: {
+          'Authorization': `Bearer ${airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to check Airtable');
+      }
+
+      const data = await response.json();
+      
+      if (data.records.length === 0) {
+        return res.status(404).json({ error: 'Customer not found. Please complete payment first.', hasAccess: false });
+      }
+
+      const customer = data.records[0].fields;
+      
       res.json({ 
-        hasAccess: customer.hasAccess === 1,
+        hasAccess: true, // If record exists in Customers table, they have access
         customer: {
-          email: customer.email,
-          totalPaid: customer.totalPaid,
-          selectedYears: customer.selectedYears
+          email: customer.Email,
+          totalPaid: customer['Total Paid'],
+          selectedYears: customer['Selected Years']
         }
       });
     } catch (error) {
@@ -223,7 +244,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Customer info endpoint
+  // Customer info endpoint - checks Airtable directly
   app.post('/api/customer/info', async (req, res) => {
     try {
       const { email } = req.body;
@@ -232,25 +253,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email is required' });
       }
 
-      const customer = await storage.getCustomerByEmail(email);
-      
-      if (!customer || customer.hasAccess !== 1) {
-        return res.status(403).json({ error: 'Access denied' });
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
       }
 
-      // Get existing submissions
-      const submissions = await storage.getIntakeSubmissionsByCustomer(customer.id);
+      // Check customer exists
+      const customerResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+        headers: {
+          'Authorization': `Bearer ${airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!customerResponse.ok) {
+        throw new Error('Failed to check customer in Airtable');
+      }
+
+      const customerData = await customerResponse.json();
+      
+      if (customerData.records.length === 0) {
+        return res.status(403).json({ error: 'Access denied - customer not found' });
+      }
+
+      const customer = customerData.records[0].fields;
+
+      // Check for existing submissions
+      const submissionsResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Submissions?filterByFormula=LOWER({Customer Email})=LOWER('${email}')`, {
+        headers: {
+          'Authorization': `Bearer ${airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      let submissions = [];
+      if (submissionsResponse.ok) {
+        const submissionsData = await submissionsResponse.json();
+        submissions = submissionsData.records.map(record => ({
+          id: record.id,
+          submissionDate: record.fields['Submission Date'],
+          entityName: record.fields['Entity Name']
+        }));
+      }
       
       res.json({ 
-        email: customer.email,
-        totalPaid: customer.totalPaid,
-        selectedYears: customer.selectedYears,
+        email: customer.Email,
+        totalPaid: customer['Total Paid'],
+        selectedYears: customer['Selected Years'],
         hasSubmissions: submissions.length > 0,
-        submissions: submissions.map(sub => ({
-          id: sub.id,
-          submissionStatus: sub.submissionStatus,
-          submittedAt: sub.submittedAt
-        }))
+        submissions: submissions
       });
     } catch (error) {
       console.error('Customer info error:', error);
@@ -258,7 +311,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Intake form submission endpoint
+  // Intake form submission endpoint - pure Airtable
   app.post('/api/intake/submit', async (req, res) => {
     try {
       const { email, formData } = req.body;
@@ -267,13 +320,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email and form data are required' });
       }
 
-      const customer = await storage.getCustomerByEmail(email);
-      
-      if (!customer || customer.hasAccess !== 1) {
-        return res.status(403).json({ error: 'Access denied' });
+      const airtableToken = process.env.AIRTABLE_API_KEY;
+      const baseId = process.env.AIRTABLE_BASE_ID;
+
+      if (!airtableToken || !baseId) {
+        return res.status(500).json({ error: 'Airtable not configured' });
       }
 
-      // Submit to Airtable
+      // Verify customer exists in Airtable
+      const customerCheck = await fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({Email})=LOWER('${email}')`, {
+        headers: {
+          'Authorization': `Bearer ${airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!customerCheck.ok) {
+        throw new Error('Failed to verify customer');
+      }
+
+      const customerData = await customerCheck.json();
+      if (customerData.records.length === 0) {
+        return res.status(403).json({ error: 'Access denied - please complete payment first' });
+      }
+
+      // Submit directly to Airtable Submissions
       const airtableRecordId = await addToAirtableSubmissions({
         customerEmail: email,
         entityName: formData.entityName,
@@ -290,14 +361,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         otherExpenses: parseInt(formData.otherExpenses) || 0,
       });
 
-      // Store in database
-      const submission = await storage.createIntakeSubmission({
-        customerId: customer.id,
-        formData: formData,
-        airtableRecordId: airtableRecordId,
-      });
-
-      res.json({ success: true, submissionId: submission.id });
+      res.json({ success: true, submissionId: airtableRecordId });
     } catch (error) {
       console.error('Intake submission error:', error);
       res.status(500).json({ error: 'Failed to submit intake form' });
@@ -341,30 +405,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(400).send('No email found in session');
         }
 
-        // Create or update customer in database
-        let customer = await storage.getCustomerByEmail(email);
-        
-        if (customer) {
-          // Update existing customer
-          customer = await storage.updateCustomerAccess(
-            email, 
-            true, // hasAccess = true
-            session.id,
-            totalPaid,
-            selectedYears.split(',').filter(y => y.trim())
-          );
-        } else {
-          // Create new customer
-          customer = await storage.createCustomer({
-            email: email,
-            hasAccess: 1,
-            stripeSessionId: session.id,
-            totalPaid: totalPaid,
-            selectedYears: selectedYears.split(',').filter(y => y.trim()),
-          });
-        }
-
-        // Add to Airtable Customers table (for backward compatibility)
+        // Add to Airtable Customers table (primary data store)
         await addToAirtableCustomers({
           email,
           total_paid: totalPaid,

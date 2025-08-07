@@ -187,71 +187,8 @@ async function sendWelcomeEmail(email: string, name?: string) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Simple SendGrid test endpoint - completely isolated
-  app.post('/api/simple-email-test', async (req, res) => {
-    try {
-      const { email } = req.body;
-      
-      if (!email) {
-        return res.status(400).json({ error: 'Email is required' });
-      }
-
-      const sendgridApiKey = process.env.SENDGRID_API_KEY;
-      
-      if (!sendgridApiKey) {
-        return res.status(500).json({ error: 'SENDGRID_API_KEY not found in environment' });
-      }
-
-      console.log('=== SendGrid Test Debug Info ===');
-      console.log('API Key exists:', !!sendgridApiKey);
-      console.log('API Key length:', sendgridApiKey.length);
-      console.log('API Key prefix:', sendgridApiKey.substring(0, 15));
-      console.log('Target email:', email);
-
-      // Import and configure SendGrid
-      const sgMail = require('@sendgrid/mail');
-      sgMail.setApiKey(sendgridApiKey);
-
-      const testMessage = {
-        to: email,
-        from: 'info@smbtaxcredits.com',
-        subject: 'SendGrid Test - SMBTaxCredits',
-        text: 'This is a simple test email.',
-        html: '<h1>Test Email</h1><p>This is a simple test email from SMBTaxCredits.com</p>',
-      };
-
-      console.log('Attempting to send email...');
-      console.log('Message object:', JSON.stringify(testMessage, null, 2));
-
-      const result = await sgMail.send(testMessage);
-      
-      console.log('SendGrid send result:', result);
-      console.log('Email sent successfully!');
-      
-      res.json({ 
-        success: true, 
-        message: `Test email sent successfully to ${email}`,
-        sendgridResponse: result 
-      });
-
-    } catch (error: any) {
-      console.error('=== SendGrid Error Details ===');
-      console.error('Error message:', error.message);
-      console.error('Error code:', error.code);
-      console.error('Error response:', error.response);
-      
-      if (error.response && error.response.body) {
-        console.error('SendGrid response body:', error.response.body);
-      }
-      
-      res.status(500).json({ 
-        error: 'SendGrid test failed', 
-        details: error.message,
-        code: error.code,
-        sendgridBody: error.response?.body
-      });
-    }
-  });
+  // SendGrid is now integrated directly into the Stripe webhook
+  // Test it by completing a purchase through the checkout flow
 
   // Auth verification endpoint - checks Airtable directly
   app.post('/api/auth/verify', async (req, res) => {
@@ -495,8 +432,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
           accessToken
         });
 
-        // Send welcome email with magic login link
-        await sendWelcomeEmail(email, customerName);
+        // Test basic SendGrid functionality first
+        console.log('Testing SendGrid integration...');
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+        const testMsg = {
+          to: email,
+          from: 'info@smbtaxcredits.com',
+          subject: 'Welcome! Complete Your R&D Credit Filing',
+          text: 'Thank you for your payment. Your R&D tax credit filing package has been activated.',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #2563eb;">Welcome${customerName ? `, ${customerName}` : ''}! Your R&D Credit Package is Ready</h2>
+              <p>Thank you for your payment. Your R&D tax credit filing package has been activated and you now have access to our secure intake portal.</p>
+              <p><strong>Next Step:</strong> Complete your intake form to begin the filing process</p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}/login` : 'http://localhost:5000/login'}" 
+                   style="background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                  Access Your Intake Portal
+                </a>
+              </div>
+              <p><strong>How to Access:</strong></p>
+              <ol>
+                <li>Click the button above or visit the login page</li>
+                <li>Enter your email address: <strong>${email}</strong></li>
+                <li>Complete the secure intake form</li>
+              </ol>
+              <p>Questions? Reply to this email or contact info@smbtaxcredits.com</p>
+            </div>
+          `,
+        };
+
+        await sgMail.send(testMsg);
+        console.log(`SendGrid email sent successfully to ${email}`);
 
         console.log(`Successfully processed payment for ${email}, plan: ${planType}, token: ${accessToken}`);
       }

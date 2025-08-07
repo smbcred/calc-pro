@@ -36,9 +36,6 @@ function App() {
         <Route path="/intake-portal">
           <GatedIntakePortal />
         </Route>
-        <Route path="/email-test">
-          <EmailTest />
-        </Route>
         <Route>
           {/* 404 fallback */}
           <div className="flex items-center justify-center min-h-screen">

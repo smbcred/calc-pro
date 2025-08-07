@@ -127,6 +127,10 @@ async function sendWelcomeEmail(email: string, name?: string) {
     throw new Error('SendGrid not configured');
   }
 
+  // Import SendGrid mail service
+  const sgMail = require('@sendgrid/mail');
+  sgMail.setApiKey(sendgridApiKey);
+
   const baseUrl = process.env.REPLIT_DEV_DOMAIN 
     ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
     : process.env.REPLIT_DOMAINS?.split(',')[0]
@@ -183,39 +187,23 @@ async function sendWelcomeEmail(email: string, name?: string) {
     </div>
   `;
 
-  const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${sendgridApiKey}`,
-      'Content-Type': 'application/json',
+  const msg = {
+    to: email,
+    from: {
+      email: 'info@smbtaxcredits.com',
+      name: 'SMBTaxCredits.com'
     },
-    body: JSON.stringify({
-      personalizations: [
-        {
-          to: [{ email }],
-          subject: 'Welcome! Complete Your R&D Credit Filing'
-        }
-      ],
-      from: {
-        email: 'info@smbtaxcredits.com',
-        name: 'SMBTaxCredits.com'
-      },
-      content: [
-        {
-          type: 'text/html',
-          value: htmlContent
-        }
-      ]
-    }),
-  });
+    subject: 'Welcome! Complete Your R&D Credit Filing',
+    html: htmlContent,
+  };
 
-  if (!response.ok) {
-    const error = await response.text();
-    console.error('SendGrid error:', error);
-    throw new Error(`Failed to send email: ${error}`);
+  try {
+    await sgMail.send(msg);
+    return { success: true };
+  } catch (error: any) {
+    console.error('SendGrid error:', error.response?.body || error);
+    throw new Error(`Failed to send email: ${error.response?.body?.errors?.[0]?.message || error.message}`);
   }
-
-  return response.json();
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {

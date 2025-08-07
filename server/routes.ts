@@ -143,8 +143,8 @@ async function sendWelcomeEmail(email: string, name?: string) {
     },
     body: JSON.stringify({
       from: {
-        email: 'noreply@rdcreditcalc.com',
-        name: 'R&D Credit Calculator'
+        email: 'info@smbtaxcredits.com',
+        name: 'SMBTaxCredits.com'
       },
       to: [{ email }],
       subject: 'Welcome! Complete Your R&D Credit Filing',
@@ -186,7 +186,7 @@ async function sendWelcomeEmail(email: string, name?: string) {
           
           <p><strong>Security:</strong> Access is tied to your email address and purchase confirmation.</p>
           
-          <p>Questions? Reply to this email or contact support@rdcreditcalc.com</p>
+          <p>Questions? Reply to this email or contact info@smbtaxcredits.com</p>
           
           <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
           <p style="color: #6b7280; font-size: 14px;">

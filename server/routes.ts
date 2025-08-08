@@ -15,6 +15,7 @@ import reviewRoutes from './routes/review.routes';
 import emailRoutes from './routes/email.routes';
 import monitoringRoutes from './routes/monitoring.routes';
 import creditsRoutes from './routes/credits.routes';
+import qreRoutes from './routes/qre.routes';
 import webhooksRoutes from './routes/webhooks.routes';
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -41,6 +42,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/email', emailRoutes);
   app.use('/api', monitoringRoutes);
   app.use('/api/credits', creditsRoutes);
+  app.use('/api/qre', qreRoutes);
   app.use('/api/webhooks', webhooksRoutes);
 
   const httpServer = createServer(app);

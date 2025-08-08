@@ -1,6 +1,11 @@
 import express, { Request, Response } from 'express';
 import { asyncHandler } from '../middleware/errorHandler';
 import { getCustomerByEmail, getCompanyByCustomerId } from '../utils/airtable';
+import {
+  calculateFederalRate,
+  RDTaxRules,
+  type BusinessProfile
+} from '../../shared/taxRules/rdTaxRules';
 
 const router = express.Router();
 
@@ -99,6 +104,14 @@ router.post('/calculate', asyncHandler(async (req: Request, res: Response) => {
     employeeCount: '',
     annualRevenue: ''
   };
+  
+  let businessProfile: BusinessProfile = {
+    yearsInBusiness: 3, // Default estimate
+    annualRevenue: 'Under $1M', // Default
+    hadRevenueThreeYearsAgo: false, // Default for startups
+    businessStructure: 'LLC', // Default
+    primaryIndustry: 'Other' // Default
+  };
 
   if (customer) {
     const company = await getCompanyByCustomerId(customer.id);
@@ -109,31 +122,46 @@ router.post('/calculate', asyncHandler(async (req: Request, res: Response) => {
         employeeCount: company.fields.employee_count || '',
         annualRevenue: company.fields.revenue || ''
       };
+      
+      // Build business profile from company data
+      businessProfile = {
+        yearsInBusiness: company.fields.years_in_business || 3,
+        annualRevenue: company.fields.revenue || 'Under $1M',
+        hadRevenueThreeYearsAgo: company.fields.had_revenue_three_years_ago || false,
+        businessStructure: company.fields.business_structure || 'LLC',
+        primaryIndustry: company.fields.primary_industry || 'Other'
+      };
     }
   }
 
-  // Calculate Federal Credit (Traditional Method: 6.5% of QRE)
-  const federalCreditRate = 6.5; // 6.5% traditional method
-  const federalCreditAmount = Math.round(qreAmount * (federalCreditRate / 100));
+  // Calculate Federal Credit using dynamic rates (14%/10%/6.5% based on business profile)
+  const federalRateInfo = calculateFederalRate(businessProfile);
+  const federalCreditAmount = Math.round(qreAmount * federalRateInfo.rate);
   
   const federalCredit = {
     traditionalMethod: federalCreditAmount,
-    rate: federalCreditRate,
-    explanation: `Traditional method applies ${federalCreditRate}% to qualified research expenses. This is the most common method for businesses with consistent R&D spending.`
+    rate: federalRateInfo.rate * 100, // Convert to percentage for display
+    explanation: `${federalRateInfo.name}: ${federalRateInfo.description}. ${federalRateInfo.benefits.join(' ')}`
   };
 
-  // State-specific R&D credit rates and information
+  // Use centralized state credit information
   const stateRates: Record<string, { rate: number; maxCredit?: number; description: string }> = {
-    'California': { rate: 24, description: 'California offers a 24% credit for qualified R&D expenses, with no annual cap' },
+    ...Object.fromEntries(
+      Object.entries(RDTaxRules.stateCredits).map(([state, info]) => [
+        state,
+        {
+          rate: info.rate * 100, // Convert to percentage
+          maxCredit: info.maxCredit || undefined,
+          description: info.notes
+        }
+      ])
+    ),
+    // Additional states not in centralized rules yet
     'Connecticut': { rate: 6, description: '6% credit with additional benefits for small businesses' },
     'Illinois': { rate: 6.5, description: '6.5% credit for increasing research activities in Illinois' },
-    'Maryland': { rate: 10, description: '10% credit for qualified research expenses with 15-year carryforward' },
     'Massachusetts': { rate: 10, description: '10% research credit for qualified expenses above base amount' },
     'New Jersey': { rate: 20, description: '20% credit for qualified research expenses with generous carryforward' },
-    'New York': { rate: 9, description: '9% credit for qualified research expenses in New York' },
     'North Carolina': { rate: 25, description: '25% credit for qualified research expenses (one of the highest state rates)' },
-    'Pennsylvania': { rate: 10, description: '10% credit for qualified research and development tax credit' },
-    'Texas': { rate: 5, description: '5% credit for qualified research expenses with no annual limit' },
     'Washington': { rate: 1.5, description: '1.5% credit for qualified research activities in Washington' }
   };
 
@@ -164,24 +192,19 @@ router.post('/calculate', asyncHandler(async (req: Request, res: Response) => {
     };
   });
 
-  // Calculate Payroll Tax Offset eligibility
-  // Eligible if: gross receipts < $5M for 5-year period AND business < 5 years old
-  const isSmallBusiness = companyInfo.annualRevenue.includes('Under $1M') || 
-                         companyInfo.annualRevenue.includes('$1M - $5M');
-  const isStartup = true; // We'd need founding year to calculate this properly
-  
+  // Calculate Payroll Tax Offset eligibility using centralized rules
   const payrollTaxOffset = {
-    eligible: isSmallBusiness && isStartup,
-    maxOffset: 250000, // $250K annual limit
+    eligible: federalRateInfo.canOffsetPayroll,
+    maxOffset: federalRateInfo.payrollOffsetLimit,
     effectiveOffset: 0,
     explanation: ''
   };
   
   if (payrollTaxOffset.eligible) {
     payrollTaxOffset.effectiveOffset = Math.min(federalCreditAmount, payrollTaxOffset.maxOffset);
-    payrollTaxOffset.explanation = 'Your business qualifies for payroll tax offset based on revenue size. Up to $250,000 of federal R&D credits can offset payroll taxes instead of income taxes.';
+    payrollTaxOffset.explanation = `Your business qualifies for payroll tax offset. Up to $${payrollTaxOffset.maxOffset.toLocaleString()} of federal R&D credits can offset payroll taxes instead of income taxes.`;
   } else {
-    payrollTaxOffset.explanation = 'Payroll tax offset is available for qualifying small businesses (under $5M gross receipts) that are less than 5 years old.';
+    payrollTaxOffset.explanation = 'Payroll tax offset is available for qualifying small businesses and startups. Your business may not meet the current eligibility requirements.';
   }
 
   // Calculate totals

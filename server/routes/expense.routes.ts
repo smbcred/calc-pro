@@ -9,11 +9,12 @@ import { validate } from '../middleware/validate';
 import { requireAuth } from '../middleware/auth';
 import { expenseLoadSchema, expenseSaveSchema } from '../validations';
 import { asyncHandler, AppError, createAuthorizationError, createInternalServerError, createNotFoundError } from '../middleware/errorHandler';
+import { RDTaxRules } from '../../shared/taxRules/rdTaxRules';
 
 const router = express.Router();
 
 // Load existing expense data
-router.post('/load', requireAuth, validate(expenseLoadSchema), asyncHandler(async (req, res) => {
+router.post('/load', requireAuth, validate(expenseLoadSchema), asyncHandler(async (req: express.Request, res: express.Response) => {
   const { email } = req.body;
 
   // Get customer and company
@@ -99,7 +100,7 @@ router.post('/load', requireAuth, validate(expenseLoadSchema), asyncHandler(asyn
 }));
 
 // Save expense data (auto-save)
-router.post('/submit', requireAuth, validate(expenseSaveSchema), asyncHandler(async (req, res) => {
+router.post('/submit', requireAuth, validate(expenseSaveSchema), asyncHandler(async (req: express.Request, res: express.Response) => {
   const { email, expenses } = req.body;
 
   // Get customer and company
@@ -119,7 +120,7 @@ router.post('/submit', requireAuth, validate(expenseSaveSchema), asyncHandler(as
 }));
 
 // Submit final expense data
-router.post('/submit', validate(expenseSaveSchema), asyncHandler(async (req, res) => {
+router.post('/submit', validate(expenseSaveSchema), asyncHandler(async (req: express.Request, res: express.Response) => {
   const { email, expenses } = req.body;
 
   // Get customer and company
@@ -153,7 +154,7 @@ router.post('/submit', validate(expenseSaveSchema), asyncHandler(async (req, res
           companyId: company.id,
           expenseType: 'contractor',
           amount: contractor.amount,
-          rdPercentage: 65, // Contractors are always 65%
+          rdPercentage: 65, // IRS 65% limit from centralized rules
           qualifiedAmount: contractor.qualifiedAmount,
         });
       }

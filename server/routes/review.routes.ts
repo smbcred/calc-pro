@@ -12,7 +12,7 @@ import { asyncHandler, AppError, createAuthorizationError, createInternalServerE
 const router = express.Router();
 
 // Review data endpoint - aggregates data from all sources
-router.post('/data', requireAuth, validate(emailSchema), asyncHandler(async (req, res) => {
+router.post('/data', requireAuth, validate(emailSchema), asyncHandler(async (req: express.Request, res: express.Response) => {
   const { email } = req.body;
 
   // Get customer and company
@@ -133,7 +133,7 @@ router.post('/data', requireAuth, validate(emailSchema), asyncHandler(async (req
 }));
 
 // Generate documents endpoint
-router.post('/generate-documents', requireAuth, validate(emailSchema), asyncHandler(async (req, res) => {
+router.post('/generate-documents', requireAuth, validate(emailSchema), asyncHandler(async (req: express.Request, res: express.Response) => {
   const { email } = req.body;
 
   // Get customer
@@ -159,7 +159,7 @@ router.post('/generate-documents', requireAuth, validate(emailSchema), asyncHand
 }));
 
 // Document status endpoint
-router.post('/document-status', validate(documentStatusSchema), asyncHandler(async (req, res) => {
+router.post('/document-status', validate(documentStatusSchema), asyncHandler(async (req: express.Request, res: express.Response) => {
   const { email, trackingId } = req.body;
 
   // In a real implementation, you would check the status in a tracking table
@@ -176,7 +176,7 @@ router.post('/document-status', validate(documentStatusSchema), asyncHandler(asy
 }));
 
 // QRE calculation endpoint
-router.post('/calculate', validate(emailSchema), asyncHandler(async (req, res) => {
+router.post('/calculate', validate(emailSchema), asyncHandler(async (req: express.Request, res: express.Response) => {
   const { email } = req.body;
 
   // Get customer and company
@@ -277,7 +277,7 @@ router.post('/calculate', validate(emailSchema), asyncHandler(async (req, res) =
 }));
 
 // Generate QRE report endpoint
-router.post('/generate-report', requireAuth, validate(emailSchema), asyncHandler(async (req, res) => {
+router.post('/generate-report', requireAuth, validate(emailSchema), asyncHandler(async (req: express.Request, res: express.Response) => {
   const { email } = req.body;
 
   // Get customer
@@ -292,7 +292,7 @@ router.post('/generate-report', requireAuth, validate(emailSchema), asyncHandler
 }));
 
 // Documents list endpoint  
-router.post('/list', requireAuth, validate(emailSchema), asyncHandler(async (req, res) => {
+router.post('/list', requireAuth, validate(emailSchema), asyncHandler(async (req: express.Request, res: express.Response) => {
   const { email } = req.body;
 
   // Get customer
@@ -338,7 +338,7 @@ router.post('/list', requireAuth, validate(emailSchema), asyncHandler(async (req
 }));
 
 // Track document download
-router.post('/track-download', requireAuth, validate(documentTrackingSchema), asyncHandler(async (req, res) => {
+router.post('/track-download', requireAuth, validate(documentTrackingSchema), asyncHandler(async (req: express.Request, res: express.Response) => {
   const { email, documentId, fileName, fileType } = req.body;
   
   await trackDocumentDownload({ email, documentId, fileName, fileType });

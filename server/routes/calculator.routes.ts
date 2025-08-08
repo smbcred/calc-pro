@@ -3,6 +3,12 @@ import { validate } from '../middleware/validate';
 import { calculatorInputSchema } from '../validations';
 import { asyncHandler } from '../middleware/errorHandler';
 import { CalculatorCache } from '../utils/calculatorCache';
+import {
+  calculateFederalRate,
+  getQualificationRate,
+  getPricingTier,
+  type BusinessProfile
+} from '../../shared/taxRules/rdTaxRules';
 
 const router = express.Router();
 
@@ -71,33 +77,36 @@ router.post('/estimate', validate(calculatorInputSchema), asyncHandler(async (re
   // Calculate if not cached
   const { wages, wageRdPercent, contractors, contractorRdPercent, supplies, suppliesRdPercent } = input;
 
-  // Calculate QREs
-  const qualifiedWages = wages * (wageRdPercent / 100);
-  const qualifiedContractors = contractors * (contractorRdPercent / 100) * 0.65; // 65% cap per IRS rules
-  const qualifiedSupplies = supplies * (suppliesRdPercent / 100);
+  // Create default business profile for calculator (optimistic for marketing)
+  const businessProfile: BusinessProfile = {
+    yearsInBusiness: 2, // Assume startup for best rate
+    annualRevenue: 'Under $1M', // Assume startup
+    hadRevenueThreeYearsAgo: false, // Assume startup
+    businessStructure: 'LLC',
+    primaryIndustry: 'Software/Tech' // Best qualification rates
+  };
+  
+  // Calculate QREs using centralized rules
+  const wageQualificationRate = getQualificationRate(businessProfile.primaryIndustry, 'employeeTime');
+  const contractorQualificationRate = getQualificationRate(businessProfile.primaryIndustry, 'contractors');
+  const suppliesQualificationRate = getQualificationRate(businessProfile.primaryIndustry, 'supplies');
+  
+  const qualifiedWages = wages * (wageRdPercent / 100) * wageQualificationRate;
+  const qualifiedContractors = contractors * (contractorRdPercent / 100) * contractorQualificationRate;
+  const qualifiedSupplies = supplies * (suppliesRdPercent / 100) * suppliesQualificationRate;
   
   const totalQRE = qualifiedWages + qualifiedContractors + qualifiedSupplies;
   
-  // Calculate federal credit (ASC method - 6% for startups)
-  const federalCredit = totalQRE * 0.06;
+  // Calculate federal credit using dynamic rates
+  const federalRateInfo = calculateFederalRate(businessProfile);
+  const federalCredit = totalQRE * federalRateInfo.rate;
   
-  // Determine pricing tier
-  let tier: number;
-  let price: number;
-  
-  if (federalCredit < 10000) {
-    tier = 1;
-    price = 500;
-  } else if (federalCredit < 50000) {
-    tier = 2;
-    price = 750;
-  } else if (federalCredit < 100000) {
-    tier = 3;
-    price = 1000;
-  } else {
-    tier = 4;
-    price = 1500;
-  }
+  // Use centralized pricing tiers
+  const pricingTier = getPricingTier(federalCredit);
+  const tier = pricingTier.name === 'Starter' ? 1 : 
+              pricingTier.name === 'Growth' ? 2 : 
+              pricingTier.name === 'Scale' ? 3 : 4;
+  const price = pricingTier.price;
   
   const savingsAmount = federalCredit - price;
   

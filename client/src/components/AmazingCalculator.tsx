@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Check, Calculator, TrendingUp, ArrowRight, DollarSign, Building2, Shield, CheckCircle } from 'lucide-react';
 import { Link } from 'wouter';
+import {
+  RDTaxRules,
+  calculateFederalRate,
+  getQualificationRate,
+  getQualificationRateInfo,
+  getPricingTier,
+  calculateDeductionValue,
+  calculateConfidenceScore,
+  type BusinessProfile,
+  type FederalRateInfo
+} from '../../../shared/taxRules/rdTaxRules';
 
 interface FormData {
   activities: string[];
@@ -163,108 +174,13 @@ const AmazingCalculator: React.FC = () => {
     };
   };
 
-  // 2025 Tax Law: Dynamic Federal Credit Rate Calculation
-  const calculateFederalCreditRate = (profile: FormData['companyInfo']) => {
-    const isQSB = profile.annualRevenue !== "Over $25M" && profile.annualRevenue !== "$5M-$25M" && profile.yearsInBusiness < 5;
-    const isStartup = profile.yearsInBusiness < 5 && !profile.hadRevenueThreeYearsAgo;
-    
-    if (isStartup) {
-      return {
-        rate: 0.14,
-        method: "Startup Method",
-        description: "14% credit rate for qualifying startups",
-        canOffsetPayroll: true,
-        payrollOffsetLimit: 500000
-      };
-    } else if (isQSB) {
-      return {
-        rate: 0.10,
-        method: "Small Business Enhanced Rate",
-        description: "10% effective rate with payroll tax offset option",
-        canOffsetPayroll: true,
-        payrollOffsetLimit: 500000
-      };
-    } else {
-      return {
-        rate: 0.065,
-        method: "Alternative Simplified Credit",
-        description: "6.5% standard rate for established businesses",
-        canOffsetPayroll: false,
-        payrollOffsetLimit: 0
-      };
-    }
-  };
+  // Using centralized tax rules for all calculations
 
-  // Industry-specific qualification rates
-  const getQualificationRates = (industry: string) => {
-    const rates = {
-      "Software/Tech": {
-        employeeTime: 0.90,
-        contractors: 0.65,
-        software: 1.0,
-        aiTools: 1.0,
-        training: 1.0
-      },
-      "Professional Services": {
-        employeeTime: 0.75,
-        contractors: 0.65,
-        software: 0.80,
-        aiTools: 1.0,
-        training: 1.0
-      },
-      "Manufacturing": {
-        employeeTime: 0.70,
-        contractors: 0.65,
-        software: 0.90,
-        aiTools: 0.90,
-        training: 1.0
-      },
-      "default": {
-        employeeTime: 0.80,
-        contractors: 0.65,
-        software: 0.90,
-        aiTools: 1.0,
-        training: 1.0
-      }
-    };
-    return rates[industry as keyof typeof rates] || rates.default;
-  };
+  // Now using centralized tax rules
 
-  // Calculate Section 174 deduction value
-  const calculateDeductionValue = (totalQRE: number, businessStructure: string) => {
-    let taxRate;
-    switch(businessStructure) {
-      case "C-Corp":
-        taxRate = 0.21;
-        break;
-      case "S-Corp":
-      case "LLC":
-        taxRate = 0.29;
-        break;
-      default:
-        taxRate = 0.25;
-    }
-    return Math.round(totalQRE * taxRate);
-  };
+  // Now using centralized deduction calculation
 
-  // Calculate confidence score
-  const calculateConfidenceScore = (qre: number, activities: string[], expenses: FormData['expenses']) => {
-    let score = 60; // Base score
-    
-    // Activity diversity bonus
-    if (activities.length >= 4) score += 15;
-    else if (activities.length >= 2) score += 10;
-    
-    // Reasonable expense allocation
-    const totalExpenses = Object.values(expenses).reduce((sum, exp) => sum + (parseFloat(exp.replace(/,/g, '')) || 0), 0);
-    if (qre / totalExpenses > 0.5 && qre / totalExpenses < 0.9) score += 10;
-    
-    // Documentation strength
-    if (parseFloat(expenses.employeeTime.replace(/,/g, '')) > 0) score += 5;
-    if (parseFloat(expenses.contractors.replace(/,/g, '')) > 0) score += 5;
-    
-    return Math.min(100, score);
-  };
+  // Now using centralized confidence calculation
 
   const calculateResults = async () => {
     setIsCalculating(true);
@@ -277,39 +193,43 @@ const AmazingCalculator: React.FC = () => {
       const software = parseFloat((formData.expenses.software || '0').replace(/,/g, '')) || 0;
       const training = parseFloat((formData.expenses.training || '0').replace(/,/g, '')) || 0;
       
-      // Get industry-specific qualification rates
-      const qualRates = getQualificationRates(formData.companyInfo.primaryIndustry);
+      // Create business profile for tax calculations
+      const businessProfile: BusinessProfile = {
+        yearsInBusiness: formData.companyInfo.yearsInBusiness || 0,
+        annualRevenue: formData.companyInfo.annualRevenue || "Under $1M",
+        hadRevenueThreeYearsAgo: formData.companyInfo.hadRevenueThreeYearsAgo || false,
+        businessStructure: formData.companyInfo.businessStructure || "LLC",
+        primaryIndustry: formData.companyInfo.primaryIndustry || "Other"
+      };
       
-      // Apply qualification percentages
-      const qualifiedEmployeeTime = employeeTime * qualRates.employeeTime;
-      const qualifiedAiTools = aiTools * qualRates.aiTools;
-      const qualifiedContractors = contractors * qualRates.contractors;
-      const qualifiedSoftware = software * qualRates.software;
-      const qualifiedTraining = training * qualRates.training;
+      // Apply industry-specific qualification rates using centralized rules
+      const qualifiedEmployeeTime = employeeTime * getQualificationRate(businessProfile.primaryIndustry, 'employeeTime');
+      const qualifiedAiTools = aiTools * getQualificationRate(businessProfile.primaryIndustry, 'aiTools');
+      const qualifiedContractors = contractors * getQualificationRate(businessProfile.primaryIndustry, 'contractors');
+      const qualifiedSoftware = software * getQualificationRate(businessProfile.primaryIndustry, 'software');
+      const qualifiedTraining = training * getQualificationRate(businessProfile.primaryIndustry, 'training');
       
       const totalQRE = qualifiedEmployeeTime + qualifiedAiTools + qualifiedContractors + qualifiedSoftware + qualifiedTraining;
       
-      // Get dynamic credit rate based on business profile
-      const creditRate = calculateFederalCreditRate(formData.companyInfo);
+      // Get dynamic credit rate based on business profile using centralized rules
+      const creditRate = calculateFederalRate(businessProfile);
       const federalCredit = Math.round(totalQRE * creditRate.rate);
       
-      // Calculate Section 174 deduction value
-      const deductionValue = calculateDeductionValue(totalQRE, formData.companyInfo.businessStructure);
+      // Calculate Section 174 deduction value using centralized rules
+      const deductionValue = calculateDeductionValue(totalQRE, businessProfile.businessStructure);
       
       // State credits (placeholder)
       const stateCredit = 0;
       const totalBenefit = federalCredit + deductionValue + stateCredit;
       
-      // Dynamic pricing based on federal credit amount
-      let price = 500;
-      if (federalCredit >= 100000) price = 1500;
-      else if (federalCredit >= 50000) price = 1000;
-      else if (federalCredit >= 10000) price = 750;
+      // Dynamic pricing using centralized rules
+      const pricingTier = getPricingTier(federalCredit);
+      const price = pricingTier.price;
       
       const savingsAmount = Math.max(0, totalBenefit - price);
       
-      // Calculate confidence score
-      const confidenceScore = calculateConfidenceScore(totalQRE, formData.activities, formData.expenses);
+      // Calculate confidence score using centralized rules
+      const confidenceScore = calculateConfidenceScore(totalQRE, formData.activities, formData.expenses, businessProfile.primaryIndustry);
       
       const results = {
         totalQRE: Math.round(totalQRE),

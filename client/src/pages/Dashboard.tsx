@@ -82,6 +82,54 @@ const Dashboard: React.FC = () => {
     setLocation('/');
   };
 
+  // Calculate progress for each section
+  const getProgressData = () => {
+    if (!customerInfo || !customerInfo.hasSubmissions || !customerInfo.submissions?.length) {
+      return {
+        companyInfo: 0,
+        rdActivities: 0,
+        expenses: 0,
+        canGenerate: false
+      };
+    }
+
+    const submission = customerInfo.submissions[0]; // Latest submission
+    let companyScore = 0;
+    let rdScore = 0;
+    let expenseScore = 0;
+
+    // Company Info (4 required fields)
+    if (submission['Entity Name']) companyScore += 25;
+    if (submission['Entity Type']) companyScore += 25;
+    if (submission['Tax ID']) companyScore += 25;
+    if (submission['Contact Name']) companyScore += 25;
+
+    // R&D Activities (2 required fields)
+    if (submission['Business Description']) rdScore += 50;
+    if (submission['R&D Activities']) rdScore += 50;
+
+    // Expenses (4 optional fields - any data counts)
+    const expenseFields = [
+      submission['Total Wages'],
+      submission['Contractor Costs'],
+      submission['Supply Costs'],
+      submission['Other Expenses']
+    ].filter(field => field && field > 0);
+    
+    expenseScore = Math.min(100, expenseFields.length * 25);
+
+    const canGenerate = companyScore === 100 && rdScore === 100;
+
+    return {
+      companyInfo: companyScore,
+      rdActivities: rdScore,
+      expenses: expenseScore,
+      canGenerate
+    };
+  };
+
+  const progressData = getProgressData();
+
   const getMenuItems = (): MenuItemType[] => {
     const items = [
       { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -153,54 +201,6 @@ const Dashboard: React.FC = () => {
     if (totalPaid >= 500) return 7500;
     return 0;
   };
-
-  // Calculate progress for each section
-  const getProgressData = () => {
-    if (!customerInfo || !customerInfo.hasSubmissions || !customerInfo.submissions?.length) {
-      return {
-        companyInfo: 0,
-        rdActivities: 0,
-        expenses: 0,
-        canGenerate: false
-      };
-    }
-
-    const submission = customerInfo.submissions[0]; // Latest submission
-    let companyScore = 0;
-    let rdScore = 0;
-    let expenseScore = 0;
-
-    // Company Info (4 required fields)
-    if (submission['Entity Name']) companyScore += 25;
-    if (submission['Entity Type']) companyScore += 25;
-    if (submission['Tax ID']) companyScore += 25;
-    if (submission['Contact Name']) companyScore += 25;
-
-    // R&D Activities (2 required fields)
-    if (submission['Business Description']) rdScore += 50;
-    if (submission['R&D Activities']) rdScore += 50;
-
-    // Expenses (4 optional fields - any data counts)
-    const expenseFields = [
-      submission['Total Wages'],
-      submission['Contractor Costs'],
-      submission['Supply Costs'],
-      submission['Other Expenses']
-    ].filter(field => field && field > 0);
-    
-    expenseScore = Math.min(100, expenseFields.length * 25);
-
-    const canGenerate = companyScore === 100 && rdScore === 100;
-
-    return {
-      companyInfo: companyScore,
-      rdActivities: rdScore,
-      expenses: expenseScore,
-      canGenerate
-    };
-  };
-
-  const progressData = getProgressData();
 
   // Smart checklist data
   const getChecklistItems = () => {

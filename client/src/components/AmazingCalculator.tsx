@@ -62,8 +62,8 @@ const AmazingCalculator: React.FC = () => {
   const steps = [
     { number: 1, title: 'AI Activities', icon: Check },
     { number: 2, title: 'Business Info', icon: Building2 },
-    { number: 3, title: 'Credit Range', icon: TrendingUp },
-    { number: 4, title: 'Expenses', icon: Calculator },
+    { number: 3, title: 'Expenses', icon: Calculator },
+    { number: 4, title: 'Credit Estimate', icon: TrendingUp },
     { number: 5, title: 'Results', icon: DollarSign }
   ];
 
@@ -247,7 +247,7 @@ const AmazingCalculator: React.FC = () => {
               />
             )}
             {currentStep === 3 && (
-              <EmailCaptureStep 
+              <ExpenseStep 
                 formData={formData} 
                 updateFormData={updateFormData} 
                 nextStep={nextStep}
@@ -255,7 +255,7 @@ const AmazingCalculator: React.FC = () => {
               />
             )}
             {currentStep === 4 && (
-              <ExpenseStep 
+              <EmailCaptureStep 
                 formData={formData} 
                 updateFormData={updateFormData} 
                 nextStep={nextStep}
@@ -671,7 +671,7 @@ const BusinessInfoStep: React.FC<{
             className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 px-8 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="flex items-center gap-2">
-              See Credit Range
+              See Credit Estimate
               <ArrowRight className="w-5 h-5" />
             </span>
           </button>
@@ -681,7 +681,7 @@ const BusinessInfoStep: React.FC<{
   );
 };
 
-// Step 3: Email Capture with Credit Range
+// Step 4: Email Capture with Credit Estimate
 const EmailCaptureStep: React.FC<{
   formData: FormData;
   updateFormData: (updates: Partial<FormData>) => void;
@@ -852,7 +852,7 @@ const EmailCaptureStep: React.FC<{
   );
 };
 
-// Step 4: Expense Collection
+// Step 3: Expense Collection
 const ExpenseStep: React.FC<{
   formData: FormData;
   updateFormData: (updates: Partial<FormData>) => void;

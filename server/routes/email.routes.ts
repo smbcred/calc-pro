@@ -25,8 +25,8 @@ if (process.env.NODE_ENV !== 'production') {
     const testMsg = {
       to: email,
       from: 'info@smbtaxcredits.com',
-      subject: 'Test Email from R&D Tax Credit System',
-      text: 'This is a test email to verify SendGrid configuration.',
+      subject: 'Test Email from R&D Tax Credit Dashboard',
+      text: 'This is a test email to verify SendGrid configuration for the R&D tax credit dashboard.',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #2563eb;">SendGrid Test Email</h2>

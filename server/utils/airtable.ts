@@ -422,23 +422,25 @@ export async function sendWelcomeEmail(email: string, name?: string) {
 
   const htmlContent = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
     <h2 style="color: #2563eb;">Welcome${name ? `, ${name}` : ''}! Your R&D Credit Package is Ready</h2>
-    <p>Thank you for your payment. Your R&D tax credit filing package has been activated and you now have access to our secure intake portal.</p>
-    <p><strong>Next Step:</strong> Complete your intake form to begin the filing process</p>
+    <p>Thank you for your payment. Your R&D tax credit filing package has been activated and you now have access to your secure dashboard.</p>
+    <p><strong>Next Step:</strong> Complete detailed forms in your dashboard to begin the filing process</p>
+    <p><strong>Timeline:</strong> Your documents will be ready within 48 hours after completing all dashboard forms</p>
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${loginUrl}" style="background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Access Your Intake Portal</a>
+      <a href="${loginUrl}" style="background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Access Your Dashboard</a>
     </div>
     <p><strong>How to Access:</strong></p>
     <ol>
       <li>Click the button above or visit: <a href="${loginUrl}">${loginUrl}</a></li>
       <li>Enter your email address: <strong>${email}</strong></li>
-      <li>Complete the secure intake form</li>
+      <li>Complete the detailed forms in your dashboard</li>
     </ol>
-    <p><strong>What to expect:</strong></p>
+    <p><strong>What to expect in your dashboard:</strong></p>
     <ul>
-      <li>Entity information and contact details</li>
+      <li>Company information and contact details</li>
       <li>Business description and R&D activities</li>
+      <li>Employee wage details and contractor expenses</li>
       <li>Expense categorization and documentation</li>
-      <li>Timeline: 10-15 minutes to complete</li>
+      <li>Timeline: Complete forms within 7 days for optimal processing</li>
     </ul>
     <p><strong>Security:</strong> Access is tied to your email address and purchase confirmation.</p>
     <p>Questions? Reply to this email or contact info@smbtaxcredits.com</p>
@@ -449,7 +451,7 @@ export async function sendWelcomeEmail(email: string, name?: string) {
   const msg = {
     to: email,
     from: 'info@smbtaxcredits.com',
-    subject: 'Welcome! Complete Your R&D Credit Filing',
+    subject: 'Welcome! Access Your R&D Tax Credit Dashboard',
     html: htmlContent,
   };
 

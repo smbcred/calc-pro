@@ -52,10 +52,16 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ customerEmail, tota
   const [creditData, setCreditData] = useState<CreditData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [email, setEmail] = useState(customerEmail);
+  const [showEmailForm, setShowEmailForm] = useState(!customerEmail);
 
   useEffect(() => {
-    loadCreditData();
-  }, [customerEmail, totalQRE]);
+    if (email) {
+      loadCreditData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [email, totalQRE]);
 
   const loadCreditData = async () => {
     try {
@@ -63,7 +69,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ customerEmail, tota
       const response = await fetch('/api/credits/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: customerEmail, totalQRE }),
+        body: JSON.stringify({ email: email, totalQRE }),
       });
 
       if (!response.ok) {
@@ -90,7 +96,7 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ customerEmail, tota
       const response = await fetch('/api/credits/generate-report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: customerEmail }),
+        body: JSON.stringify({ email: email }),
       });
 
       if (!response.ok) {
@@ -112,6 +118,48 @@ const CreditCalculator: React.FC<CreditCalculatorProps> = ({ customerEmail, tota
       setIsGeneratingReport(false);
     }
   };
+
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim()) {
+      setShowEmailForm(false);
+      setIsLoading(true);
+      loadCreditData();
+    }
+  };
+
+  if (showEmailForm) {
+    return (
+      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">R&D Tax Credit Calculator</h2>
+          <p className="text-gray-600">Enter your email to calculate your potential R&D tax credits</p>
+        </div>
+        <form onSubmit={handleEmailSubmit} className="max-w-md mx-auto">
+          <div className="mb-6">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              Email Address
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter your email address"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all transform hover:scale-105"
+          >
+            Calculate R&D Credits
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

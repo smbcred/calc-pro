@@ -1731,6 +1731,7 @@ const CreditEstimateStep: React.FC<{
   const [isCalculating, setIsCalculating] = useState(false);
   const [showEstimate, setShowEstimate] = useState(false);
   const [estimateData, setEstimateData] = useState<any>(null);
+  const [federalRateInfo, setFederalRateInfo] = useState<any>(null);
   
   useEffect(() => {
     const runEstimation = async () => {
@@ -1738,6 +1739,23 @@ const CreditEstimateStep: React.FC<{
       
       // Simulate calculation time for better UX
       await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Use centralized tax rules for accurate rate calculation
+      const businessProfile: BusinessProfile = {
+        yearsInBusiness: formData.companyInfo.yearsInBusiness || 0,
+        annualRevenue: formData.companyInfo.annualRevenue || "Under $1M",
+        hadRevenueThreeYearsAgo: formData.companyInfo.hadRevenueThreeYearsAgo || false,
+        businessStructure: formData.companyInfo.businessStructure || "LLC",
+        primaryIndustry: formData.companyInfo.primaryIndustry || "Other"
+      };
+      
+      // Get the actual federal rate they qualify for
+      const rateInfo = calculateFederalRate(businessProfile);
+      setFederalRateInfo(rateInfo);
+      
+      console.log('💰 STEP 4 - Federal Rate Calculation:');
+      console.log('Business Profile:', businessProfile);
+      console.log('Federal Rate Info:', rateInfo);
       
       const estimate = calculateCreditEstimate();
       setEstimateData(estimate);
@@ -1810,8 +1828,15 @@ const CreditEstimateStep: React.FC<{
                   <div className="text-sm text-gray-600">Annual Revenue</div>
                 </div>
                 <div className="bg-white bg-opacity-60 rounded-xl p-4">
-                  <div className="text-2xl font-bold text-orange-600">6.5%</div>
+                  <div className="text-2xl font-bold text-orange-600">
+                    {federalRateInfo ? `${(federalRateInfo.rate * 100).toFixed(1)}%` : '6.5%'}
+                  </div>
                   <div className="text-sm text-gray-600">Federal Credit Rate</div>
+                  {federalRateInfo && (
+                    <div className="text-xs text-orange-700 mt-1 font-medium">
+                      {federalRateInfo.name}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1834,6 +1859,53 @@ const CreditEstimateStep: React.FC<{
                 </div>
               </div>
             </div>
+            
+            {/* Rate Explanation */}
+            {federalRateInfo && (
+              <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-8">
+                <h3 className="text-lg font-bold text-green-900 mb-4">
+                  🎯 Why You Qualified for {(federalRateInfo.rate * 100).toFixed(1)}% Rate
+                </h3>
+                <div className="space-y-3 text-sm text-green-800">
+                  <div className="bg-green-100 rounded-lg p-3">
+                    <div className="font-semibold text-green-900 mb-2">
+                      {federalRateInfo.name} - {federalRateInfo.description}
+                    </div>
+                    <div className="space-y-1">
+                      {formData.companyInfo.yearsInBusiness < 5 && !formData.companyInfo.hadRevenueThreeYearsAgo && (
+                        <>
+                          <div>✅ Less than 5 years in business ({formData.companyInfo.yearsInBusiness} years)</div>
+                          <div>✅ No revenue 3+ years ago (startup advantage)</div>
+                          <div className="font-semibold text-green-700">→ Qualifies for maximum 14% startup rate!</div>
+                        </>
+                      )}
+                      {formData.companyInfo.yearsInBusiness < 5 && formData.companyInfo.hadRevenueThreeYearsAgo && (
+                        <>
+                          <div>✅ Less than 5 years in business ({formData.companyInfo.yearsInBusiness} years)</div>
+                          <div>✅ Small business qualification</div>
+                          <div className="font-semibold text-green-700">→ Qualifies for enhanced 10% small business rate!</div>
+                        </>
+                      )}
+                      {formData.companyInfo.yearsInBusiness >= 5 && (
+                        <>
+                          <div>ℹ️ {formData.companyInfo.yearsInBusiness} years in business</div>
+                          <div className="font-semibold text-green-700">→ Standard 6.5% rate applies</div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {federalRateInfo.canOffsetPayroll && (
+                    <div className="bg-blue-100 rounded-lg p-3">
+                      <div className="font-semibold text-blue-900 mb-1">💡 Bonus: Payroll Tax Offset Available</div>
+                      <div className="text-blue-800">
+                        Can offset up to ${federalRateInfo.payrollOffsetLimit.toLocaleString()} in payroll taxes if you don't owe income tax
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
             
             {/* What's Next */}
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">

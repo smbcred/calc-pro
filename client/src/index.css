@@ -797,6 +797,138 @@ select.form-field:focus {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
 }
 
+/* ========================================
+   AMAZING CALCULATOR DESIGN SYSTEM
+   Advanced components for the calculator
+   ======================================== */
+
+/* Glass Morphism Cards - Enhanced */
+.card-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  border-radius: var(--radius-lg);
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Interactive Hover States - Enhanced */
+.card-interactive:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+              0 0 0 2px #2563eb,
+              0 0 20px rgba(37, 99, 235, 0.15);
+  border-color: #2563eb;
+}
+
+/* Stagger Animations */
+.stagger-container .stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: staggerIn 500ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.stagger-container .stagger-item:nth-child(1) { animation-delay: 0ms; }
+.stagger-container .stagger-item:nth-child(2) { animation-delay: 100ms; }
+.stagger-container .stagger-item:nth-child(3) { animation-delay: 200ms; }
+.stagger-container .stagger-item:nth-child(4) { animation-delay: 300ms; }
+.stagger-container .stagger-item:nth-child(5) { animation-delay: 400ms; }
+.stagger-container .stagger-item:nth-child(6) { animation-delay: 500ms; }
+.stagger-container .stagger-item:nth-child(7) { animation-delay: 600ms; }
+.stagger-container .stagger-item:nth-child(8) { animation-delay: 700ms; }
+
+@keyframes staggerIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Success Celebrations */
+.success-bounce {
+  animation: successBounce 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes successBounce {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Enhanced Gradient Button Override */
+.btn-gradient {
+  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+  transition: all 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+}
+
+.btn-gradient:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-gradient:disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.loading-spinner > div {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile Optimization for Calculator */
+@media (max-width: 768px) {
+  .card-high {
+    padding: 1.5rem;
+  }
+  
+  .btn-gradient {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .stagger-container .stagger-item {
+    animation-delay: 0ms !important;
+  }
+
+  .card-glass {
+    backdrop-filter: blur(8px);
+  }
+}
+
 /* Status Badge System - Unified Spacing */
 .status-badge {
   @apply inline-flex items-center gap-2 text-sm font-semibold border interactive;

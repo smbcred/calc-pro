@@ -30,7 +30,12 @@ export const strictLimiter = rateLimit({
 // CORS configuration
 export const corsOptions = {
   origin: function (origin: any, callback: any) {
-    // Allow requests from Replit domains and localhost for development
+    // In development, allow all origins for Vite dev server compatibility
+    if (process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    
+    // In production, only allow specific origins
     const allowedOrigins = [
       'http://localhost:5000',
       'http://localhost:3000',

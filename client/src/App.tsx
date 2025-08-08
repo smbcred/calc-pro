@@ -7,7 +7,7 @@ import { performanceMonitor } from './utils/performanceMonitoring';
 
 // Lazy load all page components
 const LandingPage = lazy(() => import('./pages/LandingPage'));
-const MultiStepCalculator = lazy(() => import('./components/MultiStepCalculator'));
+const AmazingCalculator = lazy(() => import('./components/AmazingCalculator'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const SuccessPage = lazy(() => import('./pages/SuccessPage'));
 const IntakePage = lazy(() => import('./pages/IntakePage'));
@@ -47,7 +47,7 @@ function App() {
           <LandingPage />
         </Route>
         <Route path="/calculator">
-          <MultiStepCalculator />
+          <AmazingCalculator />
         </Route>
         <Route path="/checkout">
           <CheckoutPage calculationResults={calculationResults} />

@@ -239,7 +239,8 @@ const AmazingCalculator: React.FC = () => {
         {/* Enhanced Progress Bar */}
         <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b shadow-sm">
           <div className="max-w-5xl mx-auto px-4 py-6">
-            <div className="flex items-center justify-between">
+            {/* Desktop Progress Bar */}
+            <div className="hidden md:flex items-center justify-between">
               {steps.map((step, index) => (
                 <div key={step.number} className="flex items-center">
                   <div className={`
@@ -257,7 +258,7 @@ const AmazingCalculator: React.FC = () => {
                       step.number
                     )}
                   </div>
-                  <div className="ml-3 hidden sm:block">
+                  <div className="ml-3">
                     <div className={`font-semibold text-sm transition-colors ${
                       currentStep >= step.number ? 'text-gray-900' : currentStep === step.number ? 'text-blue-600' : 'text-gray-500'
                     }`}>
@@ -270,8 +271,8 @@ const AmazingCalculator: React.FC = () => {
                     </div>
                   </div>
                   {index < steps.length - 1 && (
-                    <div className="relative mx-4 sm:mx-6">
-                      <div className={`w-16 sm:w-32 h-1 rounded-full transition-all duration-700 ${
+                    <div className="relative mx-6">
+                      <div className={`w-32 h-1 rounded-full transition-all duration-700 ${
                         currentStep > step.number ? 'bg-gradient-to-r from-green-500 to-blue-500' : 'bg-gray-200'
                       }`} />
                       {currentStep > step.number && (
@@ -281,6 +282,55 @@ const AmazingCalculator: React.FC = () => {
                   )}
                 </div>
               ))}
+            </div>
+
+            {/* Mobile Progress Bar */}
+            <div className="md:hidden">
+              <div className="flex items-center justify-center mb-4">
+                <div className="text-sm font-medium text-gray-600">
+                  Step {currentStep} of {steps.length}
+                </div>
+              </div>
+              <div className="overflow-x-auto pb-2">
+                <div className="flex items-center justify-center min-w-max px-4 space-x-2">
+                  {steps.map((step, index) => (
+                    <div key={step.number} className="flex items-center flex-shrink-0">
+                      <div className={`
+                        w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs
+                        transition-all duration-500
+                        ${currentStep >= step.number 
+                          ? 'bg-gradient-to-r from-blue-600 to-green-600 text-white shadow-lg' 
+                          : currentStep === step.number
+                          ? 'bg-white border-2 border-blue-600 text-blue-600 shadow-md'
+                          : 'bg-gray-100 text-gray-400 border border-gray-200'}
+                      `}>
+                        {currentStep > step.number ? (
+                          <Check className="w-4 h-4" />
+                        ) : (
+                          step.number
+                        )}
+                      </div>
+                      {index < steps.length - 1 && (
+                        <div className="relative mx-2">
+                          <div className={`w-8 h-1 rounded-full transition-all duration-700 ${
+                            currentStep > step.number ? 'bg-gradient-to-r from-green-500 to-blue-500' : 'bg-gray-200'
+                          }`} />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="text-center mt-3">
+                <div className={`font-semibold text-sm transition-colors ${
+                  currentStep >= steps[currentStep - 1]?.number ? 'text-blue-600' : 'text-gray-500'
+                }`}>
+                  {steps[currentStep - 1]?.title}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  In Progress
+                </div>
+              </div>
             </div>
           </div>
         </div>

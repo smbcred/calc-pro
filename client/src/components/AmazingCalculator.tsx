@@ -1320,95 +1320,162 @@ const ExpenseStep: React.FC<{
         </div>
 
         <div className="p-6 lg:p-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-8">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 lg:p-6 rounded-xl">
+          <div className="grid grid-cols-1 gap-6 lg:gap-8 mb-8 max-w-4xl mx-auto">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 lg:p-8 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Building2 className="w-5 h-5 text-white" />
+                <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <Building2 className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">Employee Time</h3>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">Employee Wages & Benefits</h3>
+                  <p className="text-sm text-blue-700 font-medium">✓ 80% typically qualifies for R&D credit</p>
+                </div>
               </div>
-              <p className="text-sm text-gray-600 mb-4">
-                Wages and benefits for employees working on AI/R&D projects (80% typically qualifies)
-              </p>
+              <div className="bg-white p-4 rounded-lg mb-4">
+                <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+                  <strong>What qualifies:</strong> Salaries, wages, bonuses, benefits, and payroll taxes for employees who spend time on qualifying R&D activities including:
+                </p>
+                <ul className="text-sm text-gray-600 ml-4 space-y-1">
+                  <li>• Software development and programming</li>
+                  <li>• AI/ML model development and testing</li>
+                  <li>• Product design and engineering</li>
+                  <li>• Research and experimentation</li>
+                  <li>• Technical problem solving</li>
+                </ul>
+                <p className="text-xs text-blue-600 mt-3 font-medium">Typical qualification rate: 80% of time spent on R&D activities</p>
+              </div>
               <EmployeeTimeCalculator 
                 value={expenses.employeeTime} 
                 onChange={(value) => updateExpense('employeeTime', value)}
               />
             </div>
 
-            <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 lg:p-6 rounded-xl">
+            <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 lg:p-8 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-white" />
+                <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">AI Tools & Software</h3>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">AI Tools & Software</h3>
+                  <p className="text-sm text-green-700 font-medium">✓ 100% qualifies when used for R&D</p>
+                </div>
               </div>
-              <p className="text-sm text-gray-600 mb-4">
-                ChatGPT Plus, Claude Pro, Jasper, automation tools, custom AI development
-              </p>
+              <div className="bg-white p-4 rounded-lg mb-4">
+                <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+                  <strong>What qualifies:</strong> Software subscriptions and tools directly used for R&D activities:
+                </p>
+                <ul className="text-sm text-gray-600 ml-4 space-y-1">
+                  <li>• AI platforms (ChatGPT Plus, Claude Pro, Jasper)</li>
+                  <li>• Development tools and IDEs</li>
+                  <li>• Testing and automation software</li>
+                  <li>• Custom AI development platforms</li>
+                  <li>• Machine learning tools and frameworks</li>
+                </ul>
+                <p className="text-xs text-green-600 mt-3 font-medium">100% qualifies when used for qualifying R&D activities</p>
+              </div>
               <input
                 type="text"
                 value={expenses.aiTools}
                 onChange={(e) => updateExpense('aiTools', e.target.value)}
-                className="w-full px-4 lg:px-6 py-3 lg:py-4 border-2 border-gray-200 rounded-xl lg:rounded-2xl text-base lg:text-lg font-medium focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300"
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl text-lg font-medium focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300"
                 placeholder="12,000"
               />
             </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 lg:p-6 rounded-xl">
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 lg:p-8 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-white" />
+                <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">Contractors & Freelancers</h3>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">Contractors & Freelancers</h3>
+                  <p className="text-sm text-purple-700 font-medium">✓ 65% maximum qualification rate (IRS cap)</p>
+                </div>
               </div>
-              <p className="text-sm text-gray-600 mb-4">
-                External developers, AI consultants, data scientists (65% cap applies)
-              </p>
+              <div className="bg-white p-4 rounded-lg mb-4">
+                <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+                  <strong>What qualifies:</strong> Payments to independent contractors for R&D work. Enter the percentage of their time spent on qualifying activities:
+                </p>
+                <ul className="text-sm text-gray-600 ml-4 space-y-1">
+                  <li>• Software developers and engineers</li>
+                  <li>• AI/ML specialists and data scientists</li>
+                  <li>• Technical consultants and experts</li>
+                  <li>• Research and development contractors</li>
+                  <li>• Product design and testing services</li>
+                </ul>
+                <div className="bg-amber-50 p-3 rounded mt-3">
+                  <p className="text-xs text-amber-700"><strong>IRS Limitation:</strong> Only 65% of contractor costs can qualify for the R&D credit, regardless of actual R&D percentage</p>
+                </div>
+              </div>
               <input
                 type="text"
                 value={expenses.contractors}
                 onChange={(e) => updateExpense('contractors', e.target.value)}
-                className="w-full px-4 lg:px-6 py-3 lg:py-4 border-2 border-gray-200 rounded-xl lg:rounded-2xl text-base lg:text-lg font-medium focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-300"
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl text-lg font-medium focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-300"
                 placeholder="50,000"
               />
             </div>
 
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 lg:p-6 rounded-xl">
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 lg:p-8 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
-                  <Calculator className="w-5 h-5 text-white" />
+                <div className="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center">
+                  <Calculator className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">Supporting Software</h3>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">Supporting Software & Cloud Services</h3>
+                  <p className="text-sm text-orange-700 font-medium">✓ 100% qualifies when used for R&D</p>
+                </div>
               </div>
-              <p className="text-sm text-gray-600 mb-4">
-                Development tools, cloud services, databases used for R&D projects
-              </p>
+              <div className="bg-white p-4 rounded-lg mb-4">
+                <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+                  <strong>What qualifies:</strong> Technology infrastructure and services supporting your R&D activities:
+                </p>
+                <ul className="text-sm text-gray-600 ml-4 space-y-1">
+                  <li>• Cloud computing services (AWS, Azure, GCP)</li>
+                  <li>• Database and storage services</li>
+                  <li>• Development and testing environments</li>
+                  <li>• Version control and collaboration tools</li>
+                  <li>• Analytics and monitoring platforms</li>
+                </ul>
+                <p className="text-xs text-orange-600 mt-3 font-medium">100% qualifies when directly supporting R&D projects</p>
+              </div>
               <input
                 type="text"
                 value={expenses.software}
                 onChange={(e) => updateExpense('software', e.target.value)}
-                className="w-full px-4 lg:px-6 py-3 lg:py-4 border-2 border-gray-200 rounded-xl lg:rounded-2xl text-base lg:text-lg font-medium focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl text-lg font-medium focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
                 placeholder="25,000"
               />
             </div>
 
-            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 lg:p-6 rounded-xl lg:col-span-2">
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 lg:p-8 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-                  <Check className="w-5 h-5 text-white" />
+                <div className="w-12 h-12 bg-indigo-600 rounded-lg flex items-center justify-center">
+                  <Check className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">Training & Education</h3>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">Training & Education</h3>
+                  <p className="text-sm text-indigo-700 font-medium">✓ 100% qualifies when directly related to R&D</p>
+                </div>
               </div>
-              <p className="text-sm text-gray-600 mb-4">
-                AI courses, conferences, certifications, books for your team
-              </p>
+              <div className="bg-white p-4 rounded-lg mb-4">
+                <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+                  <strong>What qualifies:</strong> Educational expenses that enhance your team's R&D capabilities:
+                </p>
+                <ul className="text-sm text-gray-600 ml-4 space-y-1">
+                  <li>• AI and machine learning courses</li>
+                  <li>• Technical conferences and workshops</li>
+                  <li>• Professional certifications</li>
+                  <li>• Technical books and research materials</li>
+                  <li>• Online learning platforms (Coursera, Udemy)</li>
+                </ul>
+                <p className="text-xs text-indigo-600 mt-3 font-medium">100% qualifies when directly supporting R&D skill development</p>
+              </div>
               <input
                 type="text"
                 value={expenses.training}
                 onChange={(e) => updateExpense('training', e.target.value)}
-                className="w-full px-4 lg:px-6 py-3 lg:py-4 border-2 border-gray-200 rounded-xl lg:rounded-2xl text-base lg:text-lg font-medium focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-300"
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl text-lg font-medium focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-300"
                 placeholder="8,000"
               />
             </div>

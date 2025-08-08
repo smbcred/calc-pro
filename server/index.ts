@@ -22,6 +22,9 @@ import { corsOptions, apiLimiter, loginLimiter, strictLimiter } from './middlewa
 
 const app = express();
 
+// Trust proxy for proper client IP detection (required for rate limiting)
+app.set('trust proxy', 1);
+
 // Set up process handlers for unhandled rejections and uncaught exceptions
 handleUncaughtExceptions();
 handleUnhandledRejections();

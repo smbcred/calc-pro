@@ -63,11 +63,10 @@ const AmazingCalculator: React.FC = () => {
   });
 
   const steps = [
-    { number: 1, title: 'Qualification', icon: Check },
-    { number: 2, title: 'Business Info', icon: Building2 },
-    { number: 3, title: 'Email Capture', icon: Calculator },
-    { number: 4, title: 'Expenses', icon: TrendingUp },
-    { number: 5, title: 'Results', icon: Check }
+    { number: 1, title: 'Qualification & Info', icon: Check },
+    { number: 2, title: 'Expenses', icon: TrendingUp },
+    { number: 3, title: 'Credit Estimate', icon: Calculator },
+    { number: 4, title: 'Detailed Report', icon: DollarSign }
   ];
 
   // Enhanced auto-save with progress tracking
@@ -103,7 +102,7 @@ const AmazingCalculator: React.FC = () => {
   };
 
   const nextStep = () => {
-    setCurrentStep(prev => Math.min(5, prev + 1));
+    setCurrentStep(prev => Math.min(4, prev + 1));
   };
 
   const prevStep = () => {
@@ -210,30 +209,22 @@ const AmazingCalculator: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="stagger-container">
           {currentStep === 1 && (
-            <QualificationStep 
+            <QualificationAndBusinessStep 
               formData={formData} 
               updateFormData={updateFormData} 
               nextStep={nextStep} 
             />
           )}
           {currentStep === 2 && (
-            <BusinessInfoStep 
+            <ExpenseStep 
               formData={formData} 
               updateFormData={updateFormData} 
-              nextStep={nextStep} 
+              nextStep={nextStep}
               prevStep={prevStep}
             />
           )}
           {currentStep === 3 && (
-            <EmailCaptureStep 
-              formData={formData} 
-              updateFormData={updateFormData} 
-              nextStep={nextStep} 
-              prevStep={prevStep}
-            />
-          )}
-          {currentStep === 4 && (
-            <ExpenseStep 
+            <CreditEstimateStep 
               formData={formData} 
               updateFormData={updateFormData} 
               nextStep={async () => {
@@ -244,8 +235,8 @@ const AmazingCalculator: React.FC = () => {
               isCalculating={isCalculating}
             />
           )}
-          {currentStep === 5 && (
-            <ResultsStep 
+          {currentStep === 4 && (
+            <DetailedReportStep 
               formData={formData} 
               updateFormData={updateFormData}
             />
@@ -256,13 +247,38 @@ const AmazingCalculator: React.FC = () => {
   );
 };
 
-// Step 1: Qualification Discovery
-const QualificationStep: React.FC<{
+// Step 1: Combined Qualification and Business Info
+const QualificationAndBusinessStep: React.FC<{
   formData: FormData;
   updateFormData: (updates: Partial<FormData>) => void;
   nextStep: () => void;
 }> = ({ formData, updateFormData, nextStep }) => {
   const [selectedActivities, setSelectedActivities] = useState<string[]>(formData.activities || []);
+  const [companyData, setCompanyData] = useState({
+    companyName: formData.companyInfo?.companyName || '',
+    industry: formData.companyInfo?.industry || '',
+    employeeCount: formData.companyInfo?.employeeCount || '',
+    revenue: formData.companyInfo?.revenue || '',
+    foundedYear: formData.companyInfo?.foundedYear || '',
+    primaryState: formData.companyInfo?.primaryState || '',
+    email: formData.companyInfo?.email || '',
+    rdStartYear: formData.companyInfo?.rdStartYear || '2025'
+  });
+
+  const industries = [
+    { value: 'ecommerce', label: 'E-commerce / Retail', icon: '🛒', aiUse: 'High' },
+    { value: 'agency', label: 'Marketing / Creative Agency', icon: '🎯', aiUse: 'Very High' },
+    { value: 'saas', label: 'Software / SaaS', icon: '💻', aiUse: 'Very High' },
+    { value: 'consulting', label: 'Consulting / Services', icon: '📊', aiUse: 'High' },
+    { value: 'realestate', label: 'Real Estate', icon: '🏠', aiUse: 'Medium' },
+    { value: 'healthcare', label: 'Healthcare / Wellness', icon: '🏥', aiUse: 'Medium' },
+    { value: 'finance', label: 'Finance / Insurance', icon: '💳', aiUse: 'High' },
+    { value: 'education', label: 'Education / Training', icon: '🎓', aiUse: 'High' },
+    { value: 'hospitality', label: 'Restaurant / Hospitality', icon: '🍽️', aiUse: 'Medium' },
+    { value: 'nonprofit', label: 'Non-Profit', icon: '❤️', aiUse: 'Medium' },
+    { value: 'manufacturing', label: 'Manufacturing / Supply', icon: '🏭', aiUse: 'Medium' },
+    { value: 'other', label: 'Other Industry', icon: '🏢', aiUse: 'Varies' }
+  ];
 
   const activities = [
     {
@@ -435,18 +451,150 @@ const QualificationStep: React.FC<{
         {/* Qualification Message */}
         {getQualificationMessage()}
 
+        {/* Business Information Section */}
+        {selectedActivities.length > 0 && (
+          <div className="mt-8 p-8 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Tell Us About Your Business</h3>
+            
+            <div className="space-y-6">
+              {/* Company Name & Email */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Company Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={companyData.companyName}
+                    onChange={(e) => setCompanyData({...companyData, companyName: e.target.value})}
+                    className="form-field"
+                    placeholder="Acme Technologies Inc."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    value={companyData.email}
+                    onChange={(e) => setCompanyData({...companyData, email: e.target.value})}
+                    className="form-field"
+                    placeholder="you@company.com"
+                  />
+                </div>
+              </div>
+
+              {/* Industry Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Industry *
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {industries.map((industry) => (
+                    <button
+                      key={industry.value}
+                      type="button"
+                      onClick={() => setCompanyData({...companyData, industry: industry.value})}
+                      className={`
+                        p-4 rounded-lg border-2 transition-all duration-200 text-center
+                        ${companyData.industry === industry.value
+                          ? 'border-blue-500 bg-blue-50 transform scale-105'
+                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}
+                      `}
+                    >
+                      <div className="text-2xl mb-1">{industry.icon}</div>
+                      <div className="text-sm font-medium">{industry.label}</div>
+                      <div className="text-xs text-gray-500 mt-1">AI Use: {industry.aiUse}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Employee Count & Revenue */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Number of Employees *
+                  </label>
+                  <select
+                    value={companyData.employeeCount}
+                    onChange={(e) => setCompanyData({...companyData, employeeCount: e.target.value})}
+                    className="form-field"
+                  >
+                    <option value="">Select range</option>
+                    <option value="1-5">1-5 employees</option>
+                    <option value="6-10">6-10 employees</option>
+                    <option value="11-25">11-25 employees</option>
+                    <option value="26-50">26-50 employees</option>
+                    <option value="51-100">51-100 employees</option>
+                    <option value="100+">100+ employees</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Annual Revenue *
+                  </label>
+                  <select
+                    value={companyData.revenue}
+                    onChange={(e) => setCompanyData({...companyData, revenue: e.target.value})}
+                    className="form-field"
+                  >
+                    <option value="">Select revenue range</option>
+                    <option value="0-100k">Under $100,000</option>
+                    <option value="100k-250k">$100,000 - $250,000</option>
+                    <option value="250k-500k">$250,000 - $500,000</option>
+                    <option value="500k-1m">$500,000 - $1M</option>
+                    <option value="1m-2.5m">$1M - $2.5M</option>
+                    <option value="2.5m-5m">$2.5M - $5M</option>
+                    <option value="5m-10m">$5M - $10M</option>
+                    <option value="10m-25m">$10M - $25M</option>
+                    <option value="25m+">Over $25M</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* R&D Start Year */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  When did you start using AI/innovation in your business? *
+                </label>
+                <select
+                  value={companyData.rdStartYear}
+                  onChange={(e) => setCompanyData({...companyData, rdStartYear: e.target.value})}
+                  className="form-field"
+                >
+                  <option value="2025">2025 (This year)</option>
+                  <option value="2024">2024</option>
+                  <option value="2023">2023</option>
+                  <option value="2022">2022</option>
+                  <option value="2021">2021 or earlier</option>
+                </select>
+                {companyData.rdStartYear && companyData.rdStartYear !== '2025' && (
+                  <p className="text-sm text-green-600 mt-2">
+                    💡 Great! You may be able to claim credits for multiple years.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <button
           onClick={() => {
-            updateFormData({ activities: selectedActivities });
+            updateFormData({ 
+              activities: selectedActivities,
+              companyInfo: companyData
+            });
             nextStep();
           }}
-          disabled={selectedActivities.length === 0}
+          disabled={selectedActivities.length === 0 || !companyData.companyName || !companyData.industry || !companyData.employeeCount || !companyData.revenue || !companyData.email}
           className={`
-            w-full btn-gradient flex items-center justify-center gap-2 text-lg py-4
-            ${selectedActivities.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}
+            w-full btn-gradient flex items-center justify-center gap-2 text-lg py-4 mt-8
+            ${(selectedActivities.length === 0 || !companyData.companyName || !companyData.industry || !companyData.employeeCount || !companyData.revenue || !companyData.email) ? 'opacity-50 cursor-not-allowed' : ''}
           `}
         >
-          Continue to Business Info
+          Continue to Expenses
           <ChevronRight className="w-5 h-5" />
         </button>
       </div>
@@ -677,13 +825,14 @@ const BusinessInfoStep: React.FC<{
   );
 };
 
-// Step 3: Email Capture with Credit Range
-const EmailCaptureStep: React.FC<{
+// Step 3: Credit Estimate (Enhanced Email Capture)
+const CreditEstimateStep: React.FC<{
   formData: FormData;
   updateFormData: (updates: Partial<FormData>) => void;
   nextStep: () => void;
   prevStep: () => void;
-}> = ({ formData, updateFormData, nextStep, prevStep }) => {
+  isCalculating: boolean;
+}> = ({ formData, updateFormData, nextStep, prevStep, isCalculating }) => {
   const [email, setEmail] = useState(formData.email || '');
 
   // Enhanced credit range calculation based on revenue
@@ -1088,8 +1237,8 @@ const ExpenseStep: React.FC<{
   );
 };
 
-// Step 4: Amazing Results Display
-const ResultsStep: React.FC<{
+// Step 4: Detailed Report
+const DetailedReportStep: React.FC<{
   formData: FormData;
   updateFormData: (updates: Partial<FormData>) => void;
 }> = ({ formData }) => {

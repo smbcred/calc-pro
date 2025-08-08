@@ -13,11 +13,11 @@ interface FormData {
     email: string;
   };
   expenses: {
-    wages: string;
+    employeeTime: string;
+    aiTools: string;
     contractors: string;
-    supplies: string;
-    cloudSoftware: string;
-    other: string;
+    software: string;
+    training: string;
   };
   results?: {
     totalQRE: number;
@@ -44,11 +44,11 @@ const AmazingCalculator: React.FC = () => {
       email: ''
     },
     expenses: {
-      wages: '',
+      employeeTime: '',
+      aiTools: '',
       contractors: '',
-      supplies: '',
-      cloudSoftware: '',
-      other: ''
+      software: '',
+      training: ''
     }
   });
 
@@ -99,24 +99,24 @@ const AmazingCalculator: React.FC = () => {
     
     try {
       // Calculate total QRE
-      const wages = parseFloat(formData.expenses.wages.replace(/,/g, '')) || 0;
+      const employeeTime = parseFloat(formData.expenses.employeeTime.replace(/,/g, '')) || 0;
+      const aiTools = parseFloat(formData.expenses.aiTools.replace(/,/g, '')) || 0;
       const contractors = parseFloat(formData.expenses.contractors.replace(/,/g, '')) || 0;
-      const supplies = parseFloat(formData.expenses.supplies.replace(/,/g, '')) || 0;
-      const cloudSoftware = parseFloat(formData.expenses.cloudSoftware.replace(/,/g, '')) || 0;
-      const other = parseFloat(formData.expenses.other.replace(/,/g, '')) || 0;
+      const software = parseFloat(formData.expenses.software.replace(/,/g, '')) || 0;
+      const training = parseFloat(formData.expenses.training.replace(/,/g, '')) || 0;
       
       // Apply qualification percentages
-      const qualifiedWages = wages * 0.8; // 80% of wages typically qualify
+      const qualifiedEmployeeTime = employeeTime * 0.8; // 80% of employee time typically qualifies
+      const qualifiedAiTools = aiTools * 1.0; // 100% of AI tools qualify
       const qualifiedContractors = contractors * 0.65; // 65% cap for contractors
-      const qualifiedSupplies = supplies * 1.0; // 100% of supplies qualify
-      const qualifiedCloudSoftware = cloudSoftware * 1.0; // 100% of cloud/software qualify
-      const qualifiedOther = other * 0.5; // 50% of other expenses
+      const qualifiedSoftware = software * 1.0; // 100% of supporting software qualifies
+      const qualifiedTraining = training * 1.0; // 100% of training qualifies
       
-      const totalQRE = qualifiedWages + qualifiedContractors + qualifiedSupplies + qualifiedCloudSoftware + qualifiedOther;
+      const totalQRE = qualifiedEmployeeTime + qualifiedAiTools + qualifiedContractors + qualifiedSoftware + qualifiedTraining;
       
-      // Calculate federal credit (6.5% for established companies, 6% for startups)
+      // Calculate federal credit using Alternative Simplified Credit (ASC) method: 6% for startups, 14% for established companies
       const isStartup = formData.companyInfo.revenue.includes('Under $1M') || formData.companyInfo.revenue.includes('$1M - $5M');
-      const federalRate = isStartup ? 0.06 : 0.065;
+      const federalRate = isStartup ? 0.06 : 0.14;
       const federalCredit = Math.round(totalQRE * federalRate);
       
       // Calculate estimated state credit (varies by state, using 5% average)
@@ -242,46 +242,84 @@ const QualificationStep: React.FC<{
 
   const activities = [
     {
-      id: 'ai-tools',
-      icon: '🤖',
-      title: 'AI & Automation Tools',
-      description: 'Using ChatGPT, Claude, or other AI for business processes',
-      examples: 'Content creation, data analysis, customer service'
+      id: 'ai-content',
+      icon: '✍️',
+      title: 'AI Content Creation',
+      description: 'Using ChatGPT, Claude, or Jasper for marketing',
+      examples: 'Blog posts, social media, email campaigns, product descriptions',
+      commonRoles: ['Marketing Manager', 'Content Creator', 'Business Owner']
     },
     {
-      id: 'custom-development',
-      icon: '💻',
-      title: 'Custom Development',
-      description: 'Building software, apps, or digital solutions',
-      examples: 'Web apps, mobile apps, internal tools'
+      id: 'ai-customer-service',
+      icon: '💬',
+      title: 'AI Customer Support',
+      description: 'Implementing chatbots or AI-assisted responses',
+      examples: 'Chatbots, FAQ automation, ticket routing, response templates',
+      commonRoles: ['Customer Success', 'Support Team', 'Operations Manager']
     },
     {
-      id: 'process-improvement',
-      icon: '📈',
-      title: 'Process Innovation',
-      description: 'Improving efficiency by 10% or more',
-      examples: 'Automation, optimization, new workflows'
-    },
-    {
-      id: 'data-analytics',
+      id: 'ai-data-analysis',
       icon: '📊',
-      title: 'Data Analytics & AI',
-      description: 'Advanced data analysis and machine learning',
-      examples: 'Predictive models, business intelligence, analytics'
+      title: 'AI Data Analysis',
+      description: 'Using AI to analyze business data or generate insights',
+      examples: 'Sales forecasting, customer segmentation, trend analysis, reporting',
+      commonRoles: ['Data Analyst', 'Business Analyst', 'Finance Team']
     },
     {
-      id: 'product-development',
-      icon: '🚀',
-      title: 'Product Development',
-      description: 'Creating new products or improving existing ones',
-      examples: 'Feature development, UX improvements, testing'
+      id: 'process-automation',
+      icon: '⚡',
+      title: 'Workflow Automation',
+      description: 'Automating repetitive tasks with AI or no-code tools',
+      examples: 'Zapier workflows, email automation, data entry, scheduling',
+      commonRoles: ['Operations', 'Admin', 'Project Manager']
     },
     {
-      id: 'cybersecurity',
-      icon: '🔒',
-      title: 'Cybersecurity Enhancement',
-      description: 'Improving security systems and protocols',
-      examples: 'Security audits, encryption, threat detection'
+      id: 'ai-development',
+      icon: '🤖',
+      title: 'Custom AI Solutions',
+      description: 'Building GPTs, training models, or API integrations',
+      examples: 'Custom ChatGPT, fine-tuned models, API connections, prompts',
+      commonRoles: ['Developer', 'Tech Lead', 'Product Manager']
+    },
+    {
+      id: 'ai-sales',
+      icon: '🎯',
+      title: 'AI Sales Tools',
+      description: 'Using AI for lead generation or sales optimization',
+      examples: 'Lead scoring, email personalization, proposal generation',
+      commonRoles: ['Sales Team', 'Business Development', 'Account Manager']
+    },
+    {
+      id: 'ai-design',
+      icon: '🎨',
+      title: 'AI Design & Creative',
+      description: 'Using Midjourney, DALL-E, or Canva AI',
+      examples: 'Logo design, marketing materials, product images, presentations',
+      commonRoles: ['Designer', 'Marketing', 'Product Team']
+    },
+    {
+      id: 'ai-finance',
+      icon: '💰',
+      title: 'AI Financial Tools',
+      description: 'Automating bookkeeping or financial analysis',
+      examples: 'Expense categorization, invoice processing, financial forecasting',
+      commonRoles: ['Accountant', 'Bookkeeper', 'CFO']
+    },
+    {
+      id: 'ai-hr',
+      icon: '👥',
+      title: 'AI HR & Recruiting',
+      description: 'Using AI for hiring or employee management',
+      examples: 'Resume screening, interview scheduling, performance reviews',
+      commonRoles: ['HR Manager', 'Recruiter', 'People Ops']
+    },
+    {
+      id: 'ai-legal',
+      icon: '⚖️',
+      title: 'AI Legal & Compliance',
+      description: 'Contract analysis or compliance automation',
+      examples: 'Contract review, compliance checking, policy generation',
+      commonRoles: ['Legal Team', 'Compliance Officer', 'Operations']
     }
   ];
 
@@ -294,21 +332,46 @@ const QualificationStep: React.FC<{
   };
 
   const getQualificationMessage = () => {
-    if (selectedActivities.length === 0) return '';
-    if (selectedActivities.length <= 2) return "Good start! You likely qualify for credits. 🎯";
-    if (selectedActivities.length <= 4) return "Excellent! You're doing significant R&D work. 🚀";
-    return "Wow! You might be leaving serious money on the table. 💰";
+    if (selectedActivities.length === 0) return null;
+    
+    return (
+      <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-6 success-bounce">
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <Check className="w-5 h-5 text-green-600" />
+          </div>
+          <div>
+            <p className="font-semibold text-green-900 mb-1">
+              {selectedActivities.length === 1 && "Great start! Even one AI implementation can qualify."}
+              {selectedActivities.length >= 2 && selectedActivities.length <= 3 && "Excellent! Multiple AI uses strengthen your claim."}
+              {selectedActivities.length >= 4 && selectedActivities.length <= 6 && "Impressive! You're leveraging AI across your business."}
+              {selectedActivities.length > 6 && "Outstanding! You're a prime candidate for maximum credits."}
+            </p>
+            <p className="text-sm text-green-700">
+              The IRS recognizes AI implementation as "process of experimentation" for R&D purposes.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
     <div className="stagger-item">
       <div className="card-high p-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
-            Let's Discover Your R&D Activities ✨
+          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full mb-4">
+            <span className="text-sm font-semibold">NEW: AI Usage Now Qualifies for R&D Credits</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            Using ChatGPT for Your Business?<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
+              You Qualify for R&D Tax Credits
+            </span>
           </h2>
-          <p className="text-xl text-gray-600">
-            Select all the innovative work your business does
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            The IRS now recognizes AI implementation as R&D. If you've used AI tools to improve 
+            any business process by 10% or more, you likely have $10,000+ in credits waiting.
           </p>
         </div>
 
@@ -346,15 +409,7 @@ const QualificationStep: React.FC<{
         </div>
 
         {/* Qualification Message */}
-        {selectedActivities.length > 0 && (
-          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 mb-8 success-bounce">
-            <div className="text-center">
-              <p className="text-lg font-semibold text-gray-900">
-                {getQualificationMessage()}
-              </p>
-            </div>
-          </div>
-        )}
+        {getQualificationMessage()}
 
         <button
           onClick={() => {
@@ -385,12 +440,18 @@ const BusinessInfoStep: React.FC<{
   const [companyData, setCompanyData] = useState(formData.companyInfo);
 
   const industries = [
-    { value: 'saas', label: 'SaaS / Software', icon: '💻' },
-    { value: 'ecommerce', label: 'E-commerce', icon: '🛒' },
-    { value: 'fintech', label: 'Financial Services', icon: '💳' },
-    { value: 'healthcare', label: 'Healthcare Tech', icon: '🏥' },
-    { value: 'manufacturing', label: 'Manufacturing', icon: '🏭' },
-    { value: 'consulting', label: 'Consulting', icon: '📊' }
+    { value: 'ecommerce', label: 'E-commerce / Retail', icon: '🛒', aiUse: 'High' },
+    { value: 'agency', label: 'Marketing / Creative Agency', icon: '🎯', aiUse: 'Very High' },
+    { value: 'saas', label: 'Software / SaaS', icon: '💻', aiUse: 'Very High' },
+    { value: 'consulting', label: 'Consulting / Services', icon: '📊', aiUse: 'High' },
+    { value: 'realestate', label: 'Real Estate', icon: '🏠', aiUse: 'Medium' },
+    { value: 'healthcare', label: 'Healthcare / Wellness', icon: '🏥', aiUse: 'Medium' },
+    { value: 'finance', label: 'Finance / Insurance', icon: '💳', aiUse: 'High' },
+    { value: 'education', label: 'Education / Training', icon: '🎓', aiUse: 'High' },
+    { value: 'hospitality', label: 'Restaurant / Hospitality', icon: '🍽️', aiUse: 'Medium' },
+    { value: 'nonprofit', label: 'Non-Profit', icon: '❤️', aiUse: 'Medium' },
+    { value: 'manufacturing', label: 'Manufacturing / Supply', icon: '🏭', aiUse: 'Medium' },
+    { value: 'other', label: 'Other Industry', icon: '🏢', aiUse: 'Varies' }
   ];
 
   const isValid = companyData.companyName && companyData.industry && companyData.employeeCount && companyData.revenue && companyData.email;
@@ -451,6 +512,7 @@ const BusinessInfoStep: React.FC<{
                 >
                   <div className="text-2xl mb-1">{industry.icon}</div>
                   <div className="text-sm font-medium">{industry.label}</div>
+                  <div className="text-xs text-gray-500 mt-1">AI Use: {industry.aiUse}</div>
                 </button>
               ))}
             </div>
@@ -560,15 +622,69 @@ const ExpenseStep: React.FC<{
     return num.toLocaleString();
   };
 
-  const calculateTotal = () => {
-    const wages = parseFloat(expenses.wages.replace(/,/g, '')) || 0;
-    const contractors = parseFloat(expenses.contractors.replace(/,/g, '')) || 0;
-    const supplies = parseFloat(expenses.supplies.replace(/,/g, '')) || 0;
-    const cloudSoftware = parseFloat(expenses.cloudSoftware.replace(/,/g, '')) || 0;
-    const other = parseFloat(expenses.other.replace(/,/g, '')) || 0;
+  const calculateEmployeeTime = () => {
+    const empCount = parseFloat((document.getElementById('empCount') as HTMLInputElement)?.value || '0');
+    const hoursWeek = parseFloat((document.getElementById('hoursWeek') as HTMLInputElement)?.value || '0');
+    const hourlyRate = parseFloat((document.getElementById('hourlyRate') as HTMLInputElement)?.value || '0');
     
-    return wages + contractors + supplies + cloudSoftware + other;
+    if (empCount && hoursWeek && hourlyRate) {
+      const annualCost = empCount * hoursWeek * 52 * hourlyRate;
+      setExpenses(prev => ({ ...prev, employeeTime: annualCost.toLocaleString() }));
+    }
   };
+
+  const handleExpenseChange = (field: string, value: string) => {
+    setExpenses(prev => ({ ...prev, [field]: formatCurrency(value) }));
+  };
+
+  const calculateTotal = () => {
+    const employeeTime = parseFloat(expenses.employeeTime.replace(/,/g, '')) || 0;
+    const aiTools = parseFloat(expenses.aiTools.replace(/,/g, '')) || 0;
+    const contractors = parseFloat(expenses.contractors.replace(/,/g, '')) || 0;
+    const software = parseFloat(expenses.software.replace(/,/g, '')) || 0;
+    const training = parseFloat(expenses.training.replace(/,/g, '')) || 0;
+    
+    return employeeTime + aiTools + contractors + software + training;
+  };
+
+  // Expense categories for SMBs
+  const expenseCategories = [
+    {
+      id: 'employeeTime',
+      label: 'Employee Time on AI Projects',
+      helper: 'Hours spent implementing, testing, or improving AI solutions',
+      example: 'If 2 employees spend 10 hrs/week on AI projects at $50/hr = $52,000/year',
+      icon: '👥'
+    },
+    {
+      id: 'aiTools',
+      label: 'AI Tool Subscriptions',
+      helper: 'ChatGPT Plus, Claude Pro, Jasper, Midjourney, etc.',
+      example: 'ChatGPT Team: $300/mo, Claude Pro: $240/mo',
+      icon: '🤖'
+    },
+    {
+      id: 'contractors',
+      label: 'Consultants & Freelancers',
+      helper: 'External help for AI implementation or integration',
+      example: 'AI consultant: $5,000, Integration developer: $10,000',
+      icon: '💼'
+    },
+    {
+      id: 'software',
+      label: 'Supporting Software',
+      helper: 'Automation tools, APIs, cloud services for AI',
+      example: 'Zapier: $1,200/yr, Make.com: $800/yr, API costs: $2,000/yr',
+      icon: '⚡'
+    },
+    {
+      id: 'training',
+      label: 'Training & Education',
+      helper: 'Courses, workshops, or materials for AI adoption',
+      example: 'AI training workshop: $2,000, Online courses: $500',
+      icon: '📚'
+    }
+  ];
 
   const total = calculateTotal();
   const estimatedCredit = Math.round(total * 0.065);
@@ -577,100 +693,82 @@ const ExpenseStep: React.FC<{
     <div className="stagger-item">
       <div className="card-high p-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Calculate Your R&D Expenses
+          Let's Calculate Your R&D Investment
         </h2>
         <p className="text-gray-600 mb-6">
-          Include all expenses related to your innovative activities
+          Include all costs related to implementing and improving AI in your business
         </p>
 
-        <div className="space-y-6">
-          {/* Expense Inputs */}
-          <div className="card-glass p-6 space-y-4">
+        {/* Smart Calculator for Employee Time */}
+        <div className="card-glass p-6 mb-6">
+          <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="text-2xl">👥</span>
+            Quick Employee Time Calculator
+          </h3>
+          <div className="grid md:grid-cols-3 gap-4">
             <div>
-              <label className="flex items-center justify-between mb-2">
-                <span className="font-medium text-gray-700">Employee R&D Wages</span>
-                <span className="text-sm text-gray-500">Most common qualifier</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                <input
-                  type="text"
-                  value={expenses.wages}
-                  onChange={(e) => setExpenses({...expenses, wages: formatCurrency(e.target.value)})}
-                  className="form-field pl-8"
-                  placeholder="0"
-                />
-              </div>
+              <label className="text-sm text-gray-600">Employees using AI</label>
+              <input type="number" className="w-full mt-1 px-3 py-2 border rounded-lg" 
+                     placeholder="2" id="empCount" />
             </div>
-
             <div>
-              <label className="flex items-center justify-between mb-2">
-                <span className="font-medium text-gray-700">Contractor Costs</span>
-                <span className="text-sm text-gray-500">65% qualifies</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                <input
-                  type="text"
-                  value={expenses.contractors}
-                  onChange={(e) => setExpenses({...expenses, contractors: formatCurrency(e.target.value)})}
-                  className="form-field pl-8"
-                  placeholder="0"
-                />
-              </div>
+              <label className="text-sm text-gray-600">Hours/week on AI</label>
+              <input type="number" className="w-full mt-1 px-3 py-2 border rounded-lg" 
+                     placeholder="10" id="hoursWeek" />
             </div>
-
             <div>
-              <label className="flex items-center justify-between mb-2">
-                <span className="font-medium text-gray-700">Cloud & Software</span>
-                <span className="text-sm text-gray-500">AWS, tools, licenses</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                <input
-                  type="text"
-                  value={expenses.cloudSoftware}
-                  onChange={(e) => setExpenses({...expenses, cloudSoftware: formatCurrency(e.target.value)})}
-                  className="form-field pl-8"
-                  placeholder="0"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="flex items-center justify-between mb-2">
-                <span className="font-medium text-gray-700">Supply Costs</span>
-                <span className="text-sm text-gray-500">Materials, equipment</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                <input
-                  type="text"
-                  value={expenses.supplies}
-                  onChange={(e) => setExpenses({...expenses, supplies: formatCurrency(e.target.value)})}
-                  className="form-field pl-8"
-                  placeholder="0"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="flex items-center justify-between mb-2">
-                <span className="font-medium text-gray-700">Other R&D Expenses</span>
-                <span className="text-sm text-gray-500">Testing, research</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                <input
-                  type="text"
-                  value={expenses.other}
-                  onChange={(e) => setExpenses({...expenses, other: formatCurrency(e.target.value)})}
-                  className="form-field pl-8"
-                  placeholder="0"
-                />
-              </div>
+              <label className="text-sm text-gray-600">Avg hourly rate</label>
+              <input type="number" className="w-full mt-1 px-3 py-2 border rounded-lg" 
+                     placeholder="50" id="hourlyRate" />
             </div>
           </div>
+          <button 
+            onClick={calculateEmployeeTime}
+            className="mt-4 text-blue-600 text-sm font-medium hover:text-blue-700"
+          >
+            Calculate annual employee R&D cost →
+          </button>
+        </div>
+
+        {/* Expense Inputs */}
+        <div className="space-y-4">
+          {expenseCategories.map((category) => (
+            <div key={category.id} className="border border-gray-200 rounded-xl p-4 
+                                            hover:border-blue-300 transition-colors">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">{category.icon}</span>
+                <div className="flex-1">
+                  <label className="font-medium text-gray-900">{category.label}</label>
+                  <p className="text-sm text-gray-600 mb-2">{category.helper}</p>
+                  <p className="text-xs text-gray-500 italic mb-3">Example: {category.example}</p>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                    <input
+                      type="text"
+                      value={expenses[category.id as keyof typeof expenses]}
+                      onChange={(e) => handleExpenseChange(category.id, e.target.value)}
+                      className="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Real-time Qualification Check */}
+        {calculateTotal() > 0 && (
+          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl">
+            <p className="text-green-800">
+              <span className="font-semibold">✅ You qualify!</span> With ${calculateTotal().toLocaleString()} 
+              in R&D expenses, you could claim approximately ${Math.round(calculateTotal() * 0.065).toLocaleString()} 
+              in federal credits alone.
+            </p>
+          </div>
+        )}
+
+        <div className="space-y-6">
 
           {/* Live Total */}
           <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6">
@@ -718,7 +816,7 @@ const ExpenseStep: React.FC<{
                 </>
               ) : (
                 <>
-                  Calculate My Credits
+                  Calculate My AI R&D Credits
                   <ChevronRight className="w-5 h-5" />
                 </>
               )}
@@ -768,106 +866,135 @@ const ResultsStep: React.FC<{
   return (
     <div className="stagger-item">
       <div className="card-highest p-8">
-        {/* Success Animation */}
-        <div className="text-center mb-8 success-bounce">
-          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-green-400 to-blue-500 
-                        rounded-full flex items-center justify-center">
-            <Check className="w-10 h-10 text-white" />
+        {/* Eye-catching Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 
+                        px-4 py-2 rounded-full mb-4 font-semibold">
+            <Check className="w-5 h-5" />
+            You Qualify for R&D Tax Credits!
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Congratulations! 🎉
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Your AI Innovation = 
+            <span className="text-green-600"> ${federalCredit.toLocaleString()}</span> Back
           </h2>
-          <p className="text-xl text-gray-600">
-            You qualify for significant R&D tax credits
-          </p>
         </div>
 
-        {/* Credit Breakdown */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <div className="card-glass p-6 text-center">
-            <div className="text-sm font-medium text-gray-600 mb-2">
-              Federal R&D Credit
-            </div>
-            <div className="text-4xl font-bold text-green-600 mb-2">
-              ${federalCredit.toLocaleString()}
-            </div>
-            <div className="text-sm text-gray-500">
-              Direct payment from IRS
-            </div>
-          </div>
-
-          <div className="card-glass p-6 text-center">
-            <div className="text-sm font-medium text-gray-600 mb-2">
-              Total Qualified Expenses
-            </div>
-            <div className="text-4xl font-bold text-blue-600 mb-2">
-              ${totalQRE.toLocaleString()}
-            </div>
-            <div className="text-sm text-gray-500">
-              Research & development costs
-            </div>
-          </div>
-        </div>
-
-        {/* ROI Highlight */}
-        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-lg font-medium text-gray-700">Your Investment</p>
-              <p className="text-3xl font-bold text-gray-900">${price.toLocaleString()}</p>
-            </div>
-            <div className="text-center">
-              <div className="text-5xl font-bold text-orange-600">
-                {roiMultiplier}x
+        {/* Simple Value Proposition */}
+        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-2xl p-8 mb-8">
+          <div className="text-center">
+            <p className="text-lg text-gray-700 mb-6">
+              Here's the deal: You've been using AI to improve your business. 
+              The IRS will pay you for that innovation.
+            </p>
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">You spent on AI</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ${totalQRE.toLocaleString()}
+                </p>
               </div>
-              <p className="text-sm font-medium text-gray-600">ROI</p>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">IRS pays you back</p>
+                <p className="text-3xl font-bold text-green-600">
+                  ${federalCredit.toLocaleString()}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Our fee</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ${price.toLocaleString()}
+                </p>
+              </div>
             </div>
-            <div className="text-right">
-              <p className="text-lg font-medium text-gray-700">Your Return</p>
-              <p className="text-3xl font-bold text-green-600">
-                ${federalCredit.toLocaleString()}
-              </p>
+
+            <div className="mt-6 inline-flex items-center gap-2 text-orange-600 font-semibold">
+              <TrendingUp className="w-5 h-5" />
+              That's a {roiMultiplier}x return on investment!
             </div>
           </div>
         </div>
 
-        {/* What's Included */}
+        {/* What Happens Next - SMB Friendly */}
         <div className="mb-8">
           <h3 className="font-semibold text-gray-900 mb-4">
-            Your Complete R&D Credit Package Includes:
+            Here's How Simple This Is:
           </h3>
-          <div className="grid md:grid-cols-2 gap-3">
-            {[
-              'IRS Form 6765 - Completed & Ready to File',
-              'Technical Narrative Documentation',
-              'QRE Calculation Workbook',
-              'Audit Defense Documentation',
-              'Multi-Year Credit Analysis',
-              'State Credit Applications',
-              'Filing Instructions Guide',
-              'Ongoing Support Access'
-            ].map((item, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span className="text-gray-700">{item}</span>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-semibold">1</span>
               </div>
-            ))}
+              <div>
+                <p className="font-medium">You complete a simple questionnaire (15 mins)</p>
+                <p className="text-sm text-gray-600">We'll ask about your AI usage and innovation</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-semibold">2</span>
+              </div>
+              <div>
+                <p className="font-medium">We create your IRS documentation</p>
+                <p className="text-sm text-gray-600">All forms completed and audit-ready</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-semibold">3</span>
+              </div>
+              <div>
+                <p className="font-medium">File with your regular taxes</p>
+                <p className="text-sm text-gray-600">Your CPA includes Form 6765 with your return</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <DollarSign className="w-4 h-4 text-green-600" />
+              </div>
+              <div>
+                <p className="font-medium">Get ${federalCredit.toLocaleString()} from the IRS</p>
+                <p className="text-sm text-gray-600">Direct payment or credit against taxes owed</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* CTA */}
+        {/* Trust Elements for SMBs */}
+        <div className="grid md:grid-cols-3 gap-4 mb-8">
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="w-8 h-8 text-blue-600 mx-auto mb-2 text-2xl">🛡️</div>
+            <p className="text-sm font-medium">IRS Audit Support</p>
+            <p className="text-xs text-gray-600">Included free</p>
+          </div>
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="w-8 h-8 text-blue-600 mx-auto mb-2 text-2xl">⏱️</div>
+            <p className="text-sm font-medium">48-Hour Delivery</p>
+            <p className="text-xs text-gray-600">Get documents fast</p>
+          </div>
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="w-8 h-8 text-blue-600 mx-auto mb-2 text-2xl">👥</div>
+            <p className="text-sm font-medium">500+ SMBs Served</p>
+            <p className="text-xs text-gray-600">Just like yours</p>
+          </div>
+        </div>
+
+        {/* Clear CTA */}
         <button 
           onClick={handleProceedToCheckout}
-          className="w-full btn-gradient text-xl py-4 transform hover:scale-105 flex items-center justify-center gap-3"
+          className="w-full btn-gradient text-lg py-4 flex items-center justify-center gap-2"
         >
-          Get My R&D Tax Credits Now
-          <ArrowRight className="w-6 h-6" />
+          Claim My ${federalCredit.toLocaleString()} Credit Now
+          <ArrowRight className="w-5 h-5" />
         </button>
 
-        {/* Urgency */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-orange-600 font-medium">
-            ⏰ 2022 credits expire July 2026 - Don't leave money on the table
+        {/* Urgency for SMBs */}
+        <div className="mt-6 text-center p-4 bg-orange-50 rounded-lg">
+          <p className="text-orange-800 font-medium">
+            ⏰ Important: You can claim credits for the past 3 years
+          </p>
+          <p className="text-sm text-orange-700 mt-1">
+            2022 credits expire July 2026 - that could be ${(federalCredit * 3).toLocaleString()} total!
           </p>
         </div>
       </div>

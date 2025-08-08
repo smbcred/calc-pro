@@ -1,0 +1,535 @@
+# SMB AI-Focused R&D Tax Credit Calculator
+
+## The New Opportunity: AI Makes Every SMB Eligible
+
+The R&D tax credit landscape has completely changed. What used to require labs and PhDs now includes using AI tools to improve your business. This calculator should educate SMBs that their everyday AI usage likely qualifies for substantial tax credits.
+
+## Key Messaging Throughout Calculator
+
+### Hero Section
+```tsx
+<div className="text-center mb-12">
+  <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full mb-4">
+    <span className="text-sm font-semibold">NEW: AI Usage Now Qualifies for R&D Credits</span>
+  </div>
+  <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+    Using ChatGPT for Your Business?<br />
+    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
+      You Qualify for R&D Tax Credits
+    </span>
+  </h1>
+  <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+    The IRS now recognizes AI implementation as R&D. If you've used AI tools to improve 
+    any business process by 10% or more, you likely have $10,000+ in credits waiting.
+  </p>
+</div>
+```
+
+## Step 1: AI & Innovation Activities (SMB-Focused)
+
+### Updated Activities List
+```tsx
+const activities = [
+  {
+    id: 'ai-content',
+    icon: '✍️',
+    title: 'AI Content Creation',
+    description: 'Using ChatGPT, Claude, or Jasper for marketing',
+    examples: 'Blog posts, social media, email campaigns, product descriptions',
+    commonRoles: ['Marketing Manager', 'Content Creator', 'Business Owner']
+  },
+  {
+    id: 'ai-customer-service',
+    icon: '💬',
+    title: 'AI Customer Support',
+    description: 'Implementing chatbots or AI-assisted responses',
+    examples: 'Chatbots, FAQ automation, ticket routing, response templates',
+    commonRoles: ['Customer Success', 'Support Team', 'Operations Manager']
+  },
+  {
+    id: 'ai-data-analysis',
+    icon: '📊',
+    title: 'AI Data Analysis',
+    description: 'Using AI to analyze business data or generate insights',
+    examples: 'Sales forecasting, customer segmentation, trend analysis, reporting',
+    commonRoles: ['Data Analyst', 'Business Analyst', 'Finance Team']
+  },
+  {
+    id: 'process-automation',
+    icon: '⚡',
+    title: 'Workflow Automation',
+    description: 'Automating repetitive tasks with AI or no-code tools',
+    examples: 'Zapier workflows, email automation, data entry, scheduling',
+    commonRoles: ['Operations', 'Admin', 'Project Manager']
+  },
+  {
+    id: 'ai-development',
+    icon: '🤖',
+    title: 'Custom AI Solutions',
+    description: 'Building GPTs, training models, or API integrations',
+    examples: 'Custom ChatGPT, fine-tuned models, API connections, prompts',
+    commonRoles: ['Developer', 'Tech Lead', 'Product Manager']
+  },
+  {
+    id: 'ai-sales',
+    icon: '🎯',
+    title: 'AI Sales Tools',
+    description: 'Using AI for lead generation or sales optimization',
+    examples: 'Lead scoring, email personalization, proposal generation',
+    commonRoles: ['Sales Team', 'Business Development', 'Account Manager']
+  },
+  {
+    id: 'ai-design',
+    icon: '🎨',
+    title: 'AI Design & Creative',
+    description: 'Using Midjourney, DALL-E, or Canva AI',
+    examples: 'Logo design, marketing materials, product images, presentations',
+    commonRoles: ['Designer', 'Marketing', 'Product Team']
+  },
+  {
+    id: 'ai-finance',
+    icon: '💰',
+    title: 'AI Financial Tools',
+    description: 'Automating bookkeeping or financial analysis',
+    examples: 'Expense categorization, invoice processing, financial forecasting',
+    commonRoles: ['Accountant', 'Bookkeeper', 'CFO']
+  },
+  {
+    id: 'ai-hr',
+    icon: '👥',
+    title: 'AI HR & Recruiting',
+    description: 'Using AI for hiring or employee management',
+    examples: 'Resume screening, interview scheduling, performance reviews',
+    commonRoles: ['HR Manager', 'Recruiter', 'People Ops']
+  },
+  {
+    id: 'ai-legal',
+    icon: '⚖️',
+    title: 'AI Legal & Compliance',
+    description: 'Contract analysis or compliance automation',
+    examples: 'Contract review, compliance checking, policy generation',
+    commonRoles: ['Legal Team', 'Compliance Officer', 'Operations']
+  }
+];
+
+// Add helpful context based on selection
+const getContextMessage = (selectedCount: number) => {
+  if (selectedCount === 0) return null;
+  
+  return (
+    <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-6 animate-fadeIn">
+      <div className="flex items-start gap-3">
+        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+          <Check className="w-5 h-5 text-green-600" />
+        </div>
+        <div>
+          <p className="font-semibold text-green-900 mb-1">
+            {selectedCount === 1 && "Great start! Even one AI implementation can qualify."}
+            {selectedCount >= 2 && selectedCount <= 3 && "Excellent! Multiple AI uses strengthen your claim."}
+            {selectedCount >= 4 && selectedCount <= 6 && "Impressive! You're leveraging AI across your business."}
+            {selectedCount > 6 && "Outstanding! You're a prime candidate for maximum credits."}
+          </p>
+          <p className="text-sm text-green-700">
+            The IRS recognizes AI implementation as "process of experimentation" for R&D purposes.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+## Step 2: SMB-Friendly Business Information
+
+### Updated Industries List
+```tsx
+const industries = [
+  { value: 'ecommerce', label: 'E-commerce / Retail', icon: '🛒', aiUse: 'High' },
+  { value: 'agency', label: 'Marketing / Creative Agency', icon: '🎯', aiUse: 'Very High' },
+  { value: 'saas', label: 'Software / SaaS', icon: '💻', aiUse: 'Very High' },
+  { value: 'consulting', label: 'Consulting / Services', icon: '📊', aiUse: 'High' },
+  { value: 'realestate', label: 'Real Estate', icon: '🏠', aiUse: 'Medium' },
+  { value: 'healthcare', label: 'Healthcare / Wellness', icon: '🏥', aiUse: 'Medium' },
+  { value: 'finance', label: 'Finance / Insurance', icon: '💳', aiUse: 'High' },
+  { value: 'education', label: 'Education / Training', icon: '🎓', aiUse: 'High' },
+  { value: 'hospitality', label: 'Restaurant / Hospitality', icon: '🍽️', aiUse: 'Medium' },
+  { value: 'nonprofit', label: 'Non-Profit', icon: '❤️', aiUse: 'Medium' },
+  { value: 'manufacturing', label: 'Manufacturing / Supply', icon: '🏭', aiUse: 'Medium' },
+  { value: 'other', label: 'Other Industry', icon: '🏢', aiUse: 'Varies' }
+];
+
+// Add industry-specific tips
+const IndustryInsight: React.FC<{ industry: string }> = ({ industry }) => {
+  const insights = {
+    ecommerce: "E-commerce businesses using AI for product recommendations, inventory forecasting, or customer service chatbots have strong R&D claims.",
+    agency: "Agencies experimenting with AI content generation, design tools, or campaign optimization are prime candidates for credits.",
+    consulting: "Consultants using AI for data analysis, report generation, or process improvement for clients qualify for substantial credits.",
+    realestate: "Real estate firms using AI for property valuation, lead scoring, or virtual tours are engaging in qualified R&D.",
+  };
+
+  if (!insights[industry]) return null;
+
+  return (
+    <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+      <p className="text-sm text-blue-800">
+        <span className="font-semibold">💡 Industry Insight:</span> {insights[industry]}
+      </p>
+    </div>
+  );
+};
+```
+
+## Step 3: SMB-Appropriate Expense Categories
+
+### Updated Expense Input
+```tsx
+const ExpenseStep: React.FC = ({ formData, updateFormData, nextStep, prevStep }) => {
+  const [expenses, setExpenses] = useState({
+    employeeTime: '',
+    aiTools: '',
+    contractors: '',
+    software: '',
+    training: ''
+  });
+
+  // Help SMBs understand what qualifies
+  const expenseCategories = [
+    {
+      id: 'employeeTime',
+      label: 'Employee Time on AI Projects',
+      helper: 'Hours spent implementing, testing, or improving AI solutions',
+      example: 'If 2 employees spend 10 hrs/week on AI projects at $50/hr = $52,000/year',
+      icon: '👥'
+    },
+    {
+      id: 'aiTools',
+      label: 'AI Tool Subscriptions',
+      helper: 'ChatGPT Plus, Claude Pro, Jasper, Midjourney, etc.',
+      example: 'ChatGPT Team: $300/mo, Claude Pro: $240/mo',
+      icon: '🤖'
+    },
+    {
+      id: 'contractors',
+      label: 'Consultants & Freelancers',
+      helper: 'External help for AI implementation or integration',
+      example: 'AI consultant: $5,000, Integration developer: $10,000',
+      icon: '💼'
+    },
+    {
+      id: 'software',
+      label: 'Supporting Software',
+      helper: 'Automation tools, APIs, cloud services for AI',
+      example: 'Zapier: $1,200/yr, Make.com: $800/yr, API costs: $2,000/yr',
+      icon: '⚡'
+    },
+    {
+      id: 'training',
+      label: 'Training & Education',
+      helper: 'Courses, workshops, or materials for AI adoption',
+      example: 'AI training workshop: $2,000, Online courses: $500',
+      icon: '📚'
+    }
+  ];
+
+  return (
+    <div className="stagger-item">
+      <div className="card-high p-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Let's Calculate Your R&D Investment
+        </h2>
+        <p className="text-gray-600 mb-6">
+          Include all costs related to implementing and improving AI in your business
+        </p>
+
+        {/* Smart Calculator for Employee Time */}
+        <div className="card-glass p-6 mb-6">
+          <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="text-2xl">👥</span>
+            Quick Employee Time Calculator
+          </h3>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div>
+              <label className="text-sm text-gray-600">Employees using AI</label>
+              <input type="number" className="w-full mt-1 px-3 py-2 border rounded-lg" 
+                     placeholder="2" id="empCount" />
+            </div>
+            <div>
+              <label className="text-sm text-gray-600">Hours/week on AI</label>
+              <input type="number" className="w-full mt-1 px-3 py-2 border rounded-lg" 
+                     placeholder="10" id="hoursWeek" />
+            </div>
+            <div>
+              <label className="text-sm text-gray-600">Avg hourly rate</label>
+              <input type="number" className="w-full mt-1 px-3 py-2 border rounded-lg" 
+                     placeholder="50" id="hourlyRate" />
+            </div>
+          </div>
+          <button 
+            onClick={calculateEmployeeTime}
+            className="mt-4 text-blue-600 text-sm font-medium hover:text-blue-700"
+          >
+            Calculate annual employee R&D cost →
+          </button>
+        </div>
+
+        {/* Expense Inputs */}
+        <div className="space-y-4">
+          {expenseCategories.map((category) => (
+            <div key={category.id} className="border border-gray-200 rounded-xl p-4 
+                                            hover:border-blue-300 transition-colors">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">{category.icon}</span>
+                <div className="flex-1">
+                  <label className="font-medium text-gray-900">{category.label}</label>
+                  <p className="text-sm text-gray-600 mb-2">{category.helper}</p>
+                  <p className="text-xs text-gray-500 italic mb-3">Example: {category.example}</p>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                    <input
+                      type="text"
+                      value={expenses[category.id]}
+                      onChange={(e) => handleExpenseChange(category.id, e.target.value)}
+                      className="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Real-time Qualification Check */}
+        {calculateTotal() > 0 && (
+          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl">
+            <p className="text-green-800">
+              <span className="font-semibold">✅ You qualify!</span> With ${calculateTotal().toLocaleString()} 
+              in R&D expenses, you could claim approximately ${Math.round(calculateTotal() * 0.065).toLocaleString()} 
+              in federal credits alone.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+```
+
+## Step 4: SMB-Focused Results
+
+### Value-First Results Display
+```tsx
+const ResultsStep: React.FC = ({ formData }) => {
+  const totalQRE = calculateTotalQRE(formData.expenses);
+  const federalCredit = Math.round(totalQRE * 0.065);
+  const price = getPrice(federalCredit);
+  const roi = Math.round(federalCredit / price);
+
+  return (
+    <div className="stagger-item">
+      <div className="card-highest p-8">
+        {/* Eye-catching Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 
+                        px-4 py-2 rounded-full mb-4 font-semibold">
+            <Check className="w-5 h-5" />
+            You Qualify for R&D Tax Credits!
+          </div>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Your AI Innovation = 
+            <span className="text-green-600"> ${federalCredit.toLocaleString()}</span> Back
+          </h2>
+        </div>
+
+        {/* Simple Value Proposition */}
+        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-2xl p-8 mb-8">
+          <div className="text-center">
+            <p className="text-lg text-gray-700 mb-6">
+              Here's the deal: You've been using AI to improve your business. 
+              The IRS will pay you for that innovation.
+            </p>
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">You spent on AI</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ${totalQRE.toLocaleString()}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">IRS pays you back</p>
+                <p className="text-3xl font-bold text-green-600">
+                  ${federalCredit.toLocaleString()}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Our fee</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ${price}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 inline-flex items-center gap-2 text-orange-600 font-semibold">
+              <TrendingUp className="w-5 h-5" />
+              That's a {roi}x return on investment!
+            </div>
+          </div>
+        </div>
+
+        {/* What Happens Next - SMB Friendly */}
+        <div className="mb-8">
+          <h3 className="font-semibold text-gray-900 mb-4">
+            Here's How Simple This Is:
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-semibold">1</span>
+              </div>
+              <div>
+                <p className="font-medium">You complete a simple questionnaire (15 mins)</p>
+                <p className="text-sm text-gray-600">We'll ask about your AI usage and innovation</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-semibold">2</span>
+              </div>
+              <div>
+                <p className="font-medium">We create your IRS documentation</p>
+                <p className="text-sm text-gray-600">All forms completed and audit-ready</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-semibold">3</span>
+              </div>
+              <div>
+                <p className="font-medium">File with your regular taxes</p>
+                <p className="text-sm text-gray-600">Your CPA includes Form 6765 with your return</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <DollarSign className="w-4 h-4 text-green-600" />
+              </div>
+              <div>
+                <p className="font-medium">Get ${federalCredit.toLocaleString()} from the IRS</p>
+                <p className="text-sm text-gray-600">Direct payment or credit against taxes owed</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trust Elements for SMBs */}
+        <div className="grid md:grid-cols-3 gap-4 mb-8">
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <Shield className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+            <p className="text-sm font-medium">IRS Audit Support</p>
+            <p className="text-xs text-gray-600">Included free</p>
+          </div>
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <Clock className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+            <p className="text-sm font-medium">48-Hour Delivery</p>
+            <p className="text-xs text-gray-600">Get documents fast</p>
+          </div>
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <Users className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+            <p className="text-sm font-medium">500+ SMBs Served</p>
+            <p className="text-xs text-gray-600">Just like yours</p>
+          </div>
+        </div>
+
+        {/* Clear CTA */}
+        <button className="w-full btn-gradient text-lg py-4">
+          Claim My ${federalCredit.toLocaleString()} Credit Now
+        </button>
+
+        {/* Urgency for SMBs */}
+        <div className="mt-6 text-center p-4 bg-orange-50 rounded-lg">
+          <p className="text-orange-800 font-medium">
+            ⏰ Important: You can claim credits for the past 3 years
+          </p>
+          <p className="text-sm text-orange-700 mt-1">
+            2022 credits expire July 2026 - that could be ${federalCredit * 3} total!
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+## Key SMB Messaging Throughout
+
+### Educational Tooltips
+```tsx
+const AITooltip: React.FC = () => (
+  <div className="group relative inline-block ml-1">
+    <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 
+                  bg-gray-900 text-white text-sm rounded-lg opacity-0 
+                  group-hover:opacity-100 transition-opacity w-64 pointer-events-none">
+      The IRS considers AI implementation as "technological in nature" and 
+      "process of experimentation" - two key requirements for R&D credits.
+    </div>
+  </div>
+);
+```
+
+### Trust Building for SMBs
+```tsx
+const TrustBanner: React.FC = () => (
+  <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+    <div className="flex items-center gap-4">
+      <div className="flex-shrink-0">
+        <Shield className="w-12 h-12 text-blue-600" />
+      </div>
+      <div>
+        <h3 className="font-semibold text-gray-900">Built for Small Businesses</h3>
+        <p className="text-gray-700">
+          We've helped 500+ SMBs claim credits they didn't know they qualified for. 
+          No complex forms, no accounting jargon - just simple questions about your AI usage.
+        </p>
+      </div>
+    </div>
+  </div>
+);
+```
+
+### SMB Success Stories
+```tsx
+const SuccessStories = () => (
+  <div className="grid md:grid-cols-3 gap-4 mt-8">
+    <div className="p-4 bg-white rounded-lg border border-gray-200">
+      <p className="text-sm text-gray-600 mb-2">Marketing Agency</p>
+      <p className="font-semibold text-green-600">$18,000 credit</p>
+      <p className="text-xs text-gray-500">For using AI content tools</p>
+    </div>
+    <div className="p-4 bg-white rounded-lg border border-gray-200">
+      <p className="text-sm text-gray-600 mb-2">E-commerce Store</p>
+      <p className="font-semibold text-green-600">$24,000 credit</p>
+      <p className="text-xs text-gray-500">For AI customer service</p>
+    </div>
+    <div className="p-4 bg-white rounded-lg border border-gray-200">
+      <p className="text-sm text-gray-600 mb-2">Consulting Firm</p>
+      <p className="font-semibold text-green-600">$31,000 credit</p>
+      <p className="text-xs text-gray-500">For AI data analysis</p>
+    </div>
+  </div>
+);
+```
+
+## Summary
+
+This SMB-focused calculator:
+- **Speaks their language**: No technical jargon, clear examples
+- **Shows AI = R&D**: Educates that everyday AI use qualifies
+- **Industry-specific**: Relevant to agencies, e-commerce, consultants
+- **Value-focused**: ROI front and center
+- **Trust-building**: Shows other SMBs succeeding
+- **Simple process**: 15 minutes to tax credits
+- **Urgency without pressure**: Clear deadlines, helpful tone
+
+The key is making SMBs realize that their ChatGPT subscription and the hours spent prompt engineering ARE qualified R&D expenses!

@@ -1,0 +1,551 @@
+# Improved R&D Tax Credit Calculator - Enhanced Version
+
+## Key Improvements & Changes
+
+### 1. Remove State Credits (Simplified)
+### 2. Add Year Selection 
+### 3. Refined Revenue Ranges
+### 4. Additional Enhancements for Better UX & Conversion
+
+## Updated Step 2: Business Information (Enhanced)
+
+```tsx
+const BusinessInfoStep: React.FC<StepProps> = ({ formData, updateFormData, nextStep }) => {
+  const [companyData, setCompanyData] = useState({
+    companyName: formData.companyInfo?.companyName || '',
+    industry: formData.companyInfo?.industry || '',
+    employeeCount: formData.companyInfo?.employeeCount || '',
+    revenue: formData.companyInfo?.revenue || '',
+    yearFounded: formData.companyInfo?.yearFounded || '',
+    rdStartYear: formData.companyInfo?.rdStartYear || '2025' // When they started R&D
+  });
+
+  // More granular revenue ranges for SMBs
+  const revenueRanges = [
+    { value: '0-100k', label: 'Under $100,000' },
+    { value: '100k-250k', label: '$100,000 - $250,000' },
+    { value: '250k-500k', label: '$250,000 - $500,000' },
+    { value: '500k-1m', label: '$500,000 - $1M' },
+    { value: '1m-2.5m', label: '$1M - $2.5M' },
+    { value: '2.5m-5m', label: '$2.5M - $5M' },
+    { value: '5m-10m', label: '$5M - $10M' },
+    { value: '10m-25m', label: '$10M - $25M' },
+    { value: '25m+', label: 'Over $25M' }
+  ];
+
+  // Years for R&D start
+  const yearOptions = [
+    { value: '2025', label: '2025 (Current Year)' },
+    { value: '2024', label: '2024' },
+    { value: '2023', label: '2023' },
+    { value: '2022', label: '2022' },
+    { value: 'before-2022', label: 'Before 2022' }
+  ];
+
+  return (
+    <div className="stagger-item">
+      <div className="card-high p-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          Tell Us About {companyData.companyName || 'Your Business'}
+        </h2>
+
+        {/* Company Name */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Company Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={companyData.companyName}
+            onChange={(e) => setCompanyData({...companyData, companyName: e.target.value})}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl 
+                     focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            placeholder="Acme Technologies Inc."
+          />
+        </div>
+
+        {/* Revenue Range - More Granular */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Annual Revenue <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={companyData.revenue}
+            onChange={(e) => setCompanyData({...companyData, revenue: e.target.value})}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+          >
+            <option value="">Select revenue range</option>
+            {revenueRanges.map(range => (
+              <option key={range.value} value={range.value}>
+                {range.label}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">
+            This helps us estimate your potential credit more accurately
+          </p>
+        </div>
+
+        {/* When did you start using AI/R&D? */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            When did you start your R&D activities? <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={companyData.rdStartYear}
+            onChange={(e) => setCompanyData({...companyData, rdStartYear: e.target.value})}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+          >
+            {yearOptions.map(year => (
+              <option key={year.value} value={year.value}>
+                {year.label}
+              </option>
+            ))}
+          </select>
+          {companyData.rdStartYear && companyData.rdStartYear !== '2025' && (
+            <div className="mt-2 p-3 bg-green-50 rounded-lg">
+              <p className="text-sm text-green-800">
+                ✅ Great! You can claim credits for {
+                  companyData.rdStartYear === 'before-2022' 
+                    ? '2022, 2023, 2024, and 2025' 
+                    : `${companyData.rdStartYear} through 2025`
+                }
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Employee Count */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Number of Employees <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={companyData.employeeCount}
+            onChange={(e) => setCompanyData({...companyData, employeeCount: e.target.value})}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+          >
+            <option value="">Select range</option>
+            <option value="1-5">1-5 employees</option>
+            <option value="6-10">6-10 employees</option>
+            <option value="11-25">11-25 employees</option>
+            <option value="26-50">26-50 employees</option>
+            <option value="51-100">51-100 employees</option>
+            <option value="100+">100+ employees</option>
+          </select>
+        </div>
+
+        <button
+          onClick={handleContinue}
+          disabled={!companyData.companyName || !companyData.revenue || !companyData.employeeCount}
+          className="w-full btn-gradient"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
+  );
+};
+```
+
+## Enhanced Email Capture Step with Better Range Calculation
+
+```tsx
+const EmailCaptureStep: React.FC<StepProps> = ({ formData, updateFormData, nextStep }) => {
+  const [email, setEmail] = useState(formData.email || '');
+  const [showWhyEmail, setShowWhyEmail] = useState(false);
+
+  // More sophisticated range calculation based on revenue
+  const calculateCreditRange = () => {
+    const { employeeCount, revenue, rdStartYear } = formData.companyInfo;
+    const activities = formData.activities.length;
+    
+    // Revenue-based calculations (more accurate for SMBs)
+    const revenueMultipliers = {
+      '0-100k': { low: 2000, high: 8000 },
+      '100k-250k': { low: 5000, high: 15000 },
+      '250k-500k': { low: 8000, high: 25000 },
+      '500k-1m': { low: 15000, high: 40000 },
+      '1m-2.5m': { low: 25000, high: 75000 },
+      '2.5m-5m': { low: 40000, high: 125000 },
+      '5m-10m': { low: 60000, high: 200000 },
+      '10m-25m': { low: 100000, high: 400000 },
+      '25m+': { low: 150000, high: 1000000 }
+    };
+    
+    const base = revenueMultipliers[revenue] || { low: 10000, high: 50000 };
+    
+    // Adjust for activities (more activities = higher credit)
+    const activityMultiplier = 1 + (activities * 0.15);
+    
+    // Calculate number of eligible years
+    let eligibleYears = 1;
+    if (rdStartYear === 'before-2022') eligibleYears = 4;
+    else if (rdStartYear === '2022') eligibleYears = 4;
+    else if (rdStartYear === '2023') eligibleYears = 3;
+    else if (rdStartYear === '2024') eligibleYears = 2;
+    
+    return {
+      low: Math.round(base.low * activityMultiplier),
+      high: Math.round(base.high * activityMultiplier),
+      totalLow: Math.round(base.low * activityMultiplier * eligibleYears),
+      totalHigh: Math.round(base.high * activityMultiplier * eligibleYears),
+      years: eligibleYears
+    };
+  };
+
+  const creditRange = calculateCreditRange();
+
+  return (
+    <div className="stagger-item">
+      <div className="card-highest p-8">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            {formData.companyInfo.companyName}, Your R&D Credits Are Worth...
+          </h2>
+          
+          {/* Annual Credit Range */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 mb-4">
+            <p className="text-lg text-gray-700 mb-4">
+              Annual Federal R&D Credit Estimate:
+            </p>
+            <div className="text-5xl font-bold text-transparent bg-clip-text 
+                          bg-gradient-to-r from-green-600 to-blue-600">
+              ${creditRange.low.toLocaleString()} - ${creditRange.high.toLocaleString()}
+            </div>
+          </div>
+
+          {/* Multi-Year Total if applicable */}
+          {creditRange.years > 1 && (
+            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 mb-6">
+              <p className="text-lg font-semibold text-gray-900 mb-2">
+                🎉 You Can Claim {creditRange.years} Years of Credits!
+              </p>
+              <p className="text-3xl font-bold text-orange-600">
+                Total: ${creditRange.totalLow.toLocaleString()} - ${creditRange.totalHigh.toLocaleString()}
+              </p>
+              <p className="text-sm text-gray-600 mt-2">
+                Based on R&D activities starting in {formData.companyInfo.rdStartYear}
+              </p>
+            </div>
+          )}
+
+          {/* Trust Elements */}
+          <div className="flex justify-center gap-8 mb-8">
+            <div className="text-center">
+              <div className="text-2xl mb-1">⚡</div>
+              <p className="text-sm text-gray-600">2-minute<br/>calculation</p>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl mb-1">🔒</div>
+              <p className="text-sm text-gray-600">Secure &<br/>confidential</p>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl mb-1">📊</div>
+              <p className="text-sm text-gray-600">IRS-compliant<br/>methodology</p>
+            </div>
+          </div>
+
+          {/* Email Input with Benefits */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Enter your email for your personalized calculation
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl 
+                       focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              placeholder="you@company.com"
+            />
+            <button
+              onClick={() => setShowWhyEmail(!showWhyEmail)}
+              className="text-sm text-blue-600 mt-1"
+            >
+              Why do we need your email?
+            </button>
+            {showWhyEmail && (
+              <div className="mt-2 p-3 bg-blue-50 rounded-lg text-sm text-gray-700">
+                We'll send you: ✓ Detailed calculation breakdown ✓ Free AI R&D guide 
+                ✓ Deadline reminders ✓ No spam, ever
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="space-y-3">
+            <button
+              onClick={handleEmailSubmit}
+              disabled={!email}
+              className="w-full btn-gradient"
+            >
+              Get My Exact Calculation
+            </button>
+            
+            <button
+              onClick={handleSkipToCheckout}
+              className="w-full px-6 py-3 text-gray-600 text-sm hover:text-gray-800"
+            >
+              Skip this step →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+## Additional Calculator Improvements
+
+### 1. **Progress Saving & Resume**
+```tsx
+// Add to each step
+useEffect(() => {
+  // Auto-save to localStorage
+  const saveData = {
+    currentStep,
+    formData,
+    lastUpdated: new Date().toISOString()
+  };
+  localStorage.setItem('rdCalculatorProgress', JSON.stringify(saveData));
+}, [formData, currentStep]);
+
+// On calculator load
+useEffect(() => {
+  const saved = localStorage.getItem('rdCalculatorProgress');
+  if (saved) {
+    const data = JSON.parse(saved);
+    const hoursSince = (Date.now() - new Date(data.lastUpdated).getTime()) / 3600000;
+    
+    if (hoursSince < 24) {
+      setShowResumeModal(true);
+      setSavedData(data);
+    }
+  }
+}, []);
+
+// Resume modal
+const ResumeModal = () => (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl p-8 max-w-md">
+      <h3 className="text-xl font-bold mb-4">Welcome back!</h3>
+      <p className="mb-6">Would you like to continue where you left off?</p>
+      <div className="flex gap-4">
+        <button onClick={resumeProgress} className="btn-gradient">
+          Resume Progress
+        </button>
+        <button onClick={startFresh} className="btn-secondary">
+          Start Fresh
+        </button>
+      </div>
+    </div>
+  </div>
+);
+```
+
+### 2. **Live Chat Support Widget**
+```tsx
+const ChatWidget = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <div className="fixed bottom-6 right-6 z-50">
+      {isOpen ? (
+        <div className="bg-white rounded-2xl shadow-2xl w-96 h-[500px] flex flex-col">
+          <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white p-4 rounded-t-2xl">
+            <h3 className="font-semibold">Need Help?</h3>
+            <p className="text-sm opacity-90">We typically respond in under 2 minutes</p>
+          </div>
+          <div className="flex-1 p-4">
+            {/* Chat interface */}
+          </div>
+        </div>
+      ) : (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="bg-gradient-to-r from-blue-600 to-green-600 text-white 
+                   rounded-full p-4 shadow-lg hover:shadow-xl transition-all"
+        >
+          <MessageCircle className="w-6 h-6" />
+        </button>
+      )}
+    </div>
+  );
+};
+```
+
+### 3. **Smart Activity Recommendations**
+```tsx
+const ActivityRecommendations = ({ industry, selectedActivities }) => {
+  const recommendations = {
+    'ecommerce': [
+      'ai-customer-service',
+      'ai-data-analysis',
+      'process-automation'
+    ],
+    'agency': [
+      'ai-content',
+      'ai-design',
+      'ai-data-analysis'
+    ],
+    // More industries...
+  };
+  
+  const suggested = recommendations[industry]?.filter(
+    act => !selectedActivities.includes(act)
+  );
+  
+  if (!suggested?.length) return null;
+  
+  return (
+    <div className="mt-4 p-4 bg-blue-50 rounded-xl">
+      <p className="text-sm font-medium text-blue-900 mb-2">
+        💡 Common for {industry} businesses:
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {suggested.map(actId => (
+          <button
+            key={actId}
+            onClick={() => addActivity(actId)}
+            className="text-xs bg-white px-3 py-1 rounded-full border 
+                     border-blue-200 hover:border-blue-400"
+          >
+            + Add {getActivityName(actId)}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+```
+
+### 4. **Expense Quick Entry Templates**
+```tsx
+const ExpenseTemplates = ({ industry, setExpenses }) => {
+  const templates = {
+    'Small Agency (5-10 employees)': {
+      employeeTime: 52000,
+      aiTools: 3600,
+      contractors: 15000,
+      software: 2400
+    },
+    'Growing SaaS (11-25 employees)': {
+      employeeTime: 156000,
+      aiTools: 7200,
+      contractors: 50000,
+      software: 12000
+    },
+    // More templates...
+  };
+  
+  return (
+    <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+      <p className="text-sm font-medium mb-3">
+        Quick Templates (adjust as needed):
+      </p>
+      <div className="grid grid-cols-2 gap-2">
+        {Object.entries(templates).map(([name, values]) => (
+          <button
+            key={name}
+            onClick={() => setExpenses(values)}
+            className="text-xs p-2 bg-white rounded-lg border hover:border-blue-400"
+          >
+            {name}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+```
+
+### 5. **Trust & Social Proof Throughout**
+```tsx
+const TrustIndicators = ({ step }) => {
+  const indicators = [
+    { icon: Shield, text: "IRS Compliant" },
+    { icon: Clock, text: "48hr Delivery" },
+    { icon: Users, text: "500+ SMBs" },
+    { icon: Star, text: "4.9/5 Rating" }
+  ];
+  
+  return (
+    <div className="flex justify-center gap-6 mt-8 pt-8 border-t">
+      {indicators.map(({ icon: Icon, text }) => (
+        <div key={text} className="flex items-center gap-2 text-sm text-gray-600">
+          <Icon className="w-4 h-4" />
+          <span>{text}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+```
+
+### 6. **Calculation Transparency**
+```tsx
+const CalculationBreakdown = ({ expenses, show }) => {
+  if (!show) return null;
+  
+  return (
+    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+      <h4 className="font-medium mb-2">How we calculate:</h4>
+      <div className="space-y-1 text-sm text-gray-600">
+        <p>• Wages: 100% of ${expenses.employeeTime.toLocaleString()}</p>
+        <p>• Contractors: 65% of ${expenses.contractors.toLocaleString()} = ${Math.round(expenses.contractors * 0.65).toLocaleString()}</p>
+        <p>• Supplies: 100% of ${(expenses.aiTools + expenses.software).toLocaleString()}</p>
+        <p className="pt-2 font-medium text-gray-800">
+          Total QRE × 6.5% = Your Federal Credit
+        </p>
+      </div>
+    </div>
+  );
+};
+```
+
+### 7. **Mobile-First Optimizations**
+```css
+/* Responsive improvements */
+@media (max-width: 768px) {
+  /* Stack buttons vertically on mobile */
+  .button-group {
+    flex-direction: column;
+  }
+  
+  /* Larger touch targets */
+  .activity-card {
+    min-height: 80px;
+    padding: 1rem;
+  }
+  
+  /* Simplified tables */
+  .expense-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Bottom sheet style modals */
+  .modal {
+    position: fixed;
+    bottom: 0;
+    border-radius: 1.5rem 1.5rem 0 0;
+    animation: slideUp 0.3s ease-out;
+  }
+}
+```
+
+## Summary of Improvements
+
+1. **Removed States** - Simplified to federal credits only
+2. **Year Selection** - Added R&D start year to calculate multi-year opportunities
+3. **Granular Revenue Ranges** - Better for SMBs ($100K increments at low end)
+4. **Progress Saving** - Auto-save and resume functionality
+5. **Smart Recommendations** - Industry-specific activity suggestions
+6. **Expense Templates** - Quick-fill options based on company size
+7. **Trust Building** - Indicators throughout the flow
+8. **Calculation Transparency** - Show the math clearly
+9. **Mobile Optimization** - Better experience on phones
+10. **Live Support** - Chat widget for questions
+
+These improvements make the calculator more user-friendly, transparent, and conversion-optimized for SMBs!

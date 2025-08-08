@@ -11,11 +11,15 @@ interface FormData {
     foundedYear: string;
     primaryState: string;
     email: string;
+    rdStartYear: string;
   };
   email?: string;
   estimatedRange?: {
     low: number;
     high: number;
+    totalLow: number;
+    totalHigh: number;
+    years: number;
   };
   expenses: {
     employeeTime: string;
@@ -46,7 +50,8 @@ const AmazingCalculator: React.FC = () => {
       revenue: '',
       foundedYear: '',
       primaryState: '',
-      email: ''
+      email: '',
+      rdStartYear: '2025'
     },
     expenses: {
       employeeTime: '0',
@@ -65,15 +70,20 @@ const AmazingCalculator: React.FC = () => {
     { number: 5, title: 'Results', icon: Check }
   ];
 
-  // Auto-save to localStorage
+  // Enhanced auto-save with progress tracking
   useEffect(() => {
     const saveData = () => {
-      localStorage.setItem('rdCalculatorData', JSON.stringify(formData));
+      const progressData = {
+        currentStep,
+        formData,
+        lastUpdated: new Date().toISOString()
+      };
+      localStorage.setItem('rdCalculatorProgress', JSON.stringify(progressData));
     };
     
     const timeoutId = setTimeout(saveData, 1000);
     return () => clearTimeout(timeoutId);
-  }, [formData]);
+  }, [formData, currentStep]);
 
   // Load saved data on mount
   useEffect(() => {
@@ -468,13 +478,13 @@ const BusinessInfoStep: React.FC<{
     { value: 'other', label: 'Other Industry', icon: '🏢', aiUse: 'Varies' }
   ];
 
-  const isValid = companyData.companyName && companyData.industry && companyData.employeeCount && companyData.revenue && companyData.email;
+  const isValid = companyData.companyName && companyData.industry && companyData.employeeCount && companyData.revenue && companyData.rdStartYear && companyData.email;
 
   return (
     <div className="stagger-item">
       <div className="card-high p-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          Tell Us About Your Business
+          Tell Us About {companyData.companyName || 'Your Business'}
         </h2>
 
         <div className="space-y-6">
@@ -544,11 +554,12 @@ const BusinessInfoStep: React.FC<{
                 className="form-field"
               >
                 <option value="">Select range</option>
-                <option value="1-10">1-10 employees</option>
-                <option value="11-50">11-50 employees</option>
-                <option value="51-200">51-200 employees</option>
-                <option value="201-500">201-500 employees</option>
-                <option value="500+">500+ employees</option>
+                <option value="1-5">1-5 employees</option>
+                <option value="6-10">6-10 employees</option>
+                <option value="11-25">11-25 employees</option>
+                <option value="26-50">26-50 employees</option>
+                <option value="51-100">51-100 employees</option>
+                <option value="100+">100+ employees</option>
               </select>
             </div>
             <div>
@@ -560,14 +571,50 @@ const BusinessInfoStep: React.FC<{
                 onChange={(e) => setCompanyData({...companyData, revenue: e.target.value})}
                 className="form-field"
               >
-                <option value="">Select range</option>
-                <option value="Under $1M">Under $1M</option>
-                <option value="$1M - $5M">$1M - $5M</option>
-                <option value="$5M - $25M">$5M - $25M</option>
-                <option value="$25M - $100M">$25M - $100M</option>
-                <option value="$100M+">$100M+</option>
+                <option value="">Select revenue range</option>
+                <option value="0-100k">Under $100,000</option>
+                <option value="100k-250k">$100,000 - $250,000</option>
+                <option value="250k-500k">$250,000 - $500,000</option>
+                <option value="500k-1m">$500,000 - $1M</option>
+                <option value="1m-2.5m">$1M - $2.5M</option>
+                <option value="2.5m-5m">$2.5M - $5M</option>
+                <option value="5m-10m">$5M - $10M</option>
+                <option value="10m-25m">$10M - $25M</option>
+                <option value="25m+">Over $25M</option>
               </select>
+              <p className="text-xs text-gray-500 mt-1">
+                This helps us estimate your potential credit more accurately
+              </p>
             </div>
+          </div>
+
+          {/* When did you start R&D? */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              When did you start your R&D activities? *
+            </label>
+            <select
+              value={companyData.rdStartYear}
+              onChange={(e) => setCompanyData({...companyData, rdStartYear: e.target.value})}
+              className="form-field"
+            >
+              <option value="2025">2025 (Current Year)</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+              <option value="before-2022">Before 2022</option>
+            </select>
+            {companyData.rdStartYear && companyData.rdStartYear !== '2025' && (
+              <div className="mt-2 p-3 bg-green-50 rounded-lg">
+                <p className="text-sm text-green-800">
+                  ✅ Great! You can claim credits for {
+                    companyData.rdStartYear === 'before-2022' 
+                      ? '2022, 2023, 2024, and 2025' 
+                      : `${companyData.rdStartYear} through 2025`
+                  }
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Primary State */}
@@ -630,51 +677,49 @@ const EmailCaptureStep: React.FC<{
 }> = ({ formData, updateFormData, nextStep, prevStep }) => {
   const [email, setEmail] = useState(formData.email || '');
 
-  // Calculate estimated range based on company info
+  // Enhanced credit range calculation based on revenue
   const calculateCreditRange = () => {
-    const { employeeCount, industry } = formData.companyInfo;
+    const { employeeCount, revenue, rdStartYear } = formData.companyInfo;
     const activities = formData.activities.length;
     
-    // Base calculations on employee count
-    const employeeMultipliers = {
-      '1-10': { low: 5000, high: 25000 },
-      '11-50': { low: 15000, high: 75000 },
-      '51-200': { low: 35000, high: 175000 },
-      '201-500': { low: 75000, high: 350000 },
-      '500+': { low: 150000, high: 750000 }
+    // Revenue-based calculations (more accurate for SMBs)
+    const revenueMultipliers = {
+      '0-100k': { low: 2000, high: 8000 },
+      '100k-250k': { low: 5000, high: 15000 },
+      '250k-500k': { low: 8000, high: 25000 },
+      '500k-1m': { low: 15000, high: 40000 },
+      '1m-2.5m': { low: 25000, high: 75000 },
+      '2.5m-5m': { low: 40000, high: 125000 },
+      '5m-10m': { low: 60000, high: 200000 },
+      '10m-25m': { low: 100000, high: 400000 },
+      '25m+': { low: 150000, high: 1000000 }
     };
     
-    const base = employeeMultipliers[employeeCount as keyof typeof employeeMultipliers] || { low: 10000, high: 50000 };
+    const base = revenueMultipliers[revenue as keyof typeof revenueMultipliers] || { low: 10000, high: 50000 };
     
-    // Adjust for number of activities (more activities = higher credit potential)
-    const activityMultiplier = Math.min(activities * 0.15 + 0.7, 1.4);
+    // Adjust for activities (more activities = higher credit)
+    const activityMultiplier = 1 + (activities * 0.15);
     
-    // Industry adjustments
-    const industryMultipliers: Record<string, number> = {
-      'agency': 1.3,
-      'saas': 1.25,
-      'ecommerce': 1.15,
-      'consulting': 1.2,
-      'realestate': 1.0,
-      'healthcare': 1.1,
-      'finance': 1.15,
-      'education': 1.1,
-      'hospitality': 0.9,
-      'nonprofit': 0.85,
-      'manufacturing': 1.05,
-      'other': 1.0
-    };
+    // Calculate number of eligible years
+    let eligibleYears = 1;
+    if (rdStartYear === 'before-2022') eligibleYears = 4;
+    else if (rdStartYear === '2022') eligibleYears = 4;
+    else if (rdStartYear === '2023') eligibleYears = 3;
+    else if (rdStartYear === '2024') eligibleYears = 2;
     
-    const indMultiplier = industryMultipliers[industry] || 1.0;
+    const annualLow = Math.round(base.low * activityMultiplier);
+    const annualHigh = Math.round(base.high * activityMultiplier);
     
     return {
-      low: Math.round(base.low * activityMultiplier * indMultiplier),
-      high: Math.round(base.high * activityMultiplier * indMultiplier)
+      low: annualLow,
+      high: annualHigh,
+      totalLow: Math.round(annualLow * eligibleYears),
+      totalHigh: Math.round(annualHigh * eligibleYears),
+      years: eligibleYears
     };
   };
 
   const creditRange = calculateCreditRange();
-  const averageCredit = Math.round((creditRange.low + creditRange.high) / 2);
 
   const handleEmailSubmit = () => {
     updateFormData({ 
@@ -685,18 +730,20 @@ const EmailCaptureStep: React.FC<{
   };
 
   const handleSkipToCheckout = () => {
-    // Calculate quick estimate and save to localStorage for checkout
+    // Skip directly to checkout with estimated range
+    const averageCredit = Math.round((creditRange.low + creditRange.high) / 2);
     const quickEstimate = {
-      totalQRE: Math.round(averageCredit / 0.14), // Reverse calculate QRE
+      totalQRE: Math.round(averageCredit / 0.14),
       federalCredit: averageCredit,
-      stateCredit: Math.round(averageCredit * 0.05),
-      totalBenefit: Math.round(averageCredit * 1.05),
+      stateCredit: 0, // Removed state credits as per specification
+      totalBenefit: averageCredit,
       price: averageCredit < 10000 ? 500 : averageCredit <= 50000 ? 750 : averageCredit <= 100000 ? 1000 : 1500,
-      savingsAmount: Math.round(averageCredit * 1.05) - (averageCredit < 10000 ? 500 : averageCredit <= 50000 ? 750 : averageCredit <= 100000 ? 1000 : 1500)
+      savingsAmount: averageCredit - (averageCredit < 10000 ? 500 : averageCredit <= 50000 ? 750 : averageCredit <= 100000 ? 1000 : 1500)
     };
     
     updateFormData({
       email: email || 'checkout@direct.com',
+      estimatedRange: creditRange,
       results: quickEstimate
     });
     
@@ -713,43 +760,55 @@ const EmailCaptureStep: React.FC<{
       <div className="card-highest p-8">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            {formData.companyInfo.companyName}, You're Looking at Serious Tax Credits! 💰
+            {formData.companyInfo.companyName}, Your R&D Credits Are Worth...
           </h2>
           
-          {/* Credit Range Display */}
-          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 mb-6">
+          {/* Annual Credit Range */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 mb-4">
             <p className="text-lg text-gray-700 mb-4">
-              Based on your AI usage and company size, your federal R&D credit is estimated between:
+              Annual Federal R&D Credit Estimate:
             </p>
             <div className="text-5xl font-bold text-transparent bg-clip-text 
-                          bg-gradient-to-r from-green-600 to-blue-600 mb-2">
+                          bg-gradient-to-r from-green-600 to-blue-600">
               ${creditRange.low.toLocaleString()} - ${creditRange.high.toLocaleString()}
             </div>
-            <p className="text-lg font-semibold text-gray-700">
-              Average: ${averageCredit.toLocaleString()}
-            </p>
-            <p className="text-sm text-gray-600 mt-2">
-              Plus potential state credits of up to ${Math.round(averageCredit * 0.05).toLocaleString()}!
-            </p>
           </div>
 
-          {/* Simple Explanation */}
-          <div className="bg-blue-50 rounded-xl p-6 mb-8 text-left">
-            <h3 className="font-semibold text-gray-900 mb-3">
-              💡 How we calculated this:
-            </h3>
-            <ul className="space-y-2 text-sm text-gray-700">
-              <li>• Your {formData.companyInfo.employeeCount} employees using AI for innovation</li>
-              <li>• {formData.activities.length} qualifying R&D activities selected</li>
-              <li>• Federal credit rate of 6-14% of qualified expenses</li>
-              <li>• Industry factor for {formData.companyInfo.industry}</li>
-            </ul>
+          {/* Multi-Year Total if applicable */}
+          {creditRange.years > 1 && (
+            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 mb-6">
+              <p className="text-lg font-semibold text-gray-900 mb-2">
+                🎉 You Can Claim {creditRange.years} Years of Credits!
+              </p>
+              <p className="text-3xl font-bold text-orange-600">
+                Total: ${creditRange.totalLow.toLocaleString()} - ${creditRange.totalHigh.toLocaleString()}
+              </p>
+              <p className="text-sm text-gray-600 mt-2">
+                Based on R&D activities starting in {formData.companyInfo.rdStartYear}
+              </p>
+            </div>
+          )}
+
+          {/* Trust Elements */}
+          <div className="flex justify-center gap-8 mb-8">
+            <div className="text-center">
+              <div className="text-2xl mb-1">⚡</div>
+              <p className="text-sm text-gray-600">2-minute<br/>calculation</p>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl mb-1">🔒</div>
+              <p className="text-sm text-gray-600">Secure &<br/>confidential</p>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl mb-1">📊</div>
+              <p className="text-sm text-gray-600">IRS-compliant<br/>methodology</p>
+            </div>
           </div>
 
-          {/* Email Capture */}
+          {/* Email Input with Benefits */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Enter your email to get your exact calculation
+              Enter your email for your personalized calculation
             </label>
             <input
               type="email"
@@ -759,6 +818,9 @@ const EmailCaptureStep: React.FC<{
                        focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
               placeholder="you@company.com"
             />
+            <p className="text-sm text-blue-600 mt-1">
+              We'll send you: ✓ Detailed calculation breakdown ✓ Free AI R&D guide ✓ Deadline reminders ✓ No spam, ever
+            </p>
           </div>
 
           {/* Action Buttons */}
@@ -768,22 +830,17 @@ const EmailCaptureStep: React.FC<{
               disabled={!email}
               className={`w-full btn-gradient ${!email ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Calculate My Exact Credit Amount
+              Get My Exact Calculation
             </button>
             
             <button
               onClick={handleSkipToCheckout}
-              className="w-full px-6 py-3 border-2 border-gray-300 rounded-xl
-                       text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+              className="w-full px-6 py-3 text-gray-600 text-sm hover:text-gray-800"
             >
-              Skip to Checkout with ${averageCredit.toLocaleString()} Estimate →
+              Skip this step →
             </button>
           </div>
 
-          {/* Trust Element */}
-          <p className="text-xs text-gray-500 mt-4">
-            We'll also send you a free guide: "10 AI Expenses You Didn't Know Qualified for R&D Credits"
-          </p>
         </div>
 
         {/* Navigation */}

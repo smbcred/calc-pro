@@ -214,21 +214,40 @@ const AmazingCalculator: React.FC = () => {
       <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
+            {/* Logo - Responsive */}
+            <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
                 <Calculator className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-xl text-gray-900">SMBTaxCredits.com</span>
+              {/* Full name on desktop */}
+              <span className="hidden sm:block font-bold text-xl text-gray-900">SMBTaxCredits.com</span>
+              {/* Short name on mobile */}
+              <span className="sm:hidden font-bold text-lg text-gray-900">SMB</span>
             </div>
-            <div className="flex items-center gap-6">
-              <Link href="/calculator" className="text-blue-600 font-medium hover:text-blue-700">
-                Calculator
-              </Link>
-              <Link href="/login" className="text-green-600 font-medium hover:text-green-700">
-                Customer Login
-              </Link>
-              <div className="text-sm text-gray-600">
-                <span className="font-medium">🔒 Secure</span> • <span className="font-medium">⚡ Fast</span>
+            
+            {/* Navigation - Responsive */}
+            <div className="flex items-center gap-3 sm:gap-6">
+              {/* Desktop navigation */}
+              <div className="hidden md:flex items-center gap-6">
+                <Link href="/calculator" className="text-blue-600 font-medium hover:text-blue-700">
+                  Calculator
+                </Link>
+                <Link href="/login" className="text-green-600 font-medium hover:text-green-700">
+                  Customer Login
+                </Link>
+                <div className="text-sm text-gray-600">
+                  <span className="font-medium">🔒 Secure</span> • <span className="font-medium">⚡ Fast</span>
+                </div>
+              </div>
+              
+              {/* Mobile navigation */}
+              <div className="md:hidden flex items-center gap-2">
+                <Link href="/calculator" className="text-blue-600 text-sm font-medium hover:text-blue-700">
+                  Calculator
+                </Link>
+                <Link href="/login" className="text-green-600 text-sm font-medium hover:text-green-700">
+                  Login
+                </Link>
               </div>
             </div>
           </div>

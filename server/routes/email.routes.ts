@@ -9,6 +9,12 @@ const router = express.Router();
 if (process.env.NODE_ENV !== 'production') {
   router.post('/test', validate(emailTestSchema), async (req, res) => {
     try {
+      // Set security headers
+      res.set({
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block'
+      });
       const { email, name } = req.body;
       
 
@@ -81,6 +87,12 @@ if (process.env.NODE_ENV !== 'production') {
 // Send welcome email endpoint
 router.post('/welcome', validate(emailTestSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email, name } = req.body;
     
 
@@ -102,6 +114,12 @@ router.post('/welcome', validate(emailTestSchema), async (req, res) => {
 // Send custom email endpoint (for internal use)
 router.post('/send', validate(emailSendSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { to, subject, html, text } = req.body;
     
 

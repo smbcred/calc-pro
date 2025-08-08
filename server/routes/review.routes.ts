@@ -12,6 +12,12 @@ const router = express.Router();
 // Review data endpoint - aggregates data from all sources
 router.post('/data', validate(emailSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email } = req.body;
     
 
@@ -140,6 +146,12 @@ router.post('/data', validate(emailSchema), async (req, res) => {
 // Generate documents endpoint
 router.post('/generate-documents', validate(emailSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email } = req.body;
     
 
@@ -173,6 +185,12 @@ router.post('/generate-documents', validate(emailSchema), async (req, res) => {
 // Document status endpoint
 router.post('/document-status', validate(documentStatusSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email, trackingId } = req.body;
     
 
@@ -196,6 +214,12 @@ router.post('/document-status', validate(documentStatusSchema), async (req, res)
 // QRE calculation endpoint
 router.post('/calculate', validate(emailSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email } = req.body;
     
 
@@ -304,6 +328,12 @@ router.post('/calculate', validate(emailSchema), async (req, res) => {
 // Generate QRE report endpoint
 router.post('/generate-report', validate(emailSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email } = req.body;
     
 
@@ -326,6 +356,12 @@ router.post('/generate-report', validate(emailSchema), async (req, res) => {
 // Documents list endpoint  
 router.post('/list', validate(emailSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email } = req.body;
     
 
@@ -379,6 +415,12 @@ router.post('/list', validate(emailSchema), async (req, res) => {
 // Track document download
 router.post('/track-download', validate(documentTrackingSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email, documentId, fileName, fileType } = req.body;
     
 

@@ -12,6 +12,12 @@ const router = express.Router();
 // Company info load endpoint
 router.post('/info', validate(emailSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email } = req.body;
     
 
@@ -48,6 +54,12 @@ router.post('/info', validate(emailSchema), async (req, res) => {
 // Company info save progress endpoint
 router.post('/save-progress', validate(companyInfoSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email, formData } = req.body;
     
 
@@ -71,6 +83,12 @@ router.post('/save-progress', validate(companyInfoSchema), async (req, res) => {
 // Company info submission endpoint
 router.post('/submit', validate(companyInfoSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email, formData } = req.body;
     
 

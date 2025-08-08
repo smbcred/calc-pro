@@ -1,15 +1,46 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+// Import security middleware
+import helmet from 'helmet';
+import cors from 'cors';
+import mongoSanitize from 'express-mongo-sanitize';
+import hpp from 'hpp';
+import { corsOptions, apiLimiter, loginLimiter, strictLimiter } from './middleware/security';
 
 const app = express();
+
+// Apply security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+}));
+
+app.use(cors(corsOptions));
+app.use(mongoSanitize()); // Prevent NoSQL injection attacks
+app.use(hpp()); // Prevent HTTP Parameter Pollution
+
+// Apply general rate limiting to all API routes
+app.use('/api/', apiLimiter);
+
+// Apply strict rate limiting to sensitive endpoints
+app.use('/api/auth/verify', loginLimiter);
+app.use('/api/generate-report', strictLimiter);
+app.use('/api/stripeWebhook', strictLimiter);
 
 // Raw body parsing for Stripe webhook (production)
 app.use('/api/stripeWebhook', express.raw({ type: 'application/json' }));
 
-// JSON parsing for all other endpoints
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// JSON parsing for all other endpoints with size limits
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 app.use((req, res, next) => {
   const start = Date.now();

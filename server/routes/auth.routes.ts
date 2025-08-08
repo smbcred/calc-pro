@@ -8,6 +8,12 @@ const router = express.Router();
 // Auth verification endpoint - checks Airtable directly
 router.post('/verify', validate(emailSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email } = req.body;
     
 
@@ -36,6 +42,12 @@ router.post('/verify', validate(emailSchema), async (req, res) => {
 // Customer info endpoint - checks Airtable directly
 router.post('/customer/info', validate(emailSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email } = req.body;
     
 
@@ -78,6 +90,12 @@ router.post('/customer/info', validate(emailSchema), async (req, res) => {
 if (process.env.NODE_ENV !== 'production') {
   router.post('/dev/create-test-customer', validate(createTestCustomerSchema), async (req, res) => {
     try {
+      // Set security headers
+      res.set({
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block'
+      });
       const { email } = req.body;
       
       if (!email) {

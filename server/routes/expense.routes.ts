@@ -13,6 +13,12 @@ const router = express.Router();
 // Load existing expense data
 router.post('/load', validate(expenseLoadSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email } = req.body;
     
 
@@ -105,6 +111,12 @@ router.post('/load', validate(expenseLoadSchema), async (req, res) => {
 // Save expense data (auto-save)
 router.post('/save', validate(expenseSaveSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email, expenses } = req.body;
     
 
@@ -132,6 +144,12 @@ router.post('/save', validate(expenseSaveSchema), async (req, res) => {
 // Submit final expense data
 router.post('/submit', validate(expenseSaveSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email, expenses } = req.body;
     
 

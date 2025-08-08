@@ -8,6 +8,12 @@ const router = express.Router();
 // Intake form submission endpoint - pure Airtable
 router.post('/submit', validate(intakeFormSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email, formData } = req.body;
     
 

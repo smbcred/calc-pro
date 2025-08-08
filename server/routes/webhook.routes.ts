@@ -18,6 +18,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 // Stripe Webhook handler
 router.post('/stripe', async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const sig = req.headers['stripe-signature'];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -129,6 +135,12 @@ router.post('/stripe', async (req, res) => {
 // Stripe Checkout API route
 router.post('/checkout', validate(checkoutSchema), async (req, res) => {
   try {
+    // Set security headers
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    });
     const { email, tierBasePrice, yearsSelected } = req.body;
 
 

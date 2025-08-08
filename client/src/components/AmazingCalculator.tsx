@@ -198,6 +198,9 @@ const AmazingCalculator: React.FC = () => {
       const software = parseFloat((formData.expenses.software || '0').replace(/,/g, '')) || 0;
       const training = parseFloat((formData.expenses.training || '0').replace(/,/g, '')) || 0;
       
+      console.log('🔍 DEBUGGING CALCULATION:');
+      console.log('Expense values:', { employeeTime, aiTools, contractors, software, training });
+      
       // Create business profile for tax calculations
       const businessProfile: BusinessProfile = {
         yearsInBusiness: formData.companyInfo.yearsInBusiness || 0,
@@ -206,6 +209,8 @@ const AmazingCalculator: React.FC = () => {
         businessStructure: formData.companyInfo.businessStructure || "LLC",
         primaryIndustry: formData.companyInfo.primaryIndustry || "Other"
       };
+      
+      console.log('Business profile:', businessProfile);
       
       // Apply industry-specific qualification rates using centralized rules
       const qualifiedEmployeeTime = employeeTime * getQualificationRate(businessProfile.primaryIndustry, 'employeeTime');
@@ -220,6 +225,10 @@ const AmazingCalculator: React.FC = () => {
       const creditRate = calculateFederalRate(businessProfile);
       const federalCredit = Math.round(totalQRE * creditRate.rate);
       
+      console.log('Credit rate info:', creditRate);
+      console.log('Total QRE:', totalQRE);
+      console.log('Federal credit:', federalCredit);
+      
       // Calculate Section 174 deduction value using centralized rules
       const deductionValue = calculateDeductionValue(totalQRE, businessProfile.businessStructure);
       
@@ -230,6 +239,10 @@ const AmazingCalculator: React.FC = () => {
       // Dynamic pricing using centralized pricing engine
       const pricingResult = calculatePricing(federalCredit, [2025]);
       const price = pricingResult.totalPrice;
+      
+      console.log('Pricing result:', pricingResult);
+      console.log('Final price:', price);
+      console.log('Total benefit:', totalBenefit);
       
       const savingsAmount = Math.max(0, totalBenefit - price);
       
@@ -260,6 +273,8 @@ const AmazingCalculator: React.FC = () => {
         },
         confidenceScore
       };
+      
+      console.log('🎯 FINAL RESULTS:', results);
       
       updateFormData({ results });
       
@@ -946,15 +961,24 @@ const BusinessInfoStep: React.FC<{
     foundedYear: formData.companyInfo?.foundedYear || '',
     rdStartYear: formData.companyInfo?.rdStartYear || '2025',
     // New 2025 tax law fields
-    businessStructure: formData.companyInfo?.businessStructure || '',
-    annualRevenue: formData.companyInfo?.annualRevenue || '',
+    businessStructure: (formData.companyInfo?.businessStructure || '') as "C-Corp" | "S-Corp" | "LLC" | "Sole Prop" | "Partnership" | "",
+    annualRevenue: (formData.companyInfo?.annualRevenue || '') as "Under $1M" | "$1M-$5M" | "$5M-$25M" | "Over $25M" | "",
     yearsInBusiness: formData.companyInfo?.yearsInBusiness || 0,
     hadRevenueThreeYearsAgo: formData.companyInfo?.hadRevenueThreeYearsAgo || false,
-    primaryIndustry: formData.companyInfo?.primaryIndustry || ''
+    primaryIndustry: (formData.companyInfo?.primaryIndustry || '') as "Software/Tech" | "Professional Services" | "Manufacturing" | "Healthcare" | "Retail/Ecommerce" | "Other" | ""
   });
 
   const handleNext = () => {
-    updateFormData({ companyInfo: companyData });
+    // Type-safe company data update
+    const typedCompanyData = {
+      ...companyData,
+      businessStructure: companyData.businessStructure as "C-Corp" | "S-Corp" | "LLC" | "Sole Prop" | "Partnership" | "",
+      annualRevenue: companyData.annualRevenue as "Under $1M" | "$1M-$5M" | "$5M-$25M" | "Over $25M" | "",
+      primaryIndustry: companyData.primaryIndustry as "Software/Tech" | "Professional Services" | "Manufacturing" | "Healthcare" | "Retail/Ecommerce" | "Other" | ""
+    };
+    
+    console.log('BusinessInfoStep - Updating form data:', typedCompanyData);
+    updateFormData({ companyInfo: typedCompanyData });
     nextStep();
   };
 

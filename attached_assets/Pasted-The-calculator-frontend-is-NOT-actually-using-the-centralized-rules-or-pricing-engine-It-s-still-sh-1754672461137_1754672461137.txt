@@ -1,0 +1,70 @@
+The calculator frontend is NOT actually using the centralized rules or pricing engine. It's still showing hardcoded 6.5% and the calculations are broken (showing $0). Fix this immediately:
+
+## 1. CHECK THE CALCULATOR COMPONENT
+
+Look for where the federal rate is being calculated. It should be using:
+- calculateFederalRate() from the rules engine
+- NOT a hardcoded 0.065 or 6.5%
+
+## 2. FIX THE BUSINESS PROFILE DETECTION
+
+The calculator needs to ask for:
+- Years in business
+- If they had revenue 3+ years ago
+
+Based on the screenshot showing "Under $1M revenue", they should qualify for either:
+- 14% startup rate (if < 5 years old and no revenue 3 years ago)
+- 10% small business rate (if < 5 years old)
+- NOT 6.5%!
+
+## 3. FIX THE $0 CALCULATION BUG
+
+The results screen shows all $0 values. Check:
+- Is the QRE being calculated correctly?
+- Is the federal credit calculation working?
+- Is the data being passed between steps?
+
+## 4. IMPLEMENT THE PRICING ENGINE
+
+For a $10,400 credit, it should show:
+- Tier: Growth ($10K-$50K)
+- Price: $750
+- NOT $500
+
+## 5. UPDATE THE DISPLAY
+
+The Credit Estimate step should show:
+- Which rate they qualified for (Startup 14%, Small Business 10%, or Standard 6.5%)
+- WHY they got that rate
+- Clear pricing based on the tier
+
+## SPECIFIC FIXES NEEDED:
+
+1. In the calculator component, find where it says:
+```javascript
+const federalRate = 0.065; // WRONG!
+Replace with:
+javascriptimport { calculateFederalRate } from '@/shared/taxRules/rdTaxRules';
+
+const businessProfile = {
+  yearsInBusiness: formData.yearsInBusiness,
+  annualRevenue: parseRevenue(formData.revenue),
+  hadRevenueThreeYearsAgo: formData.hadRevenueThreeYearsAgo
+};
+
+const federalRateInfo = calculateFederalRate(businessProfile);
+const federalRate = federalRateInfo.rate; // Will be 0.14, 0.10, or 0.065
+
+Add questions in Step 2 (Business Info):
+
+
+How many years has your business been operating? [0-50]
+Did your business have revenue 3 or more years ago? [Yes/No]
+
+
+Fix the calculation that's showing $0
+Use the pricing engine for the service fee
+
+The calculator is still using old hardcoded logic instead of the new centralized rules!
+
+This is a critical bug - customers seeing 6.5% when they qualify for 14% is leaving money on the table, and the $0 display makes the calculator look broken!

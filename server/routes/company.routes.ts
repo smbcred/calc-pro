@@ -2,16 +2,22 @@ import express from 'express';
 import { 
   getCustomerByEmail, 
   getCompanyByCustomerId, 
-  addToAirtableCompanies 
+  addToAirtableCompanies,
+  AirtableService
 } from '../utils/airtable';
 import { validate } from '../middleware/validate';
 import { emailSchema, companyInfoSchema } from '../validations';
 import { asyncHandler, AppError, createAuthorizationError, createInternalServerError } from '../middleware/errorHandler';
+import { cacheResponse, invalidateCache } from '../middleware/cacheMiddleware';
+import { CacheTTL } from '../config/redis';
 
 const router = express.Router();
 
 // Company info load endpoint
-router.post('/info', validate(emailSchema), asyncHandler(async (req, res) => {
+router.post('/info', 
+  cacheResponse({ ttl: CacheTTL.LONG }),
+  validate(emailSchema), 
+  asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   // Get customer first
@@ -41,7 +47,10 @@ router.post('/info', validate(emailSchema), asyncHandler(async (req, res) => {
 }));
 
 // Company info save progress endpoint
-router.post('/save-progress', validate(companyInfoSchema), asyncHandler(async (req, res) => {
+router.post('/save-progress', 
+  validate(companyInfoSchema),
+  invalidateCache('company'),
+  asyncHandler(async (req, res) => {
   const { email, formData } = req.body;
 
   // Get customer first
@@ -57,7 +66,10 @@ router.post('/save-progress', validate(companyInfoSchema), asyncHandler(async (r
 }));
 
 // Company info submission endpoint
-router.post('/submit', validate(companyInfoSchema), asyncHandler(async (req, res) => {
+router.post('/submit', 
+  validate(companyInfoSchema),
+  invalidateCache('company'),
+  asyncHandler(async (req, res) => {
   const { email, formData } = req.body;
 
   // Get customer first

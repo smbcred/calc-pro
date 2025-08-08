@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { cache } from './cache';
+import { CacheManager, Cacheable } from './cacheManager';
+import { CacheKeys, CacheTTL } from '../config/redis';
 import Logger from './logger';
 
 // Helper function to get Airtable credentials
@@ -14,42 +15,187 @@ function getAirtableCredentials() {
   return { airtableToken, baseId };
 }
 
-// Customer operations
-export async function getCustomerByEmail(email: string) {
-  // Check cache first
-  const cacheKey = `customer:${email.toLowerCase()}`;
-  const cached = cache.get(cacheKey);
-  if (cached) {
-    return cached;
+export class AirtableService {
+  private static airtableToken = process.env.AIRTABLE_API_KEY;
+  private static baseId = process.env.AIRTABLE_BASE_ID;
+
+  static async getCustomerByEmail(email: string) {
+    const cacheKey = CacheKeys.CUSTOMER_BY_EMAIL(email);
+    
+    return CacheManager.getOrFetch(cacheKey, async () => {
+      if (!this.airtableToken || !this.baseId) {
+        throw new Error('Airtable credentials not configured');
+      }
+
+      const response = await fetch(
+        `https://api.airtable.com/v0/${this.baseId}/Customers?filterByFormula=LOWER({email})=LOWER('${email}')`,
+        {
+          headers: {
+            'Authorization': `Bearer ${this.airtableToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch customer');
+      }
+
+      const data = await response.json();
+      const customer = data.records.length > 0 ? data.records[0] : null;
+      
+      // Also cache by ID if found
+      if (customer) {
+        await CacheManager.set(
+          CacheKeys.CUSTOMER_BY_ID(customer.id),
+          customer,
+          CacheTTL.HOUR
+        );
+      }
+      
+      return customer;
+    }, CacheTTL.HOUR);
   }
 
-  const { airtableToken, baseId } = getAirtableCredentials();
+  static async getCompanyByCustomerId(customerId: string) {
+    const cacheKey = CacheKeys.COMPANY_BY_CUSTOMER(customerId);
+    
+    return CacheManager.getOrFetch(cacheKey, async () => {
+      if (!this.airtableToken || !this.baseId) {
+        throw new Error('Airtable credentials not configured');
+      }
 
-  try {
-    const response = await fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({email})=LOWER('${email}')`, {
+      const response = await fetch(
+        `https://api.airtable.com/v0/${this.baseId}/Companies?filterByFormula={customer_id}='${customerId}'`,
+        {
+          headers: {
+            'Authorization': `Bearer ${this.airtableToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch company');
+      }
+
+      const data = await response.json();
+      return data.records.length > 0 ? data.records[0] : null;
+    }, CacheTTL.LONG);
+  }
+
+  // Batch fetch with caching
+  static async getExpensesByCompany(companyId: string) {
+    const wagesKey = CacheKeys.WAGES_BY_COMPANY(companyId);
+    const expensesKey = CacheKeys.EXPENSES_BY_COMPANY(companyId);
+    
+    // Try to get both from cache
+    const [cachedWages, cachedExpenses] = await Promise.all([
+      CacheManager.get(wagesKey),
+      CacheManager.get(expensesKey)
+    ]);
+    
+    if (cachedWages && cachedExpenses) {
+      return { wages: cachedWages, expenses: cachedExpenses };
+    }
+    
+    // Fetch missing data
+    const [wages, expenses] = await Promise.all([
+      cachedWages || this.fetchWages(companyId),
+      cachedExpenses || this.fetchExpenses(companyId)
+    ]);
+    
+    // Cache results
+    await Promise.all([
+      !cachedWages && CacheManager.set(wagesKey, wages, CacheTTL.MEDIUM),
+      !cachedExpenses && CacheManager.set(expensesKey, expenses, CacheTTL.MEDIUM)
+    ]);
+    
+    return { wages, expenses };
+  }
+
+  private static async fetchWages(companyId: string) {
+    if (!this.airtableToken || !this.baseId) {
+      throw new Error('Airtable credentials not configured');
+    }
+
+    const response = await fetch(
+      `https://api.airtable.com/v0/${this.baseId}/Wages?filterByFormula={company_id}='${companyId}'`,
+      {
+        headers: {
+          'Authorization': `Bearer ${this.airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch wages');
+    }
+
+    const data = await response.json();
+    return data.records || [];
+  }
+
+  private static async fetchExpenses(companyId: string) {
+    if (!this.airtableToken || !this.baseId) {
+      throw new Error('Airtable credentials not configured');
+    }
+
+    const response = await fetch(
+      `https://api.airtable.com/v0/${this.baseId}/Expenses?filterByFormula={company_id}='${companyId}'`,
+      {
+        headers: {
+          'Authorization': `Bearer ${this.airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch expenses');
+    }
+
+    const data = await response.json();
+    return data.records || [];
+  }
+
+  static async updateCompany(companyId: string, data: any) {
+    // Perform update
+    const response = await this.performUpdate(companyId, data);
+    
+    // Invalidate cache
+    await CacheManager.invalidateRelated('company', companyId);
+    
+    return response;
+  }
+
+  private static async performUpdate(companyId: string, data: any) {
+    const { airtableToken, baseId } = getAirtableCredentials();
+
+    const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies/${companyId}`, {
+      method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${airtableToken}`,
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        fields: data
+      }),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch customer');
+      const error = await response.text();
+      throw new Error(`Failed to update company: ${error}`);
     }
 
-    const data = await response.json();
-    const customer = data.records.length > 0 ? data.records[0] : null;
-    
-    // Cache the result
-    if (customer) {
-      cache.set(cacheKey, customer, 10 * 60 * 1000); // Cache for 10 minutes
-    }
-    
-    return customer;
-  } catch (error) {
-    Logger.error(`Failed to fetch customer by email: ${email}`, error);
-    throw error;
+    return response.json();
   }
+}
+
+// Legacy function wrappers for backward compatibility
+export async function getCustomerByEmail(email: string) {
+  return AirtableService.getCustomerByEmail(email);
 }
 
 export async function addToAirtableCustomers(data: {
@@ -89,42 +235,8 @@ export async function addToAirtableCustomers(data: {
   return result.id; // Return customer record ID
 }
 
-// Company operations
 export async function getCompanyByCustomerId(customerId: string) {
-  // Check cache first
-  const cacheKey = `company:${customerId}`;
-  const cached = cache.get(cacheKey);
-  if (cached) {
-    return cached;
-  }
-
-  const { airtableToken, baseId } = getAirtableCredentials();
-
-  try {
-    const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula={customer_id}='${customerId}'`, {
-      headers: {
-        'Authorization': `Bearer ${airtableToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch company');
-    }
-
-    const data = await response.json();
-    const company = data.records.length > 0 ? data.records[0] : null;
-    
-    // Cache the result
-    if (company) {
-      cache.set(cacheKey, company, 10 * 60 * 1000); // Cache for 10 minutes
-    }
-    
-    return company;
-  } catch (error) {
-    Logger.error(`Failed to fetch company by customer ID: ${customerId}`, error);
-    throw error;
-  }
+  return AirtableService.getCompanyByCustomerId(customerId);
 }
 
 export async function addToAirtableCompanies(data: {

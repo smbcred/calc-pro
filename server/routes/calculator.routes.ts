@@ -2,6 +2,7 @@ import express from 'express';
 import { validate } from '../middleware/validate';
 import { calculatorInputSchema } from '../validations';
 import { asyncHandler } from '../middleware/errorHandler';
+import { CalculatorCache } from '../utils/calculatorCache';
 
 const router = express.Router();
 
@@ -58,7 +59,17 @@ const router = express.Router();
  *             }'
  */
 router.post('/estimate', validate(calculatorInputSchema), asyncHandler(async (req, res) => {
-  const { wages, wageRdPercent, contractors, contractorRdPercent, supplies, suppliesRdPercent } = req.body;
+  const input = req.body;
+  
+  // Check cache first
+  const cached = await CalculatorCache.getCachedResult(input);
+  if (cached) {
+    res.set('X-Calculator-Cache', 'HIT');
+    return res.json(cached);
+  }
+  
+  // Calculate if not cached
+  const { wages, wageRdPercent, contractors, contractorRdPercent, supplies, suppliesRdPercent } = input;
 
   // Calculate QREs
   const qualifiedWages = wages * (wageRdPercent / 100);
@@ -90,13 +101,19 @@ router.post('/estimate', validate(calculatorInputSchema), asyncHandler(async (re
   
   const savingsAmount = federalCredit - price;
   
-  res.json({
+  const result = {
     totalQRE,
     federalCredit,
     tier,
     price,
     savingsAmount
-  });
+  };
+  
+  // Cache the result
+  await CalculatorCache.cacheResult(input, result);
+  
+  res.set('X-Calculator-Cache', 'MISS');
+  res.json(result);
 }));
 
 export default router;

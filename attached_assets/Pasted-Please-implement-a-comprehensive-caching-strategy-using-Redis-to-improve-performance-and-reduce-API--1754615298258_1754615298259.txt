@@ -1,0 +1,642 @@
+Please implement a comprehensive caching strategy using Redis to improve performance and reduce API costs for our R&D Tax Credit platform.
+First, add Redis dependencies to package.json:
+json"redis": "^4.6.12",
+"@types/redis": "^4.0.11",
+"ioredis": "^5.3.2"
+Create server/config/redis.ts for Redis configuration:
+typescriptimport Redis from 'ioredis';
+import { logger } from '../utils/logger';
+
+// Redis connection configuration
+const redisConfig = {
+  host: process.env.REDIS_HOST || 'localhost',
+  port: parseInt(process.env.REDIS_PORT || '6379'),
+  password: process.env.REDIS_PASSWORD,
+  db: parseInt(process.env.REDIS_DB || '0'),
+  retryStrategy: (times: number) => {
+    const delay = Math.min(times * 50, 2000);
+    return delay;
+  },
+  reconnectOnError: (err: Error) => {
+    const targetError = 'READONLY';
+    if (err.message.includes(targetError)) {
+      return true;
+    }
+    return false;
+  },
+};
+
+// Create Redis client
+export const redis = new Redis(redisConfig);
+
+// Handle connection events
+redis.on('connect', () => {
+  logger.info('Redis client connected');
+});
+
+redis.on('error', (err) => {
+  logger.error('Redis client error:', err);
+});
+
+redis.on('close', () => {
+  logger.warn('Redis connection closed');
+});
+
+// Cache key prefixes to organize data
+export const CacheKeys = {
+  // Customer data - 1 hour TTL
+  CUSTOMER_BY_EMAIL: (email: string) => `customer:email:${email.toLowerCase()}`,
+  CUSTOMER_BY_ID: (id: string) => `customer:id:${id}`,
+  
+  // Company data - 30 minutes TTL
+  COMPANY_BY_CUSTOMER: (customerId: string) => `company:customer:${customerId}`,
+  COMPANY_BY_ID: (id: string) => `company:id:${id}`,
+  
+  // Expenses - 15 minutes TTL
+  EXPENSES_BY_COMPANY: (companyId: string) => `expenses:company:${companyId}`,
+  WAGES_BY_COMPANY: (companyId: string) => `wages:company:${companyId}`,
+  
+  // Calculator results - 24 hours TTL
+  CALCULATOR_RESULT: (hash: string) => `calc:result:${hash}`,
+  
+  // Session data - matches session TTL
+  SESSION_DATA: (sessionId: string) => `session:${sessionId}`,
+  
+  // Rate limiting - 15 minutes TTL
+  RATE_LIMIT: (key: string) => `ratelimit:${key}`,
+  
+  // API responses - 5 minutes TTL
+  API_RESPONSE: (endpoint: string, params: string) => `api:${endpoint}:${params}`,
+  
+  // Document status - 1 hour TTL
+  DOCUMENT_STATUS: (customerId: string) => `docs:status:${customerId}`,
+} as const;
+
+// TTL values in seconds
+export const CacheTTL = {
+  SHORT: 300,      // 5 minutes
+  MEDIUM: 900,     // 15 minutes
+  LONG: 1800,      // 30 minutes
+  HOUR: 3600,      // 1 hour
+  DAY: 86400,      // 24 hours
+  WEEK: 604800,    // 7 days
+} as const;
+
+// Helper to check if Redis is healthy
+export const isRedisHealthy = async (): Promise<boolean> => {
+  try {
+    const result = await redis.ping();
+    return result === 'PONG';
+  } catch {
+    return false;
+  }
+};
+Create server/utils/cacheManager.ts for cache operations:
+typescriptimport { redis, CacheTTL } from '../config/redis';
+import { logger } from './logger';
+import crypto from 'crypto';
+
+export class CacheManager {
+  /**
+   * Get value from cache
+   */
+  static async get<T>(key: string): Promise<T | null> {
+    try {
+      const cached = await redis.get(key);
+      if (!cached) return null;
+      
+      logger.debug(`Cache hit: ${key}`);
+      return JSON.parse(cached) as T;
+    } catch (error) {
+      logger.error(`Cache get error for ${key}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Set value in cache with TTL
+   */
+  static async set(key: string, value: any, ttl: number = CacheTTL.MEDIUM): Promise<void> {
+    try {
+      await redis.set(key, JSON.stringify(value), 'EX', ttl);
+      logger.debug(`Cache set: ${key} (TTL: ${ttl}s)`);
+    } catch (error) {
+      logger.error(`Cache set error for ${key}:`, error);
+    }
+  }
+
+  /**
+   * Delete from cache
+   */
+  static async delete(key: string | string[]): Promise<void> {
+    try {
+      if (Array.isArray(key)) {
+        if (key.length > 0) {
+          await redis.del(...key);
+          logger.debug(`Cache delete: ${key.length} keys`);
+        }
+      } else {
+        await redis.del(key);
+        logger.debug(`Cache delete: ${key}`);
+      }
+    } catch (error) {
+      logger.error(`Cache delete error:`, error);
+    }
+  }
+
+  /**
+   * Delete all keys matching a pattern
+   */
+  static async deletePattern(pattern: string): Promise<void> {
+    try {
+      const keys = await redis.keys(pattern);
+      if (keys.length > 0) {
+        await redis.del(...keys);
+        logger.debug(`Cache pattern delete: ${pattern} (${keys.length} keys)`);
+      }
+    } catch (error) {
+      logger.error(`Cache pattern delete error:`, error);
+    }
+  }
+
+  /**
+   * Cache with automatic fetch if miss
+   */
+  static async getOrFetch<T>(
+    key: string,
+    fetchFn: () => Promise<T>,
+    ttl: number = CacheTTL.MEDIUM
+  ): Promise<T> {
+    // Try cache first
+    const cached = await this.get<T>(key);
+    if (cached !== null) {
+      return cached;
+    }
+
+    // Fetch and cache
+    const data = await fetchFn();
+    await this.set(key, data, ttl);
+    return data;
+  }
+
+  /**
+   * Invalidate related cache entries
+   */
+  static async invalidateRelated(entity: 'customer' | 'company' | 'expenses', id: string): Promise<void> {
+    const patterns: string[] = [];
+
+    switch (entity) {
+      case 'customer':
+        patterns.push(
+          `customer:*:${id}`,
+          `company:customer:${id}`,
+          `docs:status:${id}`
+        );
+        break;
+      case 'company':
+        patterns.push(
+          `company:*:${id}`,
+          `expenses:company:${id}`,
+          `wages:company:${id}`
+        );
+        break;
+      case 'expenses':
+        patterns.push(
+          `expenses:company:${id}`,
+          `wages:company:${id}`
+        );
+        break;
+    }
+
+    for (const pattern of patterns) {
+      await this.deletePattern(pattern);
+    }
+  }
+
+  /**
+   * Generate cache key hash for complex objects
+   */
+  static generateHash(obj: any): string {
+    const str = JSON.stringify(obj);
+    return crypto.createHash('md5').update(str).digest('hex');
+  }
+}
+
+// Decorator for caching method results
+export function Cacheable(ttl: number = CacheTTL.MEDIUM, keyPrefix?: string) {
+  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
+    const originalMethod = descriptor.value;
+
+    descriptor.value = async function (...args: any[]) {
+      const key = keyPrefix 
+        ? `${keyPrefix}:${CacheManager.generateHash(args)}`
+        : `${target.constructor.name}:${propertyName}:${CacheManager.generateHash(args)}`;
+
+      return CacheManager.getOrFetch(key, () => originalMethod.apply(this, args), ttl);
+    };
+
+    return descriptor;
+  };
+}
+Create server/middleware/cacheMiddleware.ts for HTTP response caching:
+typescriptimport { Request, Response, NextFunction } from 'express';
+import { CacheManager } from '../utils/cacheManager';
+import { CacheKeys, CacheTTL } from '../config/redis';
+
+interface CacheOptions {
+  ttl?: number;
+  keyGenerator?: (req: Request) => string;
+  condition?: (req: Request) => boolean;
+}
+
+/**
+ * Middleware to cache API responses
+ */
+export function cacheResponse(options: CacheOptions = {}) {
+  const { 
+    ttl = CacheTTL.SHORT,
+    keyGenerator = defaultKeyGenerator,
+    condition = () => true
+  } = options;
+
+  return async (req: Request, res: Response, next: NextFunction) => {
+    // Skip caching for non-GET requests or if condition fails
+    if (req.method !== 'GET' || !condition(req)) {
+      return next();
+    }
+
+    const key = keyGenerator(req);
+    
+    // Try to get from cache
+    const cached = await CacheManager.get(key);
+    if (cached) {
+      res.set('X-Cache', 'HIT');
+      return res.json(cached);
+    }
+
+    // Store original json method
+    const originalJson = res.json;
+    
+    // Override json method to cache response
+    res.json = function(data: any) {
+      res.set('X-Cache', 'MISS');
+      
+      // Cache successful responses only
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        CacheManager.set(key, data, ttl).catch(err => 
+          console.error('Failed to cache response:', err)
+        );
+      }
+      
+      return originalJson.call(this, data);
+    };
+
+    next();
+  };
+}
+
+function defaultKeyGenerator(req: Request): string {
+  const params = JSON.stringify(req.query);
+  const body = JSON.stringify(req.body);
+  return CacheKeys.API_RESPONSE(req.path, `${params}:${body}`);
+}
+
+/**
+ * Middleware to invalidate cache on mutations
+ */
+export function invalidateCache(entity: 'customer' | 'company' | 'expenses') {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const originalJson = res.json;
+    
+    res.json = function(data: any) {
+      // Invalidate cache after successful mutation
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        const id = req.body.email || req.body.customerId || req.body.companyId || req.params.id;
+        if (id) {
+          CacheManager.invalidateRelated(entity, id).catch(err =>
+            console.error('Failed to invalidate cache:', err)
+          );
+        }
+      }
+      
+      return originalJson.call(this, data);
+    };
+
+    next();
+  };
+}
+Update server/utils/airtable.ts to use caching:
+typescriptimport { CacheManager, Cacheable } from './cacheManager';
+import { CacheKeys, CacheTTL } from '../config/redis';
+import { logger } from './logger';
+
+export class AirtableService {
+  private static airtableToken = process.env.AIRTABLE_API_KEY;
+  private static baseId = process.env.AIRTABLE_BASE_ID;
+
+  @Cacheable(CacheTTL.HOUR)
+  static async getCustomerByEmail(email: string) {
+    const cacheKey = CacheKeys.CUSTOMER_BY_EMAIL(email);
+    
+    return CacheManager.getOrFetch(cacheKey, async () => {
+      if (!this.airtableToken || !this.baseId) {
+        throw new Error('Airtable credentials not configured');
+      }
+
+      const response = await fetch(
+        `https://api.airtable.com/v0/${this.baseId}/Customers?filterByFormula=LOWER({email})=LOWER('${email}')`,
+        {
+          headers: {
+            'Authorization': `Bearer ${this.airtableToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch customer');
+      }
+
+      const data = await response.json();
+      const customer = data.records.length > 0 ? data.records[0] : null;
+      
+      // Also cache by ID if found
+      if (customer) {
+        await CacheManager.set(
+          CacheKeys.CUSTOMER_BY_ID(customer.id),
+          customer,
+          CacheTTL.HOUR
+        );
+      }
+      
+      return customer;
+    }, CacheTTL.HOUR);
+  }
+
+  @Cacheable(CacheTTL.LONG)
+  static async getCompanyByCustomerId(customerId: string) {
+    const cacheKey = CacheKeys.COMPANY_BY_CUSTOMER(customerId);
+    
+    return CacheManager.getOrFetch(cacheKey, async () => {
+      if (!this.airtableToken || !this.baseId) {
+        throw new Error('Airtable credentials not configured');
+      }
+
+      const response = await fetch(
+        `https://api.airtable.com/v0/${this.baseId}/Companies?filterByFormula={customer_id}='${customerId}'`,
+        {
+          headers: {
+            'Authorization': `Bearer ${this.airtableToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch company');
+      }
+
+      const data = await response.json();
+      return data.records.length > 0 ? data.records[0] : null;
+    }, CacheTTL.LONG);
+  }
+
+  static async updateCompany(companyId: string, data: any) {
+    // Perform update
+    const response = await this.performUpdate(companyId, data);
+    
+    // Invalidate cache
+    await CacheManager.invalidateRelated('company', companyId);
+    
+    return response;
+  }
+
+  // Batch fetch with caching
+  static async getExpensesByCompany(companyId: string) {
+    const wagesKey = CacheKeys.WAGES_BY_COMPANY(companyId);
+    const expensesKey = CacheKeys.EXPENSES_BY_COMPANY(companyId);
+    
+    // Try to get both from cache
+    const [cachedWages, cachedExpenses] = await Promise.all([
+      CacheManager.get(wagesKey),
+      CacheManager.get(expensesKey)
+    ]);
+    
+    if (cachedWages && cachedExpenses) {
+      return { wages: cachedWages, expenses: cachedExpenses };
+    }
+    
+    // Fetch missing data
+    const [wages, expenses] = await Promise.all([
+      cachedWages || this.fetchWages(companyId),
+      cachedExpenses || this.fetchExpenses(companyId)
+    ]);
+    
+    // Cache results
+    await Promise.all([
+      !cachedWages && CacheManager.set(wagesKey, wages, CacheTTL.MEDIUM),
+      !cachedExpenses && CacheManager.set(expensesKey, expenses, CacheTTL.MEDIUM)
+    ]);
+    
+    return { wages, expenses };
+  }
+}
+Create server/utils/calculatorCache.ts for calculator-specific caching:
+typescriptimport { CacheManager } from './cacheManager';
+import { CacheKeys, CacheTTL } from '../config/redis';
+
+interface CalculatorInput {
+  wages: number;
+  wageRdPercent: number;
+  contractors: number;
+  contractorRdPercent: number;
+  supplies: number;
+  suppliesRdPercent: number;
+}
+
+export class CalculatorCache {
+  /**
+   * Cache calculator results to avoid recalculation
+   */
+  static async getCachedResult(input: CalculatorInput) {
+    const hash = CacheManager.generateHash(input);
+    const key = CacheKeys.CALCULATOR_RESULT(hash);
+    
+    return CacheManager.get(key);
+  }
+
+  /**
+   * Store calculator result
+   */
+  static async cacheResult(input: CalculatorInput, result: any) {
+    const hash = CacheManager.generateHash(input);
+    const key = CacheKeys.CALCULATOR_RESULT(hash);
+    
+    // Cache for 24 hours - calculations don't change
+    await CacheManager.set(key, result, CacheTTL.DAY);
+  }
+
+  /**
+   * Warm cache with common calculations
+   */
+  static async warmCache() {
+    const commonScenarios = [
+      { wages: 500000, wageRdPercent: 80, contractors: 0, contractorRdPercent: 0, supplies: 50000, suppliesRdPercent: 100 },
+      { wages: 1000000, wageRdPercent: 60, contractors: 200000, contractorRdPercent: 100, supplies: 100000, suppliesRdPercent: 100 },
+      { wages: 250000, wageRdPercent: 100, contractors: 0, contractorRdPercent: 0, supplies: 25000, suppliesRdPercent: 100 },
+    ];
+
+    for (const scenario of commonScenarios) {
+      // Calculate and cache each scenario
+      const result = await this.calculate(scenario);
+      await this.cacheResult(scenario, result);
+    }
+  }
+
+  private static calculate(input: CalculatorInput) {
+    const qualifiedWages = input.wages * (input.wageRdPercent / 100);
+    const qualifiedContractors = input.contractors * (input.contractorRdPercent / 100) * 0.65;
+    const qualifiedSupplies = input.supplies * (input.suppliesRdPercent / 100);
+    
+    const totalQRE = qualifiedWages + qualifiedContractors + qualifiedSupplies;
+    const federalCredit = totalQRE * 0.06; // Startup rate
+    
+    let tier, price;
+    if (federalCredit < 10000) {
+      tier = 1;
+      price = 500;
+    } else if (federalCredit < 50000) {
+      tier = 2;
+      price = 750;
+    } else if (federalCredit < 100000) {
+      tier = 3;
+      price = 1000;
+    } else {
+      tier = 4;
+      price = 1500;
+    }
+    
+    return { totalQRE, federalCredit, tier, price };
+  }
+}
+Update route files to use caching. For example, in server/routes/company.routes.ts:
+typescriptimport { cacheResponse, invalidateCache } from '../middleware/cacheMiddleware';
+import { AirtableService } from '../utils/airtable';
+import { CacheTTL } from '../config/redis';
+
+// GET endpoints use cacheResponse
+router.post('/info', 
+  cacheResponse({ ttl: CacheTTL.LONG }),
+  asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    
+    // This will use cache automatically
+    const customer = await AirtableService.getCustomerByEmail(email);
+    if (!customer) {
+      return res.status(403).json({ error: 'Customer not found' });
+    }
+
+    const company = await AirtableService.getCompanyByCustomerId(customer.id);
+    
+    res.json({ companyInfo: company });
+  })
+);
+
+// POST/PUT endpoints use invalidateCache
+router.post('/save-progress',
+  validate(companyInfoSchema),
+  invalidateCache('company'),
+  asyncHandler(async (req, res) => {
+    // Save logic...
+    res.json({ success: true });
+  })
+);
+Update server/routes/calculator.routes.ts to use calculator cache:
+typescriptimport { CalculatorCache } from '../utils/calculatorCache';
+
+router.post('/estimate',
+  asyncHandler(async (req, res) => {
+    const input = req.body;
+    
+    // Check cache first
+    const cached = await CalculatorCache.getCachedResult(input);
+    if (cached) {
+      res.set('X-Calculator-Cache', 'HIT');
+      return res.json(cached);
+    }
+    
+    // Calculate if not cached
+    const result = calculateRdCredit(input);
+    
+    // Cache the result
+    await CalculatorCache.cacheResult(input, result);
+    
+    res.set('X-Calculator-Cache', 'MISS');
+    res.json(result);
+  })
+);
+Add cache warming on startup in server/index.ts:
+typescriptimport { redis, isRedisHealthy } from './config/redis';
+import { CalculatorCache } from './utils/calculatorCache';
+
+// After server starts
+server.listen(port, async () => {
+  logger.info(`Server started on port ${port}`);
+  
+  // Check Redis connection
+  const redisHealthy = await isRedisHealthy();
+  if (redisHealthy) {
+    logger.info('Redis connected successfully');
+    
+    // Warm calculator cache with common scenarios
+    await CalculatorCache.warmCache();
+    logger.info('Cache warming completed');
+  } else {
+    logger.warn('Redis not available - running without cache');
+  }
+});
+Update health check to include Redis status:
+typescriptrouter.get('/health', asyncHandler(async (req, res) => {
+  const [dbHealth, redisHealth] = await Promise.all([
+    checkDatabaseHealth(),
+    isRedisHealthy()
+  ]);
+  
+  const health = {
+    status: dbHealth.healthy && redisHealth ? 'healthy' : 'degraded',
+    timestamp: new Date().toISOString(),
+    services: {
+      database: dbHealth,
+      redis: { healthy: redisHealth },
+      airtable: { healthy: true }, // Could add actual check
+    },
+    cache: {
+      enabled: redisHealth,
+      hitRate: await getCacheHitRate(), // Implement if needed
+    }
+  };
+  
+  res.status(health.status === 'healthy' ? 200 : 503).json(health);
+}));
+Update .env template with Redis configuration:
+bash# Cache Configuration
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
+
+# Existing variables...This caching implementation provides:
+Automatic caching of Airtable API responses
+Calculator result caching to avoid recalculation
+Cache invalidation on data updates
+Response caching middleware for GET endpoints
+Cache warming for common scenarios
+Graceful degradation if Redis is unavailable
+Performance monitoring via cache hit rates
+Benefits:
+
+Reduced Airtable API calls (stay within rate limits)
+Faster response times (from milliseconds to microseconds)
+Lower server load (no recalculation of same data)
+Better user experience (instant responses for cached data)
+Cost savings (fewer external API calls)

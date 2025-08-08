@@ -22,6 +22,9 @@ import { corsOptions, apiLimiter, loginLimiter, strictLimiter } from './middlewa
 // Import Swagger for API documentation
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
+// Import Redis configuration and caching utilities
+import { redis, isRedisHealthy } from './config/redis';
+import { CalculatorCache } from './utils/calculatorCache';
 
 const app = express();
 
@@ -125,18 +128,37 @@ app.get('/docs', (req, res) => {
     port,
     host: "0.0.0.0",
     reusePort: true,
-  }, () => {
+  }, async () => {
     Logger.info(`🚀 Server is running on port ${port}`);
     Logger.info(`🏃 Environment: ${process.env.NODE_ENV || 'development'}`);
     log(`serving on port ${port}`);
+    
+    // Check Redis connection
+    const redisHealthy = await isRedisHealthy();
+    if (redisHealthy) {
+      Logger.info('Redis connected successfully');
+      
+      // Warm calculator cache with common scenarios
+      try {
+        await CalculatorCache.warmCache();
+        Logger.info('Cache warming completed');
+      } catch (error) {
+        Logger.warn('Cache warming failed:', error);
+      }
+    } else {
+      Logger.warn('Redis not available - running without cache');
+    }
   });
 
   // Handle graceful shutdown
   process.on('SIGTERM', async () => {
     Logger.info('SIGTERM received, shutting down gracefully');
     server.close(() => {
-      closeDatabaseConnection().then(() => {
-        Logger.info('Database connections closed');
+      Promise.all([
+        closeDatabaseConnection(),
+        redis.quit()
+      ]).then(() => {
+        Logger.info('Database and Redis connections closed');
         process.exit(0);
       });
     });
@@ -145,8 +167,11 @@ app.get('/docs', (req, res) => {
   process.on('SIGINT', async () => {
     Logger.info('SIGINT received, shutting down gracefully');
     server.close(() => {
-      closeDatabaseConnection().then(() => {
-        Logger.info('Database connections closed');
+      Promise.all([
+        closeDatabaseConnection(),
+        redis.quit()
+      ]).then(() => {
+        Logger.info('Database and Redis connections closed');
         process.exit(0);
       });
     });

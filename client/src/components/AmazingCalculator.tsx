@@ -798,11 +798,11 @@ const CreditEstimateStep: React.FC<{
                 <div className="flex justify-between">
                   <span>Total R&D expenses entered:</span>
                   <span className="font-medium">
-                    ${(parseFloat(formData.expenses.employeeTime.replace(/,/g, '')) + 
-                       parseFloat(formData.expenses.aiTools.replace(/,/g, '')) + 
-                       parseFloat(formData.expenses.contractors.replace(/,/g, '')) + 
-                       parseFloat(formData.expenses.software.replace(/,/g, '')) + 
-                       parseFloat(formData.expenses.training.replace(/,/g, ''))).toLocaleString()}
+                    ${(parseFloat((formData.expenses.employeeTime || '0').replace(/,/g, '')) + 
+                       parseFloat((formData.expenses.aiTools || '0').replace(/,/g, '')) + 
+                       parseFloat((formData.expenses.contractors || '0').replace(/,/g, '')) + 
+                       parseFloat((formData.expenses.software || '0').replace(/,/g, '')) + 
+                       parseFloat((formData.expenses.training || '0').replace(/,/g, ''))).toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">

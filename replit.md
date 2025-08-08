@@ -25,13 +25,24 @@ Preferred communication style: Simple, everyday language.
 - **Purpose**: Convert visitors into paying customers using simplified calculator
 - **Components**: LandingPage → AmazingCalculator → CheckoutPage → SuccessPage
 - **No Authentication Required**: Open to all visitors for marketing conversion
+- **User Experience**: Sales tool - simple, conversion-focused, marketing-oriented
+- **Data**: Quick estimates only, no detailed business information
 
-## PHASE 2: Backend Software (Protected, Authentication Required)  
+## PHASE 2: Customer Dashboard (Protected, Authentication Required)  
 - **Route Flow**: /login → /dashboard (single authenticated experience)
 - **Purpose**: Comprehensive data collection and IRS document generation
 - **Authentication**: Must have completed payment to access
 - **Components**: LoginPage → Dashboard (with integrated forms)
-- **Data Collection**: All business details collected within Dashboard sections
+- **Data Collection**: All detailed business information collected within Dashboard sections
+- **User Experience**: Professional tax software - comprehensive forms, detailed guidance
+- **Data**: Complete business details, comprehensive expense tracking
+
+## ⚠️ CRITICAL: NO DATA TRANSFER BETWEEN PHASES
+- Calculator estimates ≠ Dashboard forms
+- Marketing funnel ≠ Tax documentation system  
+- Simple calculator inputs ≠ Detailed business data
+- Users start fresh in dashboard with clean, comprehensive forms
+- This separation maintains distinct user experiences and data integrity
 
 # System Architecture
 

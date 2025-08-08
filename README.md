@@ -27,12 +27,13 @@ Most small business owners don't know the R&D tax credit exists. Our platform pr
 - Immediate access to secure dashboard
 - Success confirmation with next steps
 
-### 3️⃣ Data Collection
-- Secure customer dashboard
-- Multi-step intake form
-- Business details and expense collection
-- Qualifying R&D activities documentation
-- Progress tracking with checklist UI
+### 3️⃣ Data Collection (Fresh Start)
+- Access secure customer dashboard via email link
+- **No data from calculator** - users start with clean forms
+- Multi-step comprehensive business forms
+- Detailed expense collection and documentation
+- Qualifying R&D activities with professional guidance
+- Progress tracking with completion timeline
 
 ### 4️⃣ AI Document Generation
 - Automated workflow via Make.com
@@ -87,14 +88,42 @@ If you qualify as a QSB (most startups do):
 - Get immediate cash benefit even with no income tax
 - Perfect for pre-revenue companies
 
-## 🛠️ Technical Architecture
+## 🏗️ Application Architecture
+
+### Marketing Website (Public)
+- **Landing page** with benefits and educational content
+- **Interactive calculator** for quick R&D credit estimates  
+- **Stripe checkout** flow with dynamic pricing
+- **No authentication** required - open to all visitors
+- **Goal**: Convert visitors to paying customers
+- **User Experience**: Sales tool with simple, conversion-focused design
+
+### Customer Dashboard (Protected)
+- **Comprehensive data collection** forms for detailed business information
+- **Document generation system** for IRS-compliant filing packages
+- **Requires payment verification** - must complete checkout first
+- **Email-based authentication** - access via login link in welcome email
+- **Goal**: Generate professional, IRS-compliant documentation
+- **User Experience**: Professional tax software with detailed forms and guidance
+
+### ⚠️ Important: These are TWO SEPARATE EXPERIENCES
+
+| Aspect | Marketing Calculator | Customer Dashboard |
+|--------|---------------------|--------------------|
+| **Purpose** | Sales & conversion | Tax documentation |
+| **Data** | Simple estimates | Detailed business data |
+| **Authentication** | None required | Payment + email required |
+| **Design** | Marketing/sales tool | Professional tax software |
+| **Forms** | Quick calculator inputs | Comprehensive business forms |
+| **Data Transfer** | **NONE** - Users start fresh | **NONE** - No calculator data imports |
+
+> **Key Principle**: Calculator data does NOT transfer to dashboard. These are intentionally separate to maintain distinct user experiences and data integrity.
+
+## 🛠️ Technical Implementation
 
 ### Frontend (React + Tailwind)
-- **Landing Page**: Marketing and education
-- **Calculator**: Multi-step credit estimation
-- **Checkout**: Stripe integration
-- **Dashboard**: Customer portal
-- **Intake Form**: Data collection wizard
+- **Phase 1 (Marketing)**: Landing Page → Calculator → Checkout → Success
+- **Phase 2 (Dashboard)**: Login → Dashboard → Forms → Documents
 
 ### Backend Services
 - **Express.js**: API and webhook handling

@@ -725,38 +725,40 @@ const EmployeeTimeCalculator: React.FC<{
   }, [employees, timePercent, avgSalary, hours, rate, method]);
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 shadow-sm">
+    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl lg:rounded-2xl p-4 lg:p-6 shadow-sm">
       <div className="mb-6">
         <h4 className="text-lg font-semibold text-blue-900 mb-3 flex items-center gap-2">
           <Calculator className="w-5 h-5" />
           Employee Time Calculator
         </h4>
-        <div className="flex gap-2 p-1 bg-white rounded-xl border border-blue-200">
+        <div className="flex gap-1 lg:gap-2 p-1 bg-white rounded-lg lg:rounded-xl border border-blue-200">
           <button
             onClick={() => setMethod('annual')}
-            className={`flex-1 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 ${
+            className={`flex-1 px-2 lg:px-4 py-2 lg:py-3 rounded-md lg:rounded-lg text-xs lg:text-sm font-semibold transition-all duration-300 ${
               method === 'annual' 
                 ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md transform scale-105' 
                 : 'text-blue-600 hover:bg-blue-50'
             }`}
           >
-            Annual Salary Method
+            <span className="hidden sm:inline">Annual Salary</span>
+            <span className="sm:hidden">Annual</span>
           </button>
           <button
             onClick={() => setMethod('hourly')}
-            className={`flex-1 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 ${
+            className={`flex-1 px-2 lg:px-4 py-2 lg:py-3 rounded-md lg:rounded-lg text-xs lg:text-sm font-semibold transition-all duration-300 ${
               method === 'hourly' 
                 ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md transform scale-105' 
                 : 'text-blue-600 hover:bg-blue-50'
             }`}
           >
-            Hourly Rate Method
+            <span className="hidden sm:inline">Hourly Rate</span>
+            <span className="sm:hidden">Hourly</span>
           </button>
         </div>
       </div>
       
       {method === 'annual' ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 lg:gap-4">
           <div>
             <label className="block text-sm font-semibold text-blue-800 mb-2 flex items-center gap-1">
               <Building2 className="w-4 h-4" />
@@ -1317,9 +1319,9 @@ const ExpenseStep: React.FC<{
           </div>
         </div>
 
-        <div className="p-10">
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
+        <div className="p-6 lg:p-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-8">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 lg:p-6 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                   <Building2 className="w-5 h-5 text-white" />
@@ -1335,7 +1337,7 @@ const ExpenseStep: React.FC<{
               />
             </div>
 
-            <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
+            <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 lg:p-6 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
                   <TrendingUp className="w-5 h-5 text-white" />
@@ -1349,12 +1351,12 @@ const ExpenseStep: React.FC<{
                 type="text"
                 value={expenses.aiTools}
                 onChange={(e) => updateExpense('aiTools', e.target.value)}
-                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300"
+                className="w-full px-4 lg:px-6 py-3 lg:py-4 border-2 border-gray-200 rounded-xl lg:rounded-2xl text-base lg:text-lg font-medium focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300"
                 placeholder="12,000"
               />
             </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl">
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 lg:p-6 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
                   <DollarSign className="w-5 h-5 text-white" />
@@ -1368,12 +1370,12 @@ const ExpenseStep: React.FC<{
                 type="text"
                 value={expenses.contractors}
                 onChange={(e) => updateExpense('contractors', e.target.value)}
-                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-300"
+                className="w-full px-4 lg:px-6 py-3 lg:py-4 border-2 border-gray-200 rounded-xl lg:rounded-2xl text-base lg:text-lg font-medium focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-300"
                 placeholder="50,000"
               />
             </div>
 
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl">
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 lg:p-6 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
                   <Calculator className="w-5 h-5 text-white" />
@@ -1387,12 +1389,12 @@ const ExpenseStep: React.FC<{
                 type="text"
                 value={expenses.software}
                 onChange={(e) => updateExpense('software', e.target.value)}
-                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
+                className="w-full px-4 lg:px-6 py-3 lg:py-4 border-2 border-gray-200 rounded-xl lg:rounded-2xl text-base lg:text-lg font-medium focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
                 placeholder="25,000"
               />
             </div>
 
-            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 rounded-xl col-span-2">
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 lg:p-6 rounded-xl lg:col-span-2">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
                   <Check className="w-5 h-5 text-white" />
@@ -1406,7 +1408,7 @@ const ExpenseStep: React.FC<{
                 type="text"
                 value={expenses.training}
                 onChange={(e) => updateExpense('training', e.target.value)}
-                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-300"
+                className="w-full px-4 lg:px-6 py-3 lg:py-4 border-2 border-gray-200 rounded-xl lg:rounded-2xl text-base lg:text-lg font-medium focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-300"
                 placeholder="8,000"
               />
             </div>

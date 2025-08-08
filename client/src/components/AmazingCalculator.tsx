@@ -579,109 +579,155 @@ const ExpenseStep: React.FC<{
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-      <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
-        Enter Your R&D Expenses
-      </h2>
-      <p className="text-gray-600 text-center mb-8">
-        Enter your expenses for activities that involve AI implementation or process improvement
-      </p>
-
-      <div className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Employee Time (Annual)
-            </label>
-            <input
-              type="text"
-              value={expenses.employeeTime}
-              onChange={(e) => updateExpense('employeeTime', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="500000"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              AI Tools & Software
-            </label>
-            <input
-              type="text"
-              value={expenses.aiTools}
-              onChange={(e) => updateExpense('aiTools', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="50000"
-            />
-          </div>
+    <div className="stagger-item">
+      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            What did you spend on R&D activities?
+          </h2>
+          <p className="text-xl text-gray-600">
+            Enter your expenses for the current year. We'll help calculate which portions qualify.
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Contractors & Consultants
-            </label>
-            <input
-              type="text"
-              value={expenses.contractors}
-              onChange={(e) => updateExpense('contractors', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="100000"
-            />
+        <div className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Employee Time</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Wages and benefits for employees working on AI/R&D projects (80% typically qualifies)
+              </p>
+              <input
+                type="text"
+                value={expenses.employeeTime}
+                onChange={(e) => updateExpense('employeeTime', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="150000"
+              />
+            </div>
+
+            <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">AI Tools & Software</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                ChatGPT Plus, Claude Pro, Jasper, automation tools, custom AI development
+              </p>
+              <input
+                type="text"
+                value={expenses.aiTools}
+                onChange={(e) => updateExpense('aiTools', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                placeholder="12000"
+              />
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Contractors & Freelancers</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                External developers, AI consultants, data scientists (65% cap applies)
+              </p>
+              <input
+                type="text"
+                value={expenses.contractors}
+                onChange={(e) => updateExpense('contractors', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                placeholder="50000"
+              />
+            </div>
+
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+                  <Calculator className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Supporting Software</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Development tools, cloud services, databases used for R&D projects
+              </p>
+              <input
+                type="text"
+                value={expenses.software}
+                onChange={(e) => updateExpense('software', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                placeholder="25000"
+              />
+            </div>
+
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 rounded-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
+                  <Check className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Training & Education</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                AI courses, conferences, certifications, books for your team
+              </p>
+              <input
+                type="text"
+                value={expenses.training}
+                onChange={(e) => updateExpense('training', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="8000"
+              />
+            </div>
           </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Supporting Software
-            </label>
-            <input
-              type="text"
-              value={expenses.software}
-              onChange={(e) => updateExpense('software', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="25000"
-            />
+
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <div className="flex items-start gap-2">
+              <Shield className="w-5 h-5 text-amber-600 mt-0.5" />
+              <div className="text-sm text-amber-800">
+                <p className="font-medium mb-1">Qualification Guidelines</p>
+                <p>
+                  Not all expenses qualify 100%. We apply IRS-compliant percentages: 80% for wages, 
+                  65% cap for contractors, and 100% for direct R&D tools and training. 
+                  Our calculations follow current tax law requirements.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between pt-6">
+            <button
+              onClick={prevStep}
+              className="flex items-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              Back
+            </button>
+            
+            <button
+              onClick={handleNext}
+              className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 px-8 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+            >
+              <span className="flex items-center gap-2">
+                Calculate Credits
+                <ArrowRight className="w-5 h-5" />
+              </span>
+            </button>
           </div>
         </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Training & Education
-          </label>
-          <input
-            type="text"
-            value={expenses.training}
-            onChange={(e) => updateExpense('training', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="10000"
-          />
-        </div>
-      </div>
-
-      <div className="flex justify-between mt-8">
-        <button
-          onClick={prevStep}
-          className="flex items-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900"
-        >
-          <ChevronLeft className="w-5 h-5" />
-          Back
-        </button>
-        
-        <button
-          onClick={handleNext}
-          className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 px-8 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-        >
-          <span className="flex items-center gap-2">
-            Calculate Credit
-            <ArrowRight className="w-5 h-5" />
-          </span>
-        </button>
       </div>
     </div>
   );
 };
 
-// Step 3: Credit Estimate
+// Step 3: Credit Estimation Display
 const CreditEstimateStep: React.FC<{
   formData: FormData;
   updateFormData: (updates: Partial<FormData>) => void;
@@ -689,191 +735,268 @@ const CreditEstimateStep: React.FC<{
   prevStep: () => void;
   isCalculating: boolean;
 }> = ({ formData, updateFormData, nextStep, prevStep, isCalculating }) => {
-  if (isCalculating) {
-    return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 text-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">Calculating Your Credits</h3>
-        <p className="text-gray-600">Analyzing your R&D activities and expenses...</p>
-      </div>
-    );
-  }
-
-  const results = formData.results;
-  if (!results) return null;
-
+  
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-      <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
-        Your R&D Tax Credit Estimate
-      </h2>
+    <div className="stagger-item">
+      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            Your R&D Tax Credit Estimate
+          </h2>
+          <p className="text-xl text-gray-600">
+            Based on your expenses, here's your potential federal tax credit
+          </p>
+        </div>
 
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
-        <div className="text-center p-6 bg-blue-50 rounded-xl">
-          <div className="text-2xl font-bold text-blue-600 mb-1">
-            ${results.federalCredit.toLocaleString()}
+        {isCalculating ? (
+          <div className="text-center py-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-full mb-4">
+              <Calculator className="w-8 h-8 text-white animate-pulse" />
+            </div>
+            <p className="text-lg text-gray-600">Calculating your credits...</p>
+            <div className="w-64 mx-auto mt-4 bg-gray-200 rounded-full h-2">
+              <div className="bg-gradient-to-r from-blue-600 to-green-600 h-2 rounded-full animate-pulse" style={{width: '100%'}}></div>
+            </div>
           </div>
-          <div className="text-sm text-gray-600">Federal Credit</div>
-        </div>
-        
-        <div className="text-center p-6 bg-green-50 rounded-xl">
-          <div className="text-2xl font-bold text-green-600 mb-1">
-            ${results.stateCredit.toLocaleString()}
-          </div>
-          <div className="text-sm text-gray-600">State Credit</div>
-        </div>
-        
-        <div className="text-center p-6 bg-purple-50 rounded-xl">
-          <div className="text-2xl font-bold text-purple-600 mb-1">
-            ${results.totalBenefit.toLocaleString()}
-          </div>
-          <div className="text-sm text-gray-600">Total Benefits</div>
-        </div>
-      </div>
+        ) : formData.results ? (
+          <div>
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl text-center">
+                <div className="text-3xl font-bold text-blue-600 mb-2">
+                  ${formData.results.totalQRE.toLocaleString()}
+                </div>
+                <div className="text-sm font-medium text-gray-700">
+                  Total Qualified Research Expenses
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl text-center">
+                <div className="text-3xl font-bold text-green-600 mb-2">
+                  ${formData.results.federalCredit.toLocaleString()}
+                </div>
+                <div className="text-sm font-medium text-gray-700">
+                  Federal R&D Tax Credit
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl text-center">
+                <div className="text-3xl font-bold text-purple-600 mb-2">
+                  ${formData.results.savingsAmount.toLocaleString()}
+                </div>
+                <div className="text-sm font-medium text-gray-700">
+                  Your Net Savings
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  After ${formData.results.price} service fee
+                </div>
+              </div>
+            </div>
 
-      <div className="flex justify-between">
-        <button
-          onClick={prevStep}
-          className="flex items-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900"
-        >
-          <ChevronLeft className="w-5 h-5" />
-          Back
-        </button>
-        
-        <button
-          onClick={nextStep}
-          className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 px-8 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-        >
-          <span className="flex items-center gap-2">
-            View Detailed Report
-            <ArrowRight className="w-5 h-5" />
-          </span>
-        </button>
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl mb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">How We Calculated Your Credit</h3>
+              <div className="space-y-2 text-sm text-gray-700">
+                <div className="flex justify-between">
+                  <span>Total R&D expenses entered:</span>
+                  <span className="font-medium">
+                    ${(parseFloat(formData.expenses.employeeTime.replace(/,/g, '')) + 
+                       parseFloat(formData.expenses.aiTools.replace(/,/g, '')) + 
+                       parseFloat(formData.expenses.contractors.replace(/,/g, '')) + 
+                       parseFloat(formData.expenses.software.replace(/,/g, '')) + 
+                       parseFloat(formData.expenses.training.replace(/,/g, ''))).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Qualified expenses (after IRS rules):</span>
+                  <span className="font-medium">${formData.results.totalQRE.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>
+                    Credit rate ({formData.companyInfo.revenue?.includes('Under $1M') || 
+                               formData.companyInfo.revenue?.includes('$1M - $5M') ? '6%' : '14%'} ASC method):
+                  </span>
+                  <span className="font-medium">${formData.results.federalCredit.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <button
+                onClick={nextStep}
+                className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 px-8 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              >
+                <span className="flex items-center gap-3">
+                  View Detailed Report
+                  <ArrowRight className="w-6 h-6" />
+                </span>
+              </button>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="flex justify-between pt-6">
+          <button
+            onClick={prevStep}
+            className="flex items-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            Back
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-// Step 4: Detailed Report Step
+// Step 4: Detailed Report and Next Steps
 const DetailedReportStep: React.FC<{
   formData: FormData;
   updateFormData: (updates: Partial<FormData>) => void;
-}> = ({ formData }) => {
-  const results = formData.results;
-  if (!results) return null;
+}> = ({ formData, updateFormData }) => {
+  
+  const proceedToCheckout = () => {
+    // Save data for checkout
+    localStorage.setItem('rd_credit_email', formData.companyInfo.email);
+    localStorage.setItem('rd_calculation_results', JSON.stringify({
+      ...formData.results,
+      companyInfo: formData.companyInfo,
+      activities: formData.activities
+    }));
+    
+    // Navigate to checkout
+    window.location.href = '/checkout';
+  };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-      <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
-        Detailed R&D Tax Credit Report
-      </h2>
-      
-      <div className="space-y-8">
-        {/* Summary Section */}
-        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Executive Summary</h3>
-          <div className="grid md:grid-cols-2 gap-6">
+    <div className="stagger-item">
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white p-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold mb-3">
+              🎉 Congratulations, {formData.companyInfo.companyName}!
+            </h2>
+            <p className="text-xl text-blue-100">
+              You qualify for ${formData.results?.federalCredit.toLocaleString()} in R&D tax credits
+            </p>
+          </div>
+        </div>
+
+        <div className="p-8">
+          {/* Credit Summary */}
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
             <div>
-              <div className="text-sm text-gray-600 mb-1">Total Qualified Research Expenses</div>
-              <div className="text-2xl font-bold text-blue-600">
-                ${results.totalQRE.toLocaleString()}
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Your Credit Breakdown</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Total QRE</span>
+                  <span className="font-semibold">${formData.results?.totalQRE.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Federal Credit</span>
+                  <span className="font-semibold text-green-600">${formData.results?.federalCredit.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Service Fee</span>
+                  <span className="font-semibold text-red-600">-${formData.results?.price.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-t-2 border-gray-200">
+                  <span className="text-lg font-bold">Your Net Savings</span>
+                  <span className="text-xl font-bold text-green-600">${formData.results?.savingsAmount.toLocaleString()}</span>
+                </div>
               </div>
             </div>
+
             <div>
-              <div className="text-sm text-gray-600 mb-1">Estimated Total Tax Benefits</div>
-              <div className="text-2xl font-bold text-green-600">
-                ${results.totalBenefit.toLocaleString()}
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Company Profile</h3>
+              <div className="space-y-2 text-sm">
+                <div><span className="text-gray-600">Company:</span> <span className="font-medium">{formData.companyInfo.companyName}</span></div>
+                <div><span className="text-gray-600">Industry:</span> <span className="font-medium">{formData.companyInfo.industry}</span></div>
+                <div><span className="text-gray-600">Revenue:</span> <span className="font-medium">{formData.companyInfo.revenue}</span></div>
+                <div><span className="text-gray-600">Primary State:</span> <span className="font-medium">{formData.companyInfo.primaryState || 'Not specified'}</span></div>
+              </div>
+
+              <div className="mt-4">
+                <h4 className="font-semibold text-gray-900 mb-2">Qualifying Activities</h4>
+                <div className="flex flex-wrap gap-2">
+                  {formData.activities.map((activity) => (
+                    <span key={activity} className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                      {activity.replace('ai-', '').replace('-', ' ')}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Credit Breakdown */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Credit Breakdown</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
-              <span className="font-medium">Federal R&D Credit</span>
-              <span className="font-bold text-blue-600">${results.federalCredit.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
-              <span className="font-medium">Estimated State Credits</span>
-              <span className="font-bold text-green-600">${results.stateCredit.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between items-center p-4 bg-purple-50 rounded-lg border-2 border-purple-200">
-              <span className="font-semibold">Total Tax Benefits</span>
-              <span className="font-bold text-purple-600 text-lg">${results.totalBenefit.toLocaleString()}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Company Information */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Company Profile</h3>
-          <div className="grid md:grid-cols-2 gap-4 text-sm">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="font-medium text-gray-700">Company</div>
-              <div className="text-gray-900">{formData.companyInfo.companyName}</div>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="font-medium text-gray-700">Industry</div>
-              <div className="text-gray-900">{formData.companyInfo.industry}</div>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="font-medium text-gray-700">Revenue Range</div>
-              <div className="text-gray-900">{formData.companyInfo.revenue}</div>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="font-medium text-gray-700">Email</div>
-              <div className="text-gray-900">{formData.companyInfo.email}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Qualifying Activities */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Qualifying R&D Activities</h3>
-          <div className="grid md:grid-cols-2 gap-3">
-            {formData.activities.map((activity, index) => (
-              <div key={index} className="flex items-center gap-2 p-3 bg-green-50 rounded-lg">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <span className="text-gray-900 capitalize">{activity.replace('-', ' ')}</span>
+          {/* What You Get */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl mb-8">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">What You Get</h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <span className="text-sm">Complete Form 6765 preparation</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <span className="text-sm">Technical narrative documentation</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <span className="text-sm">QRE expense workbook</span>
+                </div>
               </div>
-            ))}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <span className="text-sm">Compliance memo and guidance</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <span className="text-sm">Record-keeping checklist</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <span className="text-sm">Email support throughout filing</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Pricing Information */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Service Investment</h3>
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-lg">Professional Service Fee</span>
-            <span className="text-2xl font-bold text-yellow-600">${results.price.toLocaleString()}</span>
+          {/* Urgency Banner */}
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
+            <div className="flex items-start gap-2">
+              <Shield className="w-5 h-5 text-red-600 mt-0.5" />
+              <div>
+                <p className="font-medium text-red-900 mb-1">Amendment Deadline: July 2026</p>
+                <p className="text-sm text-red-800">
+                  You can still claim R&D credits for previous tax years (2022, 2023, 2024) through amended returns. 
+                  The deadline to amend previous returns is approaching. Don't miss out on additional credits!
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="flex justify-between items-center text-lg font-semibold">
-            <span>Your Net Savings</span>
-            <span className="text-2xl font-bold text-green-600">${results.savingsAmount.toLocaleString()}</span>
-          </div>
-        </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-4 justify-center pt-6">
-          <Link href="/checkout">
-            <button className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 px-8 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-              <span className="flex items-center gap-3">
-                Proceed to Checkout
-                <ArrowRight className="w-6 h-6" />
-              </span>
+          {/* Action Button */}
+          <div className="text-center">
+            <button
+              onClick={proceedToCheckout}
+              className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 px-12 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 mb-4"
+            >
+              Secure Your ${formData.results?.federalCredit.toLocaleString()} Credit → Checkout
             </button>
-          </Link>
-        </div>
+            <p className="text-sm text-gray-600">
+              🔒 Secure payment • 30-day money-back guarantee • No upfront cost
+            </p>
+          </div>
 
-        {/* Disclaimer */}
-        <div className="text-xs text-gray-500 text-center pt-4 border-t">
-          <p>
-            * This estimate is based on current tax laws and the information provided. 
-            Actual credit amounts may vary. Please consult with a qualified tax professional.
-          </p>
+          {/* Footer */}
+          <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+            <p className="text-xs text-gray-500">
+              These calculations are estimates based on current tax law and the information provided. 
+              Actual credit amounts may vary. All documents prepared by qualified tax professionals.
+            </p>
+          </div>
         </div>
       </div>
     </div>

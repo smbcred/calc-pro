@@ -1,0 +1,916 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  ArrowRight, Check, Star, Shield, Clock, Users, Zap, 
+  ChevronRight, Play, FileText, Calculator, TrendingUp,
+  DollarSign, AlertCircle, CheckCircle, MousePointer,
+  Mail, Building, Calendar, MessageCircle, HelpCircle,
+  Loader, ArrowLeft
+} from 'lucide-react';
+
+interface StepProps {
+  formData: any;
+  updateFormData: (data: any) => void;
+  nextStep: () => void;
+  prevStep: () => void;
+}
+
+// Step 1: Qualification Discovery
+const QualificationStep: React.FC<StepProps> = ({ formData, updateFormData, nextStep }) => {
+  const [selectedActivities, setSelectedActivities] = useState<string[]>(
+    formData.activities || []
+  );
+
+  const activities = [
+    {
+      id: 'ai-content',
+      icon: '✍️',
+      title: 'AI Content Creation',
+      description: 'Using ChatGPT, Claude, or Jasper for marketing',
+      examples: 'Blog posts, social media, email campaigns, product descriptions',
+    },
+    {
+      id: 'ai-customer-service',
+      icon: '💬',
+      title: 'AI Customer Support',
+      description: 'Implementing chatbots or AI-assisted responses',
+      examples: 'Chatbots, FAQ automation, ticket routing, response templates',
+    },
+    {
+      id: 'ai-data-analysis',
+      icon: '📊',
+      title: 'AI Data Analysis',
+      description: 'Using AI to analyze business data or generate insights',
+      examples: 'Sales forecasting, customer segmentation, trend analysis, reporting',
+    },
+    {
+      id: 'process-automation',
+      icon: '⚡',
+      title: 'Workflow Automation',
+      description: 'Automating repetitive tasks with AI or no-code tools',
+      examples: 'Zapier workflows, email automation, data entry, scheduling',
+    },
+    {
+      id: 'ai-development',
+      icon: '🤖',
+      title: 'Custom AI Solutions',
+      description: 'Building GPTs, training models, or API integrations',
+      examples: 'Custom ChatGPT, fine-tuned models, API connections, prompts',
+    },
+    {
+      id: 'ai-sales',
+      icon: '🎯',
+      title: 'AI Sales Tools',
+      description: 'Using AI for lead generation or sales optimization',
+      examples: 'Lead scoring, email personalization, proposal generation',
+    },
+    {
+      id: 'ai-design',
+      icon: '🎨',
+      title: 'AI Design & Creative',
+      description: 'Using Midjourney, DALL-E, or Canva AI',
+      examples: 'Logo design, marketing materials, product images, presentations',
+    },
+    {
+      id: 'ai-finance',
+      icon: '💰',
+      title: 'AI Financial Tools',
+      description: 'Automating bookkeeping or financial analysis',
+      examples: 'Expense categorization, invoice processing, financial forecasting',
+    },
+  ];
+
+  const toggleActivity = (id: string) => {
+    setSelectedActivities(prev =>
+      prev.includes(id) 
+        ? prev.filter(a => a !== id)
+        : [...prev, id]
+    );
+  };
+
+  const handleContinue = () => {
+    updateFormData({ activities: selectedActivities });
+    nextStep();
+  };
+
+  const getQualificationMessage = () => {
+    const count = selectedActivities.length;
+    if (count === 0) return "";
+    if (count <= 2) return "Good start! You likely qualify for credits.";
+    if (count <= 4) return "Excellent! You're doing significant R&D work.";
+    return "Wow! You might be leaving serious money on the table.";
+  };
+
+  return (
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            Let's Discover Your R&D Activities ✨
+          </h2>
+          <p className="text-xl text-gray-600">
+            Select all the innovative work your business does
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4 mb-8">
+          {activities.map((activity) => (
+            <div
+              key={activity.id}
+              onClick={() => toggleActivity(activity.id)}
+              className={`
+                border-2 rounded-xl p-6 cursor-pointer transition-all
+                ${selectedActivities.includes(activity.id)
+                  ? 'border-blue-500 bg-blue-50 transform scale-105'
+                  : 'border-gray-200 hover:border-gray-300 hover:shadow-md'}
+              `}
+            >
+              <div className="flex items-start gap-4">
+                <div className="text-3xl">{activity.icon}</div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 mb-1">
+                    {activity.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-2">
+                    {activity.description}
+                  </p>
+                  <p className="text-xs text-gray-500 italic">
+                    Examples: {activity.examples}
+                  </p>
+                </div>
+                {selectedActivities.includes(activity.id) && (
+                  <Check className="w-6 h-6 text-green-600" />
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {selectedActivities.length > 0 && (
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 mb-8">
+            <div className="text-center">
+              <p className="text-lg font-semibold text-gray-900">
+                {getQualificationMessage()} 🎯
+              </p>
+              <p className="text-sm text-gray-600 mt-2">
+                The IRS recognizes AI implementation as qualified R&D
+              </p>
+            </div>
+          </div>
+        )}
+
+        <button
+          onClick={handleContinue}
+          disabled={selectedActivities.length === 0}
+          className={`
+            w-full bg-gradient-to-r from-blue-600 to-green-600 text-white
+            py-4 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl
+            transition-all transform hover:scale-105 flex items-center justify-center gap-2
+            ${selectedActivities.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}
+          `}
+        >
+          Continue to Business Info
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Step 2: Business Information
+const BusinessInfoStep: React.FC<StepProps> = ({ formData, updateFormData, nextStep, prevStep }) => {
+  const [companyData, setCompanyData] = useState({
+    companyName: formData.companyInfo?.companyName || '',
+    industry: formData.companyInfo?.industry || '',
+    employeeCount: formData.companyInfo?.employeeCount || '',
+    revenue: formData.companyInfo?.revenue || '',
+    rdStartYear: formData.companyInfo?.rdStartYear || '2025'
+  });
+
+  const industries = [
+    { value: 'ecommerce', label: 'E-commerce / Retail', icon: '🛒' },
+    { value: 'agency', label: 'Marketing / Creative Agency', icon: '🎯' },
+    { value: 'saas', label: 'Software / SaaS', icon: '💻' },
+    { value: 'consulting', label: 'Consulting / Services', icon: '📊' },
+    { value: 'realestate', label: 'Real Estate', icon: '🏠' },
+    { value: 'healthcare', label: 'Healthcare / Wellness', icon: '🏥' },
+    { value: 'finance', label: 'Finance / Insurance', icon: '💳' },
+    { value: 'education', label: 'Education / Training', icon: '🎓' },
+    { value: 'hospitality', label: 'Restaurant / Hospitality', icon: '🍽️' },
+    { value: 'manufacturing', label: 'Manufacturing / Supply', icon: '🏭' },
+    { value: 'nonprofit', label: 'Non-Profit', icon: '❤️' },
+    { value: 'other', label: 'Other Industry', icon: '🏢' }
+  ];
+
+  const revenueRanges = [
+    { value: '0-100k', label: 'Under $100,000' },
+    { value: '100k-250k', label: '$100,000 - $250,000' },
+    { value: '250k-500k', label: '$250,000 - $500,000' },
+    { value: '500k-1m', label: '$500,000 - $1M' },
+    { value: '1m-2.5m', label: '$1M - $2.5M' },
+    { value: '2.5m-5m', label: '$2.5M - $5M' },
+    { value: '5m-10m', label: '$5M - $10M' },
+    { value: '10m-25m', label: '$10M - $25M' },
+    { value: '25m+', label: 'Over $25M' }
+  ];
+
+  const yearOptions = [
+    { value: '2025', label: '2025 (Current Year)' },
+    { value: '2024', label: '2024' },
+    { value: '2023', label: '2023' },
+    { value: '2022', label: '2022' },
+    { value: 'before-2022', label: 'Before 2022' }
+  ];
+
+  const handleContinue = () => {
+    updateFormData({ companyInfo: companyData });
+    nextStep();
+  };
+
+  return (
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-lg p-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          Tell Us About Your Business
+        </h2>
+
+        <div className="space-y-6">
+          {/* Company Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Company Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={companyData.companyName}
+              onChange={(e) => setCompanyData({...companyData, companyName: e.target.value})}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl 
+                       focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
+              placeholder="Acme Technologies Inc."
+            />
+          </div>
+
+          {/* Industry Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Industry <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {industries.map((industry) => (
+                <button
+                  key={industry.value}
+                  onClick={() => setCompanyData({...companyData, industry: industry.value})}
+                  className={`
+                    p-3 rounded-lg border-2 transition-all
+                    ${companyData.industry === industry.value
+                      ? 'border-blue-500 bg-blue-50 transform scale-105'
+                      : 'border-gray-200 hover:border-gray-300'}
+                  `}
+                >
+                  <div className="text-2xl mb-1">{industry.icon}</div>
+                  <div className="text-sm font-medium">{industry.label}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Revenue Range */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Annual Revenue <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={companyData.revenue}
+              onChange={(e) => setCompanyData({...companyData, revenue: e.target.value})}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl 
+                       focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            >
+              <option value="">Select revenue range</option>
+              {revenueRanges.map(range => (
+                <option key={range.value} value={range.value}>
+                  {range.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* R&D Start Year */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              When did you start your R&D activities? <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={companyData.rdStartYear}
+              onChange={(e) => setCompanyData({...companyData, rdStartYear: e.target.value})}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+            >
+              {yearOptions.map(year => (
+                <option key={year.value} value={year.value}>
+                  {year.label}
+                </option>
+              ))}
+            </select>
+            {companyData.rdStartYear && companyData.rdStartYear !== '2025' && (
+              <div className="mt-2 p-3 bg-green-50 rounded-lg">
+                <p className="text-sm text-green-800">
+                  ✅ Great! You can claim credits for {
+                    companyData.rdStartYear === 'before-2022' 
+                      ? '2022, 2023, 2024, and 2025' 
+                      : `${companyData.rdStartYear} through 2025`
+                  }
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Employee Count */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Number of Employees <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={companyData.employeeCount}
+              onChange={(e) => setCompanyData({...companyData, employeeCount: e.target.value})}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+            >
+              <option value="">Select range</option>
+              <option value="1-5">1-5 employees</option>
+              <option value="6-10">6-10 employees</option>
+              <option value="11-25">11-25 employees</option>
+              <option value="26-50">26-50 employees</option>
+              <option value="51-100">51-100 employees</option>
+              <option value="100+">100+ employees</option>
+            </select>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex gap-4 pt-4">
+            <button
+              onClick={prevStep}
+              className="flex-1 px-6 py-3 border-2 border-gray-300 rounded-xl
+                       text-gray-700 font-medium hover:bg-gray-50 transition-all"
+            >
+              Back
+            </button>
+            <button
+              onClick={handleContinue}
+              disabled={!companyData.companyName || !companyData.industry || !companyData.revenue}
+              className={`
+                flex-1 bg-gradient-to-r from-blue-600 to-green-600 text-white
+                py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl
+                transition-all transform hover:scale-105
+                ${(!companyData.companyName || !companyData.industry || !companyData.revenue) ? 'opacity-50 cursor-not-allowed' : ''}
+              `}
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Step 3: Email Capture with Credit Range
+const EmailCaptureStep: React.FC<StepProps> = ({ formData, updateFormData, nextStep, prevStep }) => {
+  const [email, setEmail] = useState(formData.email || '');
+  const [showWhyEmail, setShowWhyEmail] = useState(false);
+
+  const calculateCreditRange = () => {
+    const { employeeCount, revenue, rdStartYear } = formData.companyInfo;
+    const activities = formData.activities.length;
+    
+    const revenueMultipliers: any = {
+      '0-100k': { low: 2000, high: 8000 },
+      '100k-250k': { low: 5000, high: 15000 },
+      '250k-500k': { low: 8000, high: 25000 },
+      '500k-1m': { low: 15000, high: 40000 },
+      '1m-2.5m': { low: 25000, high: 75000 },
+      '2.5m-5m': { low: 40000, high: 125000 },
+      '5m-10m': { low: 60000, high: 200000 },
+      '10m-25m': { low: 100000, high: 400000 },
+      '25m+': { low: 150000, high: 1000000 }
+    };
+    
+    const base = revenueMultipliers[revenue] || { low: 10000, high: 50000 };
+    const activityMultiplier = 1 + (activities * 0.15);
+    
+    let eligibleYears = 1;
+    if (rdStartYear === 'before-2022' || rdStartYear === '2022') eligibleYears = 4;
+    else if (rdStartYear === '2023') eligibleYears = 3;
+    else if (rdStartYear === '2024') eligibleYears = 2;
+    
+    return {
+      low: Math.round(base.low * activityMultiplier),
+      high: Math.round(base.high * activityMultiplier),
+      totalLow: Math.round(base.low * activityMultiplier * eligibleYears),
+      totalHigh: Math.round(base.high * activityMultiplier * eligibleYears),
+      years: eligibleYears
+    };
+  };
+
+  const creditRange = calculateCreditRange();
+
+  const handleEmailSubmit = () => {
+    updateFormData({ 
+      email, 
+      estimatedRange: creditRange 
+    });
+    nextStep();
+  };
+
+  const handleSkipToCheckout = () => {
+    const quickEstimate = Math.round((creditRange.low + creditRange.high) / 2);
+    window.location.href = `/checkout?quick=true&estimate=${quickEstimate}`;
+  };
+
+  return (
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            {formData.companyInfo.companyName}, Your R&D Credits Are Worth...
+          </h2>
+          
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 mb-4">
+            <p className="text-lg text-gray-700 mb-4">
+              Annual Federal R&D Credit Estimate:
+            </p>
+            <div className="text-5xl font-bold text-transparent bg-clip-text 
+                          bg-gradient-to-r from-green-600 to-blue-600">
+              ${creditRange.low.toLocaleString()} - ${creditRange.high.toLocaleString()}
+            </div>
+          </div>
+
+          {creditRange.years > 1 && (
+            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 mb-6">
+              <p className="text-lg font-semibold text-gray-900 mb-2">
+                🎉 You Can Claim {creditRange.years} Years of Credits!
+              </p>
+              <p className="text-3xl font-bold text-orange-600">
+                Total: ${creditRange.totalLow.toLocaleString()} - ${creditRange.totalHigh.toLocaleString()}
+              </p>
+              <p className="text-sm text-gray-600 mt-2">
+                Based on R&D activities starting in {formData.companyInfo.rdStartYear}
+              </p>
+            </div>
+          )}
+
+          <div className="flex justify-center gap-8 mb-8">
+            <div className="text-center">
+              <div className="text-2xl mb-1">⚡</div>
+              <p className="text-sm text-gray-600">2-minute<br/>calculation</p>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl mb-1">🔒</div>
+              <p className="text-sm text-gray-600">Secure &<br/>confidential</p>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl mb-1">📊</div>
+              <p className="text-sm text-gray-600">IRS-compliant<br/>methodology</p>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Enter your email for your personalized calculation
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl 
+                       focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              placeholder="you@company.com"
+            />
+            <button
+              onClick={() => setShowWhyEmail(!showWhyEmail)}
+              className="text-sm text-blue-600 mt-1"
+            >
+              Why do we need your email?
+            </button>
+            {showWhyEmail && (
+              <div className="mt-2 p-3 bg-blue-50 rounded-lg text-sm text-gray-700">
+                We'll send you: ✓ Detailed calculation breakdown ✓ Free AI R&D guide 
+                ✓ Deadline reminders ✓ No spam, ever
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={handleEmailSubmit}
+              disabled={!email}
+              className={`
+                w-full bg-gradient-to-r from-blue-600 to-green-600 text-white
+                py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl
+                transition-all transform hover:scale-105
+                ${!email ? 'opacity-50 cursor-not-allowed' : ''}
+              `}
+            >
+              Get My Exact Calculation
+            </button>
+            
+            <button
+              onClick={handleSkipToCheckout}
+              className="w-full px-6 py-3 text-gray-600 text-sm hover:text-gray-800"
+            >
+              Skip this step →
+            </button>
+          </div>
+
+          <div className="flex gap-4 mt-4">
+            <button
+              onClick={prevStep}
+              className="text-gray-600 hover:text-gray-800"
+            >
+              ← Back
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Step 4: Expense Details
+const ExpenseStep: React.FC<StepProps> = ({ formData, updateFormData, nextStep, prevStep }) => {
+  const [expenses, setExpenses] = useState({
+    employeeTime: formData.expenses?.employeeTime || 0,
+    aiTools: formData.expenses?.aiTools || 0,
+    contractors: formData.expenses?.contractors || 0,
+    software: formData.expenses?.software || 0,
+    training: formData.expenses?.training || 0,
+    other: formData.expenses?.other || 0
+  });
+
+  const [employeeCalc, setEmployeeCalc] = useState({
+    employees: '',
+    hoursPerWeek: '',
+    hourlyRate: ''
+  });
+
+  const calculateEmployeeTime = () => {
+    const { employees, hoursPerWeek, hourlyRate } = employeeCalc;
+    const annual = parseInt(employees) * parseInt(hoursPerWeek) * parseInt(hourlyRate) * 52;
+    setExpenses({ ...expenses, employeeTime: annual });
+  };
+
+  const calculateQRE = () => {
+    const wages = expenses.employeeTime;
+    const contractorQualified = expenses.contractors * 0.65;
+    const supplies = expenses.aiTools + expenses.software + expenses.training + expenses.other;
+    
+    return {
+      wages,
+      contractorQualified,
+      supplies,
+      total: wages + contractorQualified + supplies
+    };
+  };
+
+  const qre = calculateQRE();
+
+  const handleContinue = () => {
+    updateFormData({ 
+      expenses,
+      calculations: {
+        totalQRE: qre.total,
+        federalCredit: Math.round(qre.total * 0.065),
+      }
+    });
+    nextStep();
+  };
+
+  return (
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-lg p-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Let's Calculate Your Exact R&D Investment
+        </h2>
+        <p className="text-gray-600 mb-6">
+          Be thorough - every dollar counts toward your credit!
+        </p>
+
+        <div className="bg-blue-50 rounded-xl p-6 mb-6">
+          <h3 className="font-semibold text-gray-900 mb-4">
+            Quick Employee Time Calculator
+          </h3>
+          <div className="grid md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <input
+                type="number"
+                placeholder="# of employees"
+                value={employeeCalc.employees}
+                onChange={(e) => setEmployeeCalc({...employeeCalc, employees: e.target.value})}
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+            <div>
+              <input
+                type="number"
+                placeholder="Hours/week on AI"
+                value={employeeCalc.hoursPerWeek}
+                onChange={(e) => setEmployeeCalc({...employeeCalc, hoursPerWeek: e.target.value})}
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+            <div>
+              <input
+                type="number"
+                placeholder="Avg hourly rate"
+                value={employeeCalc.hourlyRate}
+                onChange={(e) => setEmployeeCalc({...employeeCalc, hourlyRate: e.target.value})}
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+          </div>
+          <button
+            onClick={calculateEmployeeTime}
+            className="text-blue-600 text-sm font-medium hover:text-blue-700"
+          >
+            Calculate Annual Cost →
+          </button>
+        </div>
+
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Employee Time on R&D (Annual)
+            </label>
+            <input
+              type="number"
+              value={expenses.employeeTime}
+              onChange={(e) => setExpenses({...expenses, employeeTime: parseInt(e.target.value) || 0})}
+              className="w-full px-4 py-3 border-2 rounded-xl"
+              placeholder="0"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              AI Tool Subscriptions (Annual)
+            </label>
+            <input
+              type="number"
+              value={expenses.aiTools}
+              onChange={(e) => setExpenses({...expenses, aiTools: parseInt(e.target.value) || 0})}
+              className="w-full px-4 py-3 border-2 rounded-xl"
+              placeholder="ChatGPT, Claude, Jasper, etc."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Contractors & Consultants
+              <span className="text-xs text-gray-500 ml-2">(65% qualifies)</span>
+            </label>
+            <input
+              type="number"
+              value={expenses.contractors}
+              onChange={(e) => setExpenses({...expenses, contractors: parseInt(e.target.value) || 0})}
+              className="w-full px-4 py-3 border-2 rounded-xl"
+              placeholder="0"
+            />
+          </div>
+        </div>
+
+        <div className="bg-gray-50 rounded-xl p-6 mb-6">
+          <h3 className="font-semibold text-gray-900 mb-3">
+            Your Qualified Research Expenses (QRE)
+          </h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span>Employee Wages:</span>
+              <span className="font-medium">${qre.wages.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Contractor Costs (65%):</span>
+              <span className="font-medium">${Math.round(qre.contractorQualified).toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Supplies & Software:</span>
+              <span className="font-medium">${qre.supplies.toLocaleString()}</span>
+            </div>
+            <div className="border-t pt-2 flex justify-between font-semibold">
+              <span>Total QRE:</span>
+              <span className="text-green-600">${qre.total.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <button
+            onClick={prevStep}
+            className="flex-1 px-6 py-3 border-2 border-gray-300 rounded-xl"
+          >
+            Back
+          </button>
+          <button
+            onClick={handleContinue}
+            className="flex-1 bg-gradient-to-r from-blue-600 to-green-600 text-white
+                     py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl
+                     transition-all transform hover:scale-105"
+          >
+            Calculate My Tax Credits
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Step 5: Results
+const ResultsStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
+  const { calculations, companyInfo } = formData;
+  const totalBenefit = calculations.federalCredit;
+  
+  const calculatePrice = (creditAmount: number) => {
+    if (creditAmount < 10000) return 500;
+    if (creditAmount <= 50000) return 750;
+    if (creditAmount <= 100000) return 1000;
+    return 1500;
+  };
+  
+  const ourPrice = calculatePrice(calculations.federalCredit);
+  const roi = Math.round(totalBenefit / ourPrice);
+
+  return (
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-green-400 to-blue-500 
+                        rounded-full flex items-center justify-center">
+            <Check className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            {companyInfo.companyName}, Here's Your R&D Tax Credit!
+          </h2>
+        </div>
+
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 mb-8">
+          <div className="text-center">
+            <p className="text-lg text-gray-700 mb-4">Federal R&D Tax Credit</p>
+            <div className="text-5xl font-bold text-green-600 mb-2">
+              ${calculations.federalCredit.toLocaleString()}
+            </div>
+            <p className="text-sm text-gray-600">
+              6.5% of ${calculations.totalQRE.toLocaleString()} QRE
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-8 mb-8">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">
+            Your Return on Investment
+          </h3>
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p className="text-sm text-gray-600">Our Fee</p>
+              <p className="text-2xl font-bold">${ourPrice}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Your Credit</p>
+              <p className="text-3xl font-bold text-green-600">
+                ${totalBenefit.toLocaleString()}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">ROI</p>
+              <p className="text-3xl font-bold text-orange-600">{roi}x</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="border border-gray-200 rounded-xl p-6 mb-8">
+          <h3 className="font-semibold text-gray-900 mb-3">
+            Our Simple, Transparent Pricing
+          </h3>
+          <div className="space-y-2 text-sm">
+            <p>✓ One-time fee of ${ourPrice} (based on your credit amount)</p>
+            <p>✓ All documentation included</p>
+            <p>✓ IRS audit support included</p>
+            <p>✓ Additional years just $297 each</p>
+          </div>
+        </div>
+
+        <a href={`/checkout?email=${formData.email}&price=${ourPrice}&credit=${totalBenefit}`}>
+          <button className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white
+                           py-4 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl
+                           transition-all transform hover:scale-105 text-lg">
+            Claim My ${totalBenefit.toLocaleString()} in Tax Credits
+          </button>
+        </a>
+      </div>
+    </div>
+  );
+};
+
+// Main Calculator Component
+export default function AmazingCalculator() {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState({
+    activities: [],
+    companyInfo: {},
+    email: '',
+    expenses: {},
+    calculations: {}
+  });
+
+  const updateFormData = (data: any) => {
+    setFormData({ ...formData, ...data });
+  };
+
+  const nextStep = () => {
+    setCurrentStep(currentStep + 1);
+  };
+
+  const prevStep = () => {
+    setCurrentStep(currentStep - 1);
+  };
+
+  const steps = [
+    { number: 1, title: 'Qualification', icon: Check },
+    { number: 2, title: 'Business Info', icon: Building },
+    { number: 3, title: 'Email', icon: Mail },
+    { number: 4, title: 'Expenses', icon: DollarSign },
+    { number: 5, title: 'Results', icon: TrendingUp }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+      {/* Progress Bar */}
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {steps.map((step, index) => (
+              <div key={step.number} className="flex items-center">
+                <div className={`
+                  w-10 h-10 rounded-full flex items-center justify-center
+                  transition-all duration-300
+                  ${currentStep >= step.number 
+                    ? 'bg-gradient-to-r from-blue-600 to-green-600 text-white' 
+                    : 'bg-gray-200 text-gray-500'}
+                `}>
+                  {currentStep > step.number ? (
+                    <Check className="w-5 h-5" />
+                  ) : (
+                    step.number
+                  )}
+                </div>
+                {index < steps.length - 1 && (
+                  <div className={`w-full h-1 mx-2 ${
+                    currentStep > step.number ? 'bg-green-500' : 'bg-gray-200'
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Step Content */}
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {currentStep === 1 && (
+          <QualificationStep 
+            formData={formData} 
+            updateFormData={updateFormData} 
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {currentStep === 2 && (
+          <BusinessInfoStep 
+            formData={formData} 
+            updateFormData={updateFormData} 
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {currentStep === 3 && (
+          <EmailCaptureStep 
+            formData={formData} 
+            updateFormData={updateFormData} 
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {currentStep === 4 && (
+          <ExpenseStep 
+            formData={formData} 
+            updateFormData={updateFormData} 
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {currentStep === 5 && (
+          <ResultsStep 
+            formData={formData} 
+            updateFormData={updateFormData} 
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+      </div>
+    </div>
+  );
+}

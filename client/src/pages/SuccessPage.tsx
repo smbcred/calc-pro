@@ -13,7 +13,9 @@ const SuccessPage: React.FC = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Payment Successful!</h1>
           <p className="text-xl text-gray-600 mb-2">Your R&D Tax Credit filing package is confirmed</p>
           <p className="text-lg text-green-600 font-medium">Check your email for login instructions to access your dashboard</p>
-          <p className="text-lg text-blue-600">Order #: {new URLSearchParams(window.location.search).get('session_id')?.slice(-8) || 'CONFIRMED'}</p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-lg mt-2">
+            <span className="text-blue-700 font-medium">Order #: {new URLSearchParams(window.location.search).get('session_id')?.slice(-8) || 'CONFIRMED'}</span>
+          </div>
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">

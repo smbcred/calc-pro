@@ -461,8 +461,12 @@ const Dashboard: React.FC = () => {
               {/* Progress Tracker - Prominent Display */}
               <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
                 <div className="text-center mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Application Progress</h2>
-                  <p className="text-gray-600">Complete all sections to generate your R&D tax credit documentation</p>
+                  <h2 className="text-3xl font-bold text-gray-900 mb-3">Welcome to Your R&D Tax Credit Dashboard</h2>
+                  <p className="text-lg text-gray-600 mb-4">Complete the sections below to generate your professional IRS filing package</p>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-lg">
+                    <Clock className="w-5 h-5 text-blue-600" />
+                    <span className="text-blue-700 font-medium">Estimated completion time: 15-20 minutes</span>
+                  </div>
                 </div>
                 
                 <div className="grid md:grid-cols-4 gap-6">
@@ -483,11 +487,13 @@ const Dashboard: React.FC = () => {
                         )}
                       </div>
                       <h3 className="font-semibold text-gray-900 mb-1">Company Info</h3>
-                      <div className={`text-2xl font-bold mb-2 ${
+                      <p className="text-xs text-gray-500 text-center mb-2">Legal name, EIN, contact details</p>
+                      <div className={`text-2xl font-bold mb-1 ${
                         progressData.companyInfo === 100 ? 'text-green-600' : 'text-blue-600'
                       }`}>
                         {progressData.companyInfo}%
                       </div>
+                      <div className="text-xs text-gray-500 mb-2">~3 minutes</div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full transition-all duration-300 ${
@@ -518,11 +524,13 @@ const Dashboard: React.FC = () => {
                         )}
                       </div>
                       <h3 className="font-semibold text-gray-900 mb-1">R&D Activities</h3>
-                      <div className={`text-2xl font-bold mb-2 ${
+                      <p className="text-xs text-gray-500 text-center mb-2">Business description & R&D details</p>
+                      <div className={`text-2xl font-bold mb-1 ${
                         progressData.rdActivities === 100 ? 'text-green-600' : 'text-blue-600'
                       }`}>
                         {progressData.rdActivities}%
                       </div>
+                      <div className="text-xs text-gray-500 mb-2">~5 minutes</div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full transition-all duration-300 ${
@@ -553,11 +561,13 @@ const Dashboard: React.FC = () => {
                         )}
                       </div>
                       <h3 className="font-semibold text-gray-900 mb-1">Expenses</h3>
-                      <div className={`text-2xl font-bold mb-2 ${
+                      <p className="text-xs text-gray-500 text-center mb-2">Wages, contractors, supplies</p>
+                      <div className={`text-2xl font-bold mb-1 ${
                         progressData.expenses === 100 ? 'text-green-600' : 'text-blue-600'
                       }`}>
                         {progressData.expenses}%
                       </div>
+                      <div className="text-xs text-gray-500 mb-2">~7 minutes</div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full transition-all duration-300 ${
@@ -617,6 +627,50 @@ const Dashboard: React.FC = () => {
                       </p>
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* What Happens After Completion */}
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl shadow-lg p-8 border border-gray-100">
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">What Happens After You Complete Your Dashboard?</h3>
+                  <p className="text-gray-600">Here's your step-by-step path to receiving your IRS documents</p>
+                </div>
+                
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-white font-bold text-lg">1</span>
+                    </div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Automatic Review</h4>
+                    <p className="text-sm text-gray-600">Our system reviews your information for completeness and accuracy within 2 hours</p>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-white font-bold text-lg">2</span>
+                    </div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Document Generation</h4>
+                    <p className="text-sm text-gray-600">Professional IRS documents are generated and quality-checked within 24-48 hours</p>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-white font-bold text-lg">3</span>
+                    </div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Ready to File</h4>
+                    <p className="text-sm text-gray-600">You'll receive email notification when your documents are ready for download and filing</p>
+                  </div>
+                </div>
+                
+                <div className="mt-6 p-4 bg-white rounded-lg border border-blue-200">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Your package includes:</p>
+                      <p className="text-sm text-gray-600">Form 6765, Technical Narrative, QRE Workbook, Compliance Memo, and Record-keeping Checklist</p>
+                    </div>
+                  </div>
                 </div>
               </div>
 

@@ -47,7 +47,7 @@ function App() {
           <LandingPage />
         </Route>
         <Route path="/calculator">
-          <CreditCalculator customerEmail="" />
+          <Dashboard />
         </Route>
         <Route path="/checkout">
           <CheckoutPage calculationResults={calculationResults} />

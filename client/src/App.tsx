@@ -14,7 +14,6 @@ const IntakePage = lazy(() => import('./pages/IntakePage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const GatedIntakePortal = lazy(() => import('./pages/GatedIntakePortal'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
-const EmailTest = lazy(() => import('./pages/EmailTest'));
 
 // Create a loading component
 const PageLoader = () => (
@@ -24,7 +23,6 @@ const PageLoader = () => (
 );
 
 function App() {
-  const [calculationResults, setCalculationResults] = useState<any>(null);
   const [location] = useLocation();
 
   // Initialize analytics and monitoring
@@ -50,7 +48,7 @@ function App() {
           <AmazingCalculator />
         </Route>
         <Route path="/checkout">
-          <CheckoutPage calculationResults={calculationResults} />
+          <CheckoutPage />
         </Route>
         <Route path="/success">
           <SuccessPage />

@@ -1,0 +1,172 @@
+# Updated: Unused Code & Files to Remove (Using AmazingCalculator)
+
+## 1. **Duplicate/Backup CSS Files**
+These appear to be old versions of your CSS that are no longer needed:
+- `client/src/index.css.old`
+- `client/src/index.css.backup`
+
+**Action**: Delete these files. They contain the old design system.
+
+## 2. **OLD Calculator Components (Since Using AmazingCalculator)**
+
+### CreditCalculator.tsx ❌
+- **Status**: REPLACED by AmazingCalculator
+- **Location**: `client/src/components/CreditCalculator.tsx`
+- **Action**: DELETE - You're using AmazingCalculator now
+
+### MultiStepCalculator.tsx ❌
+- **Status**: REPLACED by AmazingCalculator
+- **Location**: `client/src/components/MultiStepCalculator.tsx`
+- **Action**: DELETE - Not needed
+
+### Update App.tsx
+- **Action**: Change the import from `CreditCalculator` to `AmazingCalculator`
+```tsx
+// Remove this:
+import CreditCalculator from './components/CreditCalculator';
+
+// Add this:
+import AmazingCalculator from './components/AmazingCalculator';
+
+// Update route:
+<Route path="/calculator">
+  <AmazingCalculator />
+</Route>
+```
+
+## 3. **Pages to Remove**
+
+### EmailTest Page
+- **Status**: Test page, no route
+- **Location**: `client/src/pages/EmailTest.tsx`
+- **Action**: DELETE if email testing is complete
+
+### IntakePage.tsx
+- **Status**: Replaced by GatedIntakePortal
+- **Location**: `client/src/pages/IntakePage.tsx`
+- **Route**: `/intake`
+- **Action**: DELETE - Using GatedIntakePortal instead
+
+### not-found.tsx
+- **Status**: Exists but not used (404 is handled inline)
+- **Location**: `client/src/pages/not-found.tsx`
+- **Action**: DELETE or use it instead of inline 404
+
+## 4. **Unused UI Components (shadcn/ui)**
+These are installed but not used:
+
+- `client/src/components/ui/checkbox.tsx` - Not imported
+- `client/src/components/ui/collapsible.tsx` - Not imported
+- `client/src/components/ui/pagination.tsx` - Not imported
+- `client/src/components/ui/sidebar.tsx` - Not imported (very large file)
+
+**Action**: DELETE these unused shadcn components
+
+## 5. **Dashboard Components (Check Usage)**
+Since you're using AmazingCalculator for the main flow:
+
+### QRECalculator.tsx
+- **Status**: Used in Dashboard only
+- **Action**: KEEP if Dashboard is still needed, otherwise DELETE
+
+### CreditCalculator.tsx (Different from main one)
+- **Status**: Used in Dashboard only
+- **Action**: KEEP if Dashboard is still needed, otherwise DELETE
+
+## 6. **CSS Classes to Remove**
+Since AmazingCalculator has its own styling, remove unused CSS:
+- Old calculator-specific classes
+- State credit styling (no longer needed)
+- Unused animation classes if not in AmazingCalculator
+
+## 7. **State/Props Cleanup in App.tsx**
+Remove unused state:
+```tsx
+// Remove these if not used by AmazingCalculator:
+const [calculationResults, setCalculationResults] = useState<any>(null);
+
+// Remove the prop passing:
+<CreditCalculator onResultsReady={setCalculationResults} />
+```
+
+## 8. **API Endpoints to Review**
+Check if these are still needed:
+- State credit calculation endpoints
+- Test endpoints (`/api/simple-email-test`)
+
+## 9. **Landing Page Calculator Section**
+- The landing page has its own basic calculator section
+- **Action**: Ensure it links to `/calculator` (AmazingCalculator) properly
+
+## Recommended Cleanup Commands
+
+```bash
+# Delete old CSS backups
+rm client/src/index.css.old
+rm client/src/index.css.backup
+
+# Delete old calculator components
+rm client/src/components/CreditCalculator.tsx
+rm client/src/components/MultiStepCalculator.tsx
+
+# Delete unused UI components
+rm client/src/components/ui/checkbox.tsx
+rm client/src/components/ui/collapsible.tsx
+rm client/src/components/ui/pagination.tsx
+rm client/src/components/ui/sidebar.tsx
+
+# Delete unused pages
+rm client/src/pages/not-found.tsx
+rm client/src/pages/IntakePage.tsx
+rm client/src/pages/EmailTest.tsx
+
+# Update imports in App.tsx
+# Change CreditCalculator import to AmazingCalculator
+```
+
+## App.tsx Updates Needed
+
+```tsx
+import { Route, Switch } from 'wouter';
+import LandingPage from './pages/LandingPage';
+import AmazingCalculator from './components/AmazingCalculator'; // Updated
+import CheckoutPage from './pages/CheckoutPage';
+import SuccessPage from './pages/SuccessPage';
+import LoginPage from './pages/LoginPage';
+import GatedIntakePortal from './pages/GatedIntakePortal';
+import Dashboard from './pages/Dashboard';
+// Remove unused imports
+
+function App() {
+  // Remove unused state if not needed by AmazingCalculator
+  
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Switch>
+        <Route path="/">
+          <LandingPage />
+        </Route>
+        <Route path="/calculator">
+          <AmazingCalculator /> {/* Updated */}
+        </Route>
+        <Route path="/checkout">
+          <CheckoutPage />
+        </Route>
+        {/* ... rest of routes ... */}
+      </Switch>
+    </div>
+  );
+}
+```
+
+## Benefits of This Cleanup
+
+1. **Removes ~10 unused files**
+2. **Eliminates confusion** about which calculator to use
+3. **Reduces bundle size** significantly
+4. **Simplifies maintenance** - only one calculator to update
+5. **Cleaner codebase** - no duplicate functionality
+
+## Note on Dashboard
+
+If you're still using the Dashboard with its own QRECalculator and CreditCalculator components, keep those. But if the Dashboard is being replaced by the main AmazingCalculator flow, you can remove those components too.

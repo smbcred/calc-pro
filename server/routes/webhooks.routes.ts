@@ -56,7 +56,7 @@ router.post('/stripe', asyncHandler(async (req, res) => {
  *   post:
  *     summary: Trigger document generation workflow
  *     tags: [Webhooks]
- *     description: Webhook endpoint for Make.com to trigger after intake completion
+ *     description: Webhook endpoint for Make.com to trigger after dashboard completion
  *     requestBody:
  *       required: true
  *       content:
@@ -73,7 +73,7 @@ router.post('/stripe', asyncHandler(async (req, res) => {
  *                 type: string
  *               trigger:
  *                 type: string
- *                 enum: ['intake_complete', 'manual_regenerate']
+ *                 enum: ['dashboard_complete', 'manual_regenerate']
  *     responses:
  *       200:
  *         description: Workflow triggered

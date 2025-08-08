@@ -40,9 +40,9 @@ export const metrics = {
     registers: [register],
   }),
 
-  intakeFormCompletions: new Counter({
-    name: 'intake_form_completions_total',
-    help: 'Total number of intake form completions',
+  dashboardFormCompletions: new Counter({
+    name: 'dashboard_form_completions_total',
+    help: 'Total number of dashboard form completions',
     labelNames: ['company_size', 'entity_type'],
     registers: [register],
   }),

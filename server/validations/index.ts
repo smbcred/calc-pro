@@ -60,8 +60,8 @@ export const expenseSaveSchema = z.object({
   })
 });
 
-// Intake form validation schema
-export const intakeFormSchema = z.object({
+// Dashboard form validation schema
+export const dashboardFormSchema = z.object({
   email: z.string().email('Invalid email address'),
   formData: z.object({
     entityName: z.string().min(1, 'Entity name is required'),

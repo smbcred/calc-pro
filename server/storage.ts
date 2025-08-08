@@ -1,14 +1,14 @@
 import {
   users,
   customers,
-  intakeSubmissions,
+  dashboardSubmissions,
   calculations,
   type User,
   type Customer,
-  type IntakeSubmission,
+  type DashboardSubmission,
   type InsertUser,
   type InsertCustomer,
-  type InsertIntakeSubmission,
+  type InsertDashboardSubmission,
   type InsertCalculation,
   type SelectCalculation,
 } from "@shared/schema";
@@ -26,10 +26,10 @@ export interface IStorage {
   createCustomer(customer: InsertCustomer): Promise<Customer>;
   updateCustomerAccess(email: string, hasAccess: boolean, sessionId?: string, totalPaid?: number, selectedYears?: any): Promise<Customer>;
   
-  // Intake submission operations
-  getIntakeSubmissionsByCustomer(customerId: string): Promise<IntakeSubmission[]>;
-  createIntakeSubmission(submission: InsertIntakeSubmission): Promise<IntakeSubmission>;
-  updateIntakeSubmissionStatus(id: string, status: string, airtableRecordId?: string): Promise<IntakeSubmission>;
+  // Dashboard submission operations
+  getDashboardSubmissionsByCustomer(customerId: string): Promise<DashboardSubmission[]>;
+  createDashboardSubmission(submission: InsertDashboardSubmission): Promise<DashboardSubmission>;
+  updateDashboardSubmissionStatus(id: string, status: string, airtableRecordId?: string): Promise<DashboardSubmission>;
   
   // Calculation operations
   getCalculationsByEmail(email: string): Promise<SelectCalculation[]>;
@@ -87,17 +87,17 @@ export class DatabaseStorage implements IStorage {
     return customer;
   }
 
-  // Intake submission operations
-  async getIntakeSubmissionsByCustomer(customerId: string): Promise<IntakeSubmission[]> {
-    return await db.select().from(intakeSubmissions).where(eq(intakeSubmissions.customerId, customerId));
+  // Dashboard submission operations
+  async getDashboardSubmissionsByCustomer(customerId: string): Promise<DashboardSubmission[]> {
+    return await db.select().from(dashboardSubmissions).where(eq(dashboardSubmissions.customerId, customerId));
   }
 
-  async createIntakeSubmission(submissionData: InsertIntakeSubmission): Promise<IntakeSubmission> {
-    const [submission] = await db.insert(intakeSubmissions).values(submissionData).returning();
+  async createDashboardSubmission(submissionData: InsertDashboardSubmission): Promise<DashboardSubmission> {
+    const [submission] = await db.insert(dashboardSubmissions).values(submissionData).returning();
     return submission;
   }
 
-  async updateIntakeSubmissionStatus(id: string, status: string, airtableRecordId?: string): Promise<IntakeSubmission> {
+  async updateDashboardSubmissionStatus(id: string, status: string, airtableRecordId?: string): Promise<DashboardSubmission> {
     const updateData: any = {
       submissionStatus: status,
       updatedAt: new Date(),
@@ -105,9 +105,9 @@ export class DatabaseStorage implements IStorage {
     if (airtableRecordId) updateData.airtableRecordId = airtableRecordId;
 
     const [submission] = await db
-      .update(intakeSubmissions)
+      .update(dashboardSubmissions)
       .set(updateData)
-      .where(eq(intakeSubmissions.id, id))
+      .where(eq(dashboardSubmissions.id, id))
       .returning();
     return submission;
   }

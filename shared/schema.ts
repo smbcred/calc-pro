@@ -22,8 +22,8 @@ export const customers = pgTable("customers", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Intake submissions tracking
-export const intakeSubmissions = pgTable("intake_submissions", {
+// Dashboard submissions tracking
+export const dashboardSubmissions = pgTable("dashboard_submissions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   customerId: varchar("customer_id").references(() => customers.id).notNull(),
   formData: jsonb("form_data").notNull(),
@@ -58,8 +58,8 @@ export const insertCustomerSchema = createInsertSchema(customers).omit({
   updatedAt: true,
 });
 
-// Schema exports for intake submissions
-export const insertIntakeSubmissionSchema = createInsertSchema(intakeSubmissions).omit({
+// Schema exports for dashboard submissions
+export const insertDashboardSubmissionSchema = createInsertSchema(dashboardSubmissions).omit({
   id: true,
   submittedAt: true,
   updatedAt: true,
@@ -76,7 +76,7 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertCustomer = z.infer<typeof insertCustomerSchema>;
 export type Customer = typeof customers.$inferSelect;
-export type InsertIntakeSubmission = z.infer<typeof insertIntakeSubmissionSchema>;
-export type IntakeSubmission = typeof intakeSubmissions.$inferSelect;
+export type InsertDashboardSubmission = z.infer<typeof insertDashboardSubmissionSchema>;
+export type DashboardSubmission = typeof dashboardSubmissions.$inferSelect;
 export type InsertCalculation = z.infer<typeof insertCalculationSchema>;
 export type SelectCalculation = typeof calculations.$inferSelect;

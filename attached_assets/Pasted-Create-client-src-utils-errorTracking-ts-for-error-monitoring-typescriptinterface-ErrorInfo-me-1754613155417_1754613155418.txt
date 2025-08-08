@@ -1,0 +1,373 @@
+Create client/src/utils/errorTracking.ts for error monitoring:
+
+typescriptinterface ErrorInfo {
+  message: string;
+  stack?: string;
+  componentStack?: string;
+  url?: string;
+  userAgent?: string;
+  timestamp: string;
+  userId?: string;
+  sessionId?: string;
+}
+
+class ErrorTracker {
+  private queue: ErrorInfo[] = [];
+  private maxQueueSize = 10;
+  private endpoint = '/api/errors';
+
+  // Capture and log errors
+  captureError(error: Error, errorInfo?: any) {
+    const errorData: ErrorInfo = {
+      message: error.message,
+      stack: error.stack,
+      componentStack: errorInfo?.componentStack,
+      url: window.location.href,
+      userAgent: navigator.userAgent,
+      timestamp: new Date().toISOString(),
+      userId: sessionStorage.getItem('userId') || undefined,
+      sessionId: sessionStorage.getItem('sessionId') || undefined,
+    };
+
+    console.error('Error captured:', errorData);
+    this.queue.push(errorData);
+
+    // Send errors in batches
+    if (this.queue.length >= this.maxQueueSize) {
+      this.flush();
+    }
+  }
+
+  // Send errors to server
+  async flush() {
+    if (this.queue.length === 0) return;
+
+    const errors = [...this.queue];
+    this.queue = [];
+
+    try {
+      await fetch(this.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ errors }),
+      });
+    } catch (err) {
+      console.error('Failed to send errors to server:', err);
+      // Re-add errors to queue if sending failed
+      this.queue.unshift(...errors);
+    }
+  }
+
+  // Setup automatic flushing
+  setupAutoFlush() {
+    // Flush every 30 seconds
+    setInterval(() => this.flush(), 30000);
+
+    // Flush on page unload
+    window.addEventListener('beforeunload', () => this.flush());
+  }
+}
+
+export const errorTracker = new ErrorTracker();
+errorTracker.setupAutoFlush();
+
+// React Error Boundary component
+import React, { Component, ReactNode } from 'react';
+
+interface Props {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+
+interface State {
+  hasError: boolean;
+  error?: Error;
+}
+
+export class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    errorTracker.captureError(error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center p-8">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">
+              Something went wrong
+            </h1>
+            <p className="text-gray-600 mb-4">
+              We've been notified and are working on it.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Reload Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+Create client/src/utils/performanceMonitoring.ts:
+
+typescriptinterface PerformanceMetric {
+  name: string;
+  value: number;
+  rating: 'good' | 'needs-improvement' | 'poor';
+  timestamp: string;
+}
+
+class PerformanceMonitor {
+  private metrics: PerformanceMetric[] = [];
+  private endpoint = '/api/metrics';
+
+  // Monitor Core Web Vitals
+  initWebVitals() {
+    if ('web-vitals' in window) return;
+
+    import('web-vitals').then(({ onCLS, onFID, onFCP, onLCP, onTTFB }) => {
+      onCLS(this.handleMetric.bind(this));
+      onFID(this.handleMetric.bind(this));
+      onFCP(this.handleMetric.bind(this));
+      onLCP(this.handleMetric.bind(this));
+      onTTFB(this.handleMetric.bind(this));
+    });
+  }
+
+  // Handle metric reporting
+  private handleMetric(metric: any) {
+    const performanceMetric: PerformanceMetric = {
+      name: metric.name,
+      value: Math.round(metric.value),
+      rating: metric.rating || this.getRating(metric.name, metric.value),
+      timestamp: new Date().toISOString(),
+    };
+
+    this.metrics.push(performanceMetric);
+    console.log(`Performance metric: ${metric.name} = ${metric.value}ms (${performanceMetric.rating})`);
+
+    // Send metrics in batches
+    if (this.metrics.length >= 5) {
+      this.sendMetrics();
+    }
+  }
+
+  // Determine rating based on thresholds
+  private getRating(name: string, value: number): 'good' | 'needs-improvement' | 'poor' {
+    const thresholds: Record<string, { good: number; poor: number }> = {
+      FCP: { good: 1800, poor: 3000 },
+      LCP: { good: 2500, poor: 4000 },
+      FID: { good: 100, poor: 300 },
+      CLS: { good: 0.1, poor: 0.25 },
+      TTFB: { good: 800, poor: 1800 },
+    };
+
+    const threshold = thresholds[name];
+    if (!threshold) return 'needs-improvement';
+
+    if (value <= threshold.good) return 'good';
+    if (value >= threshold.poor) return 'poor';
+    return 'needs-improvement';
+  }
+
+  // Send metrics to server
+  private async sendMetrics() {
+    if (this.metrics.length === 0) return;
+
+    const metricsToSend = [...this.metrics];
+    this.metrics = [];
+
+    try {
+      await fetch(this.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          metrics: metricsToSend,
+          url: window.location.href,
+          userAgent: navigator.userAgent,
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to send metrics:', err);
+    }
+  }
+
+  // Track custom performance marks
+  measureTime(markName: string): () => void {
+    const startMark = `${markName}-start`;
+    performance.mark(startMark);
+
+    return () => {
+      const endMark = `${markName}-end`;
+      performance.mark(endMark);
+      performance.measure(markName, startMark, endMark);
+
+      const measure = performance.getEntriesByName(markName)[0];
+      if (measure) {
+        this.handleMetric({
+          name: markName,
+          value: measure.duration,
+        });
+      }
+    };
+  }
+}
+
+export const performanceMonitor = new PerformanceMonitor();
+
+Update client/src/App.tsx to use monitoring:
+
+typescriptimport { useEffect } from 'react';
+import { useLocation } from 'wouter';
+import { ErrorBoundary } from './utils/errorTracking';
+import { initGA, trackPageView } from './utils/analytics';
+import { performanceMonitor } from './utils/performanceMonitoring';
+
+function App() {
+  const [location] = useLocation();
+  const [calculationResults, setCalculationResults] = useState<any>(null);
+
+  // Initialize analytics and monitoring
+  useEffect(() => {
+    initGA();
+    performanceMonitor.initWebVitals();
+  }, []);
+
+  // Track page views
+  useEffect(() => {
+    trackPageView(location);
+  }, [location]);
+
+  return (
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-50">
+        <Suspense fallback={<PageLoader />}>
+          {/* Your routes */}
+        </Suspense>
+      </div>
+    </ErrorBoundary>
+  );
+}
+
+Create server endpoints for collecting metrics in server/routes/monitoring.routes.ts:
+
+typescriptimport { Router } from 'express';
+import { asyncHandler } from '../middleware/errorHandler';
+import { logger } from '../utils/logger';
+
+const router = Router();
+
+// Collect client errors
+router.post('/errors', asyncHandler(async (req, res) => {
+  const { errors } = req.body;
+  
+  // Log errors for monitoring
+  errors.forEach((error: any) => {
+    logger.error('Client error', {
+      ...error,
+      source: 'frontend',
+    });
+  });
+
+  res.json({ success: true });
+}));
+
+// Collect performance metrics
+router.post('/metrics', asyncHandler(async (req, res) => {
+  const { metrics, url, userAgent } = req.body;
+  
+  // Log metrics for monitoring
+  metrics.forEach((metric: any) => {
+    logger.info('Performance metric', {
+      ...metric,
+      url,
+      userAgent,
+      source: 'frontend',
+    });
+  });
+
+  res.json({ success: true });
+}));
+
+// Dashboard endpoint for viewing metrics
+router.get('/metrics/dashboard', asyncHandler(async (req, res) => {
+  // In a real app, you'd aggregate metrics from your database
+  res.json({
+    message: 'Metrics dashboard endpoint - implement aggregation logic here',
+    recentErrors: [],
+    performanceMetrics: [],
+    uptime: process.uptime(),
+  });
+}));
+
+export default router;
+
+Create a .env template file for environment variables:
+
+bash# Analytics
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+
+# Monitoring
+ENABLE_ERROR_TRACKING=true
+ENABLE_PERFORMANCE_MONITORING=true
+
+# Existing variables
+DATABASE_URL=
+AIRTABLE_API_KEY=
+AIRTABLE_BASE_ID=
+
+Add user session tracking in client/src/utils/sessionTracking.ts:
+
+typescriptimport { v4 as uuidv4 } from 'uuid';
+
+class SessionTracker {
+  private sessionId: string;
+  private sessionStart: number;
+  
+  constructor() {
+    this.sessionId = sessionStorage.getItem('sessionId') || uuidv4();
+    this.sessionStart = Date.now();
+    sessionStorage.setItem('sessionId', this.sessionId);
+  }
+
+  getSessionId(): string {
+    return this.sessionId;
+  }
+
+  getSessionDuration(): number {
+    return Date.now() - this.sessionStart;
+  }
+
+  trackUserAction(action: string, metadata?: any) {
+    const actionData = {
+      sessionId: this.sessionId,
+      action,
+      timestamp: new Date().toISOString(),
+      duration: this.getSessionDuration(),
+      ...metadata,
+    };
+
+    // Send to analytics
+    if (window.gtag) {
+      window.gtag('event', action, actionData);
+    }
+  }
+}
+
+export const sessionTracker = new SessionTracker();

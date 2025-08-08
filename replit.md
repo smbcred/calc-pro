@@ -11,6 +11,7 @@ This is a React-based R&D Tax Credit Calculator application that helps businesse
 - **Document Delivery System**: Built comprehensive documents page displaying download links for generated files (Form 6765 PDF, Technical Narrative, QRE Workbook, Compliance Memo, Record-keeping Checklist) with S3 storage and Airtable download tracking (August 7, 2025)
 - **Smart Recommendations Engine**: Implemented intelligent prompts throughout forms based on user inputs, including role-based R&D activity suggestions, industry-specific expense recommendations, and contextual guidance for maximizing credit eligibility (August 7, 2025)
 - **Risk Assessment System**: Comprehensive risk scoring that analyzes data patterns and flags high-risk items like unusual expense ratios, very high R&D percentages, and missing documentation with friendly warnings and actionable suggestions (August 7, 2025)
+- **Comprehensive Monitoring System**: Full-stack error tracking and performance monitoring with React Error Boundaries, Core Web Vitals tracking (CLS, INP, FCP, LCP, TTFB), automated error batching and reporting, session tracking with UUIDs, and server-side logging endpoints (August 8, 2025)
 
 # User Preferences
 
@@ -66,6 +67,14 @@ Preferred communication style: Simple, everyday language.
 - **Development Middleware**: Error overlay and debugging tools for enhanced developer experience
 - **Replit Integration**: Native support for Replit development environment with cartographer plugin
 
+## Monitoring & Error Tracking
+- **React Error Boundary**: Application-wide error boundary component that catches JavaScript errors, logs them with stack traces, and displays fallback UI
+- **Core Web Vitals Monitoring**: Automated tracking of performance metrics including Cumulative Layout Shift (CLS), Interaction to Next Paint (INP), First Contentful Paint (FCP), Largest Contentful Paint (LCP), and Time to First Byte (TTFB)
+- **Error Tracking System**: Batched error reporting with automatic retry, user session correlation, and detailed error context (URL, user agent, timestamp, component stack)
+- **Session Management**: UUID-based session tracking with user action logging and analytics integration
+- **Performance Analytics**: Custom performance marks and measurements with automatic rating classification (good/needs-improvement/poor)
+- **Server-side Logging**: Express routes for collecting client errors and performance metrics with structured logging
+
 # External Dependencies
 
 ## Core Framework Dependencies
@@ -93,6 +102,10 @@ Preferred communication style: Simple, everyday language.
 - **clsx**: Conditional className utility
 - **date-fns**: Modern date utility library
 - **TanStack Query**: Powerful data synchronization for React applications
+
+## Monitoring & Analytics Dependencies
+- **web-vitals**: Core Web Vitals measurement library for performance monitoring
+- **uuid**: UUID generation for session tracking and unique identifiers
 
 ## Development Tools
 - **TypeScript**: Static type checking and enhanced developer experience

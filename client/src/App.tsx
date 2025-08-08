@@ -1,6 +1,9 @@
-import { lazy, Suspense, useState } from 'react';
-import { Route, Switch } from 'wouter';
+import { lazy, Suspense, useState, useEffect } from 'react';
+import { Route, Switch, useLocation } from 'wouter';
 import { LoadingScreen } from './components/LoadingComponents';
+import { ErrorBoundary } from './utils/errorTracking';
+import { initGA, trackPageView } from './utils/analytics';
+import { performanceMonitor } from './utils/performanceMonitoring';
 
 // Lazy load all page components
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -22,9 +25,22 @@ const PageLoader = () => (
 
 function App() {
   const [calculationResults, setCalculationResults] = useState<any>(null);
+  const [location] = useLocation();
+
+  // Initialize analytics and monitoring
+  useEffect(() => {
+    initGA();
+    performanceMonitor.initWebVitals();
+  }, []);
+
+  // Track page views
+  useEffect(() => {
+    trackPageView(location);
+  }, [location]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-50">
       <Suspense fallback={<PageLoader />}>
         <Switch>
         <Route path="/">
@@ -65,7 +81,8 @@ function App() {
         </Route>
         </Switch>
       </Suspense>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }
 

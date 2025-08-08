@@ -9,6 +9,7 @@ import companyRoutes from './routes/company.routes';
 import expenseRoutes from './routes/expense.routes';
 import reviewRoutes from './routes/review.routes';
 import emailRoutes from './routes/email.routes';
+import monitoringRoutes from './routes/monitoring.routes';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -20,6 +21,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/expense', expenseRoutes);
   app.use('/api', reviewRoutes);
   app.use('/api/email', emailRoutes);
+  app.use('/api', monitoringRoutes);
 
   const httpServer = createServer(app);
 

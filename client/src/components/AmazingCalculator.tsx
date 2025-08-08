@@ -11,6 +11,12 @@ interface FormData {
     revenue: string;
     foundedYear: string;
     rdStartYear: string;
+    // New 2025 fields
+    businessStructure: "C-Corp" | "S-Corp" | "LLC" | "Sole Prop" | "Partnership" | "";
+    annualRevenue: "Under $1M" | "$1M-$5M" | "$5M-$25M" | "Over $25M" | "";
+    yearsInBusiness: number;
+    hadRevenueThreeYearsAgo: boolean;
+    primaryIndustry: "Software/Tech" | "Professional Services" | "Manufacturing" | "Healthcare" | "Retail/Ecommerce" | "Other" | "";
   };
   email?: string;
   estimatedRange?: {
@@ -30,10 +36,26 @@ interface FormData {
   results?: {
     totalQRE: number;
     federalCredit: number;
+    deductionValue: number;
     stateCredit: number;
     totalBenefit: number;
     price: number;
     savingsAmount: number;
+    creditRate: {
+      rate: number;
+      method: string;
+      description: string;
+      canOffsetPayroll: boolean;
+      payrollOffsetLimit: number;
+    };
+    breakdown: {
+      qualifiedEmployeeTime: number;
+      qualifiedAiTools: number;
+      qualifiedContractors: number;
+      qualifiedSoftware: number;
+      qualifiedTraining: number;
+    };
+    confidenceScore: number;
   };
 }
 
@@ -48,7 +70,13 @@ const AmazingCalculator: React.FC = () => {
       employeeCount: '',
       revenue: '',
       foundedYear: '',
-      rdStartYear: '2025'
+      rdStartYear: '2025',
+      // New 2025 fields
+      businessStructure: '',
+      annualRevenue: '',
+      yearsInBusiness: 0,
+      hadRevenueThreeYearsAgo: false,
+      primaryIndustry: ''
     },
     expenses: {
       employeeTime: '0',
@@ -135,35 +163,144 @@ const AmazingCalculator: React.FC = () => {
     };
   };
 
+  // 2025 Tax Law: Dynamic Federal Credit Rate Calculation
+  const calculateFederalCreditRate = (profile: FormData['companyInfo']) => {
+    const isQSB = profile.annualRevenue !== "Over $25M" && profile.annualRevenue !== "$5M-$25M" && profile.yearsInBusiness < 5;
+    const isStartup = profile.yearsInBusiness < 5 && !profile.hadRevenueThreeYearsAgo;
+    
+    if (isStartup) {
+      return {
+        rate: 0.14,
+        method: "Startup Method",
+        description: "14% credit rate for qualifying startups",
+        canOffsetPayroll: true,
+        payrollOffsetLimit: 500000
+      };
+    } else if (isQSB) {
+      return {
+        rate: 0.10,
+        method: "Small Business Enhanced Rate",
+        description: "10% effective rate with payroll tax offset option",
+        canOffsetPayroll: true,
+        payrollOffsetLimit: 500000
+      };
+    } else {
+      return {
+        rate: 0.065,
+        method: "Alternative Simplified Credit",
+        description: "6.5% standard rate for established businesses",
+        canOffsetPayroll: false,
+        payrollOffsetLimit: 0
+      };
+    }
+  };
+
+  // Industry-specific qualification rates
+  const getQualificationRates = (industry: string) => {
+    const rates = {
+      "Software/Tech": {
+        employeeTime: 0.90,
+        contractors: 0.65,
+        software: 1.0,
+        aiTools: 1.0,
+        training: 1.0
+      },
+      "Professional Services": {
+        employeeTime: 0.75,
+        contractors: 0.65,
+        software: 0.80,
+        aiTools: 1.0,
+        training: 1.0
+      },
+      "Manufacturing": {
+        employeeTime: 0.70,
+        contractors: 0.65,
+        software: 0.90,
+        aiTools: 0.90,
+        training: 1.0
+      },
+      "default": {
+        employeeTime: 0.80,
+        contractors: 0.65,
+        software: 0.90,
+        aiTools: 1.0,
+        training: 1.0
+      }
+    };
+    return rates[industry as keyof typeof rates] || rates.default;
+  };
+
+  // Calculate Section 174 deduction value
+  const calculateDeductionValue = (totalQRE: number, businessStructure: string) => {
+    let taxRate;
+    switch(businessStructure) {
+      case "C-Corp":
+        taxRate = 0.21;
+        break;
+      case "S-Corp":
+      case "LLC":
+        taxRate = 0.29;
+        break;
+      default:
+        taxRate = 0.25;
+    }
+    return Math.round(totalQRE * taxRate);
+  };
+
+  // Calculate confidence score
+  const calculateConfidenceScore = (qre: number, activities: string[], expenses: FormData['expenses']) => {
+    let score = 60; // Base score
+    
+    // Activity diversity bonus
+    if (activities.length >= 4) score += 15;
+    else if (activities.length >= 2) score += 10;
+    
+    // Reasonable expense allocation
+    const totalExpenses = Object.values(expenses).reduce((sum, exp) => sum + (parseFloat(exp.replace(/,/g, '')) || 0), 0);
+    if (qre / totalExpenses > 0.5 && qre / totalExpenses < 0.9) score += 10;
+    
+    // Documentation strength
+    if (parseFloat(expenses.employeeTime.replace(/,/g, '')) > 0) score += 5;
+    if (parseFloat(expenses.contractors.replace(/,/g, '')) > 0) score += 5;
+    
+    return Math.min(100, score);
+  };
+
   const calculateResults = async () => {
     setIsCalculating(true);
     
     try {
-      // Calculate total QRE with proper qualification rules
+      // Parse expense values
       const employeeTime = parseFloat((formData.expenses.employeeTime || '0').replace(/,/g, '')) || 0;
       const aiTools = parseFloat((formData.expenses.aiTools || '0').replace(/,/g, '')) || 0;
       const contractors = parseFloat((formData.expenses.contractors || '0').replace(/,/g, '')) || 0;
       const software = parseFloat((formData.expenses.software || '0').replace(/,/g, '')) || 0;
       const training = parseFloat((formData.expenses.training || '0').replace(/,/g, '')) || 0;
       
-      // Apply IRS qualification percentages
-      const qualifiedEmployeeTime = employeeTime * 0.8; // 80% qualification rate
-      const qualifiedAiTools = aiTools * 1.0; // 100% - direct R&D tools
-      const qualifiedContractors = contractors * 0.65; // 65% IRS limit
-      const qualifiedSoftware = software * 1.0; // 100% - supporting software
-      const qualifiedTraining = training * 1.0; // 100% - R&D training
+      // Get industry-specific qualification rates
+      const qualRates = getQualificationRates(formData.companyInfo.primaryIndustry);
+      
+      // Apply qualification percentages
+      const qualifiedEmployeeTime = employeeTime * qualRates.employeeTime;
+      const qualifiedAiTools = aiTools * qualRates.aiTools;
+      const qualifiedContractors = contractors * qualRates.contractors;
+      const qualifiedSoftware = software * qualRates.software;
+      const qualifiedTraining = training * qualRates.training;
       
       const totalQRE = qualifiedEmployeeTime + qualifiedAiTools + qualifiedContractors + qualifiedSoftware + qualifiedTraining;
       
-      // Federal credit calculation (6.5% rate)
-      const federalRate = 0.065;
-      const federalCredit = Math.round(totalQRE * federalRate);
+      // Get dynamic credit rate based on business profile
+      const creditRate = calculateFederalCreditRate(formData.companyInfo);
+      const federalCredit = Math.round(totalQRE * creditRate.rate);
       
-      // No state credits in this version
+      // Calculate Section 174 deduction value
+      const deductionValue = calculateDeductionValue(totalQRE, formData.companyInfo.businessStructure);
+      
+      // State credits (placeholder)
       const stateCredit = 0;
-      const totalBenefit = federalCredit;
+      const totalBenefit = federalCredit + deductionValue + stateCredit;
       
-      // Dynamic pricing based on credit amount
+      // Dynamic pricing based on federal credit amount
       let price = 500;
       if (federalCredit >= 100000) price = 1500;
       else if (federalCredit >= 50000) price = 1000;
@@ -171,20 +308,26 @@ const AmazingCalculator: React.FC = () => {
       
       const savingsAmount = Math.max(0, totalBenefit - price);
       
+      // Calculate confidence score
+      const confidenceScore = calculateConfidenceScore(totalQRE, formData.activities, formData.expenses);
+      
       const results = {
         totalQRE: Math.round(totalQRE),
         federalCredit,
+        deductionValue,
         stateCredit,
         totalBenefit,
         price,
         savingsAmount,
+        creditRate,
         breakdown: {
           qualifiedEmployeeTime: Math.round(qualifiedEmployeeTime),
           qualifiedAiTools: Math.round(qualifiedAiTools),
           qualifiedContractors: Math.round(qualifiedContractors),
           qualifiedSoftware: Math.round(qualifiedSoftware),
           qualifiedTraining: Math.round(qualifiedTraining)
-        }
+        },
+        confidenceScore
       };
       
       updateFormData({ results });
@@ -193,6 +336,7 @@ const AmazingCalculator: React.FC = () => {
       localStorage.setItem('rd_calculation_results', JSON.stringify({
         federalCredit,
         totalQRE: Math.round(totalQRE),
+        totalBenefit,
         savingsAmount,
         price,
         tier: price >= 1500 ? 'Enterprise' : price >= 1000 ? 'Growth' : price >= 750 ? 'Professional' : 'Starter'
@@ -868,7 +1012,13 @@ const BusinessInfoStep: React.FC<{
     employeeCount: formData.companyInfo?.employeeCount || '',
     revenue: formData.companyInfo?.revenue || '',
     foundedYear: formData.companyInfo?.foundedYear || '',
-    rdStartYear: formData.companyInfo?.rdStartYear || '2025'
+    rdStartYear: formData.companyInfo?.rdStartYear || '2025',
+    // New 2025 tax law fields
+    businessStructure: formData.companyInfo?.businessStructure || '',
+    annualRevenue: formData.companyInfo?.annualRevenue || '',
+    yearsInBusiness: formData.companyInfo?.yearsInBusiness || 0,
+    hadRevenueThreeYearsAgo: formData.companyInfo?.hadRevenueThreeYearsAgo || false,
+    primaryIndustry: formData.companyInfo?.primaryIndustry || ''
   });
 
   const handleNext = () => {
@@ -887,10 +1037,10 @@ const BusinessInfoStep: React.FC<{
             <Building2 className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-6">
-            Tell Us About Your Business
+            Business Profile for 2025 Tax Law
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Help us calculate your R&D credit potential with some basic business information. This data helps us provide accurate estimates.
+            🆕 New for 2025: Enhanced credit rates! Startups can get up to 14%, small businesses 10%, and established companies 6.5%. We need these details to determine your exact rate.
           </p>
         </div>
 
@@ -909,29 +1059,65 @@ const BusinessInfoStep: React.FC<{
               placeholder="Enter your company name"
             />
           </div>
+          
+          {/* Business Structure & Years in Business */}
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="group">
+              <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-blue-600" />
+                Business Structure *
+              </label>
+              <select
+                value={companyData.businessStructure}
+                onChange={(e) => setCompanyData({...companyData, businessStructure: e.target.value as any})}
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 group-hover:border-gray-300 bg-white"
+              >
+                <option value="">Select business structure</option>
+                <option value="C-Corp">C-Corporation</option>
+                <option value="S-Corp">S-Corporation</option>
+                <option value="LLC">LLC</option>
+                <option value="Sole Prop">Sole Proprietorship</option>
+                <option value="Partnership">Partnership</option>
+              </select>
+            </div>
+            <div className="group">
+              <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                <Calculator className="w-4 h-4 text-blue-600" />
+                Years in Business *
+              </label>
+              <input
+                type="number"
+                value={companyData.yearsInBusiness || ''}
+                onChange={(e) => setCompanyData({...companyData, yearsInBusiness: parseInt(e.target.value) || 0})}
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 group-hover:border-gray-300"
+                placeholder="5"
+                min="0"
+                max="50"
+              />
+            </div>
+          </div>
 
-          {/* Industry & Employee Count */}
+          {/* Primary Industry & Employee Count */}
           <div className="grid md:grid-cols-2 gap-8">
             <div className="group">
               <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-blue-600" />
-                Industry *
+                Primary Industry *
               </label>
               <select
-                value={companyData.industry}
-                onChange={(e) => setCompanyData({...companyData, industry: e.target.value})}
+                value={companyData.primaryIndustry}
+                onChange={(e) => setCompanyData({...companyData, primaryIndustry: e.target.value as any})}
                 className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 group-hover:border-gray-300 bg-white"
               >
-                <option value="">Select your industry</option>
-                <option value="Software">Software & Technology</option>
-                <option value="E-commerce">E-commerce & Retail</option>
-                <option value="Marketing">Marketing & Advertising</option>
-                <option value="Consulting">Consulting & Services</option>
-                <option value="Healthcare">Healthcare</option>
+                <option value="">Select primary industry</option>
+                <option value="Software/Tech">Software & Technology</option>
+                <option value="Professional Services">Professional Services</option>
+                <option value="Healthcare">Healthcare & Life Sciences</option>
                 <option value="Manufacturing">Manufacturing</option>
-                <option value="Real Estate">Real Estate</option>
+                <option value="Retail/Ecommerce">E-commerce & Retail</option>
                 <option value="Other">Other</option>
               </select>
+              <p className="text-xs text-gray-500 mt-2">💡 Affects qualification rates for R&D expenses</p>
             </div>
             <div className="group">
               <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
@@ -953,25 +1139,56 @@ const BusinessInfoStep: React.FC<{
             </div>
           </div>
 
-          {/* Revenue Range */}
-          <div className="group">
-            <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-blue-600" />
-              Annual Revenue *
-            </label>
-            <select
-              value={companyData.revenue}
-              onChange={(e) => setCompanyData({...companyData, revenue: e.target.value})}
-              className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 group-hover:border-gray-300 bg-white"
-            >
-              <option value="">Select annual revenue range</option>
-              <option value="Under $1M">Under $1M</option>
-              <option value="$1M - $5M">$1M - $5M</option>
-              <option value="$5M - $25M">$5M - $25M</option>
-              <option value="$25M - $100M">$25M - $100M</option>
-              <option value="Over $100M">Over $100M</option>
-            </select>
-            <p className="text-sm text-gray-500 mt-2">💡 Higher revenue typically means larger R&D credit potential</p>
+          {/* Revenue Range & 3-Year Revenue Question */}
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="group">
+              <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-blue-600" />
+                Annual Revenue (2024) *
+              </label>
+              <select
+                value={companyData.annualRevenue}
+                onChange={(e) => setCompanyData({...companyData, annualRevenue: e.target.value as any})}
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 group-hover:border-gray-300 bg-white"
+              >
+                <option value="">Select revenue range</option>
+                <option value="Under $1M">Under $1M</option>
+                <option value="$1M-$5M">$1M - $5M</option>
+                <option value="$5M-$25M">$5M - $25M</option>
+                <option value="Over $25M">Over $25M</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-2">💡 Determines QSB status and credit rate</p>
+            </div>
+            <div className="group">
+              <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                <Check className="w-4 h-4 text-blue-600" />
+                Had revenue 3+ years ago?
+              </label>
+              <div className="space-y-3">
+                <label className="flex items-center p-3 border-2 border-gray-200 rounded-xl hover:border-blue-300 transition-all cursor-pointer">
+                  <input
+                    type="radio"
+                    name="hadRevenue"
+                    checked={companyData.hadRevenueThreeYearsAgo === true}
+                    onChange={() => setCompanyData({...companyData, hadRevenueThreeYearsAgo: true})}
+                    className="mr-3 w-4 h-4 text-blue-600"
+                  />
+                  <span className="font-medium">Yes, we had revenue</span>
+                </label>
+                <label className="flex items-center p-3 border-2 border-gray-200 rounded-xl hover:border-green-300 transition-all cursor-pointer">
+                  <input
+                    type="radio"
+                    name="hadRevenue"
+                    checked={companyData.hadRevenueThreeYearsAgo === false}
+                    onChange={() => setCompanyData({...companyData, hadRevenueThreeYearsAgo: false})}
+                    className="mr-3 w-4 h-4 text-green-600"
+                  />
+                  <span className="font-medium">No, we're newer</span>
+                  <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">14% Rate!</span>
+                </label>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">🚀 Startups with no early revenue qualify for 14% credit rate</p>
+            </div>
           </div>
 
           {/* R&D Start Year */}
@@ -1014,7 +1231,7 @@ const BusinessInfoStep: React.FC<{
           
           <button
             onClick={handleNext}
-            disabled={!companyData.companyName || !companyData.industry || !companyData.employeeCount || !companyData.revenue}
+            disabled={!companyData.companyName || !companyData.primaryIndustry || !companyData.employeeCount || !companyData.annualRevenue || !companyData.businessStructure || companyData.yearsInBusiness <= 0}
             className={`
               relative overflow-hidden bg-gradient-to-r from-blue-600 to-green-600 text-white 
               py-4 px-10 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl 
@@ -1770,65 +1987,115 @@ const ResultsStep: React.FC<{
           </div>
         ) : formData.results ? (
           <div>
-            {/* Header */}
+            {/* Header with Credit Method Badge */}
             <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white p-8">
               <div className="text-center">
+                {/* Credit Method Badge */}
+                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-xl rounded-full px-4 py-2 mb-4">
+                  <span className="text-yellow-300">🎯</span>
+                  <span className="font-bold">{formData.results.creditRate.method}</span>
+                  <div className="group relative">
+                    <span className="cursor-help">ℹ️</span>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      {formData.results.creditRate.description}
+                    </div>
+                  </div>
+                </div>
+                
                 <h2 className="text-3xl font-bold mb-3">
                   🎉 Congratulations, {formData.companyInfo?.companyName || 'there'}!
                 </h2>
                 <p className="text-xl text-blue-100">
-                  You qualify for ${formData.results.federalCredit.toLocaleString()} in federal R&D tax credits
+                  Your total tax benefit is ${formData.results.totalBenefit.toLocaleString()}
                 </p>
-                {formData.estimatedRange?.years && formData.estimatedRange.years > 1 && (
-                  <p className="text-blue-100 mt-2">
-                    Plus potential for ${(formData.results.federalCredit * (formData.estimatedRange.years - 1)).toLocaleString()} more from previous years!
-                  </p>
+                <p className="text-blue-200 mt-2">
+                  Includes both federal credit ({(formData.results.creditRate.rate * 100).toFixed(1)}%) and tax deduction value
+                </p>
+                {formData.results.creditRate.canOffsetPayroll && (
+                  <div className="mt-3 inline-flex items-center gap-2 bg-green-500/20 rounded-full px-4 py-2">
+                    <span>✓</span>
+                    <span className="text-sm">Can offset up to ${formData.results.creditRate.payrollOffsetLimit.toLocaleString()} in payroll taxes</span>
+                  </div>
                 )}
               </div>
             </div>
 
             <div className="p-8">
-              {/* Credit Summary */}
+              {/* Three-Column Benefit Display */}
               <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl text-center">
-                  <div className="text-3xl font-bold text-blue-600 mb-2">
-                    ${formData.results.totalQRE.toLocaleString()}
-                  </div>
-                  <div className="text-sm font-medium text-gray-700">
-                    Total Qualified R&D Expenses
-                  </div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl text-center">
-                  <div className="text-3xl font-bold text-green-600 mb-2">
-                    ${formData.results.federalCredit.toLocaleString()}
-                  </div>
-                  <div className="text-sm font-medium text-gray-700">
-                    Federal R&D Tax Credit (6.5%)
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border-2 border-blue-200">
+                  <div className="text-center">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Federal R&D Credit</h3>
+                    <div className="text-3xl font-bold text-blue-600 mb-2">
+                      ${formData.results.federalCredit.toLocaleString()}
+                    </div>
+                    <p className="text-sm text-gray-700">Direct tax credit at {(formData.results.creditRate.rate * 100).toFixed(1)}% rate</p>
+                    <p className="text-xs text-blue-600 mt-1 font-medium">Dollar-for-dollar tax reduction</p>
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl text-center">
-                  <div className="text-3xl font-bold text-purple-600 mb-2">
-                    ${formData.results.savingsAmount.toLocaleString()}
+                <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border-2 border-green-200">
+                  <div className="text-center">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Section 174 Deduction</h3>
+                    <div className="text-3xl font-bold text-green-600 mb-2">
+                      ${formData.results.deductionValue.toLocaleString()}
+                    </div>
+                    <p className="text-sm text-gray-700">Tax savings from 100% deduction</p>
+                    <p className="text-xs text-green-600 mt-1 font-medium">Restored for 2025+</p>
                   </div>
-                  <div className="text-sm font-medium text-gray-700">
-                    Your Net Savings
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    After ${formData.results.price.toLocaleString()} service fee
+                </div>
+                
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border-2 border-purple-200">
+                  <div className="text-center">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Total Tax Benefit</h3>
+                    <div className="text-3xl font-bold text-purple-600 mb-2">
+                      ${formData.results.totalBenefit.toLocaleString()}
+                    </div>
+                    <p className="text-sm text-gray-700">Combined federal savings</p>
+                    <p className="text-xs text-purple-600 mt-1 font-medium">Credit + Deduction</p>
                   </div>
                 </div>
               </div>
 
-              {/* ROI Highlight */}
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl mb-8 text-center">
-                <div className="text-4xl font-bold text-green-600 mb-2">
-                  {Math.round(formData.results.federalCredit / formData.results.price)}x ROI
+              {/* Enhanced ROI Callout */}
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 p-6 rounded-xl mb-8">
+                <div className="grid md:grid-cols-3 gap-4 items-center">
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-green-600">
+                      {(formData.results.totalBenefit / formData.results.price).toFixed(1)}x
+                    </div>
+                    <div className="text-sm font-medium text-gray-700">ROI</div>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-lg font-semibold text-gray-900 mb-1">
+                      Every $1 spent returns ${(formData.results.totalBenefit / formData.results.price).toFixed(2)}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Your ${formData.results.price.toLocaleString()} investment generates ${formData.results.totalBenefit.toLocaleString()} in total tax benefits
+                    </p>
+                  </div>
                 </div>
-                <p className="text-gray-700">
-                  For every $1 you invest in our service, you get ${Math.round(formData.results.federalCredit / formData.results.price)} back in tax credits!
-                </p>
+              </div>
+              
+              {/* Confidence Score */}
+              <div className="bg-white border-2 border-gray-200 rounded-xl p-6 mb-8">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Claim Strength: {formData.results.confidenceScore >= 80 ? 'Excellent' : formData.results.confidenceScore >= 70 ? 'Strong' : formData.results.confidenceScore >= 60 ? 'Good' : 'Needs Improvement'}</h3>
+                <div className="relative w-full bg-gray-200 rounded-full h-3 mb-4">
+                  <div 
+                    className={`h-3 rounded-full transition-all duration-1000 ${
+                      formData.results.confidenceScore >= 80 ? 'bg-green-500' :
+                      formData.results.confidenceScore >= 70 ? 'bg-blue-500' :
+                      formData.results.confidenceScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: `${formData.results.confidenceScore}%` }}
+                  />
+                </div>
+                <div className="grid md:grid-cols-3 gap-4 text-sm">
+                  {formData.results.confidenceScore >= 80 && <div className="flex items-center gap-2"><span className="text-green-600">✓</span> Clear R&D activities documented</div>}
+                  {formData.results.confidenceScore >= 70 && <div className="flex items-center gap-2"><span className="text-green-600">✓</span> Reasonable expense allocations</div>}
+                  {formData.results.confidenceScore >= 60 && <div className="flex items-center gap-2"><span className="text-green-600">✓</span> Industry-appropriate percentages</div>}
+                  {formData.results.confidenceScore < 60 && <div className="flex items-center gap-2"><span className="text-yellow-600">⚠️</span> Consider documenting more activities</div>}
+                </div>
               </div>
 
               {/* What You Get */}
@@ -1871,10 +2138,12 @@ const ResultsStep: React.FC<{
                   <h3 className="text-xl font-bold text-gray-900 mb-4">Your Business Profile</h3>
                   <div className="space-y-2 text-sm">
                     <div><span className="text-gray-600">Company:</span> <span className="font-medium">{formData.companyInfo?.companyName}</span></div>
-                    <div><span className="text-gray-600">Industry:</span> <span className="font-medium">{formData.companyInfo?.industry}</span></div>
-                    <div><span className="text-gray-600">Revenue:</span> <span className="font-medium">{formData.companyInfo?.revenue}</span></div>
+                    <div><span className="text-gray-600">Structure:</span> <span className="font-medium">{formData.companyInfo?.businessStructure}</span></div>
+                    <div><span className="text-gray-600">Industry:</span> <span className="font-medium">{formData.companyInfo?.primaryIndustry}</span></div>
+                    <div><span className="text-gray-600">Revenue:</span> <span className="font-medium">{formData.companyInfo?.annualRevenue}</span></div>
+                    <div><span className="text-gray-600">Years in Business:</span> <span className="font-medium">{formData.companyInfo?.yearsInBusiness}</span></div>
                     <div><span className="text-gray-600">Employees:</span> <span className="font-medium">{formData.companyInfo?.employeeCount}</span></div>
-                    <div><span className="text-gray-600">R&D Since:</span> <span className="font-medium">{formData.companyInfo?.rdStartYear}</span></div>
+                    <div><span className="text-gray-600">Early Revenue:</span> <span className="font-medium">{formData.companyInfo?.hadRevenueThreeYearsAgo ? 'Yes' : 'No'}</span></div>
                   </div>
 
                   <div className="mt-4">
@@ -1906,13 +2175,75 @@ const ResultsStep: React.FC<{
                 </div>
               )}
 
+              {/* Why This Rate Explainer */}
+              <details className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8">
+                <summary className="text-lg font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors">
+                  Why did I get a {(formData.results.creditRate.rate * 100).toFixed(1)}% rate? 👆 Click to expand
+                </summary>
+                <div className="mt-4 space-y-4">
+                  {formData.companyInfo?.yearsInBusiness < 5 && !formData.companyInfo?.hadRevenueThreeYearsAgo && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <h4 className="font-bold text-green-800 mb-2">✅ You Qualify for Startup Treatment!</h4>
+                      <ul className="text-sm text-green-700 space-y-1">
+                        <li>• Less than 5 years in business</li>
+                        <li>• No gross receipts 3+ years ago</li>
+                        <li>• Eligible for 14% credit rate</li>
+                        <li>• Can offset payroll taxes (not just income tax)</li>
+                      </ul>
+                    </div>
+                  )}
+                  {formData.companyInfo?.yearsInBusiness < 5 && formData.companyInfo?.annualRevenue !== "Over $25M" && formData.companyInfo?.hadRevenueThreeYearsAgo && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="font-bold text-blue-800 mb-2">✅ Qualified Small Business Benefits</h4>
+                      <ul className="text-sm text-blue-700 space-y-1">
+                        <li>• Under $25M in annual revenue</li>
+                        <li>• Enhanced 10% effective rate</li>
+                        <li>• Simplified documentation requirements</li>
+                        <li>• Payroll tax offset available</li>
+                      </ul>
+                    </div>
+                  )}
+                  {(formData.companyInfo?.yearsInBusiness >= 5 || formData.companyInfo?.annualRevenue === "Over $25M") && (
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                      <h4 className="font-bold text-gray-800 mb-2">Standard Business Rate</h4>
+                      <ul className="text-sm text-gray-700 space-y-1">
+                        <li>• 6.5% Alternative Simplified Credit</li>
+                        <li>• Most common method for established businesses</li>
+                        <li>• No complex base period calculations needed</li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </details>
+              
+              {/* Updated Pricing Display */}
+              <div className="bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-200 rounded-xl p-6 mb-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Investment for Your Tax Savings</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-blue-600 mb-2">${formData.results.price.toLocaleString()}</div>
+                    <div className="text-sm text-gray-600">
+                      {formData.results.federalCredit < 10000 && "Starter tier"}
+                      {formData.results.federalCredit >= 10000 && formData.results.federalCredit < 50000 && "Growth tier"}
+                      {formData.results.federalCredit >= 50000 && formData.results.federalCredit < 100000 && "Scale tier"}
+                      {formData.results.federalCredit >= 100000 && "Enterprise tier"}
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between"><span>Your benefit:</span> <span className="font-bold">${formData.results.totalBenefit.toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span>Your cost:</span> <span>${formData.results.price.toLocaleString()}</span></div>
+                    <div className="flex justify-between border-t pt-2"><span className="font-bold">Your net gain:</span> <span className="font-bold text-green-600">${(formData.results.totalBenefit - formData.results.price).toLocaleString()}</span></div>
+                  </div>
+                </div>
+              </div>
+              
               {/* Action Button */}
               <div className="text-center">
                 <button
                   onClick={proceedToCheckout}
                   className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 px-12 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 mb-4"
                 >
-                  Secure Your ${formData.results.federalCredit.toLocaleString()} Credit → Checkout
+                  Secure Your ${formData.results.totalBenefit.toLocaleString()} Benefit → Checkout
                 </button>
                 <p className="text-sm text-gray-600 mb-4">
                   🔒 Secure payment • 30-day money-back guarantee • No upfront cost

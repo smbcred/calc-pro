@@ -78,12 +78,12 @@ const MultiStepCalculator: React.FC<MultiStepCalculatorProps> = ({ initialStep =
       setIsCalculating(true);
       
       const calculationData = {
-        wages: formData.wages,
-        wageRdPercent: formData.wageRdPercent,
-        contractors: formData.contractors,
-        contractorRdPercent: formData.contractorRdPercent,
-        supplies: formData.supplies,
-        suppliesRdPercent: formData.suppliesRdPercent,
+        wages: formData.wages || 0,
+        wageRdPercent: formData.wageRdPercent || 0,
+        contractors: formData.contractors || 0,
+        contractorRdPercent: formData.contractorRdPercent || 0,
+        supplies: formData.supplies || 0,
+        suppliesRdPercent: formData.suppliesRdPercent || 0,
       };
 
       const response = await fetch('/api/calculator/estimate', {
@@ -110,7 +110,7 @@ const MultiStepCalculator: React.FC<MultiStepCalculatorProps> = ({ initialStep =
         return !!(formData.companyName && formData.industry && formData.employees && 
                  formData.annualRevenue && formData.primaryState && formData.email);
       case 3:
-        return formData.wages > 0 || formData.contractors > 0 || formData.supplies > 0;
+        return (formData.wages > 0) || (formData.contractors > 0) || (formData.supplies > 0);
       default:
         return true;
     }
@@ -400,7 +400,14 @@ const MultiStepCalculator: React.FC<MultiStepCalculatorProps> = ({ initialStep =
 
                     <div className="text-center">
                       <button
-                        onClick={() => window.location.href = `/checkout?tier=${results.tier}`}
+                        onClick={() => {
+                          // Save email and results to localStorage for checkout
+                          if (typeof window !== 'undefined') {
+                            localStorage.setItem('rd_credit_email', formData.email);
+                            localStorage.setItem('rd_calculation_results', JSON.stringify(results));
+                          }
+                          window.location.href = '/checkout';
+                        }}
                         className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 px-8 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
                       >
                         <span className="flex items-center gap-3">

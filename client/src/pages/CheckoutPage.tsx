@@ -15,12 +15,42 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
   const [isProcessing, setIsProcessing] = useState(false);
   const [checkoutEmail, setCheckoutEmail] = useState('');
 
-  // Get calculation results from props
-  const results = calculationResults || {
-    federal: { creditAmount: 28500 },
-    totalBenefit: 33700,
-    industry: 'SaaS/Tech'
+  // Get calculation results from props or localStorage
+  const getCalculationResults = () => {
+    if (calculationResults) {
+      return calculationResults;
+    }
+    
+    // Check localStorage for results from calculator
+    if (typeof window !== 'undefined') {
+      const storedResults = localStorage.getItem('rd_calculation_results');
+      if (storedResults) {
+        try {
+          const parsed = JSON.parse(storedResults);
+          // Convert calculator API format to checkout format
+          return {
+            federal: { creditAmount: parsed.federalCredit || 28500 },
+            totalBenefit: parsed.savingsAmount ? (parsed.federalCredit + parsed.savingsAmount) : 33700,
+            industry: 'Software/Tech',
+            totalQRE: parsed.totalQRE,
+            tier: parsed.tier,
+            basePrice: parsed.price
+          };
+        } catch (error) {
+          console.error('Error parsing stored results:', error);
+        }
+      }
+    }
+    
+    // Default fallback
+    return {
+      federal: { creditAmount: 28500 },
+      totalBenefit: 33700,
+      industry: 'Software/Tech'
+    };
   };
+  
+  const results = getCalculationResults();
 
   // Get email from props or localStorage
   const savedEmail = userEmail || 
@@ -37,7 +67,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
     return 1500;
   };
 
-  const basePrice = calculateBasePrice(results.federal?.creditAmount || 0);
+  const basePrice = results.basePrice || calculateBasePrice(results.federal?.creditAmount || 0);
   const additionalYearPrice = 297;
   const additionalYearsCount = selectedYears.length - 1; // Current year is included
   const totalPrice = basePrice + (additionalYearsCount * additionalYearPrice);
@@ -240,7 +270,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
                       </div>
                       <div className="text-sm text-gray-600">
                         ~{formatCurrency(yearOption.estimatedCredit)} credit
-                        {!yearOption.included && ` for +${formatCurrency(yearOption.price)}`}
+                        {!yearOption.included && yearOption.price && ` for +${formatCurrency(yearOption.price)}`}
                       </div>
                       {!yearOption.included && selectedYears.includes(yearOption.year) && (
                         <div className="text-sm text-blue-600 font-medium">✓ Adding this year to your filing</div>
@@ -249,7 +279,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
                   </div>
                   {!yearOption.included && (
                     <div className="text-lg font-bold text-gray-900">
-                      +{formatCurrency(yearOption.price)}
+                      +{formatCurrency(yearOption.price || 0)}
                     </div>
                   )}
                 </div>

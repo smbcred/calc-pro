@@ -58,7 +58,7 @@ const router = express.Router();
  *               "suppliesRdPercent": 100
  *             }'
  */
-router.post('/estimate', validate(calculatorInputSchema), asyncHandler(async (req, res) => {
+router.post('/estimate', validate(calculatorInputSchema), asyncHandler(async (req: express.Request, res: express.Response) => {
   const input = req.body;
   
   // Check cache first

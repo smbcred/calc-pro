@@ -5,6 +5,202 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Enhanced UX Animations & Micro-interactions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s ease-out forwards;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  background-size: 200px 100%;
+}
+
+/* Stagger Container Animation */
+.stagger-container {
+  --stagger-delay: 0ms;
+}
+
+.stagger-item {
+  animation: slideInUp 0.6s ease-out forwards;
+  animation-delay: var(--stagger-delay, 0ms);
+  opacity: 0;
+}
+
+.stagger-container .stagger-item:nth-child(1) {
+  --stagger-delay: 100ms;
+}
+
+.stagger-container .stagger-item:nth-child(2) {
+  --stagger-delay: 200ms;
+}
+
+.stagger-container .stagger-item:nth-child(3) {
+  --stagger-delay: 300ms;
+}
+
+/* Enhanced Focus States */
+.focus-ring {
+  @apply focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300;
+}
+
+/* Enhanced Button Interactions */
+.btn-enhanced {
+  @apply relative overflow-hidden transform transition-all duration-300;
+}
+
+.btn-enhanced:hover {
+  @apply shadow-xl -translate-y-0.5 scale-105;
+}
+
+.btn-enhanced:active {
+  @apply scale-100 translate-y-0;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced Card Hover Effects */
+.card-interactive {
+  @apply transform transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-lg;
+}
+
+/* Progress Bar Animation */
+.progress-bar {
+  background: linear-gradient(
+    90deg,
+    #3b82f6,
+    #10b981,
+    #8b5cf6,
+    #f59e0b
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Enhanced Loading States */
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Form Input Enhancements */
+.form-input-enhanced {
+  @apply border-2 border-gray-200 rounded-2xl px-6 py-4 text-lg font-medium transition-all duration-300;
+  @apply focus:border-blue-500 focus:ring-4 focus:ring-blue-100 hover:border-gray-300;
+}
+
+/* Selection Glow Effect */
+.selection-glow {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+/* Responsive Typography Enhancements */
+@media (max-width: 640px) {
+  .stagger-container {
+    padding: 1rem;
+  }
+  
+  .stagger-item {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .btn-enhanced {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .stagger-item,
+  .animate-fade-in,
+  .animate-slide-in-up,
+  .animate-scale-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  
+  .btn-enhanced:hover {
+    transform: none;
+  }
+  
+  .card-interactive:hover {
+    transform: none;
+  }
+}
+
 :root {
   /* Enhanced Professional Color Palette */
   --background: hsl(210, 20%, 98%);

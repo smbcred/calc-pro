@@ -236,18 +236,20 @@ const AmazingCalculator: React.FC = () => {
       </nav>
 
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-        {/* Progress Bar */}
-        <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b">
-          <div className="max-w-4xl mx-auto px-4 py-4">
+        {/* Enhanced Progress Bar */}
+        <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b shadow-sm">
+          <div className="max-w-5xl mx-auto px-4 py-6">
             <div className="flex items-center justify-between">
               {steps.map((step, index) => (
                 <div key={step.number} className="flex items-center">
                   <div className={`
-                    w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm
-                    transition-all duration-300
+                    w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm
+                    transition-all duration-500 transform hover:scale-110
                     ${currentStep >= step.number 
-                      ? 'bg-gradient-to-r from-blue-600 to-green-600 text-white' 
-                      : 'bg-gray-200 text-gray-500'}
+                      ? 'bg-gradient-to-r from-blue-600 to-green-600 text-white shadow-lg ring-4 ring-blue-100' 
+                      : currentStep === step.number
+                      ? 'bg-white border-2 border-blue-600 text-blue-600 shadow-md'
+                      : 'bg-gray-100 text-gray-400 border border-gray-200'}
                   `}>
                     {currentStep > step.number ? (
                       <Check className="w-5 h-5" />
@@ -255,15 +257,27 @@ const AmazingCalculator: React.FC = () => {
                       step.number
                     )}
                   </div>
-                  <span className={`ml-2 font-medium hidden sm:block ${
-                    currentStep >= step.number ? 'text-gray-900' : 'text-gray-500'
-                  }`}>
-                    {step.title}
-                  </span>
+                  <div className="ml-3 hidden sm:block">
+                    <div className={`font-semibold text-sm transition-colors ${
+                      currentStep >= step.number ? 'text-gray-900' : currentStep === step.number ? 'text-blue-600' : 'text-gray-500'
+                    }`}>
+                      {step.title}
+                    </div>
+                    <div className={`text-xs mt-0.5 transition-colors ${
+                      currentStep > step.number ? 'text-green-600' : currentStep === step.number ? 'text-blue-500' : 'text-gray-400'
+                    }`}>
+                      {currentStep > step.number ? 'Complete' : currentStep === step.number ? 'In Progress' : 'Pending'}
+                    </div>
+                  </div>
                   {index < steps.length - 1 && (
-                    <div className={`w-12 sm:w-24 h-1 mx-2 sm:mx-4 rounded transition-all duration-300 ${
-                      currentStep > step.number ? 'bg-green-500' : 'bg-gray-200'
-                    }`} />
+                    <div className="relative mx-4 sm:mx-6">
+                      <div className={`w-16 sm:w-32 h-1 rounded-full transition-all duration-700 ${
+                        currentStep > step.number ? 'bg-gradient-to-r from-green-500 to-blue-500' : 'bg-gray-200'
+                      }`} />
+                      {currentStep > step.number && (
+                        <div className="absolute inset-0 w-full h-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-full animate-pulse" />
+                      )}
+                    </div>
                   )}
                 </div>
               ))}
@@ -272,8 +286,8 @@ const AmazingCalculator: React.FC = () => {
         </div>
 
         {/* Step Content */}
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="stagger-container">
+        <div className="max-w-5xl mx-auto px-4 py-12">
+          <div className="stagger-container space-y-8">
             {currentStep === 1 && (
               <QualificationStep 
                 formData={formData} 
@@ -482,66 +496,100 @@ const QualificationStep: React.FC<{
 
   return (
     <div className="stagger-item">
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+      <div className="bg-white rounded-3xl shadow-xl p-10 border border-gray-100 relative overflow-hidden">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-green-50/30 pointer-events-none" />
+        <div className="relative z-10">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-2xl mb-6">
+            <Check className="w-8 h-8 text-white" />
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
             Using AI for Your Business?<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
               You Qualify for R&D Tax Credits
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            The IRS now recognizes AI implementation as R&D. Select all activities that apply to your business.
+          <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+            The IRS now recognizes AI implementation as qualifying R&D activities. Select all activities that apply to your business to maximize your credit potential.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4 mb-8">
-          {activities.map((activity) => (
+        <div className="grid md:grid-cols-2 gap-6 mb-12">
+          {activities.map((activity, index) => (
             <div
               key={activity.id}
               onClick={() => toggleActivity(activity.id)}
               className={`
-                p-6 cursor-pointer transition-all duration-300 rounded-xl border-2
+                group relative p-8 cursor-pointer transition-all duration-500 rounded-2xl border-2
+                transform hover:scale-[1.02] hover:-translate-y-1
                 ${selectedActivities.includes(activity.id)
-                  ? 'border-blue-500 bg-blue-50 transform scale-105'
-                  : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'}
+                  ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-green-50 shadow-lg ring-2 ring-blue-200'
+                  : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'}
               `}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="flex items-start gap-4">
-                <div className="text-3xl">{activity.icon}</div>
+              <div className="flex items-start gap-6">
+                <div className={`text-4xl transition-transform duration-300 ${
+                  selectedActivities.includes(activity.id) ? 'scale-110' : 'group-hover:scale-105'
+                }`}>
+                  {activity.icon}
+                </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 mb-1">
+                  <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                     {activity.title}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-2">
+                  <p className="text-gray-600 mb-3 leading-relaxed">
                     {activity.description}
                   </p>
-                  <p className="text-xs text-gray-500 italic">
-                    Examples: {activity.examples}
+                  <p className="text-sm text-gray-500 italic leading-relaxed">
+                    <span className="font-medium">Examples:</span> {activity.examples}
                   </p>
                 </div>
-                {selectedActivities.includes(activity.id) && (
-                  <Check className="w-6 h-6 text-green-600" />
-                )}
+                <div className={`flex-shrink-0 transition-all duration-300 ${
+                  selectedActivities.includes(activity.id)
+                    ? 'opacity-100 scale-100'
+                    : 'opacity-0 scale-75 group-hover:opacity-50 group-hover:scale-90'
+                }`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    selectedActivities.includes(activity.id)
+                      ? 'bg-green-500 text-white'
+                      : 'bg-gray-200 text-gray-400'
+                  }`}>
+                    <Check className="w-5 h-5" />
+                  </div>
+                </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Trust indicators */}
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl mb-8">
-          <div className="grid md:grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-green-600">500+</div>
-              <div className="text-sm text-gray-600">SMBs Served</div>
+        {/* Enhanced Trust indicators */}
+        <div className="bg-gradient-to-r from-green-50 via-blue-50 to-purple-50 p-8 rounded-2xl mb-12 border border-green-100">
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+            <div className="transform hover:scale-105 transition-transform duration-300">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-xl mb-3">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="text-3xl font-bold text-green-600 mb-1">500+</div>
+              <div className="text-sm font-medium text-gray-700">SMBs Served</div>
+              <div className="text-xs text-gray-500 mt-1">Trusted by businesses nationwide</div>
             </div>
-            <div>
-              <div className="text-2xl font-bold text-blue-600">IRS</div>
-              <div className="text-sm text-gray-600">Compliant Methods</div>
+            <div className="transform hover:scale-105 transition-transform duration-300">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-xl mb-3">
+                <Shield className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="text-3xl font-bold text-blue-600 mb-1">IRS</div>
+              <div className="text-sm font-medium text-gray-700">Compliant Methods</div>
+              <div className="text-xs text-gray-500 mt-1">Following all IRS guidelines</div>
             </div>
-            <div>
-              <div className="text-2xl font-bold text-purple-600">48hr</div>
-              <div className="text-sm text-gray-600">Document Delivery</div>
+            <div className="transform hover:scale-105 transition-transform duration-300">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-xl mb-3">
+                <Calculator className="w-6 h-6 text-purple-600" />
+              </div>
+              <div className="text-3xl font-bold text-purple-600 mb-1">48hr</div>
+              <div className="text-sm font-medium text-gray-700">Document Delivery</div>
+              <div className="text-xs text-gray-500 mt-1">Fast professional service</div>
             </div>
           </div>
         </div>
@@ -550,16 +598,32 @@ const QualificationStep: React.FC<{
           <button
             onClick={handleNext}
             disabled={selectedActivities.length === 0}
-            className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-8 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`
+              relative overflow-hidden bg-gradient-to-r from-blue-600 to-green-600 text-white 
+              py-5 px-12 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl 
+              transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5
+              disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+              group
+            `}
           >
-            <span className="flex items-center gap-2">
+            {/* Button shine effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+            <span className="relative flex items-center gap-3">
               Continue with {selectedActivities.length} Activities
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </span>
           </button>
-          <p className="text-sm text-gray-500 mt-2">
-            💡 Select all that apply - more activities = higher credit potential
-          </p>
+          <div className="mt-4 space-y-2">
+            <p className="text-sm font-medium text-gray-600">
+              💡 Select all that apply - more activities = higher credit potential
+            </p>
+            {selectedActivities.length > 0 && (
+              <p className="text-xs text-green-600 animate-fade-in">
+                ✓ Great! You've selected {selectedActivities.length} qualifying activities
+              </p>
+            )}
+          </div>
+        </div>
         </div>
       </div>
     </div>
@@ -599,89 +663,127 @@ const EmployeeTimeCalculator: React.FC<{
   }, [employees, timePercent, avgSalary, hours, rate, method]);
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-      <div className="flex gap-4 mb-4">
-        <button
-          onClick={() => setMethod('annual')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium ${
-            method === 'annual' ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border border-blue-300'
-          }`}
-        >
-          Annual Salary Method
-        </button>
-        <button
-          onClick={() => setMethod('hourly')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium ${
-            method === 'hourly' ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border border-blue-300'
-          }`}
-        >
-          Hourly Rate Method
-        </button>
+    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 shadow-sm">
+      <div className="mb-6">
+        <h4 className="text-lg font-semibold text-blue-900 mb-3 flex items-center gap-2">
+          <Calculator className="w-5 h-5" />
+          Employee Time Calculator
+        </h4>
+        <div className="flex gap-2 p-1 bg-white rounded-xl border border-blue-200">
+          <button
+            onClick={() => setMethod('annual')}
+            className={`flex-1 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 ${
+              method === 'annual' 
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md transform scale-105' 
+                : 'text-blue-600 hover:bg-blue-50'
+            }`}
+          >
+            Annual Salary Method
+          </button>
+          <button
+            onClick={() => setMethod('hourly')}
+            className={`flex-1 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 ${
+              method === 'hourly' 
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md transform scale-105' 
+                : 'text-blue-600 hover:bg-blue-50'
+            }`}
+          >
+            Hourly Rate Method
+          </button>
+        </div>
       </div>
       
       {method === 'annual' ? (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-blue-700 mb-1"># Employees</label>
+            <label className="block text-sm font-semibold text-blue-800 mb-2 flex items-center gap-1">
+              <Building2 className="w-4 h-4" />
+              # Employees
+            </label>
             <input
               type="number"
               value={employees}
               onChange={(e) => setEmployees(e.target.value)}
               placeholder="3"
-              className="w-full px-3 py-2 border border-blue-300 rounded text-sm"
+              className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl text-sm font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
             />
+            <p className="text-xs text-blue-600 mt-1">Working on R&D activities</p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-blue-700 mb-1">% Time on R&D</label>
+            <label className="block text-sm font-semibold text-blue-800 mb-2 flex items-center gap-1">
+              <TrendingUp className="w-4 h-4" />
+              % Time on R&D
+            </label>
             <input
               type="number"
               value={timePercent}
               onChange={(e) => setTimePercent(e.target.value)}
               placeholder="25"
               max="100"
-              className="w-full px-3 py-2 border border-blue-300 rounded text-sm"
+              className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl text-sm font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
             />
+            <p className="text-xs text-blue-600 mt-1">Percentage of work time</p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-blue-700 mb-1">Avg Salary</label>
+            <label className="block text-sm font-semibold text-blue-800 mb-2 flex items-center gap-1">
+              <DollarSign className="w-4 h-4" />
+              Avg Salary
+            </label>
             <input
               type="number"
               value={avgSalary}
               onChange={(e) => setAvgSalary(e.target.value)}
               placeholder="80000"
-              className="w-full px-3 py-2 border border-blue-300 rounded text-sm"
+              className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl text-sm font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
             />
+            <p className="text-xs text-blue-600 mt-1">Annual salary per employee</p>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-blue-700 mb-1">Total Hours</label>
+            <label className="block text-sm font-semibold text-blue-800 mb-2 flex items-center gap-1">
+              <Calculator className="w-4 h-4" />
+              Total Hours
+            </label>
             <input
               type="number"
               value={hours}
               onChange={(e) => setHours(e.target.value)}
               placeholder="500"
-              className="w-full px-3 py-2 border border-blue-300 rounded text-sm"
+              className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl text-sm font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
             />
+            <p className="text-xs text-blue-600 mt-1">Total hours worked on R&D</p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-blue-700 mb-1">Hourly Rate</label>
+            <label className="block text-sm font-semibold text-blue-800 mb-2 flex items-center gap-1">
+              <DollarSign className="w-4 h-4" />
+              Hourly Rate
+            </label>
             <input
               type="number"
               value={rate}
               onChange={(e) => setRate(e.target.value)}
               placeholder="50"
-              className="w-full px-3 py-2 border border-blue-300 rounded text-sm"
+              className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl text-sm font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
             />
+            <p className="text-xs text-blue-600 mt-1">Average hourly rate</p>
           </div>
         </div>
       )}
       
       {calculateTotal() > 0 && (
-        <div className="mt-3 pt-3 border-t border-blue-200">
-          <div className="text-sm font-medium text-blue-700">
-            Calculated: ${calculateTotal().toLocaleString()}
+        <div className="mt-6 pt-4 border-t-2 border-blue-200">
+          <div className="bg-white rounded-xl p-4 border-2 border-green-200">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-gray-700">Calculated Employee Cost:</span>
+              <span className="text-2xl font-bold text-green-600">
+                ${calculateTotal().toLocaleString()}
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              This amount will be auto-filled in the expense form
+            </p>
           </div>
         </div>
       )}
@@ -712,43 +814,51 @@ const BusinessInfoStep: React.FC<{
 
   return (
     <div className="stagger-item">
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+      <div className="bg-white rounded-3xl shadow-xl p-10 border border-gray-100 relative overflow-hidden">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-green-50/30 pointer-events-none" />
+        <div className="relative z-10">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-2xl mb-6">
+            <Building2 className="w-8 h-8 text-white" />
+          </div>
+          <h2 className="text-4xl font-bold text-gray-900 mb-6">
             Tell Us About Your Business
           </h2>
-          <p className="text-xl text-gray-600">
-            Help us calculate your R&D credit potential with some basic business information
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Help us calculate your R&D credit potential with some basic business information. This data helps us provide accurate estimates.
           </p>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Company Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="group">
+            <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-blue-600" />
               Company Name *
             </label>
             <input
               type="text"
               value={companyData.companyName}
               onChange={(e) => setCompanyData({...companyData, companyName: e.target.value})}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Your company name"
+              className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 group-hover:border-gray-300"
+              placeholder="Enter your company name"
             />
           </div>
 
           {/* Industry & Employee Count */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="group">
+              <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-blue-600" />
                 Industry *
               </label>
               <select
                 value={companyData.industry}
                 onChange={(e) => setCompanyData({...companyData, industry: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 group-hover:border-gray-300 bg-white"
               >
-                <option value="">Select industry</option>
+                <option value="">Select your industry</option>
                 <option value="Software">Software & Technology</option>
                 <option value="E-commerce">E-commerce & Retail</option>
                 <option value="Marketing">Marketing & Advertising</option>
@@ -759,16 +869,17 @@ const BusinessInfoStep: React.FC<{
                 <option value="Other">Other</option>
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="group">
+              <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                <Calculator className="w-4 h-4 text-blue-600" />
                 Number of Employees *
               </label>
               <select
                 value={companyData.employeeCount}
                 onChange={(e) => setCompanyData({...companyData, employeeCount: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 group-hover:border-gray-300 bg-white"
               >
-                <option value="">Select range</option>
+                <option value="">Select employee range</option>
                 <option value="1-5">1-5 employees</option>
                 <option value="6-15">6-15 employees</option>
                 <option value="16-50">16-50 employees</option>
@@ -779,37 +890,36 @@ const BusinessInfoStep: React.FC<{
           </div>
 
           {/* Revenue Range */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="group">
+            <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+              <DollarSign className="w-4 h-4 text-blue-600" />
               Annual Revenue *
             </label>
             <select
               value={companyData.revenue}
               onChange={(e) => setCompanyData({...companyData, revenue: e.target.value})}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 group-hover:border-gray-300 bg-white"
             >
-              <option value="">Select revenue range</option>
-              <option value="Under $100K">Under $100K</option>
-              <option value="$100K - $250K">$100K - $250K</option>
-              <option value="$250K - $500K">$250K - $500K</option>
-              <option value="$500K - $1M">$500K - $1M</option>
-              <option value="$1M - $2.5M">$1M - $2.5M</option>
-              <option value="$2.5M - $5M">$2.5M - $5M</option>
-              <option value="$5M - $10M">$5M - $10M</option>
-              <option value="$10M - $25M">$10M - $25M</option>
-              <option value="Over $25M">Over $25M</option>
+              <option value="">Select annual revenue range</option>
+              <option value="Under $1M">Under $1M</option>
+              <option value="$1M - $5M">$1M - $5M</option>
+              <option value="$5M - $25M">$5M - $25M</option>
+              <option value="$25M - $100M">$25M - $100M</option>
+              <option value="Over $100M">Over $100M</option>
             </select>
+            <p className="text-sm text-gray-500 mt-2">💡 Higher revenue typically means larger R&D credit potential</p>
           </div>
 
           {/* R&D Start Year */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="group">
+            <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+              <Check className="w-4 h-4 text-blue-600" />
               When did you start using AI/R&D activities? *
             </label>
             <select
               value={companyData.rdStartYear}
               onChange={(e) => setCompanyData({...companyData, rdStartYear: e.target.value})}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 group-hover:border-gray-300 bg-white"
             >
               <option value="2025">2025 (This year)</option>
               <option value="2024">2024</option>
@@ -817,31 +927,46 @@ const BusinessInfoStep: React.FC<{
               <option value="2022">2022</option>
               <option value="Before 2022">Before 2022</option>
             </select>
-            <p className="text-sm text-gray-500 mt-1">
-              💡 You can claim credits for previous years through amended returns (deadline: July 2026)
-            </p>
+            <div className="mt-3 p-4 bg-amber-50 border-2 border-amber-200 rounded-xl">
+              <p className="text-sm font-medium text-amber-800 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" />
+                💡 You can claim credits for previous years through amended returns
+              </p>
+              <p className="text-xs text-amber-700 mt-1">
+                ⏰ Amendment deadline for 2022-2024: July 2026
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-between pt-6">
+        <div className="flex justify-between pt-8">
           <button
             onClick={prevStep}
-            className="flex items-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="group flex items-center gap-3 px-8 py-4 text-gray-600 hover:text-gray-900 border-2 border-gray-300 rounded-2xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 font-semibold"
           >
-            <ChevronLeft className="w-5 h-5" />
-            Back
+            <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            Back to Activities
           </button>
           
           <button
             onClick={handleNext}
             disabled={!companyData.companyName || !companyData.industry || !companyData.employeeCount || !companyData.revenue}
-            className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 px-8 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`
+              relative overflow-hidden bg-gradient-to-r from-blue-600 to-green-600 text-white 
+              py-4 px-10 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl 
+              transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5
+              disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+              group
+            `}
           >
-            <span className="flex items-center gap-2">
-              See Credit Estimate
-              <ArrowRight className="w-5 h-5" />
+            {/* Button shine effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+            <span className="relative flex items-center gap-3">
+              Continue to Expenses
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </span>
           </button>
+        </div>
         </div>
       </div>
     </div>
@@ -1077,45 +1202,61 @@ const ExpenseStep: React.FC<{
 
   return (
     <div className="stagger-item">
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
+      <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
         {/* Header with Real-time QRE Display */}
-        <div className="p-8 border-b border-gray-200">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">
+        <div className="p-10 border-b border-gray-200 bg-gradient-to-r from-blue-50/50 to-green-50/50">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-2xl mb-6">
+              <Calculator className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
               R&D Expense Details
             </h2>
-            <p className="text-xl text-gray-600">
-              Enter your 2025 AI and R&D related expenses to calculate your qualified research expenses
+            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              Enter your 2025 AI and R&D related expenses to calculate your qualified research expenses. We'll apply IRS-compliant qualification rules automatically.
             </p>
           </div>
           
-          {/* Real-time QRE Display */}
-          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
-            <div className="grid md:grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-blue-600">
+          {/* Enhanced Real-time QRE Display */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-100">
+            <h3 className="text-lg font-bold text-gray-900 mb-6 text-center">Live Calculation Preview</h3>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="text-center group">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-xl mb-3 group-hover:scale-110 transition-transform">
+                  <TrendingUp className="w-6 h-6 text-blue-600" />
+                </div>
+                <div className="text-3xl font-bold text-blue-600 mb-1">
                   ${Math.round(qre.total).toLocaleString()}
                 </div>
-                <div className="text-sm text-gray-600">Qualified Research Expenses</div>
+                <div className="text-sm font-medium text-gray-700">Qualified Research Expenses</div>
+                <div className="text-xs text-gray-500 mt-1">IRS-qualified amounts</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-green-600">
+              <div className="text-center group">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-xl mb-3 group-hover:scale-110 transition-transform">
+                  <DollarSign className="w-6 h-6 text-green-600" />
+                </div>
+                <div className="text-3xl font-bold text-green-600 mb-1">
                   ${estimatedCredit.toLocaleString()}
                 </div>
-                <div className="text-sm text-gray-600">Estimated Federal Credit</div>
+                <div className="text-sm font-medium text-gray-700">Estimated Federal Credit</div>
+                <div className="text-xs text-gray-500 mt-1">6.5% of qualified expenses</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-purple-600">
+              <div className="text-center group">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-xl mb-3 group-hover:scale-110 transition-transform">
+                  <Calculator className="w-6 h-6 text-purple-600" />
+                </div>
+                <div className="text-3xl font-bold text-purple-600 mb-1">
                   {((estimatedCredit / (qre.total || 1)) * 100).toFixed(1)}%
                 </div>
-                <div className="text-sm text-gray-600">Effective Credit Rate</div>
+                <div className="text-sm font-medium text-gray-700">Effective Credit Rate</div>
+                <div className="text-xs text-gray-500 mt-1">Return on R&D investment</div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
+        <div className="p-10">
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -1146,8 +1287,8 @@ const ExpenseStep: React.FC<{
                 type="text"
                 value={expenses.aiTools}
                 onChange={(e) => updateExpense('aiTools', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                placeholder="12000"
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300"
+                placeholder="12,000"
               />
             </div>
 
@@ -1165,8 +1306,8 @@ const ExpenseStep: React.FC<{
                 type="text"
                 value={expenses.contractors}
                 onChange={(e) => updateExpense('contractors', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                placeholder="50000"
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-300"
+                placeholder="50,000"
               />
             </div>
 
@@ -1184,8 +1325,8 @@ const ExpenseStep: React.FC<{
                 type="text"
                 value={expenses.software}
                 onChange={(e) => updateExpense('software', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                placeholder="25000"
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
+                placeholder="25,000"
               />
             </div>
 
@@ -1203,42 +1344,69 @@ const ExpenseStep: React.FC<{
                 type="text"
                 value={expenses.training}
                 onChange={(e) => updateExpense('training', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="8000"
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-medium focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-300"
+                placeholder="8,000"
               />
             </div>
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-            <div className="flex items-start gap-2">
-              <Shield className="w-5 h-5 text-amber-600 mt-0.5" />
-              <div className="text-sm text-amber-800">
-                <p className="font-medium mb-1">Qualification Guidelines</p>
-                <p>
-                  Not all expenses qualify 100%. We apply IRS-compliant percentages: 80% for wages, 
-                  65% cap for contractors, and 100% for direct R&D tools and training. 
-                  Our calculations follow current tax law requirements.
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-amber-100 rounded-xl">
+                  <Shield className="w-6 h-6 text-amber-600" />
+                </div>
+              </div>
+              <div>
+                <h4 className="text-lg font-bold text-amber-800 mb-3">IRS Qualification Guidelines</h4>
+                <p className="text-amber-800 leading-relaxed mb-4">
+                  Not all expenses qualify 100%. We automatically apply IRS-compliant percentages to ensure your filing meets all requirements:
                 </p>
+                <div className="grid md:grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-center gap-2 text-amber-700">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span><strong>80%</strong> for employee wages</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-amber-700">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span><strong>65%</strong> cap for contractors</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-amber-700">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span><strong>100%</strong> for R&D tools & training</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-amber-700">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span><strong>100%</strong> for supporting software</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-between pt-6">
+          <div className="flex justify-between pt-8">
             <button
               onClick={prevStep}
-              className="flex items-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="group flex items-center gap-3 px-8 py-4 text-gray-600 hover:text-gray-900 border-2 border-gray-300 rounded-2xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 font-semibold"
             >
-              <ChevronLeft className="w-5 h-5" />
-              Back
+              <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              Back to Business Info
             </button>
             
             <button
               onClick={handleNext}
-              className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 px-8 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              className={`
+                relative overflow-hidden bg-gradient-to-r from-blue-600 to-green-600 text-white 
+                py-4 px-10 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl 
+                transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5
+                group
+              `}
             >
-              <span className="flex items-center gap-2">
-                Calculate Exact Credits
-                <ArrowRight className="w-5 h-5" />
+              {/* Button shine effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              <span className="relative flex items-center gap-3">
+                See Final Results
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
             </button>
           </div>

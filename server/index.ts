@@ -71,12 +71,6 @@ app.use(expressWinston.logger({
 (async () => {
   const server = await registerRoutes(app);
 
-  // 404 handler for unmatched routes
-  app.use(notFoundHandler);
-  
-  // Global error handling middleware
-  app.use(globalErrorHandler);
-
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
@@ -85,6 +79,12 @@ app.use(expressWinston.logger({
   } else {
     serveStatic(app);
   }
+
+  // 404 handler for unmatched routes (MUST be after Vite/static setup)
+  app.use(notFoundHandler);
+  
+  // Global error handling middleware (MUST be last)
+  app.use(globalErrorHandler);
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
   // Other ports are firewalled. Default to 5000 if not specified.

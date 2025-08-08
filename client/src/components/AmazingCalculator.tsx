@@ -284,52 +284,45 @@ const AmazingCalculator: React.FC = () => {
               ))}
             </div>
 
-            {/* Mobile/Tablet Progress Bar */}
+            {/* Mobile Progress Bar */}
             <div className="lg:hidden">
-              <div className="flex items-center justify-center mb-4">
-                <div className="text-sm font-medium text-gray-600">
+              {/* Step indicator */}
+              <div className="text-center mb-4">
+                <div className="text-lg font-bold text-blue-600 mb-1">
                   Step {currentStep} of {steps.length}
                 </div>
-              </div>
-              <div className="overflow-x-auto pb-2">
-                <div className="flex items-center justify-center min-w-max px-2 space-x-1">
-                  {steps.map((step, index) => (
-                    <div key={step.number} className="flex items-center flex-shrink-0">
-                      <div className={`
-                        w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs
-                        transition-all duration-500
-                        ${currentStep >= step.number 
-                          ? 'bg-gradient-to-r from-blue-600 to-green-600 text-white shadow-lg' 
-                          : currentStep === step.number
-                          ? 'bg-white border-2 border-blue-600 text-blue-600 shadow-md'
-                          : 'bg-gray-100 text-gray-400 border border-gray-200'}
-                      `}>
-                        {currentStep > step.number ? (
-                          <Check className="w-4 h-4" />
-                        ) : (
-                          step.number
-                        )}
-                      </div>
-                      {index < steps.length - 1 && (
-                        <div className="relative mx-1">
-                          <div className={`w-4 h-1 rounded-full transition-all duration-700 ${
-                            currentStep > step.number ? 'bg-gradient-to-r from-green-500 to-blue-500' : 'bg-gray-200'
-                          }`} />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="text-center mt-3">
-                <div className={`font-semibold text-sm transition-colors ${
-                  currentStep >= steps[currentStep - 1]?.number ? 'text-blue-600' : 'text-gray-500'
-                }`}>
+                <div className="text-sm font-medium text-gray-900">
                   {steps[currentStep - 1]?.title}
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  In Progress
+              </div>
+              
+              {/* Progress bar */}
+              <div className="mb-4">
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-blue-600 to-green-600 h-2 rounded-full transition-all duration-500 ease-out"
+                    style={{ width: `${(currentStep / steps.length) * 100}%` }}
+                  />
                 </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-2">
+                  <span>Start</span>
+                  <span>{Math.round((currentStep / steps.length) * 100)}% Complete</span>
+                  <span>Finish</span>
+                </div>
+              </div>
+              
+              {/* Mini step indicators */}
+              <div className="flex justify-center space-x-2">
+                {steps.map((step) => (
+                  <div
+                    key={step.number}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      currentStep >= step.number 
+                        ? 'bg-blue-600' 
+                        : 'bg-gray-300'
+                    }`}
+                  />
+                ))}
               </div>
             </div>
           </div>

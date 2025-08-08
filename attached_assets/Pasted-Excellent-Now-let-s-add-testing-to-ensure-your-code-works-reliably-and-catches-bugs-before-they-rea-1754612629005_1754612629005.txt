@@ -1,0 +1,313 @@
+Excellent! Now let's add testing to ensure your code works reliably and catches bugs before they reach users.
+Step 7: Add Testing Framework
+This will help you catch bugs early and ensure your code works as expected.
+Copy this prompt to Replit:
+
+Please add a comprehensive testing setup for both frontend and backend code.
+
+First, add testing dependencies to package.json:
+
+json{
+  "devDependencies": {
+    "vitest": "^1.0.4",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/user-event": "^14.5.1",
+    "@vitest/ui": "^1.0.4",
+    "jsdom": "^23.0.1",
+    "supertest": "^6.3.3",
+    "@types/supertest": "^2.0.16"
+  },
+  "scripts": {
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
+  }
+}
+
+Create vitest.config.ts in the root directory:
+
+typescriptimport { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./client/src/test/setup.ts'],
+    include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    coverage: {
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'client/src/test/',
+      ],
+    },
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './client/src'),
+      '@shared': path.resolve(__dirname, './shared'),
+    },
+  },
+});
+
+Create client/src/test/setup.ts:
+
+typescriptimport '@testing-library/jest-dom';
+import { expect, afterEach } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import * as matchers from '@testing-library/jest-dom/matchers';
+
+// Extend Vitest's expect with jest-dom matchers
+expect.extend(matchers);
+
+// Cleanup after each test
+afterEach(() => {
+  cleanup();
+});
+
+// Mock window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+Create test utilities in client/src/test/test-utils.tsx:
+
+typescriptimport { ReactElement } from 'react';
+import { render, RenderOptions } from '@testing-library/react';
+import { Router } from 'wouter';
+
+// Create a custom render function that includes providers
+interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
+  route?: string;
+}
+
+export function renderWithRouter(
+  ui: ReactElement,
+  { route = '/', ...renderOptions }: CustomRenderOptions = {}
+) {
+  window.history.pushState({}, 'Test page', route);
+
+  function Wrapper({ children }: { children: React.ReactNode }) {
+    return (
+      <Router>
+        {children}
+      </Router>
+    );
+  }
+
+  return render(ui, { wrapper: Wrapper, ...renderOptions });
+}
+
+// Re-export everything from testing library
+export * from '@testing-library/react';
+export { renderWithRouter as render };
+
+Create your first component test in client/src/components/__tests__/LoadingComponents.test.tsx:
+
+typescriptimport { describe, it, expect } from 'vitest';
+import { render, screen } from '@/test/test-utils';
+import { 
+  SkeletonLine, 
+  SkeletonButton, 
+  SkeletonCard,
+  LoadingScreen 
+} from '../LoadingComponents';
+
+describe('LoadingComponents', () => {
+  describe('SkeletonLine', () => {
+    it('renders with default variant', () => {
+      render(<SkeletonLine />);
+      const skeleton = screen.getByRole('presentation');
+      expect(skeleton).toBeInTheDocument();
+      expect(skeleton).toHaveClass('h-4');
+    });
+
+    it('renders with custom variant', () => {
+      render(<SkeletonLine variant="short" />);
+      const skeleton = screen.getByRole('presentation');
+      expect(skeleton).toHaveClass('w-24');
+    });
+  });
+
+  describe('LoadingScreen', () => {
+    it('renders loading message', () => {
+      render(<LoadingScreen />);
+      expect(screen.getByText('Loading...')).toBeInTheDocument();
+    });
+
+    it('renders custom message', () => {
+      render(<LoadingScreen message="Please wait" />);
+      expect(screen.getByText('Please wait')).toBeInTheDocument();
+    });
+  });
+});
+
+Create API endpoint tests in server/routes/__tests__/auth.routes.test.ts:
+
+typescriptimport { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import request from 'supertest';
+import express from 'express';
+import { createTestApp } from '../../test/test-utils';
+
+// Mock the Airtable functions
+vi.mock('../../utils/airtable', () => ({
+  getCustomerByEmail: vi.fn(),
+}));
+
+import { getCustomerByEmail } from '../../utils/airtable';
+
+describe('Auth Routes', () => {
+  let app: express.Application;
+
+  beforeAll(() => {
+    app = createTestApp();
+  });
+
+  describe('POST /api/login', () => {
+    it('should return 400 if email is missing', async () => {
+      const response = await request(app)
+        .post('/api/login')
+        .send({});
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('Email is required');
+    });
+
+    it('should return 401 if customer not found', async () => {
+      vi.mocked(getCustomerByEmail).mockResolvedValueOnce(null);
+
+      const response = await request(app)
+        .post('/api/login')
+        .send({ email: 'test@example.com' });
+
+      expect(response.status).toBe(401);
+      expect(response.body.error).toBe('Customer not found');
+    });
+
+    it('should return success if customer exists', async () => {
+      vi.mocked(getCustomerByEmail).mockResolvedValueOnce({
+        id: '123',
+        fields: { email: 'test@example.com' }
+      });
+
+      const response = await request(app)
+        .post('/api/login')
+        .send({ email: 'test@example.com' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+    });
+  });
+});
+
+Create server/test/test-utils.ts:
+
+typescriptimport express from 'express';
+import { vi } from 'vitest';
+
+export function createTestApp() {
+  const app = express();
+  
+  // Add middleware
+  app.use(express.json());
+  
+  // Import and register routes
+  // Note: You'll need to update this based on your actual route structure
+  require('../routes/auth.routes').default(app);
+  
+  // Add error handling
+  app.use((err: any, req: any, res: any, next: any) => {
+    res.status(err.status || 500).json({ error: err.message });
+  });
+  
+  return app;
+}
+
+// Mock environment variables
+export function setupTestEnv() {
+  process.env.NODE_ENV = 'test';
+  process.env.AIRTABLE_API_KEY = 'test-key';
+  process.env.AIRTABLE_BASE_ID = 'test-base';
+  process.env.DATABASE_URL = 'postgresql://test';
+}
+
+Create form validation tests in shared/validations/__tests__/schemas.test.ts:
+
+typescriptimport { describe, it, expect } from 'vitest';
+import { z } from 'zod';
+import { emailSchema, companyInfoSchema } from '../index';
+
+describe('Validation Schemas', () => {
+  describe('emailSchema', () => {
+    it('should validate correct email', () => {
+      const result = emailSchema.safeParse({ email: 'test@example.com' });
+      expect(result.success).toBe(true);
+    });
+
+    it('should reject invalid email', () => {
+      const result = emailSchema.safeParse({ email: 'not-an-email' });
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('companyInfoSchema', () => {
+    it('should validate complete company info', () => {
+      const validData = {
+        email: 'test@example.com',
+        formData: {
+          companyName: 'Test Company',
+          ein: '12-3456789',
+          entityType: 'c-corp',
+          yearFounded: '2020',
+          annualRevenue: '1000000',
+          employeeCount: '50',
+          rdEmployeeCount: '10',
+          primaryState: 'CA',
+        }
+      };
+
+      const result = companyInfoSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+    });
+
+    it('should reject invalid EIN format', () => {
+      const invalidData = {
+        email: 'test@example.com',
+        formData: {
+          companyName: 'Test Company',
+          ein: '123456789', // Missing hyphen
+          entityType: 'c-corp',
+        }
+      };
+
+      const result = companyInfoSchema.safeParse(invalidData);
+      expect(result.success).toBe(false);
+    });
+  });
+});
+
+Add a test runner script to package.json:
+
+json{
+  "scripts": {
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:watch": "vitest --watch"
+  }
+}
+This gives you a complete testing setup. You can now write tests for your components and API endpoints to ensure they work correctly.

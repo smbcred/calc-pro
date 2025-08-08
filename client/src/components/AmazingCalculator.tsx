@@ -461,7 +461,16 @@ const BusinessInfoStep: React.FC<{
   nextStep: () => void;
   prevStep: () => void;
 }> = ({ formData, updateFormData, nextStep, prevStep }) => {
-  const [companyData, setCompanyData] = useState(formData.companyInfo);
+  const [companyData, setCompanyData] = useState({
+    companyName: formData.companyInfo?.companyName || '',
+    industry: formData.companyInfo?.industry || '',
+    employeeCount: formData.companyInfo?.employeeCount || '',
+    revenue: formData.companyInfo?.revenue || '',
+    foundedYear: formData.companyInfo?.foundedYear || '',
+    primaryState: formData.companyInfo?.primaryState || '',
+    email: formData.companyInfo?.email || '',
+    rdStartYear: formData.companyInfo?.rdStartYear || '2025'
+  });
 
   const industries = [
     { value: 'ecommerce', label: 'E-commerce / Retail', icon: '🛒', aiUse: 'High' },
@@ -658,7 +667,7 @@ const BusinessInfoStep: React.FC<{
               disabled={!isValid}
               className="flex-1 btn-gradient"
             >
-              Continue to Expenses
+              Continue to Email Capture
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>

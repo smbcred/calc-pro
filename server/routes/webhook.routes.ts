@@ -92,19 +92,19 @@ router.post('/stripe', asyncHandler(async (req, res) => {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #2563eb;">Welcome${customerName ? `, ${customerName}` : ''}! Your R&D Credit Package is Ready</h2>
-            <p>Thank you for your payment. Your R&D tax credit filing package has been activated and you now have access to our secure intake portal.</p>
-            <p><strong>Next Step:</strong> Complete your intake form to begin the filing process</p>
+            <p>Thank you for your payment. Your R&D tax credit filing package has been activated and you now have access to your secure dashboard.</p>
+            <p><strong>Next Step:</strong> Complete your dashboard information to begin the filing process</p>
             <div style="text-align: center; margin: 30px 0;">
               <a href="${process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}/login` : 'http://localhost:5000/login'}" 
                  style="background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
-                Access Your Intake Portal
+                Access Your Dashboard
               </a>
             </div>
             <p><strong>How to Access:</strong></p>
             <ol>
               <li>Click the button above or visit the login page</li>
               <li>Enter your email address: <strong>${email}</strong></li>
-              <li>Complete the secure intake form</li>
+              <li>Complete your secure dashboard</li>
             </ol>
             <p>Questions? Reply to this email or contact info@smbtaxcredits.com</p>
           </div>

@@ -1,16 +1,16 @@
 import express from 'express';
 import { getCustomerByEmail, getCompanyByCustomerId, createTestCustomer } from '../utils/airtable';
+import { validate } from '../middleware/validate';
+import { emailSchema, createTestCustomerSchema } from '../validations';
 
 const router = express.Router();
 
 // Auth verification endpoint - checks Airtable directly
-router.post('/verify', async (req, res) => {
+router.post('/verify', validate(emailSchema), async (req, res) => {
   try {
     const { email } = req.body;
     
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
+
 
     // Check customer in new schema
     const customer = await getCustomerByEmail(email);
@@ -34,13 +34,11 @@ router.post('/verify', async (req, res) => {
 });
 
 // Customer info endpoint - checks Airtable directly
-router.post('/customer/info', async (req, res) => {
+router.post('/customer/info', validate(emailSchema), async (req, res) => {
   try {
     const { email } = req.body;
     
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
+
 
     const airtableToken = process.env.AIRTABLE_API_KEY;
     const baseId = process.env.AIRTABLE_BASE_ID;
@@ -78,7 +76,7 @@ router.post('/customer/info', async (req, res) => {
 
 // Development-only endpoint to create test customer for login testing
 if (process.env.NODE_ENV !== 'production') {
-  router.post('/dev/create-test-customer', async (req, res) => {
+  router.post('/dev/create-test-customer', validate(createTestCustomerSchema), async (req, res) => {
     try {
       const { email } = req.body;
       

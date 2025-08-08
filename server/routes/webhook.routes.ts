@@ -2,6 +2,8 @@ import express from 'express';
 import Stripe from 'stripe';
 import { v4 as uuidv4 } from 'uuid';
 import { addToAirtableCustomers } from '../utils/airtable';
+import { validate } from '../middleware/validate';
+import { checkoutSchema } from '../validations';
 
 const router = express.Router();
 
@@ -125,15 +127,10 @@ router.post('/stripe', async (req, res) => {
 });
 
 // Stripe Checkout API route
-router.post('/checkout', async (req, res) => {
+router.post('/checkout', validate(checkoutSchema), async (req, res) => {
   try {
     const { email, tierBasePrice, yearsSelected } = req.body;
 
-    if (!email || !tierBasePrice || !Array.isArray(yearsSelected)) {
-      return res.status(400).json({ 
-        error: "Missing required fields: email, tierBasePrice, yearsSelected" 
-      });
-    }
 
     // Create line items for Stripe Checkout
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];

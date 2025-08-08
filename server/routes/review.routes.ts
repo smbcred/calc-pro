@@ -4,17 +4,17 @@ import {
   getCompanyByCustomerId, 
   trackDocumentDownload
 } from '../utils/airtable';
+import { validate } from '../middleware/validate';
+import { emailSchema, documentTrackingSchema, documentStatusSchema } from '../validations';
 
 const router = express.Router();
 
 // Review data endpoint - aggregates data from all sources
-router.post('/data', async (req, res) => {
+router.post('/data', validate(emailSchema), async (req, res) => {
   try {
     const { email } = req.body;
     
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
+
 
     // Get customer and company
     const customer = await getCustomerByEmail(email);
@@ -138,13 +138,11 @@ router.post('/data', async (req, res) => {
 });
 
 // Generate documents endpoint
-router.post('/generate-documents', async (req, res) => {
+router.post('/generate-documents', validate(emailSchema), async (req, res) => {
   try {
     const { email } = req.body;
     
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
+
 
     // Get customer
     const customer = await getCustomerByEmail(email);
@@ -173,13 +171,10 @@ router.post('/generate-documents', async (req, res) => {
 });
 
 // Document status endpoint
-router.post('/document-status', async (req, res) => {
+router.post('/document-status', validate(documentStatusSchema), async (req, res) => {
   try {
     const { email, trackingId } = req.body;
     
-    if (!email || !trackingId) {
-      return res.status(400).json({ error: 'Email and tracking ID are required' });
-    }
 
     // In a real implementation, you would check the status in a tracking table
     // For now, we'll simulate progress
@@ -199,13 +194,11 @@ router.post('/document-status', async (req, res) => {
 });
 
 // QRE calculation endpoint
-router.post('/calculate', async (req, res) => {
+router.post('/calculate', validate(emailSchema), async (req, res) => {
   try {
     const { email } = req.body;
     
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
+
 
     // Get customer and company
     const customer = await getCustomerByEmail(email);
@@ -309,13 +302,11 @@ router.post('/calculate', async (req, res) => {
 });
 
 // Generate QRE report endpoint
-router.post('/generate-report', async (req, res) => {
+router.post('/generate-report', validate(emailSchema), async (req, res) => {
   try {
     const { email } = req.body;
     
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
+
 
     // Get customer
     const customer = await getCustomerByEmail(email);
@@ -333,13 +324,11 @@ router.post('/generate-report', async (req, res) => {
 });
 
 // Documents list endpoint  
-router.post('/list', async (req, res) => {
+router.post('/list', validate(emailSchema), async (req, res) => {
   try {
     const { email } = req.body;
     
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
+
 
     // Get customer
     const customer = await getCustomerByEmail(email);
@@ -388,13 +377,10 @@ router.post('/list', async (req, res) => {
 });
 
 // Track document download
-router.post('/track-download', async (req, res) => {
+router.post('/track-download', validate(documentTrackingSchema), async (req, res) => {
   try {
     const { email, documentId, fileName, fileType } = req.body;
     
-    if (!email || !documentId) {
-      return res.status(400).json({ error: 'Email and document ID are required' });
-    }
 
     await trackDocumentDownload({ email, documentId, fileName, fileType });
     res.json({ success: true });

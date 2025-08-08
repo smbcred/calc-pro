@@ -4,17 +4,16 @@ import {
   getCompanyByCustomerId, 
   addToAirtableCompanies 
 } from '../utils/airtable';
+import { validate } from '../middleware/validate';
+import { emailSchema, companyInfoSchema } from '../validations';
 
 const router = express.Router();
 
 // Company info load endpoint
-router.post('/info', async (req, res) => {
+router.post('/info', validate(emailSchema), async (req, res) => {
   try {
     const { email } = req.body;
     
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
 
     // Get customer first
     const customer = await getCustomerByEmail(email);
@@ -47,13 +46,11 @@ router.post('/info', async (req, res) => {
 });
 
 // Company info save progress endpoint
-router.post('/save-progress', async (req, res) => {
+router.post('/save-progress', validate(companyInfoSchema), async (req, res) => {
   try {
     const { email, formData } = req.body;
     
-    if (!email || !formData) {
-      return res.status(400).json({ error: 'Email and form data are required' });
-    }
+
 
     // Get customer first
     const customer = await getCustomerByEmail(email);
@@ -72,13 +69,11 @@ router.post('/save-progress', async (req, res) => {
 });
 
 // Company info submission endpoint
-router.post('/submit', async (req, res) => {
+router.post('/submit', validate(companyInfoSchema), async (req, res) => {
   try {
     const { email, formData } = req.body;
     
-    if (!email || !formData) {
-      return res.status(400).json({ error: 'Email and form data are required' });
-    }
+
 
     // Get customer first
     const customer = await getCustomerByEmail(email);

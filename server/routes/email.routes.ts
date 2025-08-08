@@ -1,17 +1,16 @@
 import express from 'express';
 import { sendWelcomeEmail } from '../utils/airtable';
+import { validate } from '../middleware/validate';
+import { emailTestSchema, emailSendSchema } from '../validations';
 
 const router = express.Router();
 
 // Email testing endpoint - only available in development
 if (process.env.NODE_ENV !== 'production') {
-  router.post('/test', async (req, res) => {
+  router.post('/test', validate(emailTestSchema), async (req, res) => {
     try {
       const { email, name } = req.body;
       
-      if (!email) {
-        return res.status(400).json({ error: 'Email is required' });
-      }
 
       const sendgridApiKey = process.env.SENDGRID_API_KEY;
       
@@ -80,13 +79,10 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Send welcome email endpoint
-router.post('/welcome', async (req, res) => {
+router.post('/welcome', validate(emailTestSchema), async (req, res) => {
   try {
     const { email, name } = req.body;
     
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
 
     await sendWelcomeEmail(email, name);
     
@@ -104,15 +100,10 @@ router.post('/welcome', async (req, res) => {
 });
 
 // Send custom email endpoint (for internal use)
-router.post('/send', async (req, res) => {
+router.post('/send', validate(emailSendSchema), async (req, res) => {
   try {
     const { to, subject, html, text } = req.body;
     
-    if (!to || !subject || (!html && !text)) {
-      return res.status(400).json({ 
-        error: 'Missing required fields: to, subject, and either html or text' 
-      });
-    }
 
     const sendgridApiKey = process.env.SENDGRID_API_KEY;
     

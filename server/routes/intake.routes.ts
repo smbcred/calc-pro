@@ -1,16 +1,15 @@
 import express from 'express';
 import { getCustomerByEmail, addToAirtableSubmissions } from '../utils/airtable';
+import { validate } from '../middleware/validate';
+import { intakeFormSchema } from '../validations';
 
 const router = express.Router();
 
 // Intake form submission endpoint - pure Airtable
-router.post('/submit', async (req, res) => {
+router.post('/submit', validate(intakeFormSchema), async (req, res) => {
   try {
     const { email, formData } = req.body;
     
-    if (!email || !formData) {
-      return res.status(400).json({ error: 'Email and form data are required' });
-    }
 
     const airtableToken = process.env.AIRTABLE_API_KEY;
     const baseId = process.env.AIRTABLE_BASE_ID;

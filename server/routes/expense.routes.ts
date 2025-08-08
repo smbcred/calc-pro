@@ -5,17 +5,16 @@ import {
   addToAirtableWages,
   addToAirtableExpenses
 } from '../utils/airtable';
+import { validate } from '../middleware/validate';
+import { expenseLoadSchema, expenseSaveSchema } from '../validations';
 
 const router = express.Router();
 
 // Load existing expense data
-router.post('/load', async (req, res) => {
+router.post('/load', validate(expenseLoadSchema), async (req, res) => {
   try {
     const { email } = req.body;
     
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
 
     // Get customer and company
     const customer = await getCustomerByEmail(email);
@@ -104,13 +103,11 @@ router.post('/load', async (req, res) => {
 });
 
 // Save expense data (auto-save)
-router.post('/save', async (req, res) => {
+router.post('/save', validate(expenseSaveSchema), async (req, res) => {
   try {
     const { email, expenses } = req.body;
     
-    if (!email || !expenses) {
-      return res.status(400).json({ error: 'Email and expenses are required' });
-    }
+
 
     // Get customer and company
     const customer = await getCustomerByEmail(email);
@@ -133,13 +130,11 @@ router.post('/save', async (req, res) => {
 });
 
 // Submit final expense data
-router.post('/submit', async (req, res) => {
+router.post('/submit', validate(expenseSaveSchema), async (req, res) => {
   try {
     const { email, expenses } = req.body;
     
-    if (!email || !expenses) {
-      return res.status(400).json({ error: 'Email and expenses are required' });
-    }
+
 
     // Get customer and company
     const customer = await getCustomerByEmail(email);

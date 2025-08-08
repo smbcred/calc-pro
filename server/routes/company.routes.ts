@@ -6,6 +6,7 @@ import {
   AirtableService
 } from '../utils/airtable';
 import { validate } from '../middleware/validate';
+import { requireAuth } from '../middleware/auth';
 import { emailSchema, companyInfoSchema } from '../validations';
 import { asyncHandler, AppError, createAuthorizationError, createInternalServerError } from '../middleware/errorHandler';
 import { cacheResponse, invalidateCache } from '../middleware/cacheMiddleware';
@@ -15,6 +16,7 @@ const router = express.Router();
 
 // Company info load endpoint
 router.post('/info', 
+  requireAuth,
   cacheResponse({ ttl: CacheTTL.LONG }),
   validate(emailSchema), 
   asyncHandler(async (req, res) => {
@@ -48,6 +50,7 @@ router.post('/info',
 
 // Company info save progress endpoint
 router.post('/save-progress', 
+  requireAuth,
   validate(companyInfoSchema),
   invalidateCache('company'),
   asyncHandler(async (req, res) => {

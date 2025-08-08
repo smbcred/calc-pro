@@ -6,13 +6,14 @@ import {
   addToAirtableExpenses
 } from '../utils/airtable';
 import { validate } from '../middleware/validate';
+import { requireAuth } from '../middleware/auth';
 import { expenseLoadSchema, expenseSaveSchema } from '../validations';
 import { asyncHandler, AppError, createAuthorizationError, createInternalServerError, createNotFoundError } from '../middleware/errorHandler';
 
 const router = express.Router();
 
 // Load existing expense data
-router.post('/load', validate(expenseLoadSchema), asyncHandler(async (req, res) => {
+router.post('/load', requireAuth, validate(expenseLoadSchema), asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   // Get customer and company
@@ -98,7 +99,7 @@ router.post('/load', validate(expenseLoadSchema), asyncHandler(async (req, res) 
 }));
 
 // Save expense data (auto-save)
-router.post('/save', validate(expenseSaveSchema), asyncHandler(async (req, res) => {
+router.post('/submit', requireAuth, validate(expenseSaveSchema), asyncHandler(async (req, res) => {
   const { email, expenses } = req.body;
 
   // Get customer and company

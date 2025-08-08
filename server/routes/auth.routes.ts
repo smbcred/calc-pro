@@ -1,6 +1,7 @@
 import express from 'express';
 import { getCustomerByEmail, getCompanyByCustomerId, createTestCustomer } from '../utils/airtable';
 import { validate } from '../middleware/validate';
+import { requireAuth } from '../middleware/auth';
 import { emailSchema, createTestCustomerSchema } from '../validations';
 import { asyncHandler, AppError, createNotFoundError, createAuthorizationError, createInternalServerError } from '../middleware/errorHandler';
 
@@ -27,30 +28,17 @@ router.post('/verify', validate(emailSchema), asyncHandler(async (req, res) => {
   });
 }));
 
-// Customer info endpoint - checks Airtable directly
-router.post('/customer/info', validate(emailSchema), asyncHandler(async (req, res) => {
-  const { email } = req.body;
-
-  const airtableToken = process.env.AIRTABLE_API_KEY;
-  const baseId = process.env.AIRTABLE_BASE_ID;
-
-  if (!airtableToken || !baseId) {
-    throw createInternalServerError('Airtable not configured');
-  }
-
-  // Check customer exists with new schema
-  const customer = await getCustomerByEmail(email);
+// Customer info endpoint - requires authentication
+router.post('/info', requireAuth, validate(emailSchema), asyncHandler(async (req, res) => {
+  // Customer info is already verified by auth middleware
+  const customerId = req.user!.customerId;
   
-  if (!customer) {
-    throw createAuthorizationError('Access denied - customer not found');
-  }
-
   // Check for existing company
-  const company = await getCompanyByCustomerId(customer.id);
+  const company = await getCompanyByCustomerId(customerId);
   
   res.json({ 
-    email: customer.fields.email,
-    planType: customer.fields.plan_type,
+    email: req.user!.email,
+    planType: req.user!.planType,
     hasCompany: !!company,
     company: company ? {
       id: company.id,

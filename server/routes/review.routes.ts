@@ -5,13 +5,14 @@ import {
   trackDocumentDownload
 } from '../utils/airtable';
 import { validate } from '../middleware/validate';
+import { requireAuth } from '../middleware/auth';
 import { emailSchema, documentTrackingSchema, documentStatusSchema } from '../validations';
 import { asyncHandler, AppError, createAuthorizationError, createInternalServerError, createNotFoundError } from '../middleware/errorHandler';
 
 const router = express.Router();
 
 // Review data endpoint - aggregates data from all sources
-router.post('/data', validate(emailSchema), asyncHandler(async (req, res) => {
+router.post('/data', requireAuth, validate(emailSchema), asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   // Get customer and company
@@ -132,7 +133,7 @@ router.post('/data', validate(emailSchema), asyncHandler(async (req, res) => {
 }));
 
 // Generate documents endpoint
-router.post('/generate-documents', validate(emailSchema), asyncHandler(async (req, res) => {
+router.post('/generate-documents', requireAuth, validate(emailSchema), asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   // Get customer
@@ -276,7 +277,7 @@ router.post('/calculate', validate(emailSchema), asyncHandler(async (req, res) =
 }));
 
 // Generate QRE report endpoint
-router.post('/generate-report', validate(emailSchema), asyncHandler(async (req, res) => {
+router.post('/generate-report', requireAuth, validate(emailSchema), asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   // Get customer
@@ -291,7 +292,7 @@ router.post('/generate-report', validate(emailSchema), asyncHandler(async (req, 
 }));
 
 // Documents list endpoint  
-router.post('/list', validate(emailSchema), asyncHandler(async (req, res) => {
+router.post('/list', requireAuth, validate(emailSchema), asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   // Get customer
@@ -337,7 +338,7 @@ router.post('/list', validate(emailSchema), asyncHandler(async (req, res) => {
 }));
 
 // Track document download
-router.post('/track-download', validate(documentTrackingSchema), asyncHandler(async (req, res) => {
+router.post('/track-download', requireAuth, validate(documentTrackingSchema), asyncHandler(async (req, res) => {
   const { email, documentId, fileName, fileType } = req.body;
   
   await trackDocumentDownload({ email, documentId, fileName, fileType });

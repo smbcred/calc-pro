@@ -18,6 +18,21 @@ This is a React-based R&D Tax Credit Calculator application that helps businesse
 
 Preferred communication style: Simple, everyday language.
 
+# Application Flow (Updated August 2025)
+
+## PHASE 1: Marketing Funnel (Public, No Authentication)
+- **Route Flow**: / → /calculator → /checkout → /success
+- **Purpose**: Convert visitors into paying customers using simplified calculator
+- **Components**: LandingPage → AmazingCalculator → CheckoutPage → SuccessPage
+- **No Authentication Required**: Open to all visitors for marketing conversion
+
+## PHASE 2: Backend Software (Protected, Authentication Required)  
+- **Route Flow**: /login → /dashboard (single authenticated experience)
+- **Purpose**: Comprehensive data collection and IRS document generation
+- **Authentication**: Must have completed payment to access
+- **Components**: LoginPage → Dashboard (with integrated forms)
+- **Data Collection**: All business details collected within Dashboard sections
+
 # System Architecture
 
 ## Frontend Architecture

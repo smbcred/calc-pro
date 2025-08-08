@@ -12,6 +12,7 @@ const SuccessPage: React.FC = () => {
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Payment Successful!</h1>
           <p className="text-xl text-gray-600 mb-2">Your R&D Tax Credit filing package is confirmed</p>
+          <p className="text-lg text-green-600 font-medium">Check your email for login instructions to access your dashboard</p>
           <p className="text-lg text-blue-600">Order #: {new URLSearchParams(window.location.search).get('session_id')?.slice(-8) || 'CONFIRMED'}</p>
         </div>
 
@@ -24,8 +25,8 @@ const SuccessPage: React.FC = () => {
                 <span className="text-blue-600 font-semibold">1</span>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">Confirmation Email</h3>
-                <p className="text-gray-600">You'll receive a confirmation email within the next few minutes with your order details.</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">Login Instructions Email</h3>
+                <p className="text-gray-600">You'll receive an email within the next few minutes with instructions to access your secure dashboard.</p>
               </div>
             </div>
 
@@ -34,8 +35,8 @@ const SuccessPage: React.FC = () => {
                 <span className="text-blue-600 font-semibold">2</span>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">Document Preparation</h3>
-                <p className="text-gray-600">Our team will prepare your personalized R&D credit documentation package.</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">Access Your Dashboard</h3>
+                <p className="text-gray-600">Log into your secure dashboard to complete your business information and R&D activity details.</p>
               </div>
             </div>
 
@@ -44,8 +45,8 @@ const SuccessPage: React.FC = () => {
                 <span className="text-green-600 font-semibold">3</span>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">Delivery (48 Hours)</h3>
-                <p className="text-gray-600">Complete filing package delivered via email within 48 hours.</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">Document Generation</h3>
+                <p className="text-gray-600">Once you complete your dashboard, we'll generate your complete IRS filing package within 48 hours.</p>
               </div>
             </div>
           </div>

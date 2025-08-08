@@ -10,9 +10,7 @@ const LandingPage = lazy(() => import('./pages/LandingPage'));
 const AmazingCalculator = lazy(() => import('./components/AmazingCalculator'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const SuccessPage = lazy(() => import('./pages/SuccessPage'));
-const IntakePage = lazy(() => import('./pages/IntakePage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
-const GatedIntakePortal = lazy(() => import('./pages/GatedIntakePortal'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 // Create a loading component
@@ -53,14 +51,8 @@ function App() {
         <Route path="/success">
           <SuccessPage />
         </Route>
-        <Route path="/intake">
-          <IntakePage />
-        </Route>
         <Route path="/login">
           <LoginPage />
-        </Route>
-        <Route path="/intake-portal">
-          <GatedIntakePortal />
         </Route>
         <Route path="/dashboard">
           <Dashboard />

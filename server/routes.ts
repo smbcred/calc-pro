@@ -7,7 +7,6 @@ import webhookRoutes from './routes/webhook.routes';
 import calculatorRoutes from './routes/calculator.routes';
 import creditsRoutes from './routes/credits.routes';
 import webhooksRoutes from './routes/webhooks.routes';
-import intakeRoutes from './routes/intake.routes';
 import companyRoutes from './routes/company.routes';
 import expenseRoutes from './routes/expense.routes';
 import reviewRoutes from './routes/review.routes';
@@ -22,7 +21,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/credits', creditsRoutes);
   app.use('/api/webhooks', webhooksRoutes);
   app.use('/api', webhookRoutes);
-  app.use('/api/intake', intakeRoutes);
   app.use('/api/company', companyRoutes);
   app.use('/api/expense', expenseRoutes);
   app.use('/api', reviewRoutes);

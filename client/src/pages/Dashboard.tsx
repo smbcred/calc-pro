@@ -449,11 +449,6 @@ const Dashboard: React.FC = () => {
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span className="text-sm font-medium text-green-700">Active Plan</span>
                 </div>
-                <Link href="/intake-portal">
-                  <button className="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                    View Intake Form
-                  </button>
-                </Link>
               </div>
             </div>
           </div>
@@ -616,11 +611,7 @@ const Dashboard: React.FC = () => {
                     </button>
                   ) : (
                     <div>
-                      <Link href="/intake-portal">
-                        <button className="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
-                          Complete Intake Form
-                        </button>
-                      </Link>
+                      <p className="text-blue-600 font-medium">Use the sections below to complete your information</p>
                       <p className="text-sm text-gray-600 mt-2">
                         Complete Company Info and R&D Activities to unlock document generation
                       </p>
@@ -743,13 +734,7 @@ const Dashboard: React.FC = () => {
                             {/* Navigation Button */}
                             {!isCompleted && (
                               <button
-                                onClick={() => {
-                                  if (item.section === 'company' || item.section === 'rd-activities' || item.section === 'expenses') {
-                                    setLocation('/intake-portal');
-                                  } else {
-                                    setActiveSection(item.section);
-                                  }
-                                }}
+                                onClick={() => setActiveSection(item.section)}
                                 className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
                               >
                                 <span>Complete</span>
@@ -759,13 +744,7 @@ const Dashboard: React.FC = () => {
                             
                             {isCompleted && (
                               <button
-                                onClick={() => {
-                                  if (item.section === 'company' || item.section === 'rd-activities' || item.section === 'expenses') {
-                                    setLocation('/intake-portal');
-                                  } else {
-                                    setActiveSection(item.section);
-                                  }
-                                }}
+                                onClick={() => setActiveSection(item.section)}
                                 className="flex items-center gap-1 px-3 py-1.5 text-gray-600 hover:text-blue-600 text-sm hover:bg-blue-50 rounded-lg transition-colors"
                               >
                                 <span>Review</span>
@@ -816,11 +795,12 @@ const Dashboard: React.FC = () => {
                             : 'Excellent! All items complete. Ready to generate your documentation.'}
                         </p>
                         {checklistItems.filter(item => item.required && !item.completed).length === 0 && (
-                          <Link href="/intake-portal">
-                            <button className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium">
-                              Add more expense details →
-                            </button>
-                          </Link>
+                          <button 
+                            onClick={() => setActiveSection('expenses')}
+                            className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            Add more expense details →
+                          </button>
                         )}
                       </div>
                     </div>
@@ -963,13 +943,9 @@ const Dashboard: React.FC = () => {
                   {activeSection.replace('-', ' & ')}
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  This section is being built. Your information from the intake form will be displayed here.
+                  This section is being built. Your information from the dashboard forms will be displayed here.
                 </p>
-                <Link href="/intake-portal">
-                  <button className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
-                    View Intake Portal
-                  </button>
-                </Link>
+                <p className="text-gray-500 font-medium">Complete your information using the dashboard sections above</p>
               </div>
             </div>
           )}

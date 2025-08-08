@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
       if (data.hasAccess) {
         // Store auth state in session storage
         sessionStorage.setItem('authEmail', email);
-        setLocation('/intake-portal');
+        setLocation('/dashboard');
       } else {
         setStatus('error');
         setErrorMessage('You need to complete payment first. Please go through the calculator and checkout process.');
@@ -55,7 +55,7 @@ const LoginPage: React.FC = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-green-600 rounded-2xl mb-4">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Access Your Intake Portal</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Access Your Dashboard</h1>
           <p className="text-gray-600">
             Enter the email address you used during checkout
           </p>
@@ -117,7 +117,7 @@ const LoginPage: React.FC = () => {
                   Verifying...
                 </span>
               ) : (
-                'Access Intake Portal'
+                'Access Dashboard'
               )}
             </button>
           </form>

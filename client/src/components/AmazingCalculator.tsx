@@ -240,7 +240,7 @@ const AmazingCalculator: React.FC = () => {
         <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b shadow-sm">
           <div className="max-w-6xl mx-auto px-2 py-6">
             {/* Desktop Progress Bar */}
-            <div className="hidden lg:flex items-center justify-between">
+            <div className="hidden lg:flex items-center justify-center">
               {steps.map((step, index) => (
                 <div key={step.number} className="flex items-center">
                   <div className={`
@@ -258,21 +258,21 @@ const AmazingCalculator: React.FC = () => {
                       step.number
                     )}
                   </div>
-                  <div className="ml-3">
-                    <div className={`font-semibold text-sm transition-colors ${
+                  <div className="ml-2">
+                    <div className={`font-semibold text-xs transition-colors ${
                       currentStep >= step.number ? 'text-gray-900' : currentStep === step.number ? 'text-blue-600' : 'text-gray-500'
                     }`}>
                       {step.title}
                     </div>
-                    <div className={`text-xs mt-0.5 transition-colors ${
+                    <div className={`text-xs mt-0.5 transition-colors hidden xl:block ${
                       currentStep > step.number ? 'text-green-600' : currentStep === step.number ? 'text-blue-500' : 'text-gray-400'
                     }`}>
                       {currentStep > step.number ? 'Complete' : currentStep === step.number ? 'In Progress' : 'Pending'}
                     </div>
                   </div>
                   {index < steps.length - 1 && (
-                    <div className="relative mx-4">
-                      <div className={`w-20 h-1 rounded-full transition-all duration-700 ${
+                    <div className="relative mx-3">
+                      <div className={`w-16 h-1 rounded-full transition-all duration-700 ${
                         currentStep > step.number ? 'bg-gradient-to-r from-green-500 to-blue-500' : 'bg-gray-200'
                       }`} />
                       {currentStep > step.number && (

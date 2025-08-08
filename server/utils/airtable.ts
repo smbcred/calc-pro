@@ -1,4 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
+import { cache } from './cache';
+import Logger from './logger';
 
 // Helper function to get Airtable credentials
 function getAirtableCredentials() {
@@ -14,21 +16,40 @@ function getAirtableCredentials() {
 
 // Customer operations
 export async function getCustomerByEmail(email: string) {
-  const { airtableToken, baseId } = getAirtableCredentials();
-
-  const response = await fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({email})=LOWER('${email}')`, {
-    headers: {
-      'Authorization': `Bearer ${airtableToken}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch customer');
+  // Check cache first
+  const cacheKey = `customer:${email.toLowerCase()}`;
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    return cached;
   }
 
-  const data = await response.json();
-  return data.records.length > 0 ? data.records[0] : null;
+  const { airtableToken, baseId } = getAirtableCredentials();
+
+  try {
+    const response = await fetch(`https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({email})=LOWER('${email}')`, {
+      headers: {
+        'Authorization': `Bearer ${airtableToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch customer');
+    }
+
+    const data = await response.json();
+    const customer = data.records.length > 0 ? data.records[0] : null;
+    
+    // Cache the result
+    if (customer) {
+      cache.set(cacheKey, customer, 10 * 60 * 1000); // Cache for 10 minutes
+    }
+    
+    return customer;
+  } catch (error) {
+    Logger.error(`Failed to fetch customer by email: ${email}`, error);
+    throw error;
+  }
 }
 
 export async function addToAirtableCustomers(data: {
@@ -70,21 +91,40 @@ export async function addToAirtableCustomers(data: {
 
 // Company operations
 export async function getCompanyByCustomerId(customerId: string) {
-  const { airtableToken, baseId } = getAirtableCredentials();
-
-  const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula={customer_id}='${customerId}'`, {
-    headers: {
-      'Authorization': `Bearer ${airtableToken}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch company');
+  // Check cache first
+  const cacheKey = `company:${customerId}`;
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    return cached;
   }
 
-  const data = await response.json();
-  return data.records.length > 0 ? data.records[0] : null;
+  const { airtableToken, baseId } = getAirtableCredentials();
+
+  try {
+    const response = await fetch(`https://api.airtable.com/v0/${baseId}/Companies?filterByFormula={customer_id}='${customerId}'`, {
+      headers: {
+        'Authorization': `Bearer ${airtableToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch company');
+    }
+
+    const data = await response.json();
+    const company = data.records.length > 0 ? data.records[0] : null;
+    
+    // Cache the result
+    if (company) {
+      cache.set(cacheKey, company, 10 * 60 * 1000); // Cache for 10 minutes
+    }
+    
+    return company;
+  } catch (error) {
+    Logger.error(`Failed to fetch company by customer ID: ${customerId}`, error);
+    throw error;
+  }
 }
 
 export async function addToAirtableCompanies(data: {

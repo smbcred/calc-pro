@@ -10,6 +10,9 @@ import {
   handleUncaughtExceptions 
 } from './middleware/errorHandler';
 import expressWinston from 'express-winston';
+// Import database and health check
+import { closeDatabaseConnection } from './config/database';
+import healthRoutes from './routes/health.routes';
 // Import security middleware
 import helmet from 'helmet';
 import cors from 'cors';
@@ -71,6 +74,9 @@ app.use(expressWinston.logger({
 (async () => {
   const server = await registerRoutes(app);
 
+  // Add health check route
+  app.use('/', healthRoutes);
+
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
@@ -99,5 +105,26 @@ app.use(expressWinston.logger({
     Logger.info(`🚀 Server is running on port ${port}`);
     Logger.info(`🏃 Environment: ${process.env.NODE_ENV || 'development'}`);
     log(`serving on port ${port}`);
+  });
+
+  // Handle graceful shutdown
+  process.on('SIGTERM', async () => {
+    Logger.info('SIGTERM received, shutting down gracefully');
+    server.close(() => {
+      closeDatabaseConnection().then(() => {
+        Logger.info('Database connections closed');
+        process.exit(0);
+      });
+    });
+  });
+
+  process.on('SIGINT', async () => {
+    Logger.info('SIGINT received, shutting down gracefully');
+    server.close(() => {
+      closeDatabaseConnection().then(() => {
+        Logger.info('Database connections closed');
+        process.exit(0);
+      });
+    });
   });
 })();

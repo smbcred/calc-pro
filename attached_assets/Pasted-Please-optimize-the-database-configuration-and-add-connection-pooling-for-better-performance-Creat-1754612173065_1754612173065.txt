@@ -1,0 +1,235 @@
+Please optimize the database configuration and add connection pooling for better performance.
+
+Create a new file server/config/database.ts to centralize database configuration:
+
+typescriptimport { drizzle } from 'drizzle-orm/neon-http';
+import { neon, neonConfig, Pool } from '@neondatabase/serverless';
+import * as schema from '@/shared/db/schema';
+import { logger } from '../utils/logger';
+
+// Configure Neon for better performance
+neonConfig.fetchConnectionCache = true;
+
+// Database connection singleton
+let db: ReturnType<typeof drizzle> | null = null;
+let connectionPool: Pool | null = null;
+
+export const getDb = () => {
+  if (!db) {
+    const databaseUrl = process.env.DATABASE_URL;
+    
+    if (!databaseUrl) {
+      logger.error('DATABASE_URL is not set');
+      throw new Error('Database configuration error');
+    }
+
+    try {
+      // Create connection pool for better performance
+      connectionPool = new Pool({ connectionString: databaseUrl });
+      
+      // Set pool configuration
+      connectionPool.on('error', (err) => {
+        logger.error('Unexpected database pool error', err);
+      });
+
+      // Create drizzle instance
+      const sql = neon(databaseUrl);
+      db = drizzle(sql, { schema });
+      
+      logger.info('Database connection established');
+    } catch (error) {
+      logger.error('Failed to connect to database:', error);
+      throw error;
+    }
+  }
+  
+  return db;
+};
+
+// Health check function
+export const checkDatabaseHealth = async () => {
+  try {
+    const db = getDb();
+    // Simple query to check connection
+    await db.select().from(schema.users).limit(1);
+    return { healthy: true };
+  } catch (error) {
+    logger.error('Database health check failed:', error);
+    return { healthy: false, error: error.message };
+  }
+};
+
+// Cleanup function for graceful shutdown
+export const closeDatabaseConnection = async () => {
+  if (connectionPool) {
+    await connectionPool.end();
+    logger.info('Database connection pool closed');
+  }
+};
+
+Create a caching layer for Airtable API calls in server/utils/cache.ts:
+
+typescriptimport { logger } from './logger';
+
+interface CacheItem {
+  data: any;
+  timestamp: number;
+  ttl: number;
+}
+
+class SimpleCache {
+  private cache: Map<string, CacheItem> = new Map();
+  private defaultTTL = 5 * 60 * 1000; // 5 minutes default
+
+  set(key: string, data: any, ttl?: number): void {
+    const item: CacheItem = {
+      data,
+      timestamp: Date.now(),
+      ttl: ttl || this.defaultTTL,
+    };
+    this.cache.set(key, item);
+    logger.debug(`Cache set: ${key}`);
+  }
+
+  get(key: string): any | null {
+    const item = this.cache.get(key);
+    
+    if (!item) {
+      return null;
+    }
+
+    const now = Date.now();
+    if (now - item.timestamp > item.ttl) {
+      this.cache.delete(key);
+      logger.debug(`Cache expired: ${key}`);
+      return null;
+    }
+
+    logger.debug(`Cache hit: ${key}`);
+    return item.data;
+  }
+
+  clear(): void {
+    this.cache.clear();
+    logger.info('Cache cleared');
+  }
+
+  // Clean up expired entries periodically
+  startCleanup(): void {
+    setInterval(() => {
+      const now = Date.now();
+      for (const [key, item] of this.cache.entries()) {
+        if (now - item.timestamp > item.ttl) {
+          this.cache.delete(key);
+        }
+      }
+    }, 60000); // Run every minute
+  }
+}
+
+export const cache = new SimpleCache();
+// Start automatic cleanup
+cache.startCleanup();
+
+Update the Airtable helper functions to use caching. In server/utils/airtable.ts:
+
+typescriptimport { cache } from './cache';
+import { logger } from './logger';
+
+export async function getCustomerByEmail(email: string) {
+  // Check cache first
+  const cacheKey = `customer:${email.toLowerCase()}`;
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const airtableToken = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
+
+  if (!airtableToken || !baseId) {
+    throw new Error('Airtable credentials not configured');
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.airtable.com/v0/${baseId}/Customers?filterByFormula=LOWER({email})=LOWER('${email}')`,
+      {
+        headers: {
+          'Authorization': `Bearer ${airtableToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch customer');
+    }
+
+    const data = await response.json();
+    const customer = data.records.length > 0 ? data.records[0] : null;
+    
+    // Cache the result
+    if (customer) {
+      cache.set(cacheKey, customer, 10 * 60 * 1000); // Cache for 10 minutes
+    }
+    
+    return customer;
+  } catch (error) {
+    logger.error(`Failed to fetch customer by email: ${email}`, error);
+    throw error;
+  }
+}
+
+// Apply similar caching to other Airtable functions
+
+Add database query optimization for the session queries. Update any database queries to use proper indexing hints and limits:
+
+typescript// Instead of loading all data, use pagination and limits
+const results = await db
+  .select()
+  .from(schema.tableName)
+  .where(eq(schema.tableName.field, value))
+  .limit(100) // Always add limits
+  .offset(page * 100); // Add pagination if needed
+
+Add a health check endpoint in server/routes/health.routes.ts:
+
+typescriptimport { Router } from 'express';
+import { asyncHandler } from '../middleware/errorHandler';
+import { checkDatabaseHealth } from '../config/database';
+import { logger } from '../utils/logger';
+
+const router = Router();
+
+router.get('/health', asyncHandler(async (req, res) => {
+  const dbHealth = await checkDatabaseHealth();
+  
+  const health = {
+    status: dbHealth.healthy ? 'healthy' : 'unhealthy',
+    timestamp: new Date().toISOString(),
+    database: dbHealth,
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+  };
+
+  logger.info('Health check performed', health);
+  
+  res.status(dbHealth.healthy ? 200 : 503).json(health);
+}));
+
+export default router;
+
+Add graceful shutdown handling in server/index.ts:
+
+typescript// Handle graceful shutdown
+process.on('SIGTERM', async () => {
+  logger.info('SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    closeDatabaseConnection().then(() => {
+      logger.info('Database connections closed');
+      process.exit(0);
+    });
+  });
+});
+This will significantly improve your application's performance by caching frequently accessed data and properly managing database connections.

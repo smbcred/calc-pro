@@ -1,0 +1,834 @@
+Please implement comprehensive monitoring and observability for our R&D Tax Credit platform using Prometheus metrics, structured logging, and application performance monitoring.
+
+First, add monitoring dependencies to package.json:
+
+json"prom-client": "^15.1.0",
+"winston-daily-rotate-file": "^4.7.1",
+"express-prom-bundle": "^7.0.0",
+"@sentry/node": "^7.91.0",
+"@sentry/integrations": "^7.91.0",
+"bull": "^4.12.0",
+"@bull-board/express": "^5.14.0"
+
+Create server/config/metrics.ts for Prometheus metrics:
+
+typescriptimport { Registry, Counter, Histogram, Gauge, collectDefaultMetrics } from 'prom-client';
+import { logger } from '../utils/logger';
+
+// Create a Registry
+export const register = new Registry();
+
+// Add default metrics (CPU, memory, etc.)
+collectDefaultMetrics({ register });
+
+// Custom metrics for our application
+export const metrics = {
+  // HTTP metrics
+  httpRequestDuration: new Histogram({
+    name: 'http_request_duration_seconds',
+    help: 'Duration of HTTP requests in seconds',
+    labelNames: ['method', 'route', 'status_code'],
+    buckets: [0.1, 0.5, 1, 2, 5],
+    registers: [register],
+  }),
+
+  httpRequestTotal: new Counter({
+    name: 'http_requests_total',
+    help: 'Total number of HTTP requests',
+    labelNames: ['method', 'route', 'status_code'],
+    registers: [register],
+  }),
+
+  // Business metrics
+  calculatorUsage: new Counter({
+    name: 'calculator_usage_total',
+    help: 'Total number of calculator uses',
+    labelNames: ['tier', 'credit_range'],
+    registers: [register],
+  }),
+
+  loginAttempts: new Counter({
+    name: 'login_attempts_total',
+    help: 'Total number of login attempts',
+    labelNames: ['status'],
+    registers: [register],
+  }),
+
+  intakeFormCompletions: new Counter({
+    name: 'intake_form_completions_total',
+    help: 'Total number of intake form completions',
+    labelNames: ['company_size', 'entity_type'],
+    registers: [register],
+  }),
+
+  stripePayments: new Counter({
+    name: 'stripe_payments_total',
+    help: 'Total number of Stripe payments',
+    labelNames: ['status', 'tier', 'amount_range'],
+    registers: [register],
+  }),
+
+  documentGeneration: new Counter({
+    name: 'document_generation_total',
+    help: 'Total number of document generation requests',
+    labelNames: ['status', 'document_type'],
+    registers: [register],
+  }),
+
+  // Cache metrics
+  cacheHits: new Counter({
+    name: 'cache_hits_total',
+    help: 'Total number of cache hits',
+    labelNames: ['cache_type'],
+    registers: [register],
+  }),
+
+  cacheMisses: new Counter({
+    name: 'cache_misses_total',
+    help: 'Total number of cache misses',
+    labelNames: ['cache_type'],
+    registers: [register],
+  }),
+
+  // Performance metrics
+  airtableResponseTime: new Histogram({
+    name: 'airtable_response_time_seconds',
+    help: 'Airtable API response time',
+    labelNames: ['operation'],
+    buckets: [0.1, 0.3, 0.5, 1, 2],
+    registers: [register],
+  }),
+
+  // Current state gauges
+  activeUsers: new Gauge({
+    name: 'active_users',
+    help: 'Current number of active users',
+    registers: [register],
+  }),
+
+  pendingDocuments: new Gauge({
+    name: 'pending_documents',
+    help: 'Number of documents pending generation',
+    registers: [register],
+  }),
+
+  // Error tracking
+  applicationErrors: new Counter({
+    name: 'application_errors_total',
+    help: 'Total number of application errors',
+    labelNames: ['error_type', 'severity'],
+    registers: [register],
+  }),
+};
+
+// Helper functions to track business metrics
+export const trackCalculatorUsage = (federalCredit: number) => {
+  let tier = '1';
+  let creditRange = 'under_10k';
+  
+  if (federalCredit >= 100000) {
+    tier = '4';
+    creditRange = 'over_100k';
+  } else if (federalCredit >= 50000) {
+    tier = '3';
+    creditRange = '50k_100k';
+  } else if (federalCredit >= 10000) {
+    tier = '2';
+    creditRange = '10k_50k';
+  }
+  
+  metrics.calculatorUsage.inc({ tier, credit_range: creditRange });
+};
+
+export const trackPayment = (status: 'success' | 'failed', amount: number, tier: string) => {
+  let amountRange = 'under_500';
+  if (amount >= 1500) amountRange = 'over_1500';
+  else if (amount >= 1000) amountRange = '1000_1500';
+  else if (amount >= 750) amountRange = '750_1000';
+  else if (amount >= 500) amountRange = '500_750';
+  
+  metrics.stripePayments.inc({ status, tier, amount_range: amountRange });
+};
+
+// Metrics endpoint
+export const metricsEndpoint = async (req: any, res: any) => {
+  res.set('Content-Type', register.contentType);
+  const metrics = await register.metrics();
+  res.end(metrics);
+};
+
+Create server/middleware/metricsMiddleware.ts:
+
+typescriptimport { Request, Response, NextFunction } from 'express';
+import { metrics } from '../config/metrics';
+
+export const metricsMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  const start = Date.now();
+  
+  // Intercept response finish
+  res.on('finish', () => {
+    const duration = (Date.now() - start) / 1000;
+    const route = req.route?.path || req.path;
+    const method = req.method;
+    const statusCode = res.statusCode.toString();
+    
+    // Record metrics
+    metrics.httpRequestDuration.observe(
+      { method, route, status_code: statusCode },
+      duration
+    );
+    
+    metrics.httpRequestTotal.inc({
+      method,
+      route,
+      status_code: statusCode,
+    });
+  });
+  
+  next();
+};
+
+// Cache metrics middleware
+export const trackCacheMetrics = (cacheType: string) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const originalJson = res.json;
+    
+    res.json = function(data: any) {
+      const cacheHeader = res.get('X-Cache');
+      if (cacheHeader === 'HIT') {
+        metrics.cacheHits.inc({ cache_type: cacheType });
+      } else if (cacheHeader === 'MISS') {
+        metrics.cacheMisses.inc({ cache_type: cacheType });
+      }
+      
+      return originalJson.call(this, data);
+    };
+    
+    next();
+  };
+};
+
+Update server/utils/logger.ts with structured logging:
+
+typescriptimport winston from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
+import { metrics } from '../config/metrics';
+
+// Custom format for structured logging
+const structuredFormat = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.errors({ stack: true }),
+  winston.format.metadata({ fillExcept: ['message', 'level', 'timestamp', 'label'] }),
+  winston.format.json()
+);
+
+// Console format for development
+const consoleFormat = winston.format.combine(
+  winston.format.colorize(),
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  winston.format.printf(({ timestamp, level, message, metadata }) => {
+    let msg = `${timestamp} [${level}]: ${message}`;
+    if (metadata && Object.keys(metadata).length > 0) {
+      msg += ` ${JSON.stringify(metadata)}`;
+    }
+    return msg;
+  })
+);
+
+// Create the logger
+export const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: structuredFormat,
+  defaultMeta: { 
+    service: 'rd-tax-credit-api',
+    environment: process.env.NODE_ENV || 'development'
+  },
+  transports: [
+    // Console transport
+    new winston.transports.Console({
+      format: process.env.NODE_ENV === 'production' ? structuredFormat : consoleFormat,
+    }),
+    
+    // Error log file (rotated daily)
+    new DailyRotateFile({
+      filename: 'logs/error-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      level: 'error',
+      maxSize: '20m',
+      maxFiles: '14d',
+      format: structuredFormat,
+    }),
+    
+    // Combined log file (rotated daily)
+    new DailyRotateFile({
+      filename: 'logs/combined-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      maxSize: '20m',
+      maxFiles: '7d',
+      format: structuredFormat,
+    }),
+    
+    // Audit log for important events
+    new DailyRotateFile({
+      filename: 'logs/audit-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      level: 'info',
+      maxSize: '20m',
+      maxFiles: '30d',
+      format: structuredFormat,
+      filter: (info) => info.metadata?.audit === true,
+    }),
+  ],
+  exceptionHandlers: [
+    new winston.transports.File({ filename: 'logs/exceptions.log' })
+  ],
+  rejectionHandlers: [
+    new winston.transports.File({ filename: 'logs/rejections.log' })
+  ],
+});
+
+// Track errors in metrics
+logger.on('error', (error) => {
+  metrics.applicationErrors.inc({ 
+    error_type: error.name || 'unknown',
+    severity: 'high'
+  });
+});
+
+// Audit logging helper
+export const auditLog = (action: string, userId: string, details: any) => {
+  logger.info(`Audit: ${action}`, {
+    audit: true,
+    action,
+    userId,
+    timestamp: new Date().toISOString(),
+    ...details
+  });
+};
+
+// Performance logging helper
+export const perfLog = (operation: string, duration: number, metadata?: any) => {
+  logger.info(`Performance: ${operation}`, {
+    performance: true,
+    operation,
+    duration,
+    ...metadata
+  });
+};
+
+Create server/config/sentry.ts for error tracking:
+
+typescriptimport * as Sentry from '@sentry/node';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
+import { logger } from '../utils/logger';
+import { metrics } from './metrics';
+
+export const initSentry = (app: any) => {
+  if (!process.env.SENTRY_DSN) {
+    logger.warn('Sentry DSN not provided, error tracking disabled');
+    return;
+  }
+
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    integrations: [
+      // Express integration
+      new Sentry.Integrations.Http({ tracing: true }),
+      new Sentry.Integrations.Express({ app }),
+      // Performance profiling
+      nodeProfilingIntegration(),
+    ],
+    
+    // Performance Monitoring
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+    profilesSampleRate: 1.0,
+    
+    // Release tracking
+    release: process.env.RELEASE_VERSION || 'development',
+    
+    // Before send hook
+    beforeSend(event, hint) {
+      // Log to Winston as well
+      logger.error('Sentry error captured', {
+        error: hint.originalException,
+        event_id: event.event_id,
+      });
+      
+      // Track in metrics
+      metrics.applicationErrors.inc({
+        error_type: event.exception?.values?.[0]?.type || 'unknown',
+        severity: event.level || 'error'
+      });
+      
+      // Filter out sensitive data
+      if (event.request?.cookies) {
+        delete event.request.cookies;
+      }
+      
+      return event;
+    },
+    
+    // Ignore certain errors
+    ignoreErrors: [
+      'Network Error',
+      'Non-Error promise rejection captured',
+    ],
+  });
+
+  // Sentry request handler (must be first middleware)
+  app.use(Sentry.Handlers.requestHandler());
+  
+  // Sentry tracing handler
+  app.use(Sentry.Handlers.tracingHandler());
+};
+
+// Error handler (must be after all controllers)
+export const sentryErrorHandler = Sentry.Handlers.errorHandler();
+
+// Custom error capture with context
+export const captureError = (error: Error, context?: any) => {
+  Sentry.captureException(error, {
+    extra: context,
+    tags: {
+      section: context?.section || 'unknown',
+    },
+  });
+};
+
+Create server/utils/backgroundJobs.ts for job monitoring:
+
+typescriptimport Bull from 'bull';
+import { createBullBoard } from '@bull-board/api';
+import { BullAdapter } from '@bull-board/api/bullAdapter';
+import { ExpressAdapter } from '@bull-board/express';
+import { logger } from './logger';
+import { metrics } from '../config/metrics';
+
+// Create queues
+export const documentQueue = new Bull('document-generation', {
+  redis: {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT || '6379'),
+    password: process.env.REDIS_PASSWORD,
+  },
+});
+
+export const emailQueue = new Bull('email-notifications', {
+  redis: {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT || '6379'),
+    password: process.env.REDIS_PASSWORD,
+  },
+});
+
+// Job processors
+documentQueue.process(async (job) => {
+  const { customerId, companyId, documentType } = job.data;
+  
+  try {
+    logger.info('Processing document generation', { customerId, documentType });
+    
+    // Simulate document generation
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    
+    metrics.documentGeneration.inc({ status: 'success', document_type: documentType });
+    
+    return { success: true, documentId: `doc_${Date.now()}` };
+  } catch (error) {
+    logger.error('Document generation failed', { error, jobId: job.id });
+    metrics.documentGeneration.inc({ status: 'failed', document_type: documentType });
+    throw error;
+  }
+});
+
+emailQueue.process(async (job) => {
+  const { to, template, data } = job.data;
+  
+  try {
+    logger.info('Sending email', { to, template });
+    
+    // Your email sending logic here
+    
+    return { success: true };
+  } catch (error) {
+    logger.error('Email send failed', { error, jobId: job.id });
+    throw error;
+  }
+});
+
+// Queue event handlers
+documentQueue.on('completed', (job, result) => {
+  logger.info('Document job completed', { jobId: job.id, result });
+});
+
+documentQueue.on('failed', (job, err) => {
+  logger.error('Document job failed', { jobId: job.id, error: err.message });
+});
+
+// Bull Board setup for monitoring
+const serverAdapter = new ExpressAdapter();
+serverAdapter.setBasePath('/admin/queues');
+
+createBullBoard({
+  queues: [
+    new BullAdapter(documentQueue),
+    new BullAdapter(emailQueue),
+  ],
+  serverAdapter,
+});
+
+export const bullBoardRouter = serverAdapter.getRouter();
+
+// Helper to add jobs with monitoring
+export const addDocumentJob = async (data: any) => {
+  const job = await documentQueue.add(data, {
+    attempts: 3,
+    backoff: {
+      type: 'exponential',
+      delay: 2000,
+    },
+  });
+  
+  metrics.pendingDocuments.inc();
+  
+  return job;
+};
+
+Create server/utils/monitoring.ts for application monitoring:
+
+typescriptimport { metrics } from '../config/metrics';
+import { redis } from '../config/redis';
+import { logger } from './logger';
+import os from 'os';
+
+export class ApplicationMonitor {
+  private static intervalId: NodeJS.Timeout;
+
+  static start() {
+    // Update metrics every 30 seconds
+    this.intervalId = setInterval(() => {
+      this.collectMetrics();
+    }, 30000);
+
+    logger.info('Application monitoring started');
+  }
+
+  static stop() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
+  private static async collectMetrics() {
+    try {
+      // System metrics
+      const cpuUsage = process.cpuUsage();
+      const memoryUsage = process.memoryUsage();
+      
+      // Active sessions (from Redis)
+      const sessionKeys = await redis.keys('session:*');
+      metrics.activeUsers.set(sessionKeys.length);
+      
+      // Pending documents
+      const pendingDocs = await redis.get('stats:pending_documents');
+      metrics.pendingDocuments.set(parseInt(pendingDocs || '0'));
+      
+      // Log system stats
+      logger.debug('System metrics collected', {
+        cpu: cpuUsage,
+        memory: {
+          rss: `${Math.round(memoryUsage.rss / 1024 / 1024)}MB`,
+          heapUsed: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)}MB`,
+        },
+        activeUsers: sessionKeys.length,
+      });
+    } catch (error) {
+      logger.error('Failed to collect metrics', { error });
+    }
+  }
+
+  static logPerformance(operation: string, startTime: number, metadata?: any) {
+    const duration = Date.now() - startTime;
+    
+    logger.info(`Performance: ${operation}`, {
+      operation,
+      duration,
+      ...metadata,
+    });
+
+    // Track slow operations
+    if (duration > 1000) {
+      logger.warn(`Slow operation detected: ${operation}`, {
+        operation,
+        duration,
+        threshold: 1000,
+        ...metadata,
+      });
+    }
+  }
+}
+
+// Request ID middleware for tracing
+export const requestIdMiddleware = (req: any, res: any, next: any) => {
+  req.id = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  res.setHeader('X-Request-ID', req.id);
+  
+  // Add to logger context
+  logger.defaultMeta = {
+    ...logger.defaultMeta,
+    requestId: req.id,
+  };
+  
+  next();
+};
+
+Create a monitoring dashboard at server/routes/monitoring.routes.ts:
+
+typescriptimport { Router } from 'express';
+import { metricsEndpoint } from '../config/metrics';
+import { bullBoardRouter } from '../utils/backgroundJobs';
+import { asyncHandler } from '../middleware/errorHandler';
+import { redis } from '../config/redis';
+import { logger } from '../utils/logger';
+
+const router = Router();
+
+// Prometheus metrics endpoint
+router.get('/metrics', metricsEndpoint);
+
+// Bull board for job monitoring (protected)
+router.use('/queues', (req, res, next) => {
+  // Add basic auth or other protection here
+  const token = req.headers.authorization;
+  if (token !== `Bearer ${process.env.ADMIN_TOKEN}`) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  next();
+}, bullBoardRouter);
+
+// Custom monitoring dashboard data
+router.get('/dashboard', asyncHandler(async (req, res) => {
+  // Collect various stats
+  const [
+    cacheKeys,
+    sessionCount,
+    errorCount,
+  ] = await Promise.all([
+    redis.keys('*'),
+    redis.keys('session:*'),
+    redis.get('stats:errors:today'),
+  ]);
+
+  const stats = {
+    timestamp: new Date().toISOString(),
+    cache: {
+      totalKeys: cacheKeys.length,
+      memoryUsage: await redis.info('memory'),
+    },
+    sessions: {
+      active: sessionCount.length,
+    },
+    errors: {
+      today: parseInt(errorCount || '0'),
+    },
+    system: {
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      cpu: process.cpuUsage(),
+    },
+  };
+
+  res.json(stats);
+}));
+
+// Log viewer endpoint (protected)
+router.get('/logs/:type', asyncHandler(async (req, res) => {
+  const { type } = req.params;
+  const { lines = 100 } = req.query;
+  
+  // Implement log reading logic
+  res.json({ 
+    message: 'Log viewer endpoint',
+    type,
+    lines 
+  });
+}));
+
+export default router;
+
+Update server/index.ts to integrate all monitoring:
+
+typescriptimport { initSentry, sentryErrorHandler } from './config/sentry';
+import { metricsMiddleware, requestIdMiddleware } from './middleware/metricsMiddleware';
+import { ApplicationMonitor } from './utils/monitoring';
+import monitoringRoutes from './routes/monitoring.routes';
+
+// Initialize Sentry first
+initSentry(app);
+
+// Add request ID for tracing
+app.use(requestIdMiddleware);
+
+// Add metrics middleware
+app.use(metricsMiddleware);
+
+// ... other middleware ...
+
+// Add monitoring routes
+app.use('/admin', monitoringRoutes);
+
+// ... other routes ...
+
+// Sentry error handler (must be last)
+app.use(sentryErrorHandler);
+
+// Start application monitoring
+ApplicationMonitor.start();
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  logger.info('SIGTERM received, shutting down gracefully');
+  
+  ApplicationMonitor.stop();
+  
+  server.close(() => {
+    logger.info('HTTP server closed');
+    process.exit(0);
+  });
+});
+
+Update .env template:
+
+bash# Monitoring
+SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
+LOG_LEVEL=info
+ADMIN_TOKEN=your-secure-admin-token
+
+# Existing variables...
+
+Create docs/MONITORING.md:
+
+markdown# Monitoring & Observability Guide
+
+## Overview
+
+The application includes comprehensive monitoring across multiple layers:
+
+1. **Metrics** - Prometheus-compatible metrics
+2. **Logging** - Structured JSON logging with Winston
+3. **Error Tracking** - Sentry integration
+4. **Performance** - Request tracing and profiling
+5. **Job Monitoring** - Bull queue dashboard
+
+## Accessing Monitoring Tools
+
+### Prometheus Metrics
+- Endpoint: `/admin/metrics`
+- No authentication required (consider adding in production)
+- Scrape interval: 30s recommended
+
+### Bull Queue Dashboard
+- URL: `/admin/queues`
+- Authentication: Bearer token required
+- Shows job status, failures, processing times
+
+### Application Dashboard
+- URL: `/admin/dashboard`
+- Provides real-time stats on cache, sessions, errors
+
+### Grafana Dashboard
+
+Import the following dashboard for visualization:
+
+```json
+{
+  "dashboard": {
+    "title": "R&D Tax Credit Platform",
+    "panels": [
+      {
+        "title": "Request Rate",
+        "targets": [{
+          "expr": "rate(http_requests_total[5m])"
+        }]
+      },
+      {
+        "title": "Response Time",
+        "targets": [{
+          "expr": "histogram_quantile(0.95, http_request_duration_seconds)"
+        }]
+      },
+      {
+        "title": "Calculator Usage",
+        "targets": [{
+          "expr": "rate(calculator_usage_total[1h])"
+        }]
+      },
+      {
+        "title": "Cache Hit Rate",
+        "targets": [{
+          "expr": "rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m]))"
+        }]
+      }
+    ]
+  }
+}
+Key Metrics to Monitor
+Business Metrics
+
+calculator_usage_total - Track calculator adoption
+stripe_payments_total - Monitor revenue
+intake_form_completions_total - Conversion tracking
+document_generation_total - Service reliability
+
+Performance Metrics
+
+http_request_duration_seconds - API latency
+airtable_response_time_seconds - External dependency performance
+Cache hit rates - Efficiency indicator
+
+Health Indicators
+
+active_users - Current load
+pending_documents - Queue backlog
+application_errors_total - Error rate
+
+Alerts to Configure
+Critical Alerts
+yaml- alert: HighErrorRate
+  expr: rate(application_errors_total[5m]) > 0.05
+  annotations:
+    summary: "High error rate detected"
+
+- alert: SlowApiResponse  
+  expr: histogram_quantile(0.95, http_request_duration_seconds) > 2
+  annotations:
+    summary: "API response time exceeding 2s"
+
+- alert: LowCacheHitRate
+  expr: rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m])) < 0.5
+  annotations:
+    summary: "Cache hit rate below 50%"
+Log Analysis
+Important Log Patterns
+
+Audit logs: "audit": true
+Performance logs: "performance": true
+Error logs: "level": "error"
+
+Log Queries (if using LogQL/Elasticsearch)
+# Failed logins
+{service="rd-tax-credit-api"} |= "Login attempt" |= "failed"
+
+# Slow operations
+{service="rd-tax-credit-api"} |= "Slow operation detected"
+
+# Payment failures
+{service="rd-tax-credit-api"} |= "stripe" |= "failed"
+Performance Optimization
+Based on metrics, optimize:
+
+Slow endpoints (> 1s response time)
+Low cache hit rates (< 70%)
+High error rates (> 1%)
+Memory leaks (increasing RSS)

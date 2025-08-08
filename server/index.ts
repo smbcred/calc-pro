@@ -25,11 +25,25 @@ import swaggerSpec from './config/swagger';
 // Import Redis configuration and caching utilities
 import { redis, isRedisHealthy } from './config/redis';
 import { CalculatorCache } from './utils/calculatorCache';
+// Import monitoring and observability
+import { initSentry, sentryErrorHandler } from './config/sentry';
+import { metricsMiddleware, requestIdMiddleware, trackCacheMetrics } from './middleware/metricsMiddleware';
+import { ApplicationMonitor } from './utils/monitoring';
+import monitoringRoutes from './routes/monitoring.routes';
 
 const app = express();
 
+// Initialize Sentry first
+initSentry(app);
+
 // Trust proxy for proper client IP detection (required for rate limiting)
 app.set('trust proxy', 1);
+
+// Add request ID for tracing
+app.use(requestIdMiddleware);
+
+// Add metrics middleware
+app.use(metricsMiddleware);
 
 // Set up process handlers for unhandled rejections and uncaught exceptions
 handleUncaughtExceptions();
@@ -101,8 +115,14 @@ app.get('/docs', (req, res) => {
 (async () => {
   const server = await registerRoutes(app);
 
+  // Add monitoring routes
+  app.use('/admin', monitoringRoutes);
+
   // Add health check route
   app.use('/', healthRoutes);
+  
+  // Add cache metrics tracking to API routes
+  app.use('/api', trackCacheMetrics('api'));
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
@@ -115,6 +135,9 @@ app.get('/docs', (req, res) => {
 
   // 404 handler for unmatched routes (MUST be after Vite/static setup)
   app.use(notFoundHandler);
+  
+  // Sentry error handler (before global error handler)
+  app.use(sentryErrorHandler);
   
   // Global error handling middleware (MUST be last)
   app.use(globalErrorHandler);
@@ -132,6 +155,9 @@ app.get('/docs', (req, res) => {
     Logger.info(`🚀 Server is running on port ${port}`);
     Logger.info(`🏃 Environment: ${process.env.NODE_ENV || 'development'}`);
     log(`serving on port ${port}`);
+    
+    // Start application monitoring
+    ApplicationMonitor.start();
     
     // Check Redis connection
     const redisHealthy = await isRedisHealthy();
@@ -153,6 +179,9 @@ app.get('/docs', (req, res) => {
   // Handle graceful shutdown
   process.on('SIGTERM', async () => {
     Logger.info('SIGTERM received, shutting down gracefully');
+    
+    ApplicationMonitor.stop();
+    
     server.close(() => {
       Promise.all([
         closeDatabaseConnection(),
@@ -166,6 +195,9 @@ app.get('/docs', (req, res) => {
 
   process.on('SIGINT', async () => {
     Logger.info('SIGINT received, shutting down gracefully');
+    
+    ApplicationMonitor.stop();
+    
     server.close(() => {
       Promise.all([
         closeDatabaseConnection(),

@@ -638,11 +638,11 @@ const ExpenseStep: React.FC<{
   };
 
   const calculateTotal = () => {
-    const employeeTime = parseFloat(expenses.employeeTime.replace(/,/g, '')) || 0;
-    const aiTools = parseFloat(expenses.aiTools.replace(/,/g, '')) || 0;
-    const contractors = parseFloat(expenses.contractors.replace(/,/g, '')) || 0;
-    const software = parseFloat(expenses.software.replace(/,/g, '')) || 0;
-    const training = parseFloat(expenses.training.replace(/,/g, '')) || 0;
+    const employeeTime = parseFloat((expenses.employeeTime || '').replace(/,/g, '')) || 0;
+    const aiTools = parseFloat((expenses.aiTools || '').replace(/,/g, '')) || 0;
+    const contractors = parseFloat((expenses.contractors || '').replace(/,/g, '')) || 0;
+    const software = parseFloat((expenses.software || '').replace(/,/g, '')) || 0;
+    const training = parseFloat((expenses.training || '').replace(/,/g, '')) || 0;
     
     return employeeTime + aiTools + contractors + software + training;
   };

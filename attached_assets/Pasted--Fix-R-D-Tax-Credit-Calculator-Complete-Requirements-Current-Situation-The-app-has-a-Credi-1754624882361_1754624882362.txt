@@ -1,0 +1,156 @@
+# Fix R&D Tax Credit Calculator - Complete Requirements
+
+## Current Situation
+- The app has a `CreditCalculator` component at `/calculator` route
+- Landing page has a basic qualification section that links to calculator
+- Need to rebuild the calculator with all our discussed improvements
+
+## Requirements for Fixed Calculator
+
+### 1. SMB & AI Focus
+- **Target Audience**: Small businesses using AI tools (ChatGPT, Claude, etc.)
+- **Messaging**: "Using ChatGPT for Your Business? You Qualify for R&D Tax Credits"
+- **Activities List** (updated for AI/SMB):
+  - AI Content Creation (ChatGPT for marketing)
+  - AI Customer Support (Chatbots)
+  - AI Data Analysis (Business insights)
+  - Workflow Automation (Zapier, no-code)
+  - Custom AI Solutions (GPTs, APIs)
+  - AI Sales Tools (Lead generation)
+  - AI Design (Midjourney, Canva AI)
+  - AI Financial Tools (Bookkeeping automation)
+
+### 2. Calculator Flow (5 Steps)
+1. **Qualification Discovery** - Select AI activities (multi-select cards)
+2. **Business Information** - Company details
+3. **Email Capture** - Show credit RANGE, capture email
+4. **Expense Details** - Detailed expense inputs
+5. **Results** - Show credit amount with our pricing
+
+### 3. Business Information Changes
+- **Remove**: State selection (no state credits)
+- **Add**: R&D start year selection (2022, 2023, 2024, 2025, before 2022)
+- **Revenue Ranges** (granular):
+  - Under $100K
+  - $100K - $250K
+  - $250K - $500K
+  - $500K - $1M
+  - $1M - $2.5M
+  - $2.5M - $5M
+  - $5M - $10M
+  - $10M - $25M
+  - Over $25M
+
+### 4. Email Capture Step (NEW - Step 3)
+- Show estimated credit RANGE based on:
+  - Revenue range
+  - Employee count
+  - Number of activities selected
+  - Years eligible (based on R&D start year)
+- Display: "$X,XXX - $XX,XXX annual credit"
+- If multiple years: Show total (e.g., "4-Year Total: $XXX,XXX")
+- Two paths:
+  1. Enter email → Continue for exact calculation
+  2. Skip to checkout with estimate (less prominent)
+
+### 5. Expense Collection
+- **Employee Time Calculator**:
+  - Simple inputs: # employees × hours/week × hourly rate = annual cost
+- **Expense Categories**:
+  - Employee Time on R&D
+  - AI Tool Subscriptions
+  - Contractors (65% qualifies)
+  - Supporting Software
+  - Training & Education
+- Show QRE breakdown clearly
+
+### 6. Accurate Calculations
+- Federal credit: 6.5% of QRE
+- Contractors: Only 65% qualifies
+- NO state credits
+- Clear explanation of math
+
+### 7. Dynamic Pricing
+- < $10K credit → $500
+- $10K-$50K → $750  
+- $50K-$100K → $1,000
+- > $100K → $1,500
+
+### 8. Results Page Must Show
+- Federal credit amount
+- Our fee (based on credit amount)
+- ROI (e.g., "6x return!")
+- Multi-year opportunity if applicable
+- Clear CTA to checkout
+
+### 9. Data Integration
+- Save to Airtable at each step
+- Pass all data to checkout:
+  - Company name
+  - Email
+  - Credit amount
+  - Our price
+  - Years selected
+
+### 10. UI/UX Requirements
+- Mobile responsive
+- Progress bar showing 5 steps
+- Back button on all steps except first
+- Loading states
+- Error handling
+- Auto-save to localStorage
+- Trust indicators throughout
+
+### 11. Trust Elements
+- "IRS Compliant Methodology"
+- "500+ SMBs Served"
+- "48-Hour Document Delivery"
+- "Audit Support Included"
+
+### 12. Component Structure
+```tsx
+// Main calculator with state management
+const RDTaxCreditCalculator = () => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState({
+    activities: [],
+    companyInfo: {},
+    email: '',
+    estimatedRange: {},
+    expenses: {},
+    calculations: {}
+  });
+  
+  // Progress bar
+  // Step components
+  // Navigation logic
+  // Airtable saves
+}
+```
+
+### 13. Key Features to Include
+- **Progress Saving**: Auto-save and resume
+- **Smart Tips**: Industry-specific recommendations
+- **Calculation Transparency**: Show the math
+- **Mobile Optimization**: Touch-friendly, responsive
+- **Quick Templates**: Pre-fill common scenarios
+
+### 14. Landing Page Integration
+- Keep simple qualification section on landing
+- "Calculate My Credit" button → Full calculator
+- Calculator should be at `/calculator` route
+
+### 15. Important Notes
+- Use existing UI components (shadcn/ui)
+- Match existing app styling
+- Integrate with existing auth/session system
+- Use existing API endpoints where possible
+
+## Implementation Priority
+1. Fix the basic 5-step flow
+2. Add email capture with range
+3. Implement accurate calculations
+4. Add Airtable integration
+5. Polish UI/UX
+
+The calculator should feel simple and approachable for SMBs who don't think they qualify for R&D credits, while being accurate and comprehensive enough to generate real value.

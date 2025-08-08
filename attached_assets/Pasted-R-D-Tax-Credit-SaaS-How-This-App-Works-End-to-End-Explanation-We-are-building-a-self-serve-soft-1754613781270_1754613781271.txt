@@ -1,0 +1,77 @@
+R&D Tax Credit SaaS — How This App Works (End-to-End Explanation)
+
+We are building a self-serve software product that helps small businesses in the U.S. claim the R&D tax credit using AI and automation.
+
+Most small business owners don’t know this credit exists — so we guide them from curiosity → education → credit estimate → payment → document delivery.
+
+Here’s how the full flow works:
+
+⸻
+
+👥 USER JOURNEY (Marketing to Delivery)
+
+1. Marketing + Lead Capture
+	•	We drive traffic to a marketing landing page (hosted in this same app).
+	•	The page includes a “Estimate Your R&D Tax Credit” calculator.
+	•	Calculator walks the user through:
+	1.	Business type and AI/tool use
+	2.	Qualifying activities
+	3.	Estimated expenses (wages, contractors, etc.)
+	•	At the end of the calculator:
+	•	They enter their email
+	•	The app estimates their federal refund (e.g. $18,600)
+	•	It displays a dynamic price tier (e.g. “Tier 2 – $750”)
+	•	It offers multi-year add-ons (e.g. 2023 + 2024) — pricing updates in real time.
+	•	CTA: “Get Your Credit Documents”
+
+⸻
+
+2. Checkout
+	•	On clicking the CTA, user goes to Stripe Checkout:
+	•	Pre-selected tier and tax years
+	•	Email captured again by Stripe
+	•	After successful payment:
+	•	They are redirected to a “Success” page
+	•	From there, they can log in to access their secure dashboard
+
+⸻
+
+3. Dashboard + Intake Form
+	•	Inside the app dashboard, the user sees a checklist UI of required steps/documents.
+	•	First step: Fill out the secure intake form, which captures:
+	•	Business details
+	•	Total expenses
+	•	Qualifying activities
+	•	State info
+	•	When they submit the form:
+	•	All data is saved to Airtable
+	•	The app marks that step as “✅ Complete”
+
+⸻
+
+4. Automated Document Creation (via Make.com)
+	•	After form submission, the backend workflow kicks in:
+	1.	Make.com pulls the customer’s intake data from Airtable
+	2.	Sends it to Claude AI, which generates:
+	•	Technical Narrative (IRS requirement)
+	•	Compliance Memo
+	3.	Sends the full data to Documint, which generates:
+	•	IRS Form 6765
+	•	Section 174A deduction summary
+	•	Recordkeeping checklist
+	•	Optional: State forms like PA REV-545A
+	•	Filing instructions
+
+⸻
+
+5. File Storage + Delivery
+	•	All final documents are:
+	•	Uploaded to Amazon S3
+	•	URLs are saved in Airtable under that customer’s record
+	•	A completion email is sent via SendGrid, with:
+	•	Download links
+	•	Summary of what’s inside
+
+⸻
+
+⚙️ TECH STACK (Behind the Scenes)

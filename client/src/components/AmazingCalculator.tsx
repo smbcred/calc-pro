@@ -238,7 +238,7 @@ const AmazingCalculator: React.FC = () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         {/* Enhanced Progress Bar */}
         <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b shadow-sm">
-          <div className="max-w-5xl mx-auto px-4 py-6">
+          <div className="max-w-6xl mx-auto px-2 py-6">
             {/* Desktop Progress Bar */}
             <div className="hidden lg:flex items-center justify-between">
               {steps.map((step, index) => (
@@ -271,8 +271,8 @@ const AmazingCalculator: React.FC = () => {
                     </div>
                   </div>
                   {index < steps.length - 1 && (
-                    <div className="relative mx-6">
-                      <div className={`w-32 h-1 rounded-full transition-all duration-700 ${
+                    <div className="relative mx-4">
+                      <div className={`w-20 h-1 rounded-full transition-all duration-700 ${
                         currentStep > step.number ? 'bg-gradient-to-r from-green-500 to-blue-500' : 'bg-gray-200'
                       }`} />
                       {currentStep > step.number && (

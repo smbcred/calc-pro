@@ -240,7 +240,7 @@ const AmazingCalculator: React.FC = () => {
         <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b shadow-sm">
           <div className="max-w-5xl mx-auto px-4 py-6">
             {/* Desktop Progress Bar */}
-            <div className="hidden md:flex items-center justify-between">
+            <div className="hidden lg:flex items-center justify-between">
               {steps.map((step, index) => (
                 <div key={step.number} className="flex items-center">
                   <div className={`
@@ -284,19 +284,19 @@ const AmazingCalculator: React.FC = () => {
               ))}
             </div>
 
-            {/* Mobile Progress Bar */}
-            <div className="md:hidden">
+            {/* Mobile/Tablet Progress Bar */}
+            <div className="lg:hidden">
               <div className="flex items-center justify-center mb-4">
                 <div className="text-sm font-medium text-gray-600">
                   Step {currentStep} of {steps.length}
                 </div>
               </div>
               <div className="overflow-x-auto pb-2">
-                <div className="flex items-center justify-center min-w-max px-4 space-x-2">
+                <div className="flex items-center justify-center min-w-max px-2 space-x-1">
                   {steps.map((step, index) => (
                     <div key={step.number} className="flex items-center flex-shrink-0">
                       <div className={`
-                        w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs
+                        w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs
                         transition-all duration-500
                         ${currentStep >= step.number 
                           ? 'bg-gradient-to-r from-blue-600 to-green-600 text-white shadow-lg' 
@@ -311,8 +311,8 @@ const AmazingCalculator: React.FC = () => {
                         )}
                       </div>
                       {index < steps.length - 1 && (
-                        <div className="relative mx-2">
-                          <div className={`w-8 h-1 rounded-full transition-all duration-700 ${
+                        <div className="relative mx-1">
+                          <div className={`w-4 h-1 rounded-full transition-all duration-700 ${
                             currentStep > step.number ? 'bg-gradient-to-r from-green-500 to-blue-500' : 'bg-gray-200'
                           }`} />
                         </div>

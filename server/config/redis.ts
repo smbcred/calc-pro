@@ -7,7 +7,14 @@ const redisConfig = {
   port: parseInt(process.env.REDIS_PORT || '6379'),
   password: process.env.REDIS_PASSWORD,
   db: parseInt(process.env.REDIS_DB || '0'),
+  // More conservative retry strategy for development
   retryStrategy: (times: number) => {
+    // In development, give up after 5 attempts to avoid log spam
+    if (process.env.NODE_ENV === 'development' && times > 5) {
+      Logger.warn('Redis unavailable - disabling after 5 attempts');
+      return null; // Stop retrying
+    }
+    // In production, be more persistent
     const delay = Math.min(times * 50, 2000);
     return delay;
   },
@@ -18,22 +25,49 @@ const redisConfig = {
     }
     return false;
   },
+  // Reduce connection timeout to fail faster
+  connectTimeout: 5000,
+  lazyConnect: true, // Don't connect immediately
 };
 
 // Create Redis client
 export const redis = new Redis(redisConfig);
 
+// Track Redis availability
+let isRedisAvailable = false;
+let lastConnectionAttempt = 0;
+const CONNECTION_RETRY_INTERVAL = 30000; // 30 seconds
+
 // Handle connection events
 redis.on('connect', () => {
+  isRedisAvailable = true;
   Logger.info('Redis client connected');
 });
 
 redis.on('error', (err) => {
-  Logger.error('Redis client error:', err);
+  isRedisAvailable = false;
+  // Reduce log frequency for connection errors in development
+  const now = Date.now();
+  if (process.env.NODE_ENV === 'development') {
+    if (now - lastConnectionAttempt > CONNECTION_RETRY_INTERVAL) {
+      Logger.warn('Redis unavailable - running without cache', { error: err.message });
+      lastConnectionAttempt = now;
+    }
+  } else {
+    Logger.error('Redis client error:', err);
+  }
 });
 
 redis.on('close', () => {
-  Logger.warn('Redis connection closed');
+  isRedisAvailable = false;
+  if (process.env.NODE_ENV !== 'development') {
+    Logger.warn('Redis connection closed');
+  }
+});
+
+redis.on('ready', () => {
+  isRedisAvailable = true;
+  Logger.info('Redis client ready');
 });
 
 // Cache key prefixes to organize data
@@ -79,8 +113,38 @@ export const CacheTTL = {
 // Helper to check if Redis is healthy
 export const isRedisHealthy = async (): Promise<boolean> => {
   try {
+    // Use the tracked availability first to avoid unnecessary ping attempts
+    if (!isRedisAvailable) {
+      return false;
+    }
+    
     const result = await redis.ping();
     return result === 'PONG';
+  } catch {
+    isRedisAvailable = false;
+    return false;
+  }
+};
+
+// Safe Redis operations that won't throw
+export const safeRedisGet = async (key: string): Promise<string | null> => {
+  try {
+    if (!isRedisAvailable) return null;
+    return await redis.get(key);
+  } catch {
+    return null;
+  }
+};
+
+export const safeRedisSet = async (key: string, value: string, ttl?: number): Promise<boolean> => {
+  try {
+    if (!isRedisAvailable) return false;
+    if (ttl) {
+      await redis.setex(key, ttl, value);
+    } else {
+      await redis.set(key, value);
+    }
+    return true;
   } catch {
     return false;
   }

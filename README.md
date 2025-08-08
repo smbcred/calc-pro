@@ -52,17 +52,40 @@ Most small business owners don't know the R&D tax credit exists. Our platform pr
 - Email notification when ready
 - Dashboard download center
 
-## 💰 Pricing Tiers
+## 💰 Pricing Structure
 
-Dynamic pricing based on estimated credit amount:
+### Recent Law Changes (2025)
+- **100% immediate R&D expense deduction restored**
+- **No more 5-year amortization requirement**
+- **Makes the credit more valuable than 2022-2024**
 
-| Tier | Credit Range | Price | Features |
-|------|-------------|-------|----------|
-| Tier 1 | < $10,000 | $500 | All documents, 1 year |
-| Tier 2 | $10,000 - $50,000 | $750 | All documents, 1 year |
-| Tier 3 | > $50,000 | $1,000 | All documents, 1 year |
+Our transparent, value-based pricing scales with your R&D tax credit amount:
 
-Multi-year discount: 20% off additional years
+### Base Pricing by Credit Size
+
+| Your Federal Credit | Our Fee | Your Net Benefit |
+|-------------------|---------|------------------|
+| Under $10,000 | $500 | Up to $9,500 saved |
+| $10,000 - $50,000 | $750 | $9,250 - $49,250 saved |
+| $50,000 - $100,000 | $1,000 | $49,000 - $99,000 saved |
+| Over $100,000 | $1,500 | $98,500+ saved |
+
+### Multi-Year Savings
+- **Additional years**: Only $297 per year
+- **Maximum**: Current year + 3 prior years
+- **Example**: Claim 2025 + 2024 + 2023 = $750 + $297 + $297 = $1,344 total
+
+### Value Proposition
+- Pay less than 10% of your tax savings
+- No hourly billing or hidden fees
+- Includes all IRS-required documentation
+- AI-powered accuracy and compliance
+
+### Qualified Small Business Benefits
+If you qualify as a QSB (most startups do):
+- Use up to $500,000 credit against payroll taxes
+- Get immediate cash benefit even with no income tax
+- Perfect for pre-revenue companies
 
 ## 🛠️ Technical Architecture
 

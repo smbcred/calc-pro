@@ -12,6 +12,11 @@ interface FormData {
     primaryState: string;
     email: string;
   };
+  email?: string;
+  estimatedRange?: {
+    low: number;
+    high: number;
+  };
   expenses: {
     employeeTime: string;
     aiTools: string;
@@ -44,19 +49,20 @@ const AmazingCalculator: React.FC = () => {
       email: ''
     },
     expenses: {
-      employeeTime: '',
-      aiTools: '',
-      contractors: '',
-      software: '',
-      training: ''
+      employeeTime: '0',
+      aiTools: '0',
+      contractors: '0',
+      software: '0',
+      training: '0'
     }
   });
 
   const steps = [
     { number: 1, title: 'Qualification', icon: Check },
-    { number: 2, title: 'Business Info', icon: Calculator },
-    { number: 3, title: 'Expenses', icon: TrendingUp },
-    { number: 4, title: 'Results', icon: Check }
+    { number: 2, title: 'Business Info', icon: Building2 },
+    { number: 3, title: 'Email Capture', icon: Calculator },
+    { number: 4, title: 'Expenses', icon: TrendingUp },
+    { number: 5, title: 'Results', icon: Check }
   ];
 
   // Auto-save to localStorage
@@ -87,7 +93,7 @@ const AmazingCalculator: React.FC = () => {
   };
 
   const nextStep = () => {
-    setCurrentStep(prev => Math.min(4, prev + 1));
+    setCurrentStep(prev => Math.min(5, prev + 1));
   };
 
   const prevStep = () => {
@@ -209,6 +215,14 @@ const AmazingCalculator: React.FC = () => {
             />
           )}
           {currentStep === 3 && (
+            <EmailCaptureStep 
+              formData={formData} 
+              updateFormData={updateFormData} 
+              nextStep={nextStep} 
+              prevStep={prevStep}
+            />
+          )}
+          {currentStep === 4 && (
             <ExpenseStep 
               formData={formData} 
               updateFormData={updateFormData} 
@@ -220,7 +234,7 @@ const AmazingCalculator: React.FC = () => {
               isCalculating={isCalculating}
             />
           )}
-          {currentStep === 4 && (
+          {currentStep === 5 && (
             <ResultsStep 
               formData={formData} 
               updateFormData={updateFormData}
@@ -607,7 +621,187 @@ const BusinessInfoStep: React.FC<{
   );
 };
 
-// Step 3: R&D Expense Calculator
+// Step 3: Email Capture with Credit Range
+const EmailCaptureStep: React.FC<{
+  formData: FormData;
+  updateFormData: (updates: Partial<FormData>) => void;
+  nextStep: () => void;
+  prevStep: () => void;
+}> = ({ formData, updateFormData, nextStep, prevStep }) => {
+  const [email, setEmail] = useState(formData.email || '');
+
+  // Calculate estimated range based on company info
+  const calculateCreditRange = () => {
+    const { employeeCount, industry } = formData.companyInfo;
+    const activities = formData.activities.length;
+    
+    // Base calculations on employee count
+    const employeeMultipliers = {
+      '1-10': { low: 5000, high: 25000 },
+      '11-50': { low: 15000, high: 75000 },
+      '51-200': { low: 35000, high: 175000 },
+      '201-500': { low: 75000, high: 350000 },
+      '500+': { low: 150000, high: 750000 }
+    };
+    
+    const base = employeeMultipliers[employeeCount as keyof typeof employeeMultipliers] || { low: 10000, high: 50000 };
+    
+    // Adjust for number of activities (more activities = higher credit potential)
+    const activityMultiplier = Math.min(activities * 0.15 + 0.7, 1.4);
+    
+    // Industry adjustments
+    const industryMultipliers: Record<string, number> = {
+      'agency': 1.3,
+      'saas': 1.25,
+      'ecommerce': 1.15,
+      'consulting': 1.2,
+      'realestate': 1.0,
+      'healthcare': 1.1,
+      'finance': 1.15,
+      'education': 1.1,
+      'hospitality': 0.9,
+      'nonprofit': 0.85,
+      'manufacturing': 1.05,
+      'other': 1.0
+    };
+    
+    const indMultiplier = industryMultipliers[industry] || 1.0;
+    
+    return {
+      low: Math.round(base.low * activityMultiplier * indMultiplier),
+      high: Math.round(base.high * activityMultiplier * indMultiplier)
+    };
+  };
+
+  const creditRange = calculateCreditRange();
+  const averageCredit = Math.round((creditRange.low + creditRange.high) / 2);
+
+  const handleEmailSubmit = () => {
+    updateFormData({ 
+      email, 
+      estimatedRange: creditRange 
+    });
+    nextStep();
+  };
+
+  const handleSkipToCheckout = () => {
+    // Calculate quick estimate and save to localStorage for checkout
+    const quickEstimate = {
+      totalQRE: Math.round(averageCredit / 0.14), // Reverse calculate QRE
+      federalCredit: averageCredit,
+      stateCredit: Math.round(averageCredit * 0.05),
+      totalBenefit: Math.round(averageCredit * 1.05),
+      price: averageCredit < 10000 ? 500 : averageCredit <= 50000 ? 750 : averageCredit <= 100000 ? 1000 : 1500,
+      savingsAmount: Math.round(averageCredit * 1.05) - (averageCredit < 10000 ? 500 : averageCredit <= 50000 ? 750 : averageCredit <= 100000 ? 1000 : 1500)
+    };
+    
+    updateFormData({
+      email: email || 'checkout@direct.com',
+      results: quickEstimate
+    });
+    
+    // Save to localStorage for checkout
+    localStorage.setItem('rd_credit_email', email || 'checkout@direct.com');
+    localStorage.setItem('rd_calculation_results', JSON.stringify(quickEstimate));
+    
+    // Navigate directly to checkout
+    window.location.href = '/checkout';
+  };
+
+  return (
+    <div className="stagger-item">
+      <div className="card-highest p-8">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            {formData.companyInfo.companyName}, You're Looking at Serious Tax Credits! 💰
+          </h2>
+          
+          {/* Credit Range Display */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 mb-6">
+            <p className="text-lg text-gray-700 mb-4">
+              Based on your AI usage and company size, your federal R&D credit is estimated between:
+            </p>
+            <div className="text-5xl font-bold text-transparent bg-clip-text 
+                          bg-gradient-to-r from-green-600 to-blue-600 mb-2">
+              ${creditRange.low.toLocaleString()} - ${creditRange.high.toLocaleString()}
+            </div>
+            <p className="text-lg font-semibold text-gray-700">
+              Average: ${averageCredit.toLocaleString()}
+            </p>
+            <p className="text-sm text-gray-600 mt-2">
+              Plus potential state credits of up to ${Math.round(averageCredit * 0.05).toLocaleString()}!
+            </p>
+          </div>
+
+          {/* Simple Explanation */}
+          <div className="bg-blue-50 rounded-xl p-6 mb-8 text-left">
+            <h3 className="font-semibold text-gray-900 mb-3">
+              💡 How we calculated this:
+            </h3>
+            <ul className="space-y-2 text-sm text-gray-700">
+              <li>• Your {formData.companyInfo.employeeCount} employees using AI for innovation</li>
+              <li>• {formData.activities.length} qualifying R&D activities selected</li>
+              <li>• Federal credit rate of 6-14% of qualified expenses</li>
+              <li>• Industry factor for {formData.companyInfo.industry}</li>
+            </ul>
+          </div>
+
+          {/* Email Capture */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Enter your email to get your exact calculation
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl 
+                       focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              placeholder="you@company.com"
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="space-y-3">
+            <button
+              onClick={handleEmailSubmit}
+              disabled={!email}
+              className={`w-full btn-gradient ${!email ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              Calculate My Exact Credit Amount
+            </button>
+            
+            <button
+              onClick={handleSkipToCheckout}
+              className="w-full px-6 py-3 border-2 border-gray-300 rounded-xl
+                       text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+            >
+              Skip to Checkout with ${averageCredit.toLocaleString()} Estimate →
+            </button>
+          </div>
+
+          {/* Trust Element */}
+          <p className="text-xs text-gray-500 mt-4">
+            We'll also send you a free guide: "10 AI Expenses You Didn't Know Qualified for R&D Credits"
+          </p>
+        </div>
+
+        {/* Navigation */}
+        <div className="flex gap-4 pt-6">
+          <button
+            onClick={prevStep}
+            className="flex-1 btn-secondary flex items-center justify-center gap-2"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            Back
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Step 4: R&D Expense Calculator
 const ExpenseStep: React.FC<{
   formData: FormData;
   updateFormData: (updates: Partial<FormData>) => void;

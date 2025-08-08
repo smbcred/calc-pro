@@ -120,3 +120,13 @@ export const documentStatusSchema = z.object({
 export const createTestCustomerSchema = z.object({
   email: z.string().email('Invalid email address')
 });
+
+// Calculator input validation schema
+export const calculatorInputSchema = z.object({
+  wages: z.number().min(0, 'Wages must be non-negative'),
+  wageRdPercent: z.number().min(0).max(100, 'Wage R&D percentage must be between 0-100'),
+  contractors: z.number().min(0, 'Contractor costs must be non-negative'),
+  contractorRdPercent: z.number().min(0).max(100, 'Contractor R&D percentage must be between 0-100'),
+  supplies: z.number().min(0, 'Supply costs must be non-negative'),
+  suppliesRdPercent: z.number().min(0).max(100, 'Supplies R&D percentage must be between 0-100')
+});

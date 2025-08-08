@@ -1,0 +1,653 @@
+Please add comprehensive API documentation using Swagger/OpenAPI for our R&D Tax Credit SaaS platform.
+
+Install the required packages by adding to package.json dependencies:
+
+json"@types/swagger-ui-express": "^4.1.6",
+"swagger-ui-express": "^5.0.0",
+"swagger-jsdoc": "^6.2.8"
+
+Create server/config/swagger.ts for Swagger configuration:
+
+typescriptimport swaggerJsdoc from 'swagger-jsdoc';
+import { version } from '../../package.json';
+
+const options: swaggerJsdoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'R&D Tax Credit Platform API',
+      version,
+      description: 'API documentation for the R&D Tax Credit SaaS platform. This API handles customer authentication, company data collection, expense tracking, and document generation for R&D tax credit claims.',
+      contact: {
+        name: 'API Support',
+        email: 'api@yourdomain.com',
+      },
+      license: {
+        name: 'Proprietary',
+        url: 'https://yourdomain.com/terms',
+      },
+    },
+    servers: [
+      {
+        url: 'http://localhost:5000/api',
+        description: 'Development server',
+      },
+      {
+        url: 'https://api.yourdomain.com',
+        description: 'Production server',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        sessionAuth: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'connect.sid',
+          description: 'Session-based authentication using cookies',
+        },
+      },
+      schemas: {
+        Error: {
+          type: 'object',
+          properties: {
+            error: {
+              type: 'string',
+              description: 'Error message',
+            },
+            details: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  field: { type: 'string' },
+                  message: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
+        CompanyInfo: {
+          type: 'object',
+          required: ['companyName', 'ein', 'entityType', 'annualRevenue', 'employeeCount'],
+          properties: {
+            companyName: {
+              type: 'string',
+              example: 'Acme AI Corp',
+              description: 'Legal company name',
+            },
+            ein: {
+              type: 'string',
+              pattern: '^\\d{2}-\\d{7}$',
+              example: '12-3456789',
+              description: 'Employer Identification Number',
+            },
+            entityType: {
+              type: 'string',
+              enum: ['c-corp', 's-corp', 'llc', 'partnership', 'other'],
+              example: 'c-corp',
+            },
+            yearFounded: {
+              type: 'string',
+              pattern: '^\\d{4}$',
+              example: '2020',
+            },
+            annualRevenue: {
+              type: 'string',
+              example: '1000000',
+              description: 'Annual revenue in USD',
+            },
+            employeeCount: {
+              type: 'string',
+              example: '25',
+            },
+            rdEmployeeCount: {
+              type: 'string',
+              example: '10',
+              description: 'Number of employees doing R&D',
+            },
+            primaryState: {
+              type: 'string',
+              pattern: '^[A-Z]{2}$',
+              example: 'CA',
+            },
+            rdStates: {
+              type: 'array',
+              items: {
+                type: 'string',
+                pattern: '^[A-Z]{2}$',
+              },
+              example: ['CA', 'NY'],
+            },
+          },
+        },
+        Expense: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            employeeName: { type: 'string' },
+            annualSalary: { type: 'number' },
+            rdPercentage: { type: 'number', minimum: 0, maximum: 100 },
+            rdAmount: { type: 'number' },
+          },
+        },
+        CalculatorInput: {
+          type: 'object',
+          properties: {
+            wages: { type: 'number', minimum: 0 },
+            wageRdPercent: { type: 'number', minimum: 0, maximum: 100 },
+            contractors: { type: 'number', minimum: 0 },
+            contractorRdPercent: { type: 'number', minimum: 0, maximum: 100 },
+            supplies: { type: 'number', minimum: 0 },
+            suppliesRdPercent: { type: 'number', minimum: 0, maximum: 100 },
+          },
+        },
+        CalculatorResult: {
+          type: 'object',
+          properties: {
+            totalQRE: { type: 'number' },
+            federalCredit: { type: 'number' },
+            tier: { type: 'number' },
+            price: { type: 'number' },
+            savingsAmount: { type: 'number' },
+          },
+        },
+      },
+    },
+    tags: [
+      {
+        name: 'Authentication',
+        description: 'Login and session management',
+      },
+      {
+        name: 'Calculator',
+        description: 'R&D tax credit estimation',
+      },
+      {
+        name: 'Company',
+        description: 'Company information management',
+      },
+      {
+        name: 'Expenses',
+        description: 'R&D expense tracking',
+      },
+      {
+        name: 'Reports',
+        description: 'Document generation and retrieval',
+      },
+      {
+        name: 'Webhooks',
+        description: 'External service integrations',
+      },
+    ],
+  },
+  apis: ['./server/routes/*.ts', './server/routes/*.js'],
+};
+
+export default swaggerJsdoc(options);
+
+Update your route files to include Swagger annotations. For example, update server/routes/auth.routes.ts:
+
+typescriptimport { Router } from 'express';
+import { validate } from '../middleware/validate';
+import { emailSchema } from '../validations';
+import { asyncHandler } from '../middleware/errorHandler';
+import { AppError } from '../middleware/errorHandler';
+import { logger } from '../utils/logger';
+
+const router = Router();
+
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Authenticate user by email
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Login successful
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Customer not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *     x-code-samples:
+ *       - lang: 'JavaScript'
+ *         source: |
+ *           const response = await fetch('/api/login', {
+ *             method: 'POST',
+ *             headers: { 'Content-Type': 'application/json' },
+ *             body: JSON.stringify({ email: 'user@example.com' })
+ *           });
+ */
+router.post('/login', 
+  validate(emailSchema), 
+  asyncHandler(async (req, res) => {
+    // Implementation
+  })
+);
+
+/**
+ * @swagger
+ * /logout:
+ *   post:
+ *     summary: End user session
+ *     tags: [Authentication]
+ *     security:
+ *       - sessionAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *       401:
+ *         description: Not authenticated
+ */
+router.post('/logout', asyncHandler(async (req, res) => {
+  // Implementation
+}));
+
+export default router;
+
+Add Swagger annotations to server/routes/calculator.routes.ts:
+
+typescript/**
+ * @swagger
+ * /calculator/estimate:
+ *   post:
+ *     summary: Calculate R&D tax credit estimate
+ *     tags: [Calculator]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CalculatorInput'
+ *           example:
+ *             wages: 500000
+ *             wageRdPercent: 80
+ *             contractors: 100000
+ *             contractorRdPercent: 100
+ *             supplies: 50000
+ *             suppliesRdPercent: 100
+ *     responses:
+ *       200:
+ *         description: Credit calculation successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CalculatorResult'
+ *             example:
+ *               totalQRE: 515000
+ *               federalCredit: 30900
+ *               tier: 2
+ *               price: 750
+ *               savingsAmount: 30150
+ *       400:
+ *         description: Invalid input data
+ *     x-code-samples:
+ *       - lang: 'cURL'
+ *         source: |
+ *           curl -X POST https://api.yourdomain.com/calculator/estimate \
+ *             -H "Content-Type: application/json" \
+ *             -d '{
+ *               "wages": 500000,
+ *               "wageRdPercent": 80,
+ *               "contractors": 100000,
+ *               "contractorRdPercent": 100,
+ *               "supplies": 50000,
+ *               "suppliesRdPercent": 100
+ *             }'
+ */
+
+Add Swagger annotations to server/routes/company.routes.ts:
+
+typescript/**
+ * @swagger
+ * /company/info:
+ *   post:
+ *     summary: Get company information
+ *     tags: [Company]
+ *     security:
+ *       - sessionAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Company information retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 companyInfo:
+ *                   $ref: '#/components/schemas/CompanyInfo'
+ *       403:
+ *         description: Customer not found
+ *
+ * /company/save-progress:
+ *   post:
+ *     summary: Save company information progress
+ *     tags: [Company]
+ *     security:
+ *       - sessionAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - formData
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               formData:
+ *                 $ref: '#/components/schemas/CompanyInfo'
+ *     responses:
+ *       200:
+ *         description: Progress saved successfully
+ *       400:
+ *         description: Validation error
+ */
+
+Update server/index.ts to serve Swagger UI:
+
+typescriptimport swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger';
+
+// Add after your middleware setup but before routes
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'R&D Tax Credit API Documentation',
+  customfavIcon: '/favicon.ico',
+}));
+
+// Serve the OpenAPI spec as JSON
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+// Add a redirect from /docs to /api-docs for convenience
+app.get('/docs', (req, res) => {
+  res.redirect('/api-docs');
+});
+
+Create server/routes/webhooks.routes.ts with Swagger docs:
+
+typescript/**
+ * @swagger
+ * /webhooks/stripe:
+ *   post:
+ *     summary: Handle Stripe payment webhooks
+ *     tags: [Webhooks]
+ *     description: |
+ *       Endpoint for Stripe to send payment events.
+ *       
+ *       **Important**: This endpoint requires the raw request body.
+ *       Do not use JSON middleware before this route.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [
+ *                   'payment_intent.succeeded',
+ *                   'payment_intent.failed',
+ *                   'checkout.session.completed'
+ *                 ]
+ *               data:
+ *                 type: object
+ *     parameters:
+ *       - in: header
+ *         name: stripe-signature
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Stripe webhook signature for verification
+ *     responses:
+ *       200:
+ *         description: Webhook processed successfully
+ *       400:
+ *         description: Invalid signature or data
+ *       500:
+ *         description: Processing error
+ *
+ * /webhooks/make:
+ *   post:
+ *     summary: Trigger document generation workflow
+ *     tags: [Webhooks]
+ *     description: Webhook endpoint for Make.com to trigger after intake completion
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - customerId
+ *               - companyId
+ *             properties:
+ *               customerId:
+ *                 type: string
+ *               companyId:
+ *                 type: string
+ *               trigger:
+ *                 type: string
+ *                 enum: ['intake_complete', 'manual_regenerate']
+ *     responses:
+ *       200:
+ *         description: Workflow triggered
+ *       401:
+ *         description: Invalid webhook authentication
+ */
+
+Create docs/API_REFERENCE.md for additional documentation:
+
+markdown# API Reference Guide
+
+## Overview
+
+The R&D Tax Credit Platform API provides programmatic access to:
+- User authentication
+- R&D credit calculations
+- Company data management
+- Expense tracking
+- Document generation
+
+Base URL: `https://api.yourdomain.com`
+
+## Interactive Documentation
+
+Visit `/api-docs` on any deployment to access interactive Swagger documentation where you can:
+- View all available endpoints
+- See request/response schemas
+- Try out API calls directly
+- Download OpenAPI specification
+
+## Authentication
+
+The API uses session-based authentication:
+
+1. Call `/api/login` with user email
+2. Session cookie is set automatically
+3. Include cookie in subsequent requests
+4. Call `/api/logout` to end session
+
+## Rate Limits
+
+- General API: 100 requests per 15 minutes per IP
+- Login endpoint: 5 requests per 15 minutes per IP
+- Calculator: 50 requests per hour per IP
+- Report generation: 10 requests per hour per user
+
+## Error Handling
+
+All errors follow this format:
+
+```json
+{
+  "error": "Human-readable error message",
+  "details": [
+    {
+      "field": "fieldName",
+      "message": "Specific validation error"
+    }
+  ]
+}
+Common Response Codes
+
+200 - Success
+400 - Bad request (validation error)
+401 - Unauthorized (not logged in)
+403 - Forbidden (no access to resource)
+404 - Resource not found
+429 - Too many requests
+500 - Internal server error
+
+Webhooks
+Stripe Webhook
+Configure in Stripe Dashboard:
+
+Endpoint: https://api.yourdomain.com/webhooks/stripe
+Events: payment_intent.succeeded, checkout.session.completed
+
+Make.com Webhook
+Configure in Make.com:
+
+Endpoint: https://api.yourdomain.com/webhooks/make
+Method: POST
+Headers: X-Webhook-Secret: [your-secret]
+
+SDKs and Code Examples
+JavaScript/TypeScript
+typescriptclass RdTaxCreditAPI {
+  private baseURL: string;
+  
+  constructor(baseURL = 'https://api.yourdomain.com') {
+    this.baseURL = baseURL;
+  }
+  
+  async login(email: string): Promise<void> {
+    const response = await fetch(`${this.baseURL}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Login failed');
+    }
+  }
+  
+  async calculateCredit(inputs: CalculatorInput): Promise<CalculatorResult> {
+    const response = await fetch(`${this.baseURL}/api/calculator/estimate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(inputs)
+    });
+    
+    return response.json();
+  }
+}
+Python
+pythonimport requests
+
+class RdTaxCreditAPI:
+    def __init__(self, base_url='https://api.yourdomain.com'):
+        self.base_url = base_url
+        self.session = requests.Session()
+    
+    def login(self, email):
+        response = self.session.post(
+            f'{self.base_url}/api/login',
+            json={'email': email}
+        )
+        response.raise_for_status()
+    
+    def calculate_credit(self, wages, wage_rd_percent, contractors=0, 
+                        contractor_rd_percent=0, supplies=0, supplies_rd_percent=0):
+        response = self.session.post(
+            f'{self.base_url}/api/calculator/estimate',
+            json={
+                'wages': wages,
+                'wageRdPercent': wage_rd_percent,
+                'contractors': contractors,
+                'contractorRdPercent': contractor_rd_percent,
+                'supplies': supplies,
+                'suppliesRdPercent': supplies_rd_percent
+            }
+        )
+        return response.json()
+Testing
+Use these test credit card numbers in development:
+
+Success: 4242 4242 4242 4242
+Decline: 4000 0000 0000 0002
+Requires auth: 4000 0025 0000 3155
+
+Support
+
+API Status: https://status.yourdomain.com
+Developer Forum: https://forum.yourdomain.com
+Email: api-support@yourdomain.com
+
+
+This comprehensive API documentation setup provides:
+
+1. **Interactive Swagger UI** at `/api-docs` where users can test endpoints
+2. **OpenAPI specification** available as JSON for API client generation
+3. **Detailed annotations** on each endpoint with examples
+4. **Type-safe schemas** for all request/response objects
+5. **Code examples** in multiple languages
+6. **Webhook documentation** for integrations
+7. **Clear error handling** documentation
+
+The Swagger UI will automatically generate beautiful, interactive documentation from your code annotations, making it easy for developers (including yourself) to understand and test the API.

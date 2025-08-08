@@ -4,6 +4,8 @@ import { createServer, type Server } from "http";
 // Import route modules
 import authRoutes from './routes/auth.routes';
 import webhookRoutes from './routes/webhook.routes';
+import calculatorRoutes from './routes/calculator.routes';
+import webhooksRoutes from './routes/webhooks.routes';
 import intakeRoutes from './routes/intake.routes';
 import companyRoutes from './routes/company.routes';
 import expenseRoutes from './routes/expense.routes';
@@ -15,6 +17,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register route modules
   app.use('/api/auth', authRoutes);
+  app.use('/api/calculator', calculatorRoutes);
+  app.use('/api/webhooks', webhooksRoutes);
   app.use('/api', webhookRoutes);
   app.use('/api/intake', intakeRoutes);
   app.use('/api/company', companyRoutes);

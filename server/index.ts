@@ -19,6 +19,9 @@ import cors from 'cors';
 import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
 import { corsOptions, apiLimiter, loginLimiter, strictLimiter } from './middleware/security';
+// Import Swagger for API documentation
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger';
 
 const app = express();
 
@@ -73,6 +76,24 @@ app.use(expressWinston.logger({
     return process.env.NODE_ENV === 'production' && !req.url.startsWith('/api');
   }
 }));
+
+// Serve Swagger API documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'R&D Tax Credit API Documentation',
+  customfavIcon: '/favicon.ico',
+}));
+
+// Serve the OpenAPI spec as JSON
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+// Add a redirect from /docs to /api-docs for convenience
+app.get('/docs', (req, res) => {
+  res.redirect('/api-docs');
+});
 
 (async () => {
   const server = await registerRoutes(app);

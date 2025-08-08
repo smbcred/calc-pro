@@ -6,12 +6,17 @@ import {
   calculateFederalRate,
   getQualificationRate,
   getQualificationRateInfo,
-  getPricingTier,
   calculateDeductionValue,
   calculateConfidenceScore,
   type BusinessProfile,
   type FederalRateInfo
 } from '../../../shared/taxRules/rdTaxRules';
+import {
+  calculatePricing,
+  getTier,
+  formatPrice,
+  calculateROI
+} from '../../../shared/pricing/pricingEngine';
 
 interface FormData {
   activities: string[];
@@ -222,9 +227,9 @@ const AmazingCalculator: React.FC = () => {
       const stateCredit = 0;
       const totalBenefit = federalCredit + deductionValue + stateCredit;
       
-      // Dynamic pricing using centralized rules
-      const pricingTier = getPricingTier(federalCredit);
-      const price = pricingTier.price;
+      // Dynamic pricing using centralized pricing engine
+      const pricingResult = calculatePricing(federalCredit, [2025]);
+      const price = pricingResult.totalPrice;
       
       const savingsAmount = Math.max(0, totalBenefit - price);
       
@@ -239,7 +244,13 @@ const AmazingCalculator: React.FC = () => {
         totalBenefit,
         price,
         savingsAmount,
-        creditRate,
+        creditRate: {
+          rate: creditRate.rate,
+          method: creditRate.name,
+          description: creditRate.description,
+          canOffsetPayroll: creditRate.canOffsetPayroll,
+          payrollOffsetLimit: creditRate.payrollOffsetLimit
+        },
         breakdown: {
           qualifiedEmployeeTime: Math.round(qualifiedEmployeeTime),
           qualifiedAiTools: Math.round(qualifiedAiTools),
@@ -259,7 +270,8 @@ const AmazingCalculator: React.FC = () => {
         totalBenefit,
         savingsAmount,
         price,
-        tier: price >= 1500 ? 'Enterprise' : price >= 1000 ? 'Growth' : price >= 750 ? 'Professional' : 'Starter'
+        tier: pricingResult.tier.name,
+        pricingDetails: pricingResult
       }));
       
       // Simulate processing time for better UX

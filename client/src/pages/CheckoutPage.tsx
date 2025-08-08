@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'wouter';
 import { 
   ArrowLeft, Check, CreditCard, Shield, Lock, FileText, 
   Clock, Users, Zap, ChevronRight, Star, AlertCircle 
 } from 'lucide-react';
+import {
+  calculatePricing,
+  getEligibleYears,
+  formatPrice,
+  calculateROI
+} from '../../../shared/pricing/pricingEngine';
 
 interface CheckoutPageProps {
   calculationResults?: any;
@@ -59,25 +65,26 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
   // Use saved email or checkout email input
   const email = savedEmail || checkoutEmail;
 
-  // Dynamic pricing based on credit amount
-  const calculateBasePrice = (creditAmount: number) => {
-    if (creditAmount < 10000) return 500;
-    if (creditAmount <= 50000) return 750;
-    if (creditAmount <= 100000) return 1000;
-    return 1500;
-  };
+  // Use centralized pricing engine
+  const creditAmount = results.federal?.creditAmount || 0;
+  const pricingResult = useMemo(() => {
+    const years = selectedYears.map(y => parseInt(y));
+    return calculatePricing(creditAmount, years);
+  }, [creditAmount, selectedYears]);
+  
+  const totalPrice = pricingResult.totalPrice;
+  const roi = calculateROI(creditAmount, totalPrice);
 
-  const basePrice = results.basePrice || calculateBasePrice(results.federal?.creditAmount || 0);
-  const additionalYearPrice = 297;
-  const additionalYearsCount = selectedYears.length - 1; // Current year is included
-  const totalPrice = basePrice + (additionalYearsCount * additionalYearPrice);
-
-  const availableYears = [
-    { year: '2025', label: 'Current Year', included: true, estimatedCredit: results.federal?.creditAmount || 0 },
-    { year: '2024', label: 'Lookback', price: additionalYearPrice, estimatedCredit: Math.round((results.federal?.creditAmount || 0) * 0.9) },
-    { year: '2023', label: 'Lookback', price: additionalYearPrice, estimatedCredit: Math.round((results.federal?.creditAmount || 0) * 0.85) },
-    { year: '2022', label: 'Lookback', price: additionalYearPrice, estimatedCredit: Math.round((results.federal?.creditAmount || 0) * 0.8) }
-  ];
+  const eligibleYears = getEligibleYears();
+  const availableYears = eligibleYears.map(({ year, deadline, isExpiringSoon }) => ({
+    year: year.toString(),
+    label: year === 2025 ? 'Current Year' : 'Lookback',
+    included: year === 2025,
+    price: year === 2025 ? pricingResult.basePrice : 297,
+    estimatedCredit: Math.round(creditAmount * (year === 2025 ? 1 : 0.9 - (2025 - year) * 0.05)),
+    deadline,
+    isExpiringSoon
+  }));
 
   const handleYearToggle = (year: string) => {
     if (year === '2025') return; // Current year is always included
@@ -91,14 +98,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
     });
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+  const formatCurrency = formatPrice; // Use centralized price formatting
 
   const handleContinueToPayment = async () => {
     // Validate email before proceeding
@@ -120,7 +120,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
       
       console.log('Initiating Stripe checkout:', {
         email,
-        tierBasePrice: basePrice,
+        tierBasePrice: pricingResult.basePrice,
         yearsSelected: yearsAsNumbers,
         totalExpected: totalPrice
       });
@@ -133,7 +133,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
         },
         body: JSON.stringify({
           email,
-          tierBasePrice: basePrice,
+          tierBasePrice: pricingResult.basePrice,
           yearsSelected: yearsAsNumbers,
         }),
       });
@@ -189,11 +189,11 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
         <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-2xl p-8 mb-8 border border-green-200 relative overflow-hidden">
           {/* ROI Badge */}
           <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
-            {Math.round((results.federal?.creditAmount || 0) / basePrice)}x ROI
+            {Math.round((results.federal?.creditAmount || 0) / pricingResult.basePrice)}x ROI
           </div>
           
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Get {formatCurrency(results.federal?.creditAmount || 0)} for just {formatCurrency(basePrice)}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Get {formatCurrency(results.federal?.creditAmount || 0)} for just {formatCurrency(pricingResult.basePrice)}</h2>
             
             <div className="flex justify-center items-center gap-12 mb-6">
               <div className="text-center">
@@ -203,7 +203,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
               </div>
               <div className="text-6xl text-gray-400 font-light">→</div>
               <div className="text-center">
-                <div className="text-4xl font-black text-blue-600 mb-2">{formatCurrency(basePrice)}</div>
+                <div className="text-4xl font-black text-blue-600 mb-2">{formatCurrency(pricingResult.basePrice)}</div>
                 <div className="text-lg font-semibold text-gray-700">Your Investment</div>
                 <div className="text-sm text-gray-600">Complete filing package</div>
               </div>
@@ -211,10 +211,10 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
             
             <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl p-4 border border-yellow-200">
               <p className="text-lg font-bold text-gray-900 mb-1">
-                {Math.round((results.federal?.creditAmount || 0) / basePrice)}x return on investment
+                {Math.round((results.federal?.creditAmount || 0) / pricingResult.basePrice)}x return on investment
               </p>
               <p className="text-sm text-gray-700">
-                You're getting {formatCurrency((results.federal?.creditAmount || 0) - basePrice)} more than you're paying
+                You're getting {formatCurrency((results.federal?.creditAmount || 0) - pricingResult.basePrice)} more than you're paying
               </p>
             </div>
           </div>
@@ -340,14 +340,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
                 <span className="font-medium text-gray-900">Base (2025):</span>
                 <div className="text-sm text-green-600">→ Gets you {formatCurrency(results.federal?.creditAmount || 0)}</div>
               </div>
-              <span className="font-bold text-gray-900">{formatCurrency(basePrice)}</span>
+              <span className="font-bold text-gray-900">{formatCurrency(pricingResult.basePrice)}</span>
             </div>
             
-            {additionalYearsCount > 0 && (
+            {(pricingResult.selectedYears.length - 1) > 0 && (
               <div className="flex justify-between items-center py-3 border-b border-gray-100">
                 <div>
                   <span className="font-medium text-gray-900">
-                    Additional Years ({additionalYearsCount}):
+                    Additional Years ({pricingResult.selectedYears.length - 1}):
                   </span>
                   <div className="text-sm text-green-600">
                     → Gets you ~{formatCurrency(selectedYears.slice(1).reduce((sum, year) => {
@@ -356,7 +356,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ calculationResults, userEma
                     }, 0))}
                   </div>
                 </div>
-                <span className="font-bold text-gray-900">{formatCurrency(additionalYearsCount * additionalYearPrice)}</span>
+                <span className="font-bold text-gray-900">{formatCurrency(pricingResult.additionalYearsPrice)}</span>
               </div>
             )}
             

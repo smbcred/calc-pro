@@ -6,9 +6,11 @@ import { CalculatorCache } from '../utils/calculatorCache';
 import {
   calculateFederalRate,
   getQualificationRate,
-  getPricingTier,
   type BusinessProfile
 } from '../../shared/taxRules/rdTaxRules';
+import {
+  calculatePricing
+} from '../../shared/pricing/pricingEngine';
 
 const router = express.Router();
 
@@ -101,12 +103,12 @@ router.post('/estimate', validate(calculatorInputSchema), asyncHandler(async (re
   const federalRateInfo = calculateFederalRate(businessProfile);
   const federalCredit = totalQRE * federalRateInfo.rate;
   
-  // Use centralized pricing tiers
-  const pricingTier = getPricingTier(federalCredit);
-  const tier = pricingTier.name === 'Starter' ? 1 : 
-              pricingTier.name === 'Growth' ? 2 : 
-              pricingTier.name === 'Scale' ? 3 : 4;
-  const price = pricingTier.price;
+  // Use centralized pricing engine
+  const pricingResult = calculatePricing(federalCredit, [2025]);
+  const tier = pricingResult.tier.name === 'Starter' ? 1 : 
+              pricingResult.tier.name === 'Growth' ? 2 : 
+              pricingResult.tier.name === 'Scale' ? 3 : 4;
+  const price = pricingResult.totalPrice;
   
   const savingsAmount = federalCredit - price;
   

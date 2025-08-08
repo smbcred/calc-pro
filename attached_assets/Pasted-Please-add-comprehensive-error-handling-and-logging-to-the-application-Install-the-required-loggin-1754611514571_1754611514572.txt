@@ -1,0 +1,193 @@
+Please add comprehensive error handling and logging to the application.
+
+Install the required logging package by adding to package.json dependencies:
+
+json"winston": "^3.11.0",
+"express-winston": "^4.2.0"
+
+Create a new file server/utils/logger.ts for the logging configuration:
+
+typescriptimport winston from 'winston';
+
+// Define log levels and colors
+const logLevels = {
+  error: 0,
+  warn: 1,
+  info: 2,
+  http: 3,
+  debug: 4,
+};
+
+// Create the logger
+export const logger = winston.createLogger({
+  levels: logLevels,
+  format: winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.errors({ stack: true }),
+    winston.format.splat(),
+    winston.format.json(),
+    winston.format.printf(({ timestamp, level, message, ...metadata }) => {
+      let msg = `${timestamp} [${level.toUpperCase()}]: ${message}`;
+      if (Object.keys(metadata).length > 0) {
+        msg += ` ${JSON.stringify(metadata)}`;
+      }
+      return msg;
+    })
+  ),
+  transports: [
+    // Console transport for development
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      ),
+    }),
+    // File transport for errors
+    new winston.transports.File({
+      filename: 'logs/error.log',
+      level: 'error',
+      maxsize: 5242880, // 5MB
+      maxFiles: 5,
+    }),
+    // File transport for all logs
+    new winston.transports.File({
+      filename: 'logs/combined.log',
+      maxsize: 5242880, // 5MB
+      maxFiles: 5,
+    }),
+  ],
+});
+
+// Create a stream for Morgan middleware
+export const loggerStream = {
+  write: (message: string) => {
+    logger.http(message.trim());
+  },
+};
+
+Create a new file server/middleware/errorHandler.ts for centralized error handling:
+
+typescriptimport { Request, Response, NextFunction } from 'express';
+import { logger } from '../utils/logger';
+
+// Custom error class
+export class AppError extends Error {
+  statusCode: number;
+  isOperational: boolean;
+
+  constructor(message: string, statusCode: number) {
+    super(message);
+    this.statusCode = statusCode;
+    this.isOperational = true;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
+
+// Async error wrapper to catch errors in async route handlers
+export const asyncHandler = (fn: Function) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+};
+
+// Global error handler middleware
+export const errorHandler = (
+  err: Error | AppError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let statusCode = 500;
+  let message = 'Internal Server Error';
+  
+  // Log the error
+  logger.error({
+    message: err.message,
+    stack: err.stack,
+    url: req.originalUrl,
+    method: req.method,
+    ip: req.ip,
+    body: req.body,
+  });
+
+  // Handle different error types
+  if (err instanceof AppError) {
+    statusCode = err.statusCode;
+    message = err.message;
+  } else if (err.name === 'ValidationError') {
+    statusCode = 400;
+    message = 'Validation Error';
+  } else if (err.name === 'CastError') {
+    statusCode = 400;
+    message = 'Invalid ID format';
+  }
+
+  // Send error response
+  res.status(statusCode).json({
+    success: false,
+    error: message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+  });
+};
+
+// 404 handler
+export const notFoundHandler = (req: Request, res: Response) => {
+  logger.warn(`404 - Not Found: ${req.originalUrl}`);
+  res.status(404).json({
+    success: false,
+    error: 'Route not found',
+  });
+};
+
+Update server/index.ts to use the logger and error handling:
+
+typescriptimport { logger, loggerStream } from './utils/logger';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import expressWinston from 'express-winston';
+
+// Replace the existing console.log statements with logger
+// For example, replace:
+// console.log(`serving on port ${port}`);
+// With:
+logger.info(`Server started on port ${port}`);
+
+// Add request logging middleware (add this after the security middleware)
+app.use(expressWinston.logger({
+  winstonInstance: logger,
+  meta: true,
+  msg: 'HTTP {{req.method}} {{req.url}}',
+  expressFormat: true,
+  colorize: false,
+}));
+
+// Remove the existing error handling middleware and add these at the very end (after all routes)
+app.use(notFoundHandler);
+app.use(errorHandler);
+
+Update all route files to use the asyncHandler and AppError. For example:
+
+typescriptimport { asyncHandler } from '../middleware/errorHandler';
+import { AppError } from '../middleware/errorHandler';
+import { logger } from '../utils/logger';
+
+// Wrap all async route handlers
+app.post('/api/login', validate(emailSchema), asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  
+  logger.info(`Login attempt for email: ${email}`);
+  
+  // If something goes wrong, throw an AppError
+  if (!customer) {
+    throw new AppError('Invalid email or customer not found', 401);
+  }
+  
+  // Success logging
+  logger.info(`Successful login for: ${email}`);
+  
+  res.json({ success: true });
+}));
+
+Create a logs folder in the root directory to store log files.
+Add logs/ to your .gitignore file to avoid committing log files.
+
+This will give you proper error tracking, request logging, and make debugging much easier. All errors will be logged to files and the console.

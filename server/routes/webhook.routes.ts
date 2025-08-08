@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { addToAirtableCustomers } from '../utils/airtable';
 import { validate } from '../middleware/validate';
 import { checkoutSchema } from '../validations';
+import { asyncHandler, AppError, createInternalServerError } from '../middleware/errorHandler';
 
 const router = express.Router();
 
@@ -16,30 +17,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 } as any);
 
 // Stripe Webhook handler
-router.post('/stripe', async (req, res) => {
+router.post('/stripe', asyncHandler(async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!sig || !endpointSecret) {
+    throw new AppError('Missing webhook signature or secret', 400);
+  }
+
+  let event: Stripe.Event;
+
   try {
-    // Set security headers
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block'
-    });
-    const sig = req.headers['stripe-signature'];
-    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-    if (!sig || !endpointSecret) {
-      console.error('Missing webhook signature or secret');
-      return res.status(400).send('Missing webhook signature or secret');
-    }
-
-    let event: Stripe.Event;
-
-    try {
-      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-    } catch (err: any) {
-      console.error('Webhook signature verification failed:', err.message);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err: any) {
+    console.error('Webhook signature verification failed:', err.message);
+    throw new AppError(`Webhook Error: ${err.message}`, 400);
+  }
 
     // Handle the checkout.session.completed event
     if (event.type === 'checkout.session.completed') {
@@ -74,8 +67,7 @@ router.post('/stripe', async (req, res) => {
       }
 
       if (!email) {
-        console.error('No email found in session');
-        return res.status(400).send('No email found in session');
+        throw new AppError('No email found in session', 400);
       }
 
       // Add to Airtable Customers table with new schema
@@ -126,90 +118,74 @@ router.post('/stripe', async (req, res) => {
     }
 
     res.json({ received: true });
-  } catch (error: any) {
-    console.error('Webhook error:', error);
-    res.status(500).json({ error: 'Webhook processing failed', details: error.message });
-  }
-});
+}));
 
 // Stripe Checkout API route
-router.post('/checkout', validate(checkoutSchema), async (req, res) => {
-  try {
-    // Set security headers
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block'
-    });
-    const { email, tierBasePrice, yearsSelected } = req.body;
+router.post('/checkout', validate(checkoutSchema), asyncHandler(async (req, res) => {
+  const { email, tierBasePrice, yearsSelected } = req.body;
 
+  // Create line items for Stripe Checkout
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
-    // Create line items for Stripe Checkout
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+  // Base package item
+  lineItems.push({
+    price_data: {
+      currency: 'usd',
+      product_data: {
+        name: `R&D Credit Filing Package (Tier)`,
+        description: `Professional R&D tax credit documentation and filing package`,
+      },
+      unit_amount: Math.round(tierBasePrice * 100), // Convert to cents
+    },
+    quantity: 1,
+  });
 
-    // Base package item
+  // Add line items for each selected year
+  yearsSelected.forEach((year: number) => {
     lineItems.push({
       price_data: {
         currency: 'usd',
         product_data: {
-          name: `R&D Credit Filing Package (Tier)`,
-          description: `Professional R&D tax credit documentation and filing package`,
+          name: `Tax Year ${year} Filing`,
+          description: `R&D credit filing for tax year ${year}`,
         },
-        unit_amount: Math.round(tierBasePrice * 100), // Convert to cents
+        unit_amount: 29700, // $297 in cents
       },
       quantity: 1,
     });
+  });
 
-    // Add line items for each selected year
-    yearsSelected.forEach((year: number) => {
-      lineItems.push({
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: `Tax Year ${year} Filing`,
-            description: `R&D credit filing for tax year ${year}`,
-          },
-          unit_amount: 29700, // $297 in cents
-        },
-        quantity: 1,
-      });
-    });
-
-    // Create proper base URL with scheme for Replit environment
-    let fullBaseUrl = 'http://localhost:5000'; // fallback
-    
-    if (req.headers.origin) {
-      fullBaseUrl = req.headers.origin;
-    } else if (req.headers.host) {
-      const protocol = req.headers['x-forwarded-proto'] || 'http';
-      fullBaseUrl = `${protocol}://${req.headers.host}`;
-    }
-    
-    // Ensure URL has proper scheme
-    if (!fullBaseUrl.startsWith('http')) {
-      fullBaseUrl = `http://${fullBaseUrl}`;
-    }
-
-    // Create Stripe Checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      mode: 'payment',
-      customer_email: email,
-      success_url: `${fullBaseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${fullBaseUrl}/checkout`,
-      metadata: {
-        email,
-        tierBasePrice: tierBasePrice.toString(),
-        yearsSelected: yearsSelected.join(','),
-      },
-    });
-
-    res.json({ url: session.url });
-  } catch (error: any) {
-    console.error('Stripe checkout error:', error);
-    res.status(500).json({ error: "Error creating checkout session: " + error.message });
+  // Create proper base URL with scheme for Replit environment
+  let fullBaseUrl = 'http://localhost:5000'; // fallback
+  
+  if (req.headers.origin) {
+    fullBaseUrl = req.headers.origin;
+  } else if (req.headers.host) {
+    const protocol = req.headers['x-forwarded-proto'] || 'http';
+    fullBaseUrl = `${protocol}://${req.headers.host}`;
   }
-});
+  
+  // Ensure URL has proper scheme
+  if (!fullBaseUrl.startsWith('http')) {
+    fullBaseUrl = `http://${fullBaseUrl}`;
+  }
+
+  // Create Stripe Checkout session
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: lineItems,
+    mode: 'payment',
+    customer_email: email,
+    success_url: `${fullBaseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${fullBaseUrl}/checkout`,
+    metadata: {
+      email,
+      tierBasePrice: tierBasePrice.toString(),
+      yearsSelected: yearsSelected.join(','),
+    },
+  });
+
+  res.json({ url: session.url });
+}));
 
 export default router;

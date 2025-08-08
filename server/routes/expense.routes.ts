@@ -7,38 +7,31 @@ import {
 } from '../utils/airtable';
 import { validate } from '../middleware/validate';
 import { expenseLoadSchema, expenseSaveSchema } from '../validations';
+import { asyncHandler, AppError, createAuthorizationError, createInternalServerError, createNotFoundError } from '../middleware/errorHandler';
 
 const router = express.Router();
 
 // Load existing expense data
-router.post('/load', validate(expenseLoadSchema), async (req, res) => {
-  try {
-    // Set security headers
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block'
-    });
-    const { email } = req.body;
-    
+router.post('/load', validate(expenseLoadSchema), asyncHandler(async (req, res) => {
+  const { email } = req.body;
 
-    // Get customer and company
-    const customer = await getCustomerByEmail(email);
-    if (!customer) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
+  // Get customer and company
+  const customer = await getCustomerByEmail(email);
+  if (!customer) {
+    throw createAuthorizationError('Access denied');
+  }
 
-    const company = await getCompanyByCustomerId(customer.id);
-    if (!company) {
-      return res.json({ wages: [], contractors: [], supplies: [], cloudSoftware: [] });
-    }
+  const company = await getCompanyByCustomerId(customer.id);
+  if (!company) {
+    return res.json({ wages: [], contractors: [], supplies: [], cloudSoftware: [] });
+  }
 
-    const airtableToken = process.env.AIRTABLE_API_KEY;
-    const baseId = process.env.AIRTABLE_BASE_ID;
+  const airtableToken = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
 
-    if (!airtableToken || !baseId) {
-      return res.status(500).json({ error: 'Airtable not configured' });
-    }
+  if (!airtableToken || !baseId) {
+    throw createInternalServerError('Airtable not configured');
+  }
 
     // Fetch wages
     const wagesResponse = await fetch(`https://api.airtable.com/v0/${baseId}/Wages?filterByFormula={company_id}='${company.id}'`, {
@@ -101,69 +94,43 @@ router.post('/load', validate(expenseLoadSchema), async (req, res) => {
       annualRdAmount: record.fields.qualified_amount,
     }));
 
-    res.json({ wages, contractors, supplies, cloudSoftware });
-  } catch (error) {
-    console.error('Expense load error:', error);
-    res.status(500).json({ error: 'Failed to load expense data' });
-  }
-});
+  res.json({ wages, contractors, supplies, cloudSoftware });
+}));
 
 // Save expense data (auto-save)
-router.post('/save', validate(expenseSaveSchema), async (req, res) => {
-  try {
-    // Set security headers
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block'
-    });
-    const { email, expenses } = req.body;
-    
+router.post('/save', validate(expenseSaveSchema), asyncHandler(async (req, res) => {
+  const { email, expenses } = req.body;
 
-
-    // Get customer and company
-    const customer = await getCustomerByEmail(email);
-    if (!customer) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
-
-    const company = await getCompanyByCustomerId(customer.id);
-    if (!company) {
-      return res.status(400).json({ error: 'Company not found' });
-    }
-
-    // For now, just return success for auto-save
-    // In a full implementation, you'd save to a temporary/draft table
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Expense save error:', error);
-    res.status(500).json({ error: 'Failed to save expense data' });
+  // Get customer and company
+  const customer = await getCustomerByEmail(email);
+  if (!customer) {
+    throw createAuthorizationError('Access denied');
   }
-});
+
+  const company = await getCompanyByCustomerId(customer.id);
+  if (!company) {
+    throw createNotFoundError('Company not found');
+  }
+
+  // For now, just return success for auto-save
+  // In a full implementation, you'd save to a temporary/draft table
+  res.json({ success: true });
+}));
 
 // Submit final expense data
-router.post('/submit', validate(expenseSaveSchema), async (req, res) => {
-  try {
-    // Set security headers
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block'
-    });
-    const { email, expenses } = req.body;
-    
+router.post('/submit', validate(expenseSaveSchema), asyncHandler(async (req, res) => {
+  const { email, expenses } = req.body;
 
+  // Get customer and company
+  const customer = await getCustomerByEmail(email);
+  if (!customer) {
+    throw createAuthorizationError('Access denied');
+  }
 
-    // Get customer and company
-    const customer = await getCustomerByEmail(email);
-    if (!customer) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
-
-    const company = await getCompanyByCustomerId(customer.id);
-    if (!company) {
-      return res.status(400).json({ error: 'Company not found' });
-    }
+  const company = await getCompanyByCustomerId(customer.id);
+  if (!company) {
+    throw createNotFoundError('Company not found');
+  }
 
     // Submit wages
     if (expenses.wages?.length > 0) {
@@ -217,11 +184,7 @@ router.post('/submit', validate(expenseSaveSchema), async (req, res) => {
       }
     }
 
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Expense submission error:', error);
-    res.status(500).json({ error: 'Failed to submit expense information' });
-  }
-});
+  res.json({ success: true });
+}));
 
 export default router;

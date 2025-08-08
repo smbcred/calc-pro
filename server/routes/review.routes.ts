@@ -6,44 +6,36 @@ import {
 } from '../utils/airtable';
 import { validate } from '../middleware/validate';
 import { emailSchema, documentTrackingSchema, documentStatusSchema } from '../validations';
+import { asyncHandler, AppError, createAuthorizationError, createInternalServerError, createNotFoundError } from '../middleware/errorHandler';
 
 const router = express.Router();
 
 // Review data endpoint - aggregates data from all sources
-router.post('/data', validate(emailSchema), async (req, res) => {
-  try {
-    // Set security headers
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block'
+router.post('/data', validate(emailSchema), asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  // Get customer and company
+  const customer = await getCustomerByEmail(email);
+  if (!customer) {
+    throw createAuthorizationError('Access denied');
+  }
+
+  const company = await getCompanyByCustomerId(customer.id);
+  if (!company) {
+    return res.json({ 
+      companyInfo: null,
+      rdActivities: null,
+      expenses: null,
+      completionStatus: { companyInfo: 0, rdActivities: 0, expenses: 0, canGenerate: false }
     });
-    const { email } = req.body;
-    
+  }
 
+  const airtableToken = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
 
-    // Get customer and company
-    const customer = await getCustomerByEmail(email);
-    if (!customer) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
-
-    const company = await getCompanyByCustomerId(customer.id);
-    if (!company) {
-      return res.json({ 
-        companyInfo: null,
-        rdActivities: null,
-        expenses: null,
-        completionStatus: { companyInfo: 0, rdActivities: 0, expenses: 0, canGenerate: false }
-      });
-    }
-
-    const airtableToken = process.env.AIRTABLE_API_KEY;
-    const baseId = process.env.AIRTABLE_BASE_ID;
-
-    if (!airtableToken || !baseId) {
-      return res.status(500).json({ error: 'Airtable not configured' });
-    }
+  if (!airtableToken || !baseId) {
+    throw createInternalServerError('Airtable not configured');
+  }
 
     // Get wages and expenses
     const [wagesResponse, expensesResponse] = await Promise.all([
@@ -136,111 +128,73 @@ router.post('/data', validate(emailSchema), async (req, res) => {
       }
     };
 
-    res.json(reviewData);
-  } catch (error) {
-    console.error('Review data error:', error);
-    res.status(500).json({ error: 'Failed to load review data' });
-  }
-});
+  res.json(reviewData);
+}));
 
 // Generate documents endpoint
-router.post('/generate-documents', validate(emailSchema), async (req, res) => {
-  try {
-    // Set security headers
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block'
-    });
-    const { email } = req.body;
-    
+router.post('/generate-documents', validate(emailSchema), asyncHandler(async (req, res) => {
+  const { email } = req.body;
 
-
-    // Get customer
-    const customer = await getCustomerByEmail(email);
-    if (!customer) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
-
-    // Generate a tracking ID for this request
-    const trackingId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
-
-    // In a real implementation, you would:
-    // 1. Queue the document generation job
-    // 2. Start the actual document generation process
-    // 3. Update progress in a tracking table
-
-    res.json({
-      success: true,
-      message: 'Document generation started. You will receive an email when complete.',
-      trackingId,
-      estimatedCompletion: '5-10 minutes'
-    });
-  } catch (error) {
-    console.error('Document generation error:', error);
-    res.status(500).json({ error: 'Failed to start document generation' });
+  // Get customer
+  const customer = await getCustomerByEmail(email);
+  if (!customer) {
+    throw createAuthorizationError('Access denied');
   }
-});
+
+  // Generate a tracking ID for this request
+  const trackingId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+
+  // In a real implementation, you would:
+  // 1. Queue the document generation job
+  // 2. Start the actual document generation process
+  // 3. Update progress in a tracking table
+
+  res.json({
+    success: true,
+    message: 'Document generation started. You will receive an email when complete.',
+    trackingId,
+    estimatedCompletion: '5-10 minutes'
+  });
+}));
 
 // Document status endpoint
-router.post('/document-status', validate(documentStatusSchema), async (req, res) => {
-  try {
-    // Set security headers
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block'
-    });
-    const { email, trackingId } = req.body;
-    
+router.post('/document-status', validate(documentStatusSchema), asyncHandler(async (req, res) => {
+  const { email, trackingId } = req.body;
 
-    // In a real implementation, you would check the status in a tracking table
-    // For now, we'll simulate progress
-    const progress = Math.min(100, Math.floor(Math.random() * 100) + 10);
-    const isComplete = progress >= 100;
+  // In a real implementation, you would check the status in a tracking table
+  // For now, we'll simulate progress
+  const progress = Math.min(100, Math.floor(Math.random() * 100) + 10);
+  const isComplete = progress >= 100;
 
-    res.json({
-      status: isComplete ? 'completed' : 'processing',
-      progress,
-      currentStep: isComplete ? 'Documents ready for download' : 'Generating technical narrative...',
-      estimatedTimeRemaining: isComplete ? '0 minutes' : `${Math.max(1, 8 - Math.floor(progress/15))} minutes`,
-    });
-  } catch (error) {
-    console.error('Document status error:', error);
-    res.status(500).json({ error: 'Failed to get document status' });
-  }
-});
+  res.json({
+    status: isComplete ? 'completed' : 'processing',
+    progress,
+    currentStep: isComplete ? 'Documents ready for download' : 'Generating technical narrative...',
+    estimatedTimeRemaining: isComplete ? '0 minutes' : `${Math.max(1, 8 - Math.floor(progress/15))} minutes`,
+  });
+}));
 
 // QRE calculation endpoint
-router.post('/calculate', validate(emailSchema), async (req, res) => {
-  try {
-    // Set security headers
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block'
-    });
-    const { email } = req.body;
-    
+router.post('/calculate', validate(emailSchema), asyncHandler(async (req, res) => {
+  const { email } = req.body;
 
+  // Get customer and company
+  const customer = await getCustomerByEmail(email);
+  if (!customer) {
+    throw createAuthorizationError('Access denied');
+  }
 
-    // Get customer and company
-    const customer = await getCustomerByEmail(email);
-    if (!customer) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
+  const company = await getCompanyByCustomerId(customer.id);
+  if (!company) {
+    throw createNotFoundError('Company not found');
+  }
 
-    const company = await getCompanyByCustomerId(customer.id);
-    if (!company) {
-      return res.status(400).json({ error: 'Company not found' });
-    }
+  const airtableToken = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
 
-    const airtableToken = process.env.AIRTABLE_API_KEY;
-    const baseId = process.env.AIRTABLE_BASE_ID;
-
-    if (!airtableToken || !baseId) {
-      return res.status(500).json({ error: 'Airtable not configured' });
-    }
+  if (!airtableToken || !baseId) {
+    throw createInternalServerError('Airtable not configured');
+  }
 
     // Get wages and expenses
     const [wagesResponse, expensesResponse] = await Promise.all([
@@ -318,66 +272,40 @@ router.post('/calculate', validate(emailSchema), async (req, res) => {
       taxCreditEstimate: Math.round(grandTotal * 0.20), // 20% federal credit
     };
 
-    res.json(qreData);
-  } catch (error) {
-    console.error('QRE calculation error:', error);
-    res.status(500).json({ error: 'Failed to calculate QRE' });
-  }
-});
+  res.json(qreData);
+}));
 
 // Generate QRE report endpoint
-router.post('/generate-report', validate(emailSchema), async (req, res) => {
-  try {
-    // Set security headers
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block'
-    });
-    const { email } = req.body;
-    
+router.post('/generate-report', validate(emailSchema), asyncHandler(async (req, res) => {
+  const { email } = req.body;
 
-
-    // Get customer
-    const customer = await getCustomerByEmail(email);
-    if (!customer) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
-
-    // In a real implementation, you would generate and send the QRE report
-    // For now, just return success
-    res.json({ success: true, message: 'QRE report generation started' });
-  } catch (error) {
-    console.error('QRE report generation error:', error);
-    res.status(500).json({ error: 'Failed to generate QRE report' });
+  // Get customer
+  const customer = await getCustomerByEmail(email);
+  if (!customer) {
+    throw createAuthorizationError('Access denied');
   }
-});
+
+  // In a real implementation, you would generate and send the QRE report
+  // For now, just return success
+  res.json({ success: true, message: 'QRE report generation started' });
+}));
 
 // Documents list endpoint  
-router.post('/list', validate(emailSchema), async (req, res) => {
-  try {
-    // Set security headers
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block'
-    });
-    const { email } = req.body;
-    
+router.post('/list', validate(emailSchema), asyncHandler(async (req, res) => {
+  const { email } = req.body;
 
+  // Get customer
+  const customer = await getCustomerByEmail(email);
+  if (!customer) {
+    throw createAuthorizationError('Access denied');
+  }
 
-    // Get customer
-    const customer = await getCustomerByEmail(email);
-    if (!customer) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
+  const airtableToken = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
 
-    const airtableToken = process.env.AIRTABLE_API_KEY;
-    const baseId = process.env.AIRTABLE_BASE_ID;
-
-    if (!airtableToken || !baseId) {
-      return res.status(500).json({ error: 'Airtable not configured' });
-    }
+  if (!airtableToken || !baseId) {
+    throw createInternalServerError('Airtable not configured');
+  }
 
     // Get documents for this customer
     const response = await fetch(`https://api.airtable.com/v0/${baseId}/Documents?filterByFormula={customer_email}='${email}'`, {
@@ -405,35 +333,16 @@ router.post('/list', validate(emailSchema), async (req, res) => {
       lastDownloaded: record.fields['Last Downloaded'],
     }));
 
-    res.json({ documents });
-  } catch (error) {
-    console.error('Documents list error:', error);
-    res.status(500).json({ error: 'Failed to load documents' });
-  }
-});
+  res.json({ documents });
+}));
 
 // Track document download
-router.post('/track-download', validate(documentTrackingSchema), async (req, res) => {
-  try {
-    // Set security headers
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block'
-    });
-    const { email, documentId, fileName, fileType } = req.body;
-    
-
-    await trackDocumentDownload({ email, documentId, fileName, fileType });
-    res.json({ success: true });
-  } catch (error: any) {
-    console.error('Download tracking error:', error);
-    res.status(500).json({ 
-      error: 'Failed to track download',
-      details: error.message 
-    });
-  }
-});
+router.post('/track-download', validate(documentTrackingSchema), asyncHandler(async (req, res) => {
+  const { email, documentId, fileName, fileType } = req.body;
+  
+  await trackDocumentDownload({ email, documentId, fileName, fileType });
+  res.json({ success: true });
+}));
 
 // Helper functions for document display
 function getDocumentDisplayName(fileType: string): string {

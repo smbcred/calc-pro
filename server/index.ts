@@ -1,6 +1,15 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+// Import logging and error handling
+import Logger from './utils/logger';
+import { 
+  globalErrorHandler, 
+  notFoundHandler, 
+  handleUnhandledRejections,
+  handleUncaughtExceptions 
+} from './middleware/errorHandler';
+import expressWinston from 'express-winston';
 // Import security middleware
 import helmet from 'helmet';
 import cors from 'cors';
@@ -9,6 +18,10 @@ import hpp from 'hpp';
 import { corsOptions, apiLimiter, loginLimiter, strictLimiter } from './middleware/security';
 
 const app = express();
+
+// Set up process handlers for unhandled rejections and uncaught exceptions
+handleUncaughtExceptions();
+handleUnhandledRejections();
 
 // Apply security middleware
 app.use(helmet({
@@ -42,46 +55,27 @@ app.use('/api/stripeWebhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
-    }
-  });
-
-  next();
-});
+// HTTP request logging middleware using Winston
+app.use(expressWinston.logger({
+  winstonInstance: Logger,
+  meta: false, // Don't log metadata
+  msg: "{{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms",
+  expressFormat: true,
+  colorize: false,
+  ignoreRoute: function (req, res) {
+    // Don't log static file requests in production
+    return process.env.NODE_ENV === 'production' && !req.url.startsWith('/api');
+  }
+}));
 
 (async () => {
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
+  // 404 handler for unmatched routes
+  app.use(notFoundHandler);
+  
+  // Global error handling middleware
+  app.use(globalErrorHandler);
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
@@ -102,6 +96,8 @@ app.use((req, res, next) => {
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
+    Logger.info(`🚀 Server is running on port ${port}`);
+    Logger.info(`🏃 Environment: ${process.env.NODE_ENV || 'development'}`);
     log(`serving on port ${port}`);
   });
 })();

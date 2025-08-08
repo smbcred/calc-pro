@@ -1,26 +1,37 @@
+import { lazy, Suspense, useState } from 'react';
 import { Route, Switch } from 'wouter';
-import LandingPage from './pages/LandingPage';
-import CreditCalculator from './components/CreditCalculator';
-import CheckoutPage from './pages/CheckoutPage';
-import SuccessPage from './pages/SuccessPage';
-import IntakePage from './pages/IntakePage';
-import LoginPage from './pages/LoginPage';
-import GatedIntakePortal from './pages/GatedIntakePortal';
-import Dashboard from './pages/Dashboard';
-import EmailTest from './pages/EmailTest';
-import { useState } from 'react';
+import { LoadingScreen } from './components/LoadingComponents';
+
+// Lazy load all page components
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const CreditCalculator = lazy(() => import('./components/CreditCalculator'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const SuccessPage = lazy(() => import('./pages/SuccessPage'));
+const IntakePage = lazy(() => import('./pages/IntakePage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const GatedIntakePortal = lazy(() => import('./pages/GatedIntakePortal'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const EmailTest = lazy(() => import('./pages/EmailTest'));
+
+// Create a loading component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <LoadingScreen />
+  </div>
+);
 
 function App() {
   const [calculationResults, setCalculationResults] = useState<any>(null);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Switch>
+      <Suspense fallback={<PageLoader />}>
+        <Switch>
         <Route path="/">
           <LandingPage />
         </Route>
         <Route path="/calculator">
-          <CreditCalculator onResultsReady={setCalculationResults} />
+          <CreditCalculator customerEmail="" />
         </Route>
         <Route path="/checkout">
           <CheckoutPage calculationResults={calculationResults} />
@@ -52,7 +63,8 @@ function App() {
             </div>
           </div>
         </Route>
-      </Switch>
+        </Switch>
+      </Suspense>
     </div>
   );
 }

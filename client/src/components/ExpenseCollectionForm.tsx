@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { 
   DollarSign, Users, UserCheck, Package, Cloud, 
@@ -59,7 +59,7 @@ interface ExpenseCollectionFormProps {
   onBack?: () => void;
 }
 
-const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = ({ 
+const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = memo(({ 
   customerEmail, 
   onComplete, 
   onBack 
@@ -1337,6 +1337,6 @@ const ExpenseCollectionForm: React.FC<ExpenseCollectionFormProps> = ({
       </div>
     </div>
   );
-};
+});
 
 export default ExpenseCollectionForm;

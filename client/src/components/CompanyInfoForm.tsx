@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { 
   Building2, DollarSign, MapPin, ChevronLeft, ChevronRight,
@@ -50,7 +50,7 @@ const ENTITY_TYPES = [
   'Other'
 ];
 
-const CompanyInfoForm: React.FC<CompanyInfoFormProps> = ({ customerEmail, onComplete, onBack }) => {
+const CompanyInfoForm: React.FC<CompanyInfoFormProps> = memo(({ customerEmail, onComplete, onBack }) => {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
@@ -533,6 +533,6 @@ const CompanyInfoForm: React.FC<CompanyInfoFormProps> = ({ customerEmail, onComp
       </div>
     </div>
   );
-};
+});
 
 export default CompanyInfoForm;

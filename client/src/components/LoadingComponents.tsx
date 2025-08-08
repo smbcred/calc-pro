@@ -260,3 +260,15 @@ export function FormLoadingSkeleton({ className, ...props }: HTMLAttributes<HTML
     </div>
   );
 }
+
+// Main Loading Screen Component
+export function LoadingScreen({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={cn('flex items-center justify-center', className)} {...props}>
+      <div className="text-center">
+        <LoadingSpinner size="lg" />
+        <p className="mt-4 text-gray-600">Loading...</p>
+      </div>
+    </div>
+  );
+}

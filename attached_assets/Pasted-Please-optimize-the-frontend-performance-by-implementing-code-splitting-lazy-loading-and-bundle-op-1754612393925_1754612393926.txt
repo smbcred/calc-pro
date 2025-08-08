@@ -1,0 +1,292 @@
+Please optimize the frontend performance by implementing code splitting, lazy loading, and bundle optimization.
+
+Update client/src/App.tsx to use React lazy loading for routes:
+
+typescriptimport { lazy, Suspense } from 'react';
+import { Route, Switch } from 'wouter';
+import { LoadingScreen } from './components/LoadingComponents';
+
+// Lazy load all page components
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const CreditCalculator = lazy(() => import('./components/CreditCalculator'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const SuccessPage = lazy(() => import('./pages/SuccessPage'));
+const IntakePage = lazy(() => import('./pages/IntakePage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const GatedIntakePortal = lazy(() => import('./pages/GatedIntakePortal'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const EmailTest = lazy(() => import('./pages/EmailTest'));
+
+// Create a loading component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <LoadingScreen />
+  </div>
+);
+
+function App() {
+  const [calculationResults, setCalculationResults] = useState<any>(null);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Suspense fallback={<PageLoader />}>
+        <Switch>
+          <Route path="/">
+            <LandingPage />
+          </Route>
+          <Route path="/calculator">
+            <CreditCalculator onResultsReady={setCalculationResults} />
+          </Route>
+          <Route path="/checkout">
+            <CheckoutPage calculationResults={calculationResults} />
+          </Route>
+          <Route path="/success">
+            <SuccessPage />
+          </Route>
+          <Route path="/intake">
+            <IntakePage />
+          </Route>
+          <Route path="/login">
+            <LoginPage />
+          </Route>
+          <Route path="/intake-portal">
+            <GatedIntakePortal />
+          </Route>
+          <Route path="/dashboard">
+            <Dashboard />
+          </Route>
+          <Route>
+            {/* 404 fallback */}
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="text-center">
+                <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
+                <p className="text-gray-600 mb-4">Page not found</p>
+                <a href="/" className="text-blue-600 hover:text-blue-700">
+                  Return to home
+                </a>
+              </div>
+            </div>
+          </Route>
+        </Switch>
+      </Suspense>
+    </div>
+  );
+}
+
+export default App;
+
+Create a new file client/src/hooks/useDebounce.ts for optimizing input handling:
+
+typescriptimport { useState, useEffect } from 'react';
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+Create client/src/hooks/useIntersectionObserver.ts for lazy loading components:
+
+typescriptimport { useEffect, useRef, useState } from 'react';
+
+interface UseIntersectionObserverProps {
+  threshold?: number;
+  root?: Element | null;
+  rootMargin?: string;
+}
+
+export function useIntersectionObserver({
+  threshold = 0.1,
+  root = null,
+  rootMargin = '0px',
+}: UseIntersectionObserverProps = {}) {
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const targetRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const target = targetRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsIntersecting(entry.isIntersecting);
+      },
+      {
+        threshold,
+        root,
+        rootMargin,
+      }
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.unobserve(target);
+    };
+  }, [threshold, root, rootMargin]);
+
+  return { targetRef, isIntersecting };
+}
+
+Update vite.config.ts to optimize the build:
+
+typescriptimport { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './client/src'),
+      '@shared': path.resolve(__dirname, './shared'),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Split vendor chunks for better caching
+          'react-vendor': ['react', 'react-dom', 'wouter'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-form'],
+          'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          'utils': ['clsx', 'tailwind-merge', 'date-fns'],
+        },
+      },
+    },
+    // Optimize chunk size
+    chunkSizeWarningLimit: 1000,
+    // Enable minification
+    minify: 'esbuild',
+    // Enable source maps for production debugging
+    sourcemap: true,
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
+    exclude: ['@replit/database'],
+  },
+});
+
+Create client/src/components/LazyImage.tsx for optimized image loading:
+
+typescriptimport { useState, useEffect } from 'react';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+
+interface LazyImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+  placeholder?: string;
+}
+
+export function LazyImage({ src, alt, className, placeholder }: LazyImageProps) {
+  const [imageSrc, setImageSrc] = useState(placeholder || '');
+  const [imageRef, setImageRef] = useState<HTMLImageElement | null>(null);
+  const { targetRef, isIntersecting } = useIntersectionObserver({
+    threshold: 0.1,
+    rootMargin: '50px',
+  });
+
+  useEffect(() => {
+    if (isIntersecting && src) {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        setImageSrc(src);
+      };
+    }
+  }, [isIntersecting, src]);
+
+  return (
+    <div ref={targetRef} className={className}>
+      <img
+        ref={setImageRef}
+        src={imageSrc}
+        alt={alt}
+        className={`${className} ${!imageSrc ? 'animate-pulse bg-gray-200' : ''}`}
+        loading="lazy"
+      />
+    </div>
+  );
+}
+
+Add performance monitoring in client/src/utils/performance.ts:
+
+typescriptexport const measurePerformance = (metricName: string) => {
+  if ('performance' in window) {
+    performance.mark(`${metricName}-start`);
+    
+    return () => {
+      performance.mark(`${metricName}-end`);
+      performance.measure(
+        metricName,
+        `${metricName}-start`,
+        `${metricName}-end`
+      );
+      
+      const measure = performance.getEntriesByName(metricName)[0];
+      console.log(`${metricName}: ${measure.duration.toFixed(2)}ms`);
+    };
+  }
+  
+  return () => {};
+};
+
+// Web Vitals reporting
+export const reportWebVitals = (onPerfEntry?: (metric: any) => void) => {
+  if (onPerfEntry && onPerfEntry instanceof Function) {
+    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+      getCLS(onPerfEntry);
+      getFID(onPerfEntry);
+      getFCP(onPerfEntry);
+      getLCP(onPerfEntry);
+      getTTFB(onPerfEntry);
+    });
+  }
+};
+
+Update any heavy components to use React.memo for preventing unnecessary re-renders. For example, in large form components:
+
+typescriptimport { memo } from 'react';
+
+export const ExpenseCollectionForm = memo(function ExpenseCollectionForm(props) {
+  // Component code
+});
+
+Add preconnect hints in index.html:
+
+html<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://api.airtable.com">
+    
+    <!-- Preload critical fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
+    
+    <title>R&D Tax Credit Calculator</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+This will significantly improve your app's loading speed and runtime performance through code splitting, lazy loading, and optimized bundling.

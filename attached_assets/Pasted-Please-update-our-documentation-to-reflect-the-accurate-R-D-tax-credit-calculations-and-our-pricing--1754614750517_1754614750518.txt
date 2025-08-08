@@ -1,0 +1,174 @@
+Please update our documentation to reflect the accurate R&D tax credit calculations and our pricing strategy.
+
+Update docs/CALCULATOR_LOGIC.md with the correct calculation formulas:
+
+markdown# R&D Tax Credit Calculator Logic
+
+## Overview
+
+The calculator guides users through determining eligibility and estimating their potential R&D tax credit using the Alternative Simplified Credit (ASC) method, which is most common for small businesses and startups.
+
+## Calculation Steps
+
+### Step 1: Eligibility Check
+- Business type (C-Corp, S-Corp, LLC, etc.)
+- Use of AI/automation tools
+- Technical experimentation activities
+- U.S.-based operations
+
+### Step 2: Qualifying Activities
+User selects from common R&D activities:
+- Software development
+- Process automation
+- AI/ML implementation
+- Product development
+- Manufacturing improvements
+- Technical problem-solving
+
+### Step 3: Expense Collection
+
+#### Qualified Research Expenses (QREs)
+
+**Wages**
+- Number of employees doing R&D
+- Average salary
+- Percentage of time on R&D (0-100%)
+- Formula: `Qualified Wages = Employees × Avg Salary × R&D %`
+
+**Contractors**
+- Total contractor costs
+- R&D percentage (typically 65% max per IRS rules)
+- Formula: `Qualified Contractors = Contractor Costs × R&D % × 0.65`
+
+**Supplies & Cloud Computing**
+- Cloud computing costs (AWS, Azure, etc.)
+- Software licenses for development
+- Development tools and testing materials
+- Formula: `Qualified Supplies = Supply Costs × R&D %`
+
+### Step 4: Credit Calculation
+
+**Total Qualified Research Expenses (QRE)**
+QRE = Qualified Wages + Qualified Contractors + Qualified Supplies
+
+**Federal Credit Calculation (ASC Method)**
+
+For startups with no prior R&D history:
+Federal Credit = QRE × 6%
+
+For companies with R&D history:
+Federal Credit = (Current Year QRE - (50% × Prior 3-Year Average QRE)) × 14%
+
+**Important Notes:**
+- Most startups use the 6% rate (no prior R&D)
+- The credit cannot exceed actual tax liability (unless using payroll tax offset)
+- Qualified Small Businesses can offset up to $500,000 in payroll taxes
+
+### Step 5: Pricing Tier Determination
+
+Based on calculated federal credit amount:
+
+| Credit Amount | Service Price | Value Proposition |
+|--------------|---------------|-------------------|
+| < $10,000 | $500 | Entry tier for smaller credits |
+| $10,000 - $50,000 | $750 | Most common tier |
+| $50,000 - $100,000 | $1,000 | Significant R&D investment |
+| > $100,000 | $1,500 | Enterprise-level R&D |
+
+**Multi-Year Pricing:**
+- Base year: Full price (as above)
+- Additional years: $297 each
+- Maximum: 3 additional years (current year + 3 prior)
+- Example: $50,000 credit = $750 base + $297/year for additional years
+
+## Implementation Example
+
+```typescript
+interface CalculatorInputs {
+  wages: number;
+  wageRdPercent: number;
+  contractors: number;
+  contractorRdPercent: number;
+  supplies: number;
+  suppliesRdPercent: number;
+  hasPriorRd: boolean;
+  priorYearAverage?: number;
+}
+
+const calculateRdCredit = (inputs: CalculatorInputs) => {
+  // Calculate QREs
+  const qualifiedWages = inputs.wages * (inputs.wageRdPercent / 100);
+  const qualifiedContractors = inputs.contractors * (inputs.contractorRdPercent / 100) * 0.65;
+  const qualifiedSupplies = inputs.supplies * (inputs.suppliesRdPercent / 100);
+  
+  const totalQRE = qualifiedWages + qualifiedContractors + qualifiedSupplies;
+  
+  // Calculate federal credit
+  let federalCredit: number;
+  if (!inputs.hasPriorRd) {
+    // Startup rate: 6% of current QRE
+    federalCredit = totalQRE * 0.06;
+  } else {
+    // Established company: 14% of excess over 50% of prior average
+    const excess = totalQRE - (0.5 * (inputs.priorYearAverage || 0));
+    federalCredit = Math.max(0, excess * 0.14);
+  }
+  
+  // Determine pricing tier
+  let basePrice: number;
+  if (federalCredit < 10000) {
+    basePrice = 500;
+  } else if (federalCredit < 50000) {
+    basePrice = 750;
+  } else if (federalCredit < 100000) {
+    basePrice = 1000;
+  } else {
+    basePrice = 1500;
+  }
+  
+  return {
+    totalQRE,
+    federalCredit,
+    basePrice,
+    additionalYearPrice: 297
+  };
+};
+Calculator UI/UX Guidelines
+
+Progressive Disclosure: Show fields based on user selections
+Real-time Calculation: Update credit and price as user types
+Visual Indicators:
+
+Show credit amount in green
+Highlight pricing tier changes
+Display savings comparison (credit vs. our fee)
+
+
+Trust Signals:
+
+"IRS-compliant calculations"
+"Based on 2025 tax law"
+"Includes Big Beautiful Bill updates"
+
+
+Clear CTAs:
+
+Show total price with multi-year discount
+"Get Your R&D Tax Documents" button
+
+
+
+Validation Rules
+
+Minimum QRE: $10,000 (not worth filing below this)
+R&D percentages: 0-100%
+Contractor R&D: Automatically cap at 65% per IRS rules
+Maximum shown credit: $500,000 (payroll tax offset limit)
+For credits > $500,000: Show message about income tax offset
+
+Special Considerations
+Qualified Small Business (QSB) Eligibility
+
+< $5 million gross receipts in current year
+No gross receipts before 5 tax years ago
+Can use $500,000 payroll tax offset

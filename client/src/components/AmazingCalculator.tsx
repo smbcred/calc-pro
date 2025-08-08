@@ -107,56 +107,99 @@ const AmazingCalculator: React.FC = () => {
     setCurrentStep(prev => Math.max(1, prev - 1));
   };
 
+  // Smart credit estimation based on revenue and activities
+  const calculateCreditEstimate = () => {
+    const revenue = formData.companyInfo.revenue;
+    const activityCount = formData.activities.length;
+    
+    // Base estimate multipliers by revenue range
+    const revenueMultipliers = {
+      'Under $1M': { base: 8000, multiplier: 1200 },
+      '$1M - $5M': { base: 15000, multiplier: 2800 },
+      '$5M - $25M': { base: 35000, multiplier: 6500 },
+      '$25M - $100M': { base: 75000, multiplier: 12000 },
+      'Over $100M': { base: 150000, multiplier: 18000 }
+    };
+    
+    const multiplier = revenueMultipliers[revenue as keyof typeof revenueMultipliers] || revenueMultipliers['Under $1M'];
+    const estimatedCredit = multiplier.base + (activityCount * multiplier.multiplier);
+    
+    // Calculate multi-year potential (2022-2025)
+    const multiYearTotal = estimatedCredit * 4;
+    
+    return {
+      currentYear: estimatedCredit,
+      multiYear: multiYearTotal,
+      activityCount,
+      revenue
+    };
+  };
+
   const calculateResults = async () => {
     setIsCalculating(true);
     
     try {
-      // Calculate total QRE
+      // Calculate total QRE with proper qualification rules
       const employeeTime = parseFloat((formData.expenses.employeeTime || '0').replace(/,/g, '')) || 0;
       const aiTools = parseFloat((formData.expenses.aiTools || '0').replace(/,/g, '')) || 0;
       const contractors = parseFloat((formData.expenses.contractors || '0').replace(/,/g, '')) || 0;
       const software = parseFloat((formData.expenses.software || '0').replace(/,/g, '')) || 0;
       const training = parseFloat((formData.expenses.training || '0').replace(/,/g, '')) || 0;
       
-      // Apply qualification percentages
-      const qualifiedEmployeeTime = employeeTime * 0.8; // 80% of employee time typically qualifies
-      const qualifiedAiTools = aiTools * 1.0; // 100% of AI tools qualify
-      const qualifiedContractors = contractors * 0.65; // 65% cap for contractors
-      const qualifiedSoftware = software * 1.0; // 100% of supporting software qualifies
-      const qualifiedTraining = training * 1.0; // 100% of training qualifies
+      // Apply IRS qualification percentages
+      const qualifiedEmployeeTime = employeeTime * 0.8; // 80% qualification rate
+      const qualifiedAiTools = aiTools * 1.0; // 100% - direct R&D tools
+      const qualifiedContractors = contractors * 0.65; // 65% IRS limit
+      const qualifiedSoftware = software * 1.0; // 100% - supporting software
+      const qualifiedTraining = training * 1.0; // 100% - R&D training
       
       const totalQRE = qualifiedEmployeeTime + qualifiedAiTools + qualifiedContractors + qualifiedSoftware + qualifiedTraining;
       
-      // Calculate federal credit using standard 6.5% rate (no state credits)
+      // Federal credit calculation (6.5% rate)
       const federalRate = 0.065;
       const federalCredit = Math.round(totalQRE * federalRate);
       
-      // No state credits - federal only
+      // No state credits in this version
       const stateCredit = 0;
-      
       const totalBenefit = federalCredit;
       
       // Dynamic pricing based on credit amount
-      let price = 500; // Default starter price
+      let price = 500;
       if (federalCredit >= 100000) price = 1500;
       else if (federalCredit >= 50000) price = 1000;
       else if (federalCredit >= 10000) price = 750;
       
-      const savingsAmount = totalBenefit - price;
+      const savingsAmount = Math.max(0, totalBenefit - price);
       
       const results = {
-        totalQRE,
+        totalQRE: Math.round(totalQRE),
         federalCredit,
         stateCredit,
         totalBenefit,
         price,
-        savingsAmount
+        savingsAmount,
+        breakdown: {
+          qualifiedEmployeeTime: Math.round(qualifiedEmployeeTime),
+          qualifiedAiTools: Math.round(qualifiedAiTools),
+          qualifiedContractors: Math.round(qualifiedContractors),
+          qualifiedSoftware: Math.round(qualifiedSoftware),
+          qualifiedTraining: Math.round(qualifiedTraining)
+        }
       };
       
       updateFormData({ results });
       
-      // Simulate API delay for better UX
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Save calculation results to localStorage for checkout
+      localStorage.setItem('rd_calculation_results', JSON.stringify({
+        federalCredit,
+        totalQRE: Math.round(totalQRE),
+        savingsAmount,
+        price,
+        tier: price >= 1500 ? 'Enterprise' : price >= 1000 ? 'Growth' : price >= 750 ? 'Professional' : 'Starter'
+      }));
+      
+      // Simulate processing time for better UX
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
     } catch (error) {
       console.error('Calculation error:', error);
@@ -255,11 +298,12 @@ const AmazingCalculator: React.FC = () => {
               />
             )}
             {currentStep === 4 && (
-              <EmailCaptureStep 
+              <CreditEstimateStep 
                 formData={formData} 
                 updateFormData={updateFormData} 
                 nextStep={nextStep}
                 prevStep={prevStep}
+                calculateCreditEstimate={calculateCreditEstimate}
               />
             )}
             {currentStep === 5 && (
@@ -518,6 +562,129 @@ const QualificationStep: React.FC<{
           </p>
         </div>
       </div>
+    </div>
+  );
+};
+
+// Employee Time Calculator Component
+const EmployeeTimeCalculator: React.FC<{
+  value: string;
+  onChange: (value: string) => void;
+}> = ({ value, onChange }) => {
+  const [method, setMethod] = useState<'annual' | 'hourly'>('annual');
+  const [employees, setEmployees] = useState('');
+  const [timePercent, setTimePercent] = useState('');
+  const [avgSalary, setAvgSalary] = useState('');
+  const [hours, setHours] = useState('');
+  const [rate, setRate] = useState('');
+
+  const calculateTotal = () => {
+    if (method === 'annual') {
+      const emp = parseFloat(employees) || 0;
+      const percent = parseFloat(timePercent) || 0;
+      const salary = parseFloat(avgSalary) || 0;
+      return Math.round(emp * (percent / 100) * salary);
+    } else {
+      const hrs = parseFloat(hours) || 0;
+      const hourlyRate = parseFloat(rate) || 0;
+      return Math.round(hrs * hourlyRate);
+    }
+  };
+
+  React.useEffect(() => {
+    const total = calculateTotal();
+    if (total > 0) {
+      onChange(total.toLocaleString());
+    }
+  }, [employees, timePercent, avgSalary, hours, rate, method]);
+
+  return (
+    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="flex gap-4 mb-4">
+        <button
+          onClick={() => setMethod('annual')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium ${
+            method === 'annual' ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border border-blue-300'
+          }`}
+        >
+          Annual Salary Method
+        </button>
+        <button
+          onClick={() => setMethod('hourly')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium ${
+            method === 'hourly' ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border border-blue-300'
+          }`}
+        >
+          Hourly Rate Method
+        </button>
+      </div>
+      
+      {method === 'annual' ? (
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-blue-700 mb-1"># Employees</label>
+            <input
+              type="number"
+              value={employees}
+              onChange={(e) => setEmployees(e.target.value)}
+              placeholder="3"
+              className="w-full px-3 py-2 border border-blue-300 rounded text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-blue-700 mb-1">% Time on R&D</label>
+            <input
+              type="number"
+              value={timePercent}
+              onChange={(e) => setTimePercent(e.target.value)}
+              placeholder="25"
+              max="100"
+              className="w-full px-3 py-2 border border-blue-300 rounded text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-blue-700 mb-1">Avg Salary</label>
+            <input
+              type="number"
+              value={avgSalary}
+              onChange={(e) => setAvgSalary(e.target.value)}
+              placeholder="80000"
+              className="w-full px-3 py-2 border border-blue-300 rounded text-sm"
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-blue-700 mb-1">Total Hours</label>
+            <input
+              type="number"
+              value={hours}
+              onChange={(e) => setHours(e.target.value)}
+              placeholder="500"
+              className="w-full px-3 py-2 border border-blue-300 rounded text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-blue-700 mb-1">Hourly Rate</label>
+            <input
+              type="number"
+              value={rate}
+              onChange={(e) => setRate(e.target.value)}
+              placeholder="50"
+              className="w-full px-3 py-2 border border-blue-300 rounded text-sm"
+            />
+          </div>
+        </div>
+      )}
+      
+      {calculateTotal() > 0 && (
+        <div className="mt-3 pt-3 border-t border-blue-200">
+          <div className="text-sm font-medium text-blue-700">
+            Calculated: ${calculateTotal().toLocaleString()}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -852,14 +1019,50 @@ const EmailCaptureStep: React.FC<{
   );
 };
 
-// Step 3: Expense Collection
+// Step 3: Enhanced Expense Collection with Real-time QRE
 const ExpenseStep: React.FC<{
   formData: FormData;
   updateFormData: (updates: Partial<FormData>) => void;
   nextStep: () => void;
   prevStep: () => void;
 }> = ({ formData, updateFormData, nextStep, prevStep }) => {
-  const [expenses, setExpenses] = useState(formData.expenses);
+  const [expenses, setExpenses] = useState({
+    employeeTime: formData.expenses?.employeeTime || '0',
+    aiTools: formData.expenses?.aiTools || '0',
+    contractors: formData.expenses?.contractors || '0',
+    software: formData.expenses?.software || '0',
+    training: formData.expenses?.training || '0'
+  });
+
+  // Real-time QRE calculation
+  const calculateQRE = () => {
+    const employeeTime = parseFloat(expenses.employeeTime.replace(/,/g, '')) || 0;
+    const aiTools = parseFloat(expenses.aiTools.replace(/,/g, '')) || 0;
+    const contractors = parseFloat(expenses.contractors.replace(/,/g, '')) || 0;
+    const software = parseFloat(expenses.software.replace(/,/g, '')) || 0;
+    const training = parseFloat(expenses.training.replace(/,/g, '')) || 0;
+    
+    // Apply qualification rates
+    const qualifiedEmployeeTime = employeeTime * 0.8;
+    const qualifiedAiTools = aiTools * 1.0;
+    const qualifiedContractors = contractors * 0.65;
+    const qualifiedSoftware = software * 1.0;
+    const qualifiedTraining = training * 1.0;
+    
+    return {
+      total: qualifiedEmployeeTime + qualifiedAiTools + qualifiedContractors + qualifiedSoftware + qualifiedTraining,
+      breakdown: {
+        employeeTime: qualifiedEmployeeTime,
+        aiTools: qualifiedAiTools,
+        contractors: qualifiedContractors,
+        software: qualifiedSoftware,
+        training: qualifiedTraining
+      }
+    };
+  };
+
+  const qre = calculateQRE();
+  const estimatedCredit = Math.round(qre.total * 0.065);
 
   const updateExpense = (field: string, value: string) => {
     const newExpenses = { ...expenses, [field]: value };
@@ -868,19 +1071,47 @@ const ExpenseStep: React.FC<{
   };
 
   const handleNext = () => {
+    updateFormData({ expenses });
     nextStep();
   };
 
   return (
     <div className="stagger-item">
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
-            What did you spend on R&D activities?
-          </h2>
-          <p className="text-xl text-gray-600">
-            Enter your expenses for the current year. We'll help calculate which portions qualify.
-          </p>
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
+        {/* Header with Real-time QRE Display */}
+        <div className="p-8 border-b border-gray-200">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">
+              R&D Expense Details
+            </h2>
+            <p className="text-xl text-gray-600">
+              Enter your 2025 AI and R&D related expenses to calculate your qualified research expenses
+            </p>
+          </div>
+          
+          {/* Real-time QRE Display */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
+            <div className="grid md:grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-blue-600">
+                  ${Math.round(qre.total).toLocaleString()}
+                </div>
+                <div className="text-sm text-gray-600">Qualified Research Expenses</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-green-600">
+                  ${estimatedCredit.toLocaleString()}
+                </div>
+                <div className="text-sm text-gray-600">Estimated Federal Credit</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-purple-600">
+                  {((estimatedCredit / (qre.total || 1)) * 100).toFixed(1)}%
+                </div>
+                <div className="text-sm text-gray-600">Effective Credit Rate</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-6">
@@ -895,12 +1126,9 @@ const ExpenseStep: React.FC<{
               <p className="text-sm text-gray-600 mb-4">
                 Wages and benefits for employees working on AI/R&D projects (80% typically qualifies)
               </p>
-              <input
-                type="text"
-                value={expenses.employeeTime}
-                onChange={(e) => updateExpense('employeeTime', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="150000"
+              <EmployeeTimeCalculator 
+                value={expenses.employeeTime} 
+                onChange={(value) => updateExpense('employeeTime', value)}
               />
             </div>
 
@@ -1015,6 +1243,178 @@ const ExpenseStep: React.FC<{
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+// Step 4: Credit Estimate Display
+const CreditEstimateStep: React.FC<{
+  formData: FormData;
+  updateFormData: (updates: Partial<FormData>) => void;
+  nextStep: () => void;
+  prevStep: () => void;
+  calculateCreditEstimate: () => { currentYear: number; multiYear: number; activityCount: number; revenue: string };
+}> = ({ formData, updateFormData, nextStep, prevStep, calculateCreditEstimate }) => {
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [showEstimate, setShowEstimate] = useState(false);
+  const [estimateData, setEstimateData] = useState<any>(null);
+  
+  useEffect(() => {
+    const runEstimation = async () => {
+      setIsCalculating(true);
+      
+      // Simulate calculation time for better UX
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const estimate = calculateCreditEstimate();
+      setEstimateData(estimate);
+      
+      updateFormData({
+        estimatedRange: {
+          low: estimate.currentYear * 0.8,
+          high: estimate.currentYear * 1.2,
+          totalLow: estimate.multiYear * 0.8,
+          totalHigh: estimate.multiYear * 1.2,
+          years: 4
+        }
+      });
+      
+      setIsCalculating(false);
+      setShowEstimate(true);
+    };
+    
+    if (!showEstimate && !isCalculating) {
+      runEstimation();
+    }
+  }, []);
+  
+  return (
+    <div className="stagger-item">
+      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        {isCalculating ? (
+          <div className="text-center py-16">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-green-600 rounded-full mb-6">
+              <Calculator className="w-10 h-10 text-white animate-pulse" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Calculating Your R&D Credit Estimate
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Analyzing your business profile and AI activities...
+            </p>
+            <div className="w-80 mx-auto bg-gray-200 rounded-full h-3">
+              <div className="bg-gradient-to-r from-blue-600 to-green-600 h-3 rounded-full animate-pulse" style={{width: '75%'}}></div>
+            </div>
+          </div>
+        ) : showEstimate && estimateData ? (
+          <div>
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-3">
+                🎉 Great News! Your Business Qualifies
+              </h2>
+              <p className="text-xl text-gray-600">
+                Based on your {estimateData.activityCount} AI activities and {estimateData.revenue} revenue
+              </p>
+            </div>
+            
+            {/* Main Estimate Display */}
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 mb-8 text-center">
+              <div className="mb-6">
+                <div className="text-5xl font-bold text-green-600 mb-2">
+                  ${estimateData.currentYear.toLocaleString()}
+                </div>
+                <div className="text-lg font-semibold text-gray-700">2025 Estimated Federal Credit</div>
+                <div className="text-sm text-gray-600">Based on your current AI implementation</div>
+              </div>
+              
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="bg-white bg-opacity-60 rounded-xl p-4">
+                  <div className="text-2xl font-bold text-blue-600">{estimateData.activityCount}</div>
+                  <div className="text-sm text-gray-600">Qualifying AI Activities</div>
+                </div>
+                <div className="bg-white bg-opacity-60 rounded-xl p-4">
+                  <div className="text-2xl font-bold text-purple-600">{estimateData.revenue}</div>
+                  <div className="text-sm text-gray-600">Annual Revenue</div>
+                </div>
+                <div className="bg-white bg-opacity-60 rounded-xl p-4">
+                  <div className="text-2xl font-bold text-orange-600">6.5%</div>
+                  <div className="text-sm text-gray-600">Federal Credit Rate</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Multi-Year Potential */}
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-8">
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-amber-800 mb-3">💰 Multi-Year Opportunity</h3>
+                <div className="text-3xl font-bold text-amber-700 mb-2">
+                  ${estimateData.multiYear.toLocaleString()}
+                </div>
+                <p className="text-amber-700">
+                  <strong>Potential total for 2022-2025</strong> (4 years)
+                </p>
+                <div className="mt-4 bg-amber-100 rounded-lg p-4">
+                  <p className="text-sm text-amber-800">
+                    ⏰ <strong>Amendment deadline: July 2026</strong> for previous years (2022-2024)<br/>
+                    Most businesses miss out on $75,000+ by waiting too long!
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            {/* What's Next */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+              <h3 className="text-lg font-bold text-blue-900 mb-4">📋 Next: Enter Your Exact Expenses</h3>
+              <p className="text-blue-800 mb-4">
+                We'll calculate your precise credit amount using IRS-compliant qualification rules:
+              </p>
+              <div className="grid md:grid-cols-2 gap-4 text-sm text-blue-700">
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-600" />
+                  <span>Employee wages (80% qualification rate)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-600" />
+                  <span>AI tools & software (100% qualification)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-600" />
+                  <span>Contractors (65% cap per IRS rules)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-600" />
+                  <span>Training & education (100% qualification)</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Navigation */}
+            <div className="flex justify-between pt-6">
+              <button
+                onClick={prevStep}
+                className="flex items-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5" />
+                Back
+              </button>
+              
+              <button
+                onClick={nextStep}
+                className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 px-8 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              >
+                <span className="flex items-center gap-2">
+                  Enter Exact Expenses
+                  <ArrowRight className="w-5 h-5" />
+                </span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <p className="text-gray-600">Loading your credit estimate...</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1248,5 +1648,6 @@ const ResultsStep: React.FC<{
     </div>
   );
 };
+
 
 export default AmazingCalculator;
